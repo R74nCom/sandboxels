@@ -5,7 +5,7 @@ var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
 
 if (!isChromium && !isAndroid) {
     window.addEventListener("load",function(){
-        console.log(1)
+        console.log("Error: glow.js only works on Chrome or Chromium-based browsers.")
         logMessage("Error: glow.js only works on Chrome or Chromium-based browsers.")
     })
 }
@@ -26,6 +26,8 @@ elements.positron.emit = true;
 elements.plasma.emit = true;
 elements.uranium.emit = 3;
 elements.uranium.emitColor = "#009800";
+elements.molten_uranium.emit = 3;
+elements.molten_uranium.emitColor = "#009800";
 elements.rainbow.emit = true;
 elements.static.emit = true;
 elements.flash.emit = true;

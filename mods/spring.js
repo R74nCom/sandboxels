@@ -46,7 +46,8 @@ elements.sakura = {
         "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
         "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
         "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
-        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "carbon_dioxide": { elem2:"oxygen" }
     },
     category:"life",
     tempHigh: 100,

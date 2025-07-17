@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="homepage">
 
 <head>
 	<meta charset="utf-8">
@@ -34,23 +34,23 @@
 	<meta property="og:url" content="https://sandboxels.r74n.com">
 	<meta property="og:site_name" content="Sandboxels">
 	<meta property="og:image" content="https://sandboxels.r74n.com/icons/cover-3840x1240px-text.png">
-	<meta property="og:image:width" content="1980">
-	<meta property="og:image:height" content="971">
+	<meta property="og:image:width" content="3840">
+	<meta property="og:image:height" content="1240">
 	<meta property="og:image:type" content="image/png">
 	<meta property="og:image:alt" content="Magma falling into Water, forming Steam and Basalt. Pixel art style.">
 
 	<!--Twitter-->
 	<meta name="twitter:card" content="summary_large_image">
-	<meta name="twitter:description" content="Relax or experiment with over 500 materials in this falling sand simulator.">
 	<meta name="twitter:title" content="Sandboxels - Experiment with Pixels">
+	<meta name="twitter:description" content="Relax or experiment with over 500 materials in this falling sand simulator.">
 	<meta name="twitter:site:id" content="1436857621827530753">
 	<meta name="twitter:image" content="https://sandboxels.r74n.com/icons/cover-3840x1240px-text.png">
 	<meta name="twitter:image:alt" content="Magma falling into Water, forming Steam and Basalt. Pixel art style.">
 	<meta name="twitter:creator:id" content="1436857621827530753">
 
 	<script> // versioning info
-		currentversion = "1.11.2";
-		saveVersion = 4;
+		currentversion = "1.12";
+		saveVersion = 5;
 		standalone = false;
 		standaloneType = null;
 	</script>
@@ -140,6 +140,26 @@
 		function saveSettings() {
 			if (currentSaveData.loaded) { return }
 			localStorage.setItem("settings", JSON.stringify(settings));
+		}
+
+		saveTagsMap = {};
+		saveTags = {
+			1: "Structure/City",
+			2: "Natural/Landscape",
+			3: "Machine",
+			4: "Destroyable",
+			5: "Art",
+			6: "Cooking/Food",
+			7: "Experiment",
+			8: "Weapon",
+			9: "Workstation",
+			10: "Holiday",
+			11: "Modded",
+			12: "Challenge",
+			13: "Contest",
+			14: "Contest Submission",
+			15: "Miscellaneous",
+			90: "Official",
 		}
 		
 		defaultCooldown = 8;
@@ -273,10 +293,6 @@ UL_UR: [
 ],
 UL_UR_OPTIMIZED: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
-	if (pixel.charge && elements[pixel.element].behaviorOn !== undefined) {
-		pixelTick(pixel);
-		return;
-	}
 	var move1Spots = [0,1,-1]
 	var moved = false;
 	for (var i = 0; i < move1Spots.length; i++) {
@@ -298,7 +314,11 @@ UL_UR_OPTIMIZED: function(pixel) {
 			else if (move2Spots.length > 1) { move2Spots.splice(j, 1); }
 		}
 	}
-	if (!pixel.del) { doDefaults(pixel); }
+	if (pixel.del !== true) {
+		doHeat(pixel)
+		doAirDensity(pixel);
+		doBurning(pixel);
+	}
 },
 GAS_OLD: [
 	"M2|M1|M2",
@@ -319,7 +339,7 @@ GAS: function(pixel) {
 		if (tryMove(pixel, pixel.x+coords[0], pixel.y+coords[1])) { moved = true; break; }
 		move1Spots.splice(j, 1);
 	}
-	if (!moved) {
+	if (moved === false) {
 		let move2Spots = diagonalCoords.slice(0);
 		for (var i = 0; i < move2Spots.length; i++) {
 			const j = Math.random()*move2Spots.length | 0;
@@ -367,6 +387,22 @@ CLONER: [
 	"CF|XX|CF",
 	"XX|CF|XX",
 ],
+CLONE_ON_CLICK: function(pixel,element) {
+	if (pixel.clone) return;
+	if (elements[pixel.element].ignore.indexOf(element) !== -1) return;
+	if (elements[element].tool && elements[element].canPlace !== true) return;
+	if (elements[element].canPlace === false) return;
+	pixel.clone = element;
+	if (elements[element].temp !== undefined) pixel.temp = elements[element].temp;
+},
+STAIN_ON_MIX: function(pixel1,pixel2) {
+	if (elements[pixel1.element].id === elements[pixel2.element].id) return;
+	if (elements[pixel2.element].isGas) return;
+	if (!pixel1.color.match(/^rgb/)) return;
+	
+	stainPixel(pixel2, RGBToHex(pixel1.color.match(/\d+/g)), 0.05);
+	if (Math.random() < 0.05) deletePixel(pixel1.x,pixel1.y);
+},
 STURDYPOWDER_OLD: [
 	"XX|XX|XX",
 	"XX|XX|XX",
@@ -417,8 +453,8 @@ MOLTEN_OLD: [
 	"M1|M1|M1",
 ],
 RADPOWDER: [
-	"XX|CR:radiation%1|XX",
-	"CR:radiation%1|XX|CR:radiation%1",
+	"XX|XX|XX",
+	"XX|RL:radiation%1|XX",
 	"M2|M1|M2",
 ],
 RADMOLTEN: [
@@ -427,8 +463,8 @@ RADMOLTEN: [
 	"M1|M1|M1",
 ],
 RADLIQUID: [
-	"XX|CR:radiation%2|XX",
-	"M2 AND CR:radiation%2|XX|M2 AND CR:radiation%2",
+	"XX|XX|XX",
+	"M2|RL:radiation%2|M2",
 	"M1|M1|M1",
 ],
 BOUNCY: function(pixel) {
@@ -493,7 +529,7 @@ FLY: function(pixel, onHit) {
 		else {onHit(pixel);}
 	}
 	if (pixel.del) {return}
-	if (!isEmpty(pixel.x+nx,pixel.y) || Math.random() < 0.02) {
+	if ((!isEmpty(pixel.x+nx,pixel.y) && !(currentSaveData.loopX && onBorderX(pixel.x))) || Math.random() < 0.02) {
 		pixel.flipX = !pixel.flipX;
 	}
 	if (pixel.charge && elements[pixel.element].behaviorOn) {
@@ -828,13 +864,16 @@ SEEDRISE: function(pixel) {
 	canPlace: false,
 	desc: "Use on pixels to decrease temperature."
 },
-"erase": { //hard-coded
+"erase": {
 	color: "#fdb5ff",
 	behavior: [
 		"DL|DL|DL",
 		"DL|DL|DL",
 		"DL|DL|DL",
 	],
+	tool: function(pixel) {
+		deletePixel(pixel.x,pixel.y);
+	},
 	category: "tools",
 	canPlace: false,
 	desc: "Use on pixels to delete them."
@@ -900,14 +939,28 @@ SEEDRISE: function(pixel) {
 	darkText: true,
 	desc: "Use on pixels to move them around."
 },
-"pick": { //hard-coded
+"pick": {
 	color: ["#fa9b9b","#fae99b","#9bfab7","#9b9dfa"],
+	tool: function(pixel){
+		let element = pixel.element;
+		if (!shiftDown && elements[element].pickElement) {
+			element = elements[element].pickElement;
+		}
+		selectElement(element);
+		selectCategory(elements[element].category);
+		if (shiftDown) {
+			currentElementProp = {};
+			for (var key in pixel) { currentElementProp[key] = pixel[key] }
+			delete currentElementProp.x;
+			delete currentElementProp.y;
+		}
+		mouseIsDown = false;
+	},
 	behavior: [
 		"CF|CF|CF",
 		"CF|DL%5|CF",
 		"CF|CF|CF",
 	],
-	tool: function(pixel){},
 	category: "tools",
 	maxSize: 0,
 	darkText: true,
@@ -1149,16 +1202,16 @@ SEEDRISE: function(pixel) {
 		}},
 		"salt_water": { elem2:"bubble", attr2:{"clone":"salt_water"}, chance:0.001, tempMin:85 },
 		// electrolysis:
-		"aluminum": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.0025 },
-		"zinc": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.015 },
-		"steel": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.0125 },
-		"iron": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.0125 },
-		"tin": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.01 },
-		"brass": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.001 },
-		"bronze": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.001 },
-		"copper": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.0075 },
-		"silver": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.0075 },
-		"gold": { elem1:["hydrogen","hydrogen","oxygen","chlorine"], charged:true, chance:0.0075 }
+		"aluminum": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.0025 },
+		"zinc": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.015 },
+		"steel": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.0125 },
+		"iron": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.0125 },
+		"tin": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.01 },
+		"brass": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.001 },
+		"bronze": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.001 },
+		"copper": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.0075 },
+		"silver": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.0075 },
+		"gold": { elem1:["hydrogen","lye","chlorine"], charged:true, chance:0.0075 }
 	},
 	state: "liquid",
 	density: 1026,
@@ -1352,6 +1405,7 @@ SEEDRISE: function(pixel) {
 		"antibody": { elem2:null, chance:0.01 },
 		"poison": { elem2:null, chance:0.01 },
 		"charcoal": { elem1:"water", chance:0.02 },
+		"dna": { elem2:null, chance:0.002 },
 		"pool_water": { elem2:"bubble", attr2:{"clone":"pool_water"}, chance:0.001, tempMin:85 }
 	},
 	hidden: true,
@@ -1691,15 +1745,10 @@ SEEDRISE: function(pixel) {
 			const coords = move1Spots[j];
 			const x = pixel.x+coords[0];
 			const y = pixel.y+coords[1];
-			if (!isEmpty(x, y, true) && elements[pixelMap[x][y].element].fireColor) {
-				pixel.color = pixelColorPick(pixel,elements[pixelMap[x][y].element].fireColor);
-				pixel.origColor = undefined;
-				pixel.cc = true;
-			}
 			if (tryMove(pixel, x, y)) { moved = true; break; }
 			move1Spots.splice(j, 1);
 		}
-		if (!moved) {
+		if (moved === false) {
 			let move2Spots = diagonalCoords.slice(0);
 			for (var i = 0; i < move2Spots.length; i++) {
 				const j = Math.random()*move2Spots.length | 0;
@@ -1708,9 +1757,20 @@ SEEDRISE: function(pixel) {
 				move2Spots.splice(j, 1);
 			}
 		}
-		doDefaults(pixel);
-	
-		if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke") }
+		if (pixel.del !== true) {
+			doHeat(pixel)
+			doAirDensity(pixel);
+			doBurning(pixel);
+
+			if (settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1) { changePixel(pixel,"smoke") }
+		}
+	},
+	onCollide: function(pixel1,pixel2) {
+		if (elements[pixel2.element].fireColor) {
+			pixel1.color = pixelColorPick(pixel1,elements[pixel2.element].fireColor);
+			pixel1.origColor = undefined;
+			pixel1.cc = true;
+		}
 	},
 	tool: function(pixel) {
 		if (pixel.temp >= elements.fire.temp || elements[pixel.element].insulate) {return;}
@@ -1947,6 +2007,12 @@ SEEDRISE: function(pixel) {
 		"CL%5 AND M1|XX|CL%5 AND M1",
 		"M2|M1|M2",
 	],
+	tool: function(pixel) {
+		if (pixel.temp >= elements.plasma.temp || elements[pixel.element].insulate) {return;}
+		pixel.temp += elements.plasma.temp/(elements[pixel.element].extinguish ? 240 : 60);
+		pixelTempCheck(pixel);
+	},
+	canPlace: true,
 	temp:7065,
 	tempLow:5000,
 	stateLow: "fire",
@@ -2009,7 +2075,22 @@ SEEDRISE: function(pixel) {
 		"radiation": { elem1:"molten_rad_glass", chance:0.66 },
 		"rad_steam": { elem1:"molten_rad_glass", elem2:null, chance:0.33 },
 		"molten_uranium": { elem1:"molten_rad_glass", elem2:null },
-		"fallout": { elem1:"molten_rad_glass", elem2:"radiation" }
+		"fallout": { elem1:"molten_rad_glass", elem2:"radiation" },
+
+		"rust": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:0} }, //red
+		"molten_iron": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:0} }, //red
+		"molten_bronze": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:38} }, //orange-yellow
+		"mercury": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:45} }, //orange-yellow
+		"mercury_gas": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:45} }, //orange-yellow
+		"molten_sulfur": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:60} }, //yellow
+		"sulfur_gas": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:60} }, //yellow
+		"molten_copper": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:150} }, //blue-green
+		"oxidized_copper": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:150} }, //blue-green
+		"molten_nickel": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:240} }, //blue
+		"molten_purple_gold": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:280} }, //purple
+		"molten_rose_gold": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:300} }, //magenta
+		"molten_gold": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:320} }, //purple-red
+		"gold_coin": { elem1:"molten_stained_glass", elem2:null, attr1:{colorstart:320} }, //purple-red
 	},
 	grain: 0
 },
@@ -2073,6 +2154,7 @@ SEEDRISE: function(pixel) {
 		"cyanide_gas": { elem1:"rotten_meat", elem2:null, chance:0.5 },
 		"rotten_cheese": { elem1:"rotten_meat", chance:0.02 },
 		"fallout": { elem1:"rotten_meat", chance:0.2 },
+		"slime": { elem1:"rotten_meat", chance:0.2 },
 		"water": { elem2:"broth", tempMin:70 },
 		"salt_water": { elem2:"broth", tempMin:70 },
 		"sugar_water": { elem2:"broth", tempMin:70 },
@@ -2272,11 +2354,14 @@ SEEDRISE: function(pixel) {
 	],
 	category: "machines",
 	tempHigh: 1455.5,
-	stateHigh: ["molten_steel","explosion","acid_gas"]
+	stateHigh: ["molten_steel","explosion","acid_gas"],
+	hardness: 0.8,
+	breakInto: ["metal_scrap","acid"]
 },
 "cloner": {
 	color: "#dddd00",
 	behavior: behaviors.CLONER,
+	onClicked: behaviors.CLONE_ON_CLICK,
 	ignore: ["ecloner","slow_cloner","clone_powder","floating_cloner","wall","ewall"],
 	category:"machines",
 	insulate:true,
@@ -2292,7 +2377,7 @@ SEEDRISE: function(pixel) {
 			var y = pixel.y + coords[1];
 			if (!isEmpty(x,y,true)) {
 				var sensed = pixelMap[x][y];
-				if (pixel.sense && sensed.element !== pixel.sense) continue;
+				if (pixel.sense && sensed.element !== pixel.sense && pixel.sense.split(",").indexOf(sensed.element) === -1) continue;
 				if (!sensed.charge && !sensed.chargeCD && (sensed.con || elements[sensed.element].movable && elements.sensor.ignore.indexOf(sensed.element) === -1)) {
 					pixel.charge = 1;
 					if (!pixel.chargeStart) pixel.chargeStart = pixelTicks;
@@ -2328,7 +2413,7 @@ SEEDRISE: function(pixel) {
 	category:"machines",
 	insulate:true
 },
-"random": { //hard-coded
+"random": {
 	color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
 	behavior: behaviors.WALL,
 	tick: function(pixel) {
@@ -2380,7 +2465,12 @@ SEEDRISE: function(pixel) {
 			changePixel(pixel,r.elem2)
 		}
 		if (!elements[pixel.element].customColor) {
-			pixel.color = pixelColorPick(pixel)
+			if (elements[pixel.element].colorPattern && settings.textures!==0) {
+				pixel.color = colorPatternPick(pixel);
+			}
+			else {
+				pixel.color = pixelColorPick(pixel)
+			}
 		}
 	},
 	reactions: {
@@ -2690,6 +2780,7 @@ SEEDRISE: function(pixel) {
 		"ammonia": { elem2:"nitrogen", chance:0.05 },
 		"oil": { elem2:"methane", chance:0.001 },
 		"milk": { elem2:"yogurt", chance:0.01 },
+		"cream": { elem2:"yogurt", chance:0.01 },
 		"chocolate_milk": { elem2:"yogurt", chance:0.01, color2:"#4c392c" },
 		"fruit_milk": { elem2:"yogurt", chance:0.01, color2:"#977871" },
 		"pilk": { elem2:"yogurt", chance:0.01, color2:"#bba789" },
@@ -2722,6 +2813,7 @@ SEEDRISE: function(pixel) {
 		"fish": { elem2:"cancer", chance:0.005 },
 		"rat": { elem2:"cancer", chance:0.005 },
 		"bird": { elem2:"cancer", chance:0.005 },
+		"homunculus": { elem2:"cancer", chance:0.005 },
 		"bone": { elem2:"cancer", chance:0.005 },
 		"bone_marrow": { elem2:"cancer", chance:0.005 },
 		"skin": { elem2:"cancer", chance:0.005 },
@@ -3479,6 +3571,7 @@ SEEDRISE: function(pixel) {
 	burnInto: "cooked_meat",
 	breakInto: ["blood","meat","bone"],
 	forceSaveColor: true,
+	pickElement: "human",
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.005 },
 		"radiation": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.4 },
@@ -3500,7 +3593,9 @@ SEEDRISE: function(pixel) {
 		"gold_coin": { elem2:null, chance:0.05 },
 		"diamond": { elem2:null, chance:0.05 },
 		"sun": { elem1:"cooked_meat" },
-		"alcohol": { chance:0.2, attr1:{"panic":0} }
+		"alcohol": { chance:0.2, attr1:{"panic":0} },
+		"anesthesia": { attr1:{"panic":0} },
+		"alcohol_gas": { chance:0.2, attr1:{"panic":0} }
 	},
 	properties: {
 		dead: false,
@@ -3645,6 +3740,7 @@ SEEDRISE: function(pixel) {
 	burnInto: "cooked_meat",
 	breakInto: ["blood","meat","bone"],
 	forceSaveColor: true,
+	pickElement: "human",
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.005 },
 		"radiation": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.4 },
@@ -3659,7 +3755,9 @@ SEEDRISE: function(pixel) {
 		"water": { elem2:"bubble", attr2:{"clone":"water"}, chance:0.001 },
 		"salt_water": { elem2:"bubble", attr2:{"clone":"salt_water"}, chance:0.001 },
 		"pool_water": { elem2:"bubble", attr2:{"clone":"pool_water"}, chance:0.001 },
-		"alcohol": { chance:0.2, attr1:{"panic":0} }
+		"alcohol": { chance:0.2, attr1:{"panic":0} },
+		"anesthesia": { attr1:{"panic":0} },
+		"alcohol_gas": { chance:0.2, attr1:{"panic":0} }
 	},
 	properties: {
 		dead: false
@@ -3844,8 +3942,8 @@ SEEDRISE: function(pixel) {
 "rat": {
 	color: ["#a698a9","#8c7d82","#ccc3cf"],
 	behavior: [
-		"XX|CR:plague%0.05 AND M2%1.5|M2%5",
-		"XX|FX%2|M2 AND BO",
+		"XX|M2%1.5|M2%5",
+		"XX|FX%2 AND RL:plague%0.05|M2 AND BO",
 		"XX|M1|M2",
 	],
 	reactions: {
@@ -4767,7 +4865,10 @@ SEEDRISE: function(pixel) {
 		"seltzer": { "color1":"#c2fff9" },
 		"diamond": { "color1":["#c2c5ff","#c2d9ff"] },
 		"rainbow": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
-		"static": { "color1":["#ffffff","#bdbdbd","#808080","#424242","#1c1c1c"] }
+		"static": { "color1":["#ffffff","#bdbdbd","#808080","#424242","#1c1c1c"] },
+		"pipe": { },
+		"pipe_wall": { },
+		"wall": { },
 	},
 	temp: 35,
 	tempLow: -273,
@@ -5113,8 +5214,14 @@ SEEDRISE: function(pixel) {
 "ammonia": {
 	color: "#bab6a9",
 	behavior: behaviors.GAS,
+	function(pixel) {
+		if (pixel.temp > 650 && Math.random() < 0.01) {
+			changePixel(pixel,Math.random() < 0.5 ? "nitrogen" : "hydrogen");
+		}
+	},
 	reactions: {
 		"methane": { elem1:["hydrogen","water"], elem2:"cyanide_gas", chance:0.25 },
+		"vinegar": { elem1:"salt_water", elem2:"salt_water", chance:0.05 },
 		"plant": { elem1:"plant", chance:0.05 },
 		"evergreen": { elem1:"evergreen", chance:0.05 },
 		"cactus": { elem1:"cactus", chance:0.05 },
@@ -5167,8 +5274,7 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"dirt": { elem1:null, elem2:"mud" },
 		"sand": { elem1:null, elem2:"wet_sand" },
-		"sulfur": { elem1:null, elem2:"greek_fire" },
-		"molten_sulfur": { elem1:"greek_fire", elem2:"greek_fire" },
+		"sap": { elem1:"greek_fire", elem2:"greek_fire" },
 		"water": { burning1:true, elem2:"explosion" },
 		"steam": { burning1:true, elem2:"explosion" },
 		"salt_water": { burning1:true, elem2:"explosion" },
@@ -5176,7 +5282,8 @@ SEEDRISE: function(pixel) {
 		"dirty_water": { burning1:true, elem2:"explosion" },
 		"pool_water": { burning1:true, elem2:"explosion" },
 		"seltzer": { burning1:true, elem2:"explosion" },
-		"coral": { elem2:null, chance:0.01 }
+		"coral": { elem2:null, chance:0.01 },
+		"hydrogen": { elem1:"sulfur", elem2:"steam", burning1:false, burning2:false, tempMin:90, chance:0.1 },
 	},
 	category: "liquids",
 	tempHigh: 500,
@@ -5291,13 +5398,20 @@ SEEDRISE: function(pixel) {
 "molten_stained_glass": {
 	color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
 	onPlace: behaviors.DO_TICK,
-	tick: function(pixel) {
+	behavior: function(pixel) {
 		if (pixel.start-1 <= pixelTicks) {
 			if (pixel.colorstart === undefined) {
 				pixel.colorstart = pixel.start;
 			}
 			pixel.color = "hsl(" + pixel.colorstart + ",40%,60%)";
 		}
+
+		if (Math.random() < 0.025 && isEmpty(pixel.x,pixel.y-1)) {
+			createPixel("fire",pixel.x,pixel.y-1);
+			pixelMap[pixel.x][pixel.y-1].temp = pixel.temp;
+			pixelMap[pixel.x][pixel.y-1].color = "hsl(" + pixel.colorstart + ",70%,70%)";
+		}
+		behaviors.LIQUID(pixel);
 	}
 },
 "art": {
@@ -5325,7 +5439,8 @@ SEEDRISE: function(pixel) {
 	onPlace: behaviors.DO_TICK,
 	category: "special",
 	movable: false,
-	breakInto: "static"
+	breakInto: "static",
+	fireColor: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"]
 },
 "static": {
 	color: ["#ffffff","#888888","#000000"],
@@ -5355,7 +5470,8 @@ SEEDRISE: function(pixel) {
 	category: "special",
 	conduct: 1,
 	movable: false,
-	breakInto: "malware"
+	breakInto: "malware",
+	fireColor: ["#ffffff","#bfbfbf","#888888","#404040","#000000"]
 },
 "border": {
 	color: ["#00ffff","#000000","#00ffff","#000000","#00ffff"],
@@ -5379,6 +5495,7 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"dirt": { elem1:"clay_soil", elem2:"clay_soil" },
 		"gravel": { elem1:"clay_soil", elem2:"clay_soil" },
+		"brick_rubble": { elem1:"clay_soil", elem2:"clay_soil" },
 		"quicklime": { elem1:"cement", elem2:"cement" }
 	},
 	tempHigh: 135,
@@ -6261,7 +6378,7 @@ SEEDRISE: function(pixel) {
 		"DB%5 AND M2|XX|DB%5 AND M2",
 		"DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
 	],
-	ignore: ["glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","clay"],
+	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","clay","pipe","pipe_wall","lye","rose_gold","purple_gold","blue_gold","electrum"],
 	reactions: {
 		"ash": { elem1:"neutral_acid", elem2:null },
 		"limestone": { elem1:"neutral_acid", elem2:["calcium","carbon_dioxide"] },
@@ -6270,7 +6387,8 @@ SEEDRISE: function(pixel) {
 		"borax": { elem1:"neutral_acid", elem2:null },
 		"ammonia": { elem1:"neutral_acid", elem2:null },
 		"cement": { elem1:"neutral_acid", elem2:null },
-		"potassium": { elem1:["fire","hydrogen"], elem2:"potassium_salt" },
+		"potassium": { elem1:["fire","hydrogen","pop","explosion"], elem2:"potassium_salt" },
+		"molten_potassium": { elem1:["fire","hydrogen","pop","explosion"], elem2:"potassium_salt" },
 		"caustic_potash": { elem1:"water", elem2:"potassium_salt" },
 		"bone": { elem1:"neutral_acid", chance:0.01 },
 		"head": { elem1:"bone", chance:0.03 },
@@ -6285,6 +6403,7 @@ SEEDRISE: function(pixel) {
 		"baking_soda": { elem1:"salt_water", elem2:["carbon_dioxide","foam"] },
 		"calcium": { elem1:"chlorine", elem2:"hydrogen", chance:0.01 },
 		"zinc": { elem1:"hydrogen", elem2:null, chance:0.03 },
+		"magnesium": { elem1:"hydrogen", elem2:null, temp1:50, chance:0.03 },
 		"sugar": { elem1:"steam", elem2:"carbon_dioxide" },
 		"gravel": { elem1:null, elem2:"sand", chance:0.1 },
 		"wet_sand": { elem1:"neutral_acid", elem2:"clay" },
@@ -6322,7 +6441,12 @@ SEEDRISE: function(pixel) {
 		"DB%5 AND M1|XX|DB%5 AND M1",
 		"DB%5 AND M1|DB%10 AND M1|DB%5 AND M1",
 	],
-	ignore: ["glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
+	tick: function(pixel) {
+		if (pixel.temp > 1000 && Math.random() < 0.01) {
+			changePixel(pixel,Math.random() < 0.66 ? "hydrogen" : "chlorine");
+		}
+	},
+	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","pipe","pipe_wall","lye"],
 	reactions: {
 		"acid_gas": { elem1: null, elem2: "acid_cloud", chance:0.3, "y":[0,12], "setting":"clouds" },
 		"rain_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
@@ -6342,8 +6466,6 @@ SEEDRISE: function(pixel) {
 	},
 	category: "gases",
 	temp: 120,
-	tempHigh: 400,
-	stateHigh: "fire",
 	tempLow: 30,
 	stateLow: "acid",
 	burn: 30,
@@ -6371,6 +6493,7 @@ SEEDRISE: function(pixel) {
 		"bead": {elem1:null, elem2:"plastic"},
 		"dirt": {elem1:null, elem2:"mudstone"},
 		"sand": {elem1:null, elem2:"packed_sand"},
+		"crumb": {elem1:null, elem2:"bread"},
 		"fly": {elem2:"dead_bug"},
 		"firefly": {elem2:"dead_bug"},
 		"ant": {elem2:"dead_bug"},
@@ -6418,7 +6541,8 @@ SEEDRISE: function(pixel) {
 	},
 	state: "liquid",
 	density: 1030,
-	isFood: true
+	isFood: true,
+	alias: "cola"
 },
 "gray_goo": {
 	color: "#c0c0c0",
@@ -6507,6 +6631,7 @@ SEEDRISE: function(pixel) {
 			}
 		}
 	},
+	onClicked: behaviors.CLONE_ON_CLICK,
 	ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","wire","ewall","sensor","battery","fuse"],
 	ignoreConduct:["fuse"],
 	category:"machines",
@@ -6523,6 +6648,7 @@ SEEDRISE: function(pixel) {
 		"CF%10|XX|CF%10",
 		"XX|CF%10|XX",
 	],
+	onClicked: behaviors.CLONE_ON_CLICK,
 	ignore: ["cloner","ecloner","clone_powder","floating_cloner","wall","ewall"],
 	category:"machines",
 	insulate:true,
@@ -6535,6 +6661,7 @@ SEEDRISE: function(pixel) {
 		"CF|XX|CF",
 		"M2|CF AND M1|M2",
 	],
+	onClicked: behaviors.CLONE_ON_CLICK,
 	reactions: {
 		"malware": { elem1:"floating_cloner" }
 	},
@@ -6554,6 +6681,7 @@ SEEDRISE: function(pixel) {
 		"CF%3 AND M1%10|XX|CF%3 AND M1%10",
 		"XX|CF%3 AND M1%10|XX",
 	],
+	onClicked: behaviors.CLONE_ON_CLICK,
 	reactions: {
 		"malware": { elem1:"clone_powder" }
 	},
@@ -6594,7 +6722,7 @@ SEEDRISE: function(pixel) {
 		"liquid_light": { elem1:null, chance:0.1 },
 		"electric": { elem2:"malware" }
 	},
-	ignore: ["fire","smoke","soap","plague","cancer","plasma","light","loopy","liquid_light","malware","electric"],
+	ignore: ["fire","smoke","soap","plague","cancer","plasma","light","loopy","liquid_light","malware","electric","pointer"],
 	category: "special",
 	state: "solid",
 	density: 600,
@@ -6674,7 +6802,7 @@ SEEDRISE: function(pixel) {
 	state: "liquid",
 	density: 2000,
 	excludeRandom: true,
-	ignore: ["fire","smoke","antimatter","strange_matter","wall","ewall","plasma","void","border"],
+	ignore: ["fire","smoke","antimatter","strange_matter","wall","ewall","plasma","void","border","pointer"],
 },
 "permafrost": {
 	color: ["#54443a","#4f4235","#453c30","#524639"],
@@ -6993,10 +7121,14 @@ SEEDRISE: function(pixel) {
 	color: "#a89ba8",
 	colorOn: "#6156b8",
 	behavior: [
-		"M2|DB%50 AND M2 AND EX:8>fire,positron|M2",
+		"M2|DB%50 AND M2|M2",
 		"M1|XX|M1",
-		"M1|DB%50 AND M1 AND EX:8>fire,positron|M1",
+		"M1|DB%50 AND M1|M1",
 	],
+	onCollide: function(pixel1,pixel2) {
+		if (elements.antimatter.ignore.indexOf(pixel2.element) !== -1 || elements[pixel2.element].isGas) return;
+		explodeAt(pixel2.x,pixel2.y,8,["fire","positron"]);
+	},
 	reactions: {
 		"proton": { elem1:"explosion", elem2:"explosion" },
 		"neutron": { elem1:"explosion", elem2:"explosion" },
@@ -7140,7 +7272,8 @@ SEEDRISE: function(pixel) {
 	category: "solids",
 	insulate: true,
 	state: "solid",
-	noMix: true
+	noMix: true,
+	darkText: true
 },
 "sponge": {
 	color: ["#bf9c00","#ad8e05","#876f05"],
@@ -7263,7 +7396,7 @@ SEEDRISE: function(pixel) {
 	fireColor: ["#07BA4F","#00BC5B","#00C2A9","#11B7E7","#C6F2EC"]
 },
 "gold": {
-	color: ["#fff0b5","#986a1a","#f0bb62"],
+	color: ["#FFFDDE","#FDF55F","#FAD64A","#EAB115","#DC9710"],
 	behavior: behaviors.WALL,
 	tempHigh: 1064,
 	category: "solids",
@@ -7330,7 +7463,7 @@ SEEDRISE: function(pixel) {
 	hidden: true
 },
 "zinc": {
-	color: ["#8d8c8e","#f6f6f1","#c7c7c5","#ccccca","#6b6a6a","#848382"],
+	color: ["#666466","#817e81","#9a989a"],
 	behavior: behaviors.WALL,
 	tempHigh: 419.53,
 	category: "solids",
@@ -7377,7 +7510,7 @@ SEEDRISE: function(pixel) {
 	superconductAt: -265.95
 },
 "nickel": {
-	color: "#727472",
+	color: ["#695c52","#827362","#998b71"],
 	behavior: behaviors.WALL,
 	tempHigh: 1455,
 	category: "solids",
@@ -7391,6 +7524,7 @@ SEEDRISE: function(pixel) {
 		"radiation": { elem2:"electric", temp1:200 }
 	},
 	behavior: behaviors.WALL,
+	renderer: null,
 	tempHigh: 660.3,
 	category: "solids",
 	density: 2710,
@@ -7398,10 +7532,12 @@ SEEDRISE: function(pixel) {
 	hardness: 0.05,
 	breakInto: "metal_scrap",
 	fireColor: "#A7B3BF",
-	superconductAt: -271.95
+	superconductAt: -271.95,
+	darkText: true
 },
 "tungsten": {
-	color: ["#d4d3cd","#c3c0b8","#bcbaae","#625950"],
+	color: ["#BBB3A2","#D4D4CA"],
+	grain: 5,
 	behavior: behaviors.WALL,
 	tempHigh: 3422,
 	category: "solids",
@@ -7414,7 +7550,7 @@ SEEDRISE: function(pixel) {
 	color: ['#ffff67', '#ffd367', '#ff9e00', '#d1ff5c', '#5cffb0', '#0073ff', '#ca57ff', '#ffba57', '#ff8c00', '#c46f28', '#c45928', '#c44300']
 },
 "brass": {
-	color: ["#cb9e5d","#865e39"],
+	color: ["#e4be6c","#cc965c","#ab7c49"],
 	behavior: behaviors.WALL,
 	reactions: {
 		"ammonia": { elem1:"metal_scrap", color1:["#cb9e5d","#865e39"], chance:0.01 }
@@ -7427,7 +7563,7 @@ SEEDRISE: function(pixel) {
 	hidden: true
 },
 "bronze": {
-	color: "#cd7f32",
+	color: ["#e4aa6d","#cc875c","#ab6c4a"],
 	behavior: behaviors.WALL,
 	reactions: {
 		"water": { elem1:"oxidized_copper", chance:0.00125 },
@@ -7447,8 +7583,20 @@ SEEDRISE: function(pixel) {
 	hardness: 0.225,
 	hidden: true
 },
+"invar": {
+	color: ["#36322c","#302e29","#2e2d29"],
+	grain: 0.5,
+	behavior: behaviors.WALL,
+	tempHigh: 1427,
+	category: "solids",
+	density: 8100,
+	conduct: 0.49,
+	hardness: 0.35,
+	hidden: true
+},
 "sterling": {
-	color: ["#858478","#eae8e2","#bfbcb7"],
+	color: "#D4D4D4",
+	grain: 0.3,
 	behavior: behaviors.WALL,
 	tempHigh: 802,
 	category: "solids",
@@ -7475,7 +7623,7 @@ SEEDRISE: function(pixel) {
 	density: 6095,
 	stateLow: "gallium",
 	reactions: {
-		"aluminum": { elem1:"alga", elem2:["alga",null,null], chance:0.01 },
+		"aluminum": { elem1:["molten_gallium","molten_gallium","alga"], elem2:null, chance:0.01 },
 		"molten_aluminum": { elem1:"alga", elem2:"molten_alga", chance:0.05 },
 		"sodium": { elem1:"hydrogen", elem2:"salt", chance:0.005 },
 		"steel": { elem2:"iron", chance:0.005 },
@@ -7549,7 +7697,7 @@ SEEDRISE: function(pixel) {
 	alias: ["fool's gold","iron sulfide"]
 },
 "solder": {
-	color: "#a1a19d",
+	color: ["#a1a19d","#b4b4b1"],
 	behavior: behaviors.WALL,
 	tempHigh: 200,
 	category: "solids",
@@ -7600,7 +7748,8 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"charcoal": { elem1: "molten_steel", elem2: null },
 		"diamond": { elem1: "molten_steel", elem2: null },
-		"carbon_dioxide": { elem1: "molten_steel", elem2: null }
+		"carbon_dioxide": { elem1: "molten_steel", elem2: null },
+		"molten_nickel": { elem1: "molten_invar", elem2: null }
 	},
 	density: 6980
 },
@@ -7624,8 +7773,8 @@ SEEDRISE: function(pixel) {
 	color: "#f0bf3d",
 	behavior: behaviors.LIQUID,
 	reactions: {
-		"seltzer": { elem1: "soda", elem2: "foam", color1:"#4d391b" },
-		"carbon_dioxide": { elem1: "soda", elem2: "foam", color1:"#4d391b" },
+		"seltzer": { elem1: "soda", elem2: "foam", color1:"#ff9021" },
+		"carbon_dioxide": { elem1: "soda", elem2: "foam", color1:"#ff9021" },
 		"sugar": { elem2:null, chance:0.005}
 	},
 	tempHigh: 160,
@@ -7671,7 +7820,8 @@ SEEDRISE: function(pixel) {
 	stain: -0.01,
 	hidden: true,
 	isFood: true,
-	extinguish: true
+	extinguish: true,
+	alias: "soup"
 },
 "milk": {
 	color: "#fafafa",
@@ -7860,7 +8010,8 @@ SEEDRISE: function(pixel) {
 	hidden: true,
 	isFood: true,
 	state: "solid",
-	density: 1031
+	density: 1031,
+	alias: "fried egg"
 },
 "cream": {
 	color: "#f7f7f7",
@@ -8359,7 +8510,7 @@ SEEDRISE: function(pixel) {
 },
 "corn": {
 	color: ["#f8d223","#d6ba2a","#f7f5ba","#dbd281","#cdb12d"],
-	behavior: behaviors.WALL,
+	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	burn: 10,
 	burnTime: 200,
@@ -8552,6 +8703,7 @@ SEEDRISE: function(pixel) {
 		"soda": { elem2:"alcohol", chance:0.005, color2:"#80724d" },
 		"corn": { elem2:"alcohol", chance:0.005, color2:"#b8b6a2" },
 		"rice": { elem2:"alcohol", chance:0.005, color2:"#ecc986" },
+		"wheat": { elem2:"alcohol", chance:0.005, color2:"#FCD630" },
 		"honey": { elem2:"alcohol", chance:0.005, color2:"#dccb72" },
 		"molasses": { elem2:"alcohol", chance:0.005, color2:"#803924" },
 		"herb": { elem2:"tea", chance:0.005 },
@@ -8856,6 +9008,7 @@ SEEDRISE: function(pixel) {
 	density: 1245,
 	isFood: true,
 	hidden: true,
+	alias: "jam"
 },
 "baking_soda": {
 	color: "#ededed",
@@ -9212,6 +9365,7 @@ SEEDRISE: function(pixel) {
 		"lamp_oil": { elem1:null, elem2: "chlorine", chance: 0.01 },
 		"nut_oil": { elem1:null, elem2: "chlorine", chance: 0.01 },
 		"grease": { elem1:null, elem2: "chlorine", chance: 0.01 },
+		"baking_soda": { elem1:null, elem2: "chlorine", chance: 0.01 },
 		"blood": { elem2: null },
 		"infection": { elem2: null },
 		"vinegar": { elem1:"chlorine", elem2:"sodium_acetate" },
@@ -9241,7 +9395,7 @@ SEEDRISE: function(pixel) {
 	behavior: behaviors.GAS,
 	reactions: {
 		"water": { elem1: "pool_water", elem2:null },
-		"hydrogen": { elem1: "acid_gas", elem2:null },//hydrochloric acid
+		"hydrogen": { elem1: "acid_gas", elem2:null, tempMax:1000 },//hydrochloric acid
 		"dirty_water": { elem2:"water" },
 		"ammonia": { elem1:"poison_gas", elem2:null },
 		"liquid_ammonia": { elem1:"poison_gas", elem2:null },
@@ -9283,6 +9437,7 @@ SEEDRISE: function(pixel) {
 "dye": {
 	color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
 	behavior: behaviors.LIQUID,
+	onMix: behaviors.STAIN_ON_MIX,
 	reactions: {
 		"water": { stain2:null },
 		"salt_water": { elem1:null, chance:0.05 },
@@ -9290,7 +9445,13 @@ SEEDRISE: function(pixel) {
 		"seltzer": { elem1:null, chance:0.05 },
 		"dirty_water": { elem1:null, chance:0.05 },
 		"pool_water": { elem1:null, chance:0.05 },
-		"bleach": { elem1:null, elem2:null, chance:0.05 }
+		"bleach": { elem1:null, elem2:null, chance:0.05 },
+		"sand": { func: function(pixel1,pixel2) {
+			if (!pixel1.color.match(/^rgb/)) return;
+			let hsl = RGBToHSL(pixel1.color.match(/\d+/g));
+			pixel2.colorstart = Math.floor(hsl[0]*360 + Math.random()*10);
+			changePixel(pixel2,"color_sand");
+		} }
 	},
 	customColor: true,
 	stain: 0.66,
@@ -9305,6 +9466,7 @@ SEEDRISE: function(pixel) {
 "ink": {
 	color: "#171717",
 	behavior: behaviors.LIQUID,
+	onMix: behaviors.STAIN_ON_MIX,
 	reactions: {
 		"water": { elem1:null, chance:0.01 },
 		"salt_water": { elem1:null, chance:0.01 },
@@ -9398,7 +9560,8 @@ SEEDRISE: function(pixel) {
 		"lead": { elem1:"infection", elem2:null, chance:0.01 },
 		"oxygen": { elem2:null, chance:0.05 },
 		"carbon_dioxide": { elem2:null, chance:0.05 },
-		"alcohol": { elem1:[null,"dna"], chance:0.02 }
+		"alcohol": { elem1:[null,"dna"], chance:0.02 },
+		"blood": { elem2:"bubble", color2:"#f07878", attr2:{"clone":"blood"}, chance:0.001, tempMin:85 },
 	},
 	viscosity: 10,
 	tempHigh: 124.55,
@@ -9422,8 +9585,10 @@ SEEDRISE: function(pixel) {
 		"rotten_cheese": { elem2:"cheese", chance:0.1 }
 	},
 	viscosity: 2.6,
-	tempHigh: 124.55,
+	tempHigh: 130,
 	stateHigh: "steam",
+	tempLow: -2.5,
+	stateLow: ["ice","dna"],
 	category:"liquids",
 	state: "liquid",
 	density: 1125,
@@ -9441,11 +9606,12 @@ SEEDRISE: function(pixel) {
 		"rotten_meat": { elem2:"meat", chance:0.1 },
 		"rotten_cheese": { elem2:"cheese", chance:0.1 },
 		"poison": { elem1:"antidote", elem2:null, chance:0.03 },
-		"alcohol": { elem1:[null,"dna"], chance:0.02 }
+		"alcohol": { elem1:[null,"dna"], chance:0.02 },
+		"sugar_water": { elem1:"vaccine", elem2:"vaccine" }
 	},
 	viscosity: 6.3,
-	tempHigh: 124.55,
-	stateHigh: ["steam","salt","oxygen"],
+	tempHigh: 120,
+	stateHigh: ["salt","oxygen","vaccine"],
 	tempLow: 0,
 	category:"liquids",
 	hidden: true,
@@ -9456,6 +9622,9 @@ SEEDRISE: function(pixel) {
 "infection": {
 	color: ["#cf005d","#be004c"],
 	behavior: behaviors.LIQUID,
+	tick: function(pixel) {
+		if (Math.random() < 0.001) { releaseElement(pixel,"plague"); }
+	},
 	reactions: {
 		"blood": { elem2:"infection", chance:0.01 },
 		"frog": { elem2:"rotten_meat", chance:0.005 },
@@ -9543,7 +9712,8 @@ SEEDRISE: function(pixel) {
 	tempLow: 0,
 	category:"liquids",
 	state: "liquid",
-	density: 1060
+	density: 1060,
+	darkText: true
 },
 "poison_gas": {
 	color: "#98f5b0",
@@ -9582,6 +9752,8 @@ SEEDRISE: function(pixel) {
 	viscosity: 2,
 	tempHigh: 124.55,
 	stateHigh: ["steam","salt","oxygen"],
+	tempLow: -2.5,
+	stateLow: ["salt_ice","dna"],
 	category:"liquids",
 	state: "liquid",
 	density: 1060,
@@ -9667,6 +9839,7 @@ SEEDRISE: function(pixel) {
 	stateHigh: "caramel",
 	tempLow: 0,
 	stateLow: "candy",
+	stateLowColor: ["#fcedac","#fece80","#fdbf8b"],
 	category:"liquids",
 	state: "liquid",
 	density: 1420,
@@ -9727,6 +9900,7 @@ SEEDRISE: function(pixel) {
 	stateHigh: ["fire","smoke","steam"],
 	tempLow: 0,
 	stateLow: "candy",
+	stateLowColor: ["#a43b1e","#98361b"],
 	category:"liquids",
 	state: "liquid",
 	density: 1600,
@@ -9888,15 +10062,15 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"chlorine": { elem1:"salt", elem2:"pop" },
 		"vinegar": { elem1:"sodium_acetate", elem2:[null,null,null,"hydrogen"], attr1:{"foam":15} },
-		"water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"salt_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"sugar_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"dirty_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"seltzer": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"pool_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"primordial_soup": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"nut_milk": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"acid": { elem1:"explosion" }
+		"water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"salt_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"sugar_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"dirty_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"seltzer": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"pool_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"primordial_soup": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"nut_milk": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:200 },
+		"acid": { elem1:["hydrogen","salt","salt","pop"], elem2:["hydrogen","salt","salt","pop"], temp1:100, temp2:100 }
 	},
 	tempHigh: 97.794,
 	category: "powders",
@@ -9912,14 +10086,14 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"chlorine": { elem1:"salt", elem2:"pop" },
 		"vinegar": { elem1:"sodium_acetate", elem2:null, attr1:{"foam":15} },
-		"water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"salt_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"sugar_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"dirty_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"seltzer": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"pool_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"primordial_soup": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
-		"nut_milk": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
+		"salt_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
+		"sugar_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
+		"dirty_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
+		"seltzer": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
+		"pool_water": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
+		"primordial_soup": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
+		"nut_milk": { elem1:["pop","pop","pop","hydrogen","lye"], chance:0.01, temp2:250 },
 		"acid": { elem1:"explosion" },
 		"molten_potassium_salt": { elem1:"salt", elem2:"potassium" }
 	},
@@ -10126,6 +10300,54 @@ SEEDRISE: function(pixel) {
 		"nut_milk": { elem1:null, elem2:"hydrogen", chance:0.03 }
 	}
 },
+"lye": {
+	color: "#c5d3eb",
+	grain: 4,
+	behavior: behaviors.POWDER,
+	reactions: {
+		"nut_oil": { elem1:"soap", elem2:null, chance:0.03 },
+		"grease": { elem1:"soap", elem2:null, chance:0.03 },
+		"fat": { elem1:"soap", elem2:null, chance:0.005 },
+		"chlorine": { elem1:"bleach", elem2:null, chance:0.03 },
+		"sodium_acetate": { elem1:"methane", elem2:null, chance:0.005 },
+		"acid": { elem1:"salt_water", elem2:null, chance:0.005, temp1:500 },
+		"aluminum": { elem1:"hydrogen", elem2:null, chance:0.002 },
+		"lead": { elem1:"hydrogen", elem2:null, chance:0.005 },
+		"molten_lead": { elem1:"hydrogen", elem2:null, chance:0.002 },
+		"molten_tin": { elem1:"hydrogen", elem2:null, chance:0.002 },
+		"tin": { elem1:"hydrogen", elem2:null, chance:0.002 },
+		"zinc": { elem1:"hydrogen", elem2:null, chance:0.002 },
+		"galvanized_steel": { elem1:"hydrogen", elem2:"steel", chance:0.005 },
+		"water": { elem1:"bubble", chance:0.01, temp2:250 },
+		"salt_water": { elem1:"bubble", chance:0.01, temp2:250 },
+		"sugar_water": { elem1:"bubble", chance:0.01, temp2:250 },
+		"dirty_water": { elem1:"bubble", chance:0.01, temp2:250 },
+		"seltzer": { elem1:"bubble", chance:0.01, temp2:250 },
+		"pool_water": { elem1:"bubble", chance:0.01, temp2:250 },
+		"primordial_soup": { elem1:"bubble", chance:0.01, temp2:250 },
+		"nut_milk": { elem1:"bubble", chance:0.01, temp2:250 },
+	},
+	category: "powders",
+	tempHigh: 323,
+	state: "solid",
+	density: 2130,
+	alias: ["sodium hydroxide","caustic soda"]
+},
+"molten_lye": {
+	color: "#976c30",
+	behavior: behaviors.LIQUID,
+	reactions: {
+		"acid_gas": { elem1:["steam","salt"], elem2:null, chance:0.01 },
+		"aluminum": { elem1:"hydrogen", elem2:null, chance:0.002 },
+		"molten_aluminum": { elem1:"hydrogen", elem2:null, chance:0.005 },
+		"molten_lead": { elem1:"hydrogen", elem2:null, chance:0.005 },
+		"molten_tin": { elem1:"hydrogen", elem2:null, chance:0.005 },
+		"molten_zinc": { elem1:"hydrogen", elem2:null, chance:0.005 },
+		"molten_galvanized_steel": { elem1:"hydrogen", elem2:"molten_steel", chance:0.01 },
+	},
+	tempHigh: 1388,
+	stateHigh: "smoke"
+},
 "thermite": {
 	color: ["#5d4947","#5b3c42","#372a2d"],
 	behavior: behaviors.POWDER,
@@ -10178,6 +10400,7 @@ SEEDRISE: function(pixel) {
 	conduct: 0.37,
 },
 "molten_aluminum": {
+	color: ["#e6e0db","#d0d7cb","#d3d2d5"],
 	reactions: {
 		"rust": { elem1:null, elem2:"thermite" },
 		"oxidized_copper": { elem1:null, elem2:"thermite" }
@@ -10343,7 +10566,6 @@ SEEDRISE: function(pixel) {
 		"yeast": { elem2:null, chance:0.1 },
 		"cell": { elem2:null, chance:0.1 },
 		"cancer": { elem2:null, chance:0.025 },
-		"infection": { elem2:"blood", chance:0.1 },
 		"rat": { elem2:"rotten_meat", chance:0.05 },
 		"fish": { elem2:"rotten_meat", chance:0.05 },
 		"worm": { elem2:null, chance:0.05 },
@@ -10774,10 +10996,11 @@ SEEDRISE: function(pixel) {
 	forceSaveColor: true
 },
 "sulfur": {
-	color: ["#e9d74c","#89761b","#ddc56b"],
+	color: ["#EFF4AA","#eaf277"],
 	behavior: behaviors.POWDER,
 	reactions: {
-		"hydrogen": { elem1:null, elem2:"stench" }
+		"hydrogen": { elem1:null, elem2:"stench" },
+		"silver": { stain2:"#251d0e", chance:0.005 }
 	},
 	category: "powders",
 	tempHigh: 115.21,
@@ -10786,7 +11009,8 @@ SEEDRISE: function(pixel) {
 	fireColor: ["#8180cc","#7f84e6"],
 	state: "solid",
 	density: 2070,
-	alias: "sulphur"
+	alias: "sulphur",
+	darkText: true
 },
 "molten_sulfur": {
 	color: "#831502",
@@ -10794,7 +11018,8 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"iron": { elem1: null, elem2: "pyrite" },
 		"magnesium": { elem1:null, elem2:"epsom_salt", chance:0.01 },
-		"molten_magnesium": { elem1:null, elem2:"epsom_salt" }
+		"molten_magnesium": { elem1:null, elem2:"epsom_salt" },
+		"silver": { stain2:"#251d0e", chance:0.01 }
 	},
 	density: 1819,
 	burn: 25,
@@ -10809,7 +11034,8 @@ SEEDRISE: function(pixel) {
 },
 "sulfur_gas": {
 	reactions: {
-		"molten_magnesium": { elem1:null, elem2:"epsom_salt" }
+		"molten_magnesium": { elem1:null, elem2:"epsom_salt" },
+		"silver": { stain2:"#251d0e", chance:0.0075 }
 	},
 	color: "#b0a65d",
 	burnTime: 10,
@@ -10838,7 +11064,12 @@ SEEDRISE: function(pixel) {
 		"mushroom_spore": {elem2:null},
 		"zinc": {stain2:"#2A1210"},
 		"fire": {elem1:null,elem2:"poison_gas",chance:0.1},
-		"sugar": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]}
+		"sugar": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"sugar_water": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"caramel": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"candy": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"flour": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"chocolate": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
 	},
 	tempHigh: 110,
 	fireColor: ["#91d106","#feff97","#248e01"],
@@ -10870,6 +11101,7 @@ SEEDRISE: function(pixel) {
 		"XX|RT%20|M2",
 		"CF|XX|XX",
 	],
+	onClicked: behaviors.CLONE_ON_CLICK,
 	ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","ecloner"],
 	rotatable: true,
 	category: "special"
@@ -11041,7 +11273,8 @@ SEEDRISE: function(pixel) {
 	},
 	state: "gas",
 	density: 1.5,
-	category: "energy"
+	category: "energy",
+	darkText: true
 },
 "fallout": {
 	color: ["#77a172","#566c56","#5e6c56","#83a172"],
@@ -11071,6 +11304,7 @@ SEEDRISE: function(pixel) {
 		"silver": { elem1:["radiation",null,null], chance:0.25 },
 		"firework": { func(pixel1,pixel2){pixel2.burning=true;pixel2.burnStart=pixelTicks}, chance:0.01 },
 		"glass": { elem1:null, elem2:"rad_glass" },
+		"glass_shard": { elem1:null, elem2:"rad_shard" },
 		"cloud": { elem1:null, elem2:"rad_cloud" },
 		"rain_cloud": { elem1:null, elem2:"rad_cloud" }
 	},
@@ -11126,8 +11360,8 @@ SEEDRISE: function(pixel) {
 "uranium": {
 	color: ["#599e61","#364d3c","#494d4a","#6c8a42","#798d65","#b5e089"],
 	behavior: [
-		"XX|CR:radiation%1|XX",
-		"CR:radiation%1|CH:lead%0.001|CR:radiation%1",
+		"XX|XX|XX",
+		"XX|RL:radiation%1 AND CH:lead%0.001|XX",
 		"M2|M1|M2",
 	],
 	reactions: {
@@ -11158,7 +11392,8 @@ SEEDRISE: function(pixel) {
 		"oxygen": { elem1:"carbon_dioxide", elem2:null, tempMin:900 },
 		"fire": { elem1:"carbon_dioxide", tempMin:900 },
 		"smoke": { elem1:"carbon_dioxide", tempMin:900 },
-		"molten_steel": { elem1:"carbon_dioxide", chance:0.001 }
+		"molten_steel": { elem1:"carbon_dioxide", chance:0.001 },
+		"charcoal": { elem2:"diamond", tempMin:800, tempMax:900, chance:0.005, oneway:true }
 	},
 	category: "powders",
 	state: "solid",
@@ -11357,7 +11592,8 @@ SEEDRISE: function(pixel) {
 	burnTime: 400,
 	burnInto: "dioxin",
 	state: "solid",
-	density: 1052
+	density: 1052,
+	darkText: true
 },
 "color_sand": {
 	color: ["#ff4d4d","#ffac4d","#ffff4d","#4dff4d","#4dffff","#4d4dff","#ff4dff"],
@@ -11375,7 +11611,57 @@ SEEDRISE: function(pixel) {
 	stateHigh: "molten_stained_glass",
 	category: "powders",
 	state: "solid",
-	density: 1602
+	density: 1602,
+	darkText: true
+},
+"caustic_potash": {
+	color: "#feffe8",
+	behavior: behaviors.POWDER,
+	category: "powders",
+	tempHigh: 410,
+	state: "solid",
+	density: 2044,
+	hidden: true,
+	alias: "potassium hydroxide"
+},
+"molten_caustic_potash": {
+	color: "#8d8f6d",
+	behavior: behaviors.LIQUID,
+	reactions: {
+		// electrolysis:
+		"aluminum": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.0025 },
+		"zinc": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.015 },
+		"steel": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.0125 },
+		"iron": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.0125 },
+		"tin": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.01 },
+		"brass": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.001 },
+		"bronze": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.001 },
+		"copper": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.0075 },
+		"silver": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.0075 },
+		"gold": { elem1:["potassium","hydrogen","oxygen"], charged:true, chance:0.0075 }
+	}
+},
+"sodium_acetate": {
+	color: ["#ededed","#dbdbdb"],
+	behavior: [
+		"XX|XX|XX",
+		"XX|XX|XX",
+		"M2|M1|M2",
+	],
+	tick: function(pixel) {
+		if ((pixel.foam || Math.random() < 0.25) && isEmpty(pixel.x,pixel.y-1)) {
+			createPixel("foam",pixel.x,pixel.y-1);
+			if (pixel.foam) {
+				pixelMap[pixel.x][pixel.y-1].foam = pixel.foam;
+				pixel.foam--;
+			}
+		}
+	},
+	hidden: true,
+	state: "solid",
+	density: 1530,
+	category: "powders",
+	tempHigh: 881.4
 },
 "borax": {
 	color: "#ffffff",
@@ -11423,38 +11709,6 @@ SEEDRISE: function(pixel) {
 	alias:"potassium chloride",
 	hidden: true
 },
-"caustic_potash": {
-	color: "#feffe8",
-	behavior: behaviors.POWDER,
-	category: "powders",
-	tempHigh: 410,
-	state: "solid",
-	density: 2044,
-	hidden: true,
-	alias: "potassium hydroxide"
-},
-"sodium_acetate": {
-	color: ["#ededed","#dbdbdb"],
-	behavior: [
-		"XX|XX|XX",
-		"XX|XX|XX",
-		"M2|M1|M2",
-	],
-	tick: function(pixel) {
-		if ((pixel.foam || Math.random() < 0.25) && isEmpty(pixel.x,pixel.y-1)) {
-			createPixel("foam",pixel.x,pixel.y-1);
-			if (pixel.foam) {
-				pixelMap[pixel.x][pixel.y-1].foam = pixel.foam;
-				pixel.foam--;
-			}
-		}
-	},
-	hidden: true,
-	state: "solid",
-	density: 1530,
-	category: "powders",
-	tempHigh: 881.4
-},
 "lightning": {
 	color: "#ffffed",
 	tick: function(pixel) {
@@ -11479,7 +11733,10 @@ SEEDRISE: function(pixel) {
 					if (Math.random() < 0.01) { // BALL LIGHTNING
 						pixelMap[last[0]][last[1]].stage = 9;
 					}
-					if (!outOfBounds(x,y)) { pixelMap[x][y].temp = 27760 }
+					if (!outOfBounds(x,y) && !elements[pixelMap[x][y].element].insulate) { pixelMap[x][y].temp = 27760 }
+					else if (currentSaveData.voidY) {
+						break;
+					}
 					explodeAt(x, y, 13, ["plasma","plasma","plasma","electric"]);
 					break;
 				}
@@ -11723,6 +11980,10 @@ SEEDRISE: function(pixel) {
 				pixelMap[x][y].delay = (y - pixel.y) / 8;
 			}
 			else {
+				if (pixelMap[x][y].burning) {
+					delete pixelMap[x][y].burning;
+					delete pixelMap[x][y].burnStart;
+				}
 				if (elements[pixelMap[x][y].element].id === elements.flash.id) { continue }
 				if (elements[pixelMap[x][y].element].id === elements.god_ray.id) { break }
 				if (!elements[pixelMap[x][y].element].isGas && isEmpty(x, y-1)) {
@@ -11738,7 +11999,8 @@ SEEDRISE: function(pixel) {
 	state: "gas",
 	density: 1,
 	excludeRandom: true,
-	noMix: true
+	noMix: true,
+	darkText: true
 },
 "heat_ray": {
 	color: ["#ff0000","#ff5e00"],
@@ -11863,7 +12125,7 @@ SEEDRISE: function(pixel) {
 	color: ["#ebf8ff","#dbf3ff","#b8e7ff"],
 	behavior: [
 		"XX|XX|XX",
-		"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,molten_potassium AND CH:void|XX",
+		"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,molten_potassium,mercury,molten_aluminum AND CH:void|XX",
 		"XX|XX|XX",
 	],
 	temp: 99999999700,
@@ -12027,7 +12289,8 @@ SEEDRISE: function(pixel) {
 	stateHigh: "explosion",
 	state: "solid",
 	density: 1700,
-	excludeRandom: true
+	excludeRandom: true,
+	alias: "black powder"
 },
 "ember": {
 	color: ["#ffe985","#ffd885","#ffc285"],
@@ -12036,6 +12299,13 @@ SEEDRISE: function(pixel) {
 		"XX|XX|XX",
 		"XX|XX|XX",
 	],
+	onCollide: function(pixel1,pixel2) {
+		if (elements[pixel2.element].fireColor) {
+			pixel1.color = pixelColorPick(pixel1,elements[pixel2.element].fireColor);
+			pixel1.origColor = undefined;
+			pixel1.cc = true;
+		}
+	},
 	onPlace: function(pixel) {
 		if (pixel.alpha === undefined) { pixel.alpha = 0.2 }
 	},
@@ -12056,8 +12326,9 @@ SEEDRISE: function(pixel) {
 	burnTime: 10,
 	burnInto: "ash",
 	burning: true,
+	fireElement: null,
 	state: "gas",
-	density: 700,
+	density: 600,
 	hidden: true
 },
 "firework": {
@@ -12167,7 +12438,7 @@ SEEDRISE: function(pixel) {
 					}
 					if (elements[newPixel.element].id === elements.gray_goo.id) {
 						changePixel(newPixel,"flash")
-					} 
+					}
 				}
 				explodeAt(pixel.x,pixel.y+1,20,"flash");
 			}
@@ -12841,6 +13112,7 @@ SEEDRISE: function(pixel) {
 		"light": { elem1:["algae","cell","mushroom_spore","lichen","yeast","antibody"], chance:0.5 },
 		"carbon_dioxide": { elem2:"oxygen" },
 		"milk": { elem2:"yogurt" },
+		"cream": { elem2:"yogurt" },
 		"dirt": { elem2:"mud", chance:0.2 },
 		"sand": { elem2:"wet_sand", chance:0.2 },
 		"clay_soil": { elem2:"clay", chance:0.2 },
@@ -12872,7 +13144,7 @@ SEEDRISE: function(pixel) {
 	tool: function(pixel) {
 		mouseIsDown = false;
 		if (shiftDown) { toggleShift() }
-		var output = pixel.element.toUpperCase()+" at x"+pixel.x+", y"+pixel.y+", tick"+pixelTicks+"\n";
+		var output = pixel.element.toUpperCase()+" at x"+pixel.x+", y"+pixel.y+", tick"+pixelTicks+"\n\n";
 		for (var i in pixel) {
 			if (i !== "x" && i !== "y" && i !== "element") {
 				output += "  " + i + ": " + pixel[i] + "\n";
@@ -12889,11 +13161,9 @@ SEEDRISE: function(pixel) {
 "prop": {
 	color: ["#d46f50","#d4aa50"],
 	onSelect: function(){
-		// var answer1 = prompt("Warning - This tool may break Sandboxels if used incorrectly. Avoid using if you don't understand.\n\nEnter a pixel attribute to modify:",currentProp);
 		promptInput("Warning - This tool may break Sandboxels if used incorrectly. Avoid using if you don't understand.\n\nEnter a pixel attribute to modify:",
 		  (answer1) => {
 			  if (!answer1) { selectElement("unknown"); return }
-			//   var answer2 = prompt("Now, enter a value for "+answer1+":",currentPropValue);
 			  promptInput("Now, enter a value for "+answer1+":",
 				(answer2) => {
 					if (!answer2) { selectElement("unknown"); return }
@@ -12924,6 +13194,12 @@ SEEDRISE: function(pixel) {
 	},
 	tool: function(pixel) {
 		if (!currentProp) { return }
+		if (typeof currentPropValue === "boolean" && typeof pixel[currentProp] === "number") {
+			currentPropValue = currentPropValue ? 1 : 0;
+		}
+		else if (typeof currentPropValue === "number" && typeof pixel[currentProp] === "boolean") {
+			currentPropValue = !!currentPropValue;
+		}
 		if (currentPropValue !== null && currentPropValue !== undefined && pixel[currentProp] !== null && pixel[currentProp] !== undefined && typeof pixel[currentProp] !== typeof currentPropValue) {
 			logMessage("Error: "+currentProp+" type is "+typeof pixel[currentProp]+", not "+typeof currentPropValue+".");
 			currentProp = null;
@@ -12987,6 +13263,8 @@ if (standalone) {
 		script.src = "mods/steam_port.js";
 		document.head.appendChild(script);
 	}
+
+	document.documentElement.classList.add("standalone");
 }
 
 var currentMonth = new Date().getMonth();
@@ -13170,15 +13448,16 @@ keybinds["Backslash"] = ()=>{ // Open settings
 	closeMenu();
 	showSettings();
 }
-keybinds["KeyL"] = ()=>{ // Open saves
+keybinds["KeyL"] = (e)=>{ // Open saves
 	closeMenu();
 	showSaves();
 }
 keybinds["KeyC"] = ()=>{ // Screenshot
-	if (!shiftDown) { drawLayers(true); }
+	let png = generateScreenshot();
+
 	var link = document.createElement('a');
 	link.setAttribute('download', ((currentSaveData && currentSaveData.name) ? currentSaveData.name : 'sandboxels-screenshot') + ".png");
-	link.setAttribute('href', document.getElementById("game").toDataURL("image/png").replace("image/png", "image/octet-stream"));
+	link.setAttribute('href', png.replace("image/png", "image/octet-stream"));
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
@@ -13218,6 +13497,7 @@ keybinds["Backspace"] = ()=>{ // Select previous element
 // If the localStorage key "enabledMods" exists, load it as an array.
 // If it doesn't exist, create an empty array.
 enabledMods = localStorage.getItem("enabledMods") ? JSON.parse(localStorage.getItem("enabledMods")) : [];
+enabledModNames = [];
 loadedMods = [];
 queuedMods = [];
 dependents = {};
@@ -13233,7 +13513,7 @@ function dependOn(modName, callback, forceLoad) {
 	}
 	dependents[modName].push(callback);
 	if (forceLoad && loadedMods.indexOf(modName) === -1 && queuedMods.indexOf(modName) === -1 && queuedDependencies.indexOf(modName) === -1) {
-		queuedDependencies.push((modName.startsWith("http") ? "" : "mods/") + modName);
+		queuedDependencies.push((modName.startsWith("http") ? "" : (standalone ? "https://sandboxels.r74n.com/mods/" : "mods/")) + modName);
 	}
 }
 function checkDependents(modName) {
@@ -13245,6 +13525,27 @@ function checkDependents(modName) {
 			dependents[modName][i]();
 		}
 	}
+}
+function modIsEnabled(modName) {
+	if (modName.indexOf("/") !== -1) {
+		modName = modName.match(/\/[^\/]+$/g)[0].substring(1);
+	}
+	return enabledModNames.indexOf(modName) !== -1;
+}
+for (var i = 0; i < enabledMods.length; i++) {
+	let src = enabledMods[i];
+	let split = src.split("/");
+	let modName = split[split.length-1];
+	enabledModNames.push(modName);
+}
+if (standalone && window.initialData && window.initialData.modScripts) {
+	for (let modName in window.initialData.modScripts) {
+		let js = window.initialData.modScripts[modName];
+		let script = document.createElement('script');
+		script.innerHTML = js;
+		document.head.appendChild(script);
+	}
+	delete window.initialData.modScripts;
 }
 // Run all scripts in the enabledMods array, if it fails print to console
 for (var i = 0; i < enabledMods.length; i++) {
@@ -13304,6 +13605,9 @@ if (urlParams.has("lang") && urlParams.get("lang") !== "en") {
 }
 else if (settings.lang && settings.lang !== "en") {
 	langCode = settings.lang;
+}
+else if (window.initialData && window.initialData.langCode && window.initialData.langCode !== "en") {
+	langCode = window.initialData.langCode;
 }
 // langCode = "test";
 if (langCode) {
@@ -13368,10 +13672,17 @@ function langKey(key,fallback,template) {
 			var g = 0;
 			var b = 0;
 			for (var i = 0; i < rgblist.length; i++) {
-				var rgb = rgblist[i];
-				r += parseInt(rgb.r||rgb[0]);
-				g += parseInt(rgb.g||rgb[1]);
-				b += parseInt(rgb.b||rgb[2]);
+				let rgb = rgblist[i];
+				let newr, newg, newb;
+				if (Array.isArray(rgb)) {
+					newr = rgb[0], newg = rgb[1], newb = rgb[2];
+				}
+				else {
+					newr = rgb.r, newg = rgb.g, newb = rgb.b;
+				}
+				r += parseInt(newr);
+				g += parseInt(newg);
+				b += parseInt(newb);
 			}
 			r = Math.floor(r/rgblist.length);
 			g = Math.floor(g/rgblist.length);
@@ -13423,7 +13734,7 @@ function langKey(key,fallback,template) {
 				this.element = element;
 				var elementInfo = elements[element];
 				if (elementInfo.colorPattern && settings.textures!==0) {
-					this.color = pixelColorPick(this, elementInfo.colorPattern[y%elementInfo.colorPattern.length][x%elementInfo.colorPattern[0].length]);
+					this.color = colorPatternPick(this);
 				}
 				else {
 					this.color = pixelColorPick(this);
@@ -13648,6 +13959,7 @@ function langKey(key,fallback,template) {
 			if (r.chance !== undefined && Math.random() > r.chance) {
 				return false;
 			}
+			if (pixel1.skip === true || pixel2.skip === true) { return false }
 			if (r.setting && settings[r.setting]===0) {
 				return false;
 			}
@@ -13756,27 +14068,27 @@ function langKey(key,fallback,template) {
 				
 			}
 		}
-
-		loadedSounds = {};
-		function playSound(sound) {
-			if (loadedSounds[sound] === undefined) {
-				loadedSounds[sound] = new Audio("sounds/" + sound);
-			}
-			loadedSounds[sound].play();
+		function getPixel(x, y) {
+			if (outOfBounds(x,y)) return null;
+			return pixelMap[x][y] || null;
 		}
-		function stopSound(sound) {
-			if (loadedSounds[sound] === undefined) {
-				loadedSounds[sound] = new Audio("sounds/" + sound);
+		function tryCreate(element, x, y, replace) {
+			if (!isEmpty(x,y)) {
+				if (replace && !outOfBounds(x,y)) {
+					deletePixel(x,y);
+				}
+				else return null;
 			}
-			loadedSounds[sound].pause();
-			loadedSounds[sound].currentTime = 0;
+			createPixel(element, x, y);
+			return pixelMap[x][y];
 		}
-		function loopSound(sound) {
-			if (loadedSounds[sound] === undefined) {
-				loadedSounds[sound] = new Audio("sounds/" + sound);
+		function tryDelete(x, y) {
+			if (!isEmpty(x,y,true)) {
+				const pixel = pixelMap[x][y];
+				deletePixel(x,y);
+				return pixel;
 			}
-			loadedSounds[sound].loop = true;
-			loadedSounds[sound].play();
+			return null;
 		}
 
 		validDensitySwaps = {
@@ -13806,16 +14118,16 @@ function langKey(key,fallback,template) {
 					}
 				}
 			}
-			var info = elements[pixel.element];
-			var oob = outOfBounds(nx,ny);
+			const info = elements[pixel.element];
+			const oob = outOfBounds(nx,ny);
 			if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
 				movePixel(pixel,nx,ny,leaveBehind);
 				return true;
 			}
 			else if (!oob) {
 				// Reactions
-				var newPixel = pixelMap[nx][ny];
-				var rr1 = false;
+				const newPixel = pixelMap[nx][ny];
+				let rr1 = false;
 				if (info.reactions !== undefined && info.reactions[newPixel.element] !== undefined) {
 					rr1 = reactPixels(pixel,newPixel)
 					if (rr1) {
@@ -13841,6 +14153,9 @@ function langKey(key,fallback,template) {
 					}
 					if (elements[newPixel.element].onMoveInto !== undefined) {
 						elements[newPixel.element].onMoveInto(newPixel,pixel);
+					}
+					if (info.onCollide !== undefined) {
+						info.onCollide(pixel,newPixel);
 					}
 				}
 				else if (info.isGas !== true && validDensitySwaps[info.state][info.state] !== undefined && Math.random() < 1/(currentPixels.length/10)) {
@@ -14232,6 +14547,7 @@ behaviorRules = {
 	"CO": function() {
 		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
 			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+			if (elements[newPixel.element].insulate) { return }
 			if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
 				if (btemp.arg !== null) {btemp.arg = parseFloat(btemp.arg)}
 				else {btemp.arg = 1}
@@ -14346,6 +14662,12 @@ behaviorRules = {
 				btemp.mixSpots.push({x:newPixel.x, y:newPixel.y});
 			}
 		}
+	},
+	"RL": function() {
+		if (btemp.arg.indexOf(",") !== -1) {
+			btemp.arg = choose(arg.split(","));
+		}
+		releaseElement(btemp.pixel, btemp.arg);
 	},
 	"XX": function() {},
 }
@@ -14551,7 +14873,7 @@ behaviorRules = {
 	}
 
 		function doDefaults(pixel) {
-			if (pixel.del) {return}
+			if (pixel.del === true) {return}
 			if (elements[pixel.element].insulate !== true) { doHeat(pixel) };
 			doAirDensity(pixel);
 			doBurning(pixel);
@@ -14560,11 +14882,9 @@ behaviorRules = {
 		}
 
 		function doAirDensity(pixel) {
-			if (pixel.del) {return}
+			if (pixel.del === true) {return}
 			var info = elements[pixel.element];
-			if (info.density < airDensity && !info.ignoreAir && info.density !== undefined && info.movable === true) {
-				// Air Density
-				// if the pixel's state + ">" + newPixel's state is in validDensitySwaps, and the pixel's density is larger than the newPixel's density, swap the pixels
+			if (info.density < airDensity && info.ignoreAir !== true && info.movable === true) {
 				if (validDensitySwaps.gas[info.state]) {
 					// chance depending on the difference in density
 					if (Math.random() < (airDensity - info.density)/(airDensity + info.density)) {
@@ -14579,7 +14899,7 @@ behaviorRules = {
 				if (settings.burn === 0) { return }
 				if (pixel.burnStart === undefined) { pixel.burnStart = pixelTicks }
 				var info = elements[pixel.element];
-				if (!info.insulate) { pixel.temp += 1; }
+				if (info.insulate !== true) { pixel.temp += 1; }
 				pixelTempCheck(pixel);
 				if (pixel.temp < 0) {
 					pixel.burning = undefined;
@@ -14606,15 +14926,17 @@ behaviorRules = {
 				}
 
 				if ((pixelTicks - pixel.burnStart > (info.burnTime || 200)) && Math.floor(Math.random()*100)<(info.burn || 10) && !(info.burnTime === undefined && info.hardness >= 1)) {
-					var burnInto = info.burnInto;
+					let burnInto = info.burnInto;
+					let makesFire = false;
 					if (burnInto === undefined) {
 						burnInto = "fire";
+						makesFire = true;
 					}
 					else if (burnInto instanceof Array) {
 						burnInto = burnInto[Math.floor(Math.random()*burnInto.length)];
 					}
 					changePixel(pixel,burnInto);
-					if (info.fireColor !== undefined && burnInto === "fire") {
+					if (info.fireColor !== undefined && makesFire) {
 						pixel.color = pixelColorPick(pixel,info.fireColor);
 					}
 					else {
@@ -14748,6 +15070,8 @@ behaviorRules = {
 					}
 					if ((elements[newPixel.element].id !== elements[pixel.element].id || elements[newPixel.element].stainSelf) && (solidStates[elements[newPixel.element].state] || elements[newPixel.element].id === elements[pixel.element].id)) {
 						if (Math.random() < Math.abs(stain)) {
+							// if newPixel.color doesn't start with rgb, continue
+							if (!newPixel.color.match(/^rgb/)) { continue; }
 							if (stain < 0) {
 								if (newPixel.origColor) {
 									newColor = newPixel.origColor;
@@ -14757,8 +15081,6 @@ behaviorRules = {
 							else if (!newPixel.origColor) {
 								newPixel.origColor = newPixel.color.match(/\d+/g);
 							}
-							// if newPixel.color doesn't start with rgb, continue
-							if (!newPixel.color.match(/^rgb/)) { continue; }
 							// parse rgb color string of newPixel rgb(r,g,b)
 							var rgb = newPixel.color.match(/\d+/g);
 							if (elements[pixel.element].stainSelf && elements[newPixel.element].id === elements[pixel.element].id) {
@@ -14786,11 +15108,11 @@ behaviorRules = {
 		function stainPixel(newPixel,color,intensity) {
 			if (!newPixel.color.match(/^rgb/)) { return; }
 			if (!intensity) { intensity = 0.5 }
-			if (color.charCodeAt(0) === 35) { //
+			if (color.charCodeAt(0) === 35) { //#
 				color = hexToRGB(color);
 				color = [color.r,color.g,color.b];
 			}
-			var rgb = newPixel.color.match(/\d+/g);
+			let rgb = newPixel.color.match(/\d+/g);
 			if (!newPixel.origColor) newPixel.origColor = rgb;
 			var avg = [];
 			for (var j = 0; j < rgb.length; j++) {
@@ -14845,6 +15167,10 @@ behaviorRules = {
 				}
 			}*/
 			return color;
+		}
+		function colorPatternPick(pixel) {
+			const elementInfo = elements[pixel.element];
+			return pixelColorPick(pixel, elementInfo.colorPattern[pixel.y%elementInfo.colorPattern.length][pixel.x%elementInfo.colorPattern[0].length]);
 		}
 		function pixelTempCheck(pixel) {
 			if (pixel.del) { return }
@@ -15037,7 +15363,14 @@ behaviorRules = {
 				}
 			}
 			return selection;
-		} 
+		}
+
+		function generateScreenshot() {
+			// if (!shiftDown) { drawLayers(true); }
+			drawLayers(shiftDown ? false : true);
+			return document.getElementById("game").toDataURL("image/png");
+		}
+
 		unicodeSkips = {
 			0: 65, // null -> A
 			58: 65, // : -> A
@@ -15144,8 +15477,11 @@ behaviorRules = {
 			}
 			if (saveOptions.mods === false) { var mods = []; }
 			else { var mods = enabledMods }
-			if (window.location.protocol === "file:") {
-				var url = "";
+			if (standalone) {
+				var url = standaloneType || "standalone";
+			}
+			else if (window.location.protocol === "file:") {
+				var url = "local";
 			}
 			else {
 				var url = window.location.href;
@@ -15196,30 +15532,60 @@ behaviorRules = {
 					"seriesIndex":seriesIndex,
 					"uuid":uuidv4(),
 					"seriesId":seriesId,
-					"url":url
+					"url":url,
+					"tags":saveOptions.tags||[]
 				},
 				"saveConfig":saveConfig,
 				"codes":codesReverse,
 				"pixelMap":compressedMap
 			}
 		}
-		function loadSave(saveJSON) {
+		function loadSave(saveJSON, confirmed=0, skip=0) {
 			if (!saveJSON.pixelMap) { return }
 			var compressedMap = saveJSON.pixelMap;
 			if (!compressedMap) {
-				prompText("Invalid save file - missing pixelMap.", undefined, "Error"); return;
+				promptText("Invalid save file - missing pixelMap.", undefined, "Error"); return;
 			}
 			var saveConfig = saveJSON.saveConfig || {};
-			var savePixelSize = saveConfig.pixelSize||6;
+			var savePixelSize = parseInt(saveConfig.pixelSize)||6;
 			var version = parseInt(saveJSON.meta.saveVersion.split("sb")[1]);
-			if (version < 1 || !version) {
-				prompText("This save was made in an unknown version of Sandboxels, and may not load correctly.", undefined, "Warning")
+			if (!confirmed) {
+				if (version < 1 || !version) {
+					promptConfirm("This save was made in an unknown version of Sandboxels, and may not load correctly.", (r)=>{ if (!r) return; loadSave(saveJSON,1,skip) }, "Warning");
+					return;
+				}
+				else if (version > saveVersion) {
+					promptConfirm("This save was made in a newer version of Sandboxels, and may not load correctly. Please use the latest version.", (r)=>{ if (!r) return; loadSave(saveJSON,1,skip) }, "Warning");
+					return;
+				}
+				if (confirmed < 2 && saveConfig.height*saveConfig.width >= 1000000) {
+					promptConfirm("This save is very large. Are you sure you want to load it?", (r)=>{ if (!r) return; loadSave(saveJSON,2,skip) }, "Warning");
+					return;
+				}
 			}
-			else if (version > saveVersion) {
-				prompText("This save was made in a newer version of Sandboxels, and may not load correctly. Please use the latest version.", undefined, "Warning")
-			}
-			if (saveConfig.height*saveConfig.width >= 1000000) {
-				if (!standalone && !confirm("This save is very large. Are you sure you want to load it?")) { return }
+			if (saveConfig.mods && skip < 3) {
+				if (confirmed < 3) {
+					for (var i = 0; i < saveConfig.mods.length; i++) {
+						if (!modIsEnabled(saveConfig.mods[i])) {
+							promptConfirm("Install included mods for this save? Only continue if you trust this file's source. They may or may not be necessary.\n\n"+saveConfig.mods.join("\n"), (r)=>{ if (!r) loadSave(saveJSON,confirmed,3); else loadSave(saveJSON,3,skip); }, "Warning");
+							return;
+						}
+					}
+				}
+				else {
+					let added = [];
+					for (var i = 0; i < saveConfig.mods.length; i++) {
+						if (!modIsEnabled(saveConfig.mods[i])) {
+							let mod = addMod(saveConfig.mods[i],true);
+							if (mod) added.push(mod);
+						}
+					}
+					if (added.length === 0) loadSave(saveJSON,confirmed,3);
+					localStorage.setItem("SandboxelsTempSave", JSON.stringify(saveJSON));
+					localStorage.setItem("SandboxelsTempMods", JSON.stringify(added));
+					window.location.reload();
+					return;
+				}
 			}
 			resizeCanvas(saveConfig.height*savePixelSize+savePixelSize,saveConfig.width*savePixelSize+savePixelSize,savePixelSize);
 			clearAll(true);
@@ -15229,31 +15595,15 @@ behaviorRules = {
 					settings[key] = saveConfig.settings[key];
 				}
 			}
-			if (saveConfig.mods) {
-				var modConfirm = false;
-				for (var i = 0; i < saveConfig.mods.length; i++) {
-					if (enabledMods.indexOf(saveConfig.mods[i]) === -1) {
-						modConfirm = confirm("Install included mods for this save? Only continue if you trust this file's source. They may or may not be necessary.\n\n"+saveConfig.mods.join("\n"));
-						break;
-					}
-				}
-				if (modConfirm) {
-					for (var i = 0; i < saveConfig.mods.length; i++) {
-						if (enabledMods.indexOf(saveConfig.mods[i]) === -1) {
-							addMod(saveConfig.mods[i],true);
-						}
-					}
-					window.location.reload();
-				}
-			}
-			tps = saveConfig.tps||30;
+			let oldTps = tps;
+			tps = parseInt(saveConfig.tps)||30;
 			resetInterval(tps);
 			// if (saveConfig.currentElement) {
 			//	 selectElement(saveConfig.currentElement||firstElement);
 			//	 selectCategory(elements[currentElement].category);
 			// }
 			// if (saveConfig.mouseSize) { mouseSize = saveConfig.mouseSize };
-			if (saveConfig.view) { setView(saveConfig.view) };
+			// if (saveConfig.view) { setView(saveConfig.view) };
 			if (saveConfig.paused && !paused) { togglePause(); }
 			if (typeof compressedMap !== "object") {
 				if (version >= 2) {
@@ -15293,7 +15643,7 @@ behaviorRules = {
 					}
 				}
 			}
-			pixelTicks = saveConfig.pixelTicks||0;
+			pixelTicks = parseInt(saveConfig.pixelTicks)||0;
 			if (saveConfig.border === undefined) {
 				saveConfig.border = 1;
 			}
@@ -15306,15 +15656,18 @@ behaviorRules = {
 				"name":saveJSON.meta.name,
 				"author":saveJSON.meta.author,
 				"desc":saveJSON.meta.desc,
+				"tags":saveJSON.meta.tags,
 				"border":saveConfig.border,
 				"voidX":saveConfig.voidX,
 				"voidY":saveConfig.voidY,
 				"loopX":saveConfig.loopX,
-				"loopY":saveConfig.loopY
+				"loopY":saveConfig.loopY,
+				"oldTps":oldTps
 			}
 			if (saveJSON.meta.author) {
 				logMessage("Created by "+saveJSON.meta.author);
 			}
+			if (showingMenu) closeMenu();
 			return pixelarray;
 		}
 
@@ -15505,7 +15858,10 @@ behaviorRules = {
 			const canvasLayerKeys = Object.keys(canvasLayers);
 			for (let i = 0; i < canvasLayerKeys.length; i++) {
 				const layerCanvas = canvasLayers[canvasLayerKeys[i]];
-				if (!paused && pixelTicks === lastPixelDraw && layerCanvas === canvasLayers.pixels) { continue }
+				if (layerCanvas === canvasLayers.pixels) {
+					if (viewInfo[view].clear === false) continue;
+					if (!paused && pixelTicks === lastPixelDraw) continue;
+				}
 				const layerCtx = layerCanvas.getContext("2d");
 				layerCtx.clearRect(0, 0, layerCanvas.width, layerCanvas.height);
 			}
@@ -15524,10 +15880,10 @@ behaviorRules = {
 					canvas.style.backgroundColor = settings.bg;
 					// document.getElementById("stats").style.backgroundColor = settings.bg;
 				}
-				if (includeBackground) {
-					ctx.fillStyle = settings.bg;
-					ctx.fillRect(0, 0, canvas.width, canvas.height);
-				}
+			}
+			if (includeBackground) {
+				ctx.fillStyle = settings.bg || "#000000";
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
 			}
 			for (let i = 0; i < canvasLayersPre.length; i++) {
 				const layerCanvas = canvasLayersPre[i];
@@ -15540,7 +15896,7 @@ behaviorRules = {
 				}
 				lastPixelDraw = pixelTicks;
 			}
-			drawCursor();
+			if (!includeBackground) drawCursor();
 			for (let i = 0; i < canvasLayersPost.length; i++) {
 				const layerCanvas = canvasLayersPost[i];
 				ctx.drawImage(layerCanvas, 0, 0);
@@ -15552,11 +15908,13 @@ behaviorRules = {
 			var topLeft = [mousePos.x-mouseOffset,mousePos.y-mouseOffset];
 			var bottomRight = [mousePos.x+mouseOffset,mousePos.y+mouseOffset];
 			// Draw a square around the mouse
-			layerCtx.strokeStyle = settings.mouseColor||"white";
+			layerCtx.globalAlpha = mouseAlpha;
+			layerCtx.lineWidth = 2;
+			layerCtx.strokeStyle = settings.mouseColor||mouseColor||"white";
 			layerCtx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
 			// draw one transparent pixel in the center
 			if (settings.precision) {
-				layerCtx.fillStyle = "rgba(255,255,255,0.5)";
+				layerCtx.fillStyle = mouseColor;
 				layerCtx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
 			}
 			if (shaping) {
@@ -15564,7 +15922,7 @@ behaviorRules = {
 					let coords = lineCoords(shapeStart.x,shapeStart.y,mousePos.x,mousePos.y);
 					coords.forEach((coord) => {
 						if (outOfBounds(coord[0],coord[1])) return;
-						drawSquare(layerCtx,"rgba(255,255,255,0.5)",coord[0],coord[1],undefined)
+						drawSquare(layerCtx,mouseColor,coord[0],coord[1],undefined,mouseAlpha)
 					})
 				}
 			}
@@ -15577,6 +15935,7 @@ behaviorRules = {
 
 			for (var i = 0; i < newCurrentPixels.length; i++) {
 				var pixel = newCurrentPixels[i];
+				if (pixel.skip === true) continue;
 				if (elements[pixel.element].movable) {
 					if (currentSaveData.voidX === true && onBorderX(pixel.x)) {
 						deletePixel(pixel.x,pixel.y); continue;
@@ -15649,15 +16008,7 @@ behaviorRules = {
 					})
 				},
 				pixel: function(pixel,ctx) {
-					// if (pixel.temp < thermalMin) thermalMin = Math.round((thermalMin + Math.min(pixel.temp,0))/2);
-					// if (pixel.temp > thermalMax) thermalMax = Math.round((thermalMax + Math.max(pixel.temp,100))/2);
-
 					var temp = pixel.temp;
-					// if (temp < -50) {temp = -50}
-					// if (temp > 6000) {temp = 6000}
-					// logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
-					// var hue = Math.round(225 - (Math.log(temp+50)/Math.log(6000+50))*225);
-					// var hue = Math.round(225 - (temp-thermalMin)/(thermalMax-thermalMin))*225;
 					var hue = 255 - Math.round((temp - thermalMin) / (thermalMax - thermalMin) * 255);
 					if (hue < 0) {hue = 0}
 					if (hue > 225) {hue = 225}
@@ -15674,6 +16025,22 @@ behaviorRules = {
 							drawSquare(ctx,"rgba(255,255,0,0.5)",pixel.x,pixel.y);
 						}
 					}
+				}
+			},
+			4: { // Streak View
+				name: "streak",
+				clear: false,
+				effects: true,
+				colorEffects: true,
+				pre: function(ctx) {
+					const canvas = ctx.canvas;
+
+					ctx.fillStyle = settings.bg||"#000000";
+					ctx.globalAlpha = 0.1;
+					ctx.fillRect(0, 0, canvas.width, canvas.height);
+				},
+				pixel: function(pixel,ctx) {
+					viewInfo[1].pixel(pixel,ctx);
 				}
 			}
 		}
@@ -15781,11 +16148,13 @@ behaviorRules = {
 				if (elements[currentElement].perTick) {
 					elements[currentElement].perTick();
 				}
+				
 				tickPixels();
-			}
-			if (runEveryTickList.length) {
-				for (let i = 0; i < runEveryTickList.length; i++) {
-					runEveryTickList[i]();
+
+				if (runEveryTickList.length) {
+					for (let i = 0; i < runEveryTickList.length; i++) {
+						runEveryTickList[i]();
+					}
 				}
 			}
 
@@ -15821,6 +16190,8 @@ behaviorRules = {
 		mouseIsDown = false;
 		isMobile = false;
 		genericMenuHandler = null;
+		changedMods = false;
+		forceReload = false;
 		nextElemID = 1;
 		// detect if mobile
 		if ((navigator.userAgent && (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) ||
@@ -15957,12 +16328,15 @@ behaviorRules = {
 				evt = evt.touches[0];
 				isMobile = true;
 			}
-			var rect = canvas.getBoundingClientRect();
-			return {
-				// Round to nearest pixel
-			x: Math.round((evt.clientX - rect.left)/pixelSize-0.5),
-			y: Math.round((evt.clientY - rect.top)/pixelSize-0.5)
-			};
+			const rect = canvas.getBoundingClientRect();
+
+			let x = evt.clientX - rect.left;
+			let y = evt.clientY - rect.top;
+
+			x = Math.floor((x / canvas.clientWidth) * (width+1));
+			y = Math.floor((y / canvas.clientHeight) * (height+1));
+
+			return {x:x, y:y};
 		}
 		function mouseMove(e) {
 			updateStats();
@@ -15986,6 +16360,8 @@ behaviorRules = {
 		lastPos = mousePos;
 		lastPlace = -100;
 		if (typeof settings.mouseColor !== "string") { delete settings.mouseColor }
+		mouseColor = settings.mouseColor||"rgba(255,255,255)";
+		mouseAlpha = 0.5;
 		function mouseRange(mouseX,mouseY,size) {
 			var coords = [];
 			size = size || mouseSize;
@@ -16002,8 +16378,6 @@ behaviorRules = {
 			return coords;
 		}
 		function mouse1Action(e,mouseX=undefined,mouseY=undefined,startPos) {
-			if (currentElement === "erase") { mouse2Action(e,mouseX,mouseY,startPos); return; }
-			else if (currentElement === "pick") { mouseMiddleAction(e,mouseX,mouseY); return; }
 			// If x and y are undefined, get the mouse position
 			if (mouseX === undefined && mouseY === undefined) {
 				// var canvas = document.getElementById("game");
@@ -16045,21 +16419,28 @@ behaviorRules = {
 				done[x][y] = true;
 
 				if (outOfSight(x,y)) { continue; }
+				
+				var existingPixel = null;
+				if (!isEmpty(x,y,true)) { existingPixel = pixelMap[x][y] }
+
 
 				if (mode === "replace" && (!elements[currentElement].tool || elements[currentElement].canPlace)) {
 					if (outOfBounds(x,y)) {
 						continue;
 					}
 					// Remove pixel at position from currentPixels
-					if (!isEmpty(x,y,true)) {
-						if (!(currentElement === pixelMap[x][y].element && pixelMap[x][y].start === pixelTicks-1)) {
+					if (existingPixel !== null) {
+						if (!(currentElement === existingPixel.element && existingPixel.start === pixelTicks-1)) {
 							deletePixel(x,y);
 						}
 					}
 				}
+				else if (existingPixel !== null && elements[existingPixel.element].onClicked && currentElement !== existingPixel.element) {
+					elements[existingPixel.element].onClicked(existingPixel,currentElement);
+				}
 
 				if (currentElement === "mix") {
-					if (!isEmpty(x,y,true)) {
+					if (existingPixel !== null) {
 						var pixel = pixelMap[x][y];
 						if (pixel.del) continue;
 						if (!(elements[pixel.element].movable !== true || elements[pixel.element].noMix === true) || shiftDown) {
@@ -16070,7 +16451,7 @@ behaviorRules = {
 				}
 				else if (elements[currentElement].tool && !(elements[currentElement].canPlace && isEmpty(x,y))) {
 					// run the tool function on the pixel
-					if (!isEmpty(x,y,true)) {
+					if (existingPixel !== null) {
 						var pixel = pixelMap[x][y];
 						// if the current element has an ignore property and the pixel's element is in the ignore property, don't do anything
 						if (elements[currentElement].ignore && elements[currentElement].ignore.indexOf(pixel.element) !== -1) {
@@ -16156,29 +16537,23 @@ behaviorRules = {
 					if (outOfBounds(x,y)) {
 						continue
 					}
-					deletePixel(x,y)
+					if (elements.erase) elements.erase.tool(pixelMap[x][y])
 				}
 			}
 		}
 		function mouseMiddleAction(e, mouseX, mouseY) {
-			if (mouseX === undefined && mouseY === undefined) {
-				lastPos = mousePos;
-				mousePos = getMousePos(canvas, e);
-				var mouseX = mousePos.x;
-				var mouseY = mousePos.y;
+			if (e) {
+				if (mouseX === undefined && mouseY === undefined) {
+					lastPos = mousePos;
+					mousePos = getMousePos(canvas, e);
+					var mouseX = mousePos.x;
+					var mouseY = mousePos.y;
+				}
+				if (!outOfBounds(mouseX, mouseY)) { e.preventDefault(); }
 			}
-			if (!outOfBounds(mouseX, mouseY) && e) { e.preventDefault(); }
 			if (!isEmpty(mouseX, mouseY,true)) {
 				var pixel = pixelMap[mouseX][mouseY];
-				selectElement(pixel.element);
-				selectCategory(elements[pixel.element].category);
-				if (shiftDown) {
-					currentElementProp = {};
-					for (var key in pixel) { currentElementProp[key] = pixel[key] }
-					delete currentElementProp.x;
-					delete currentElementProp.y;
-				}
-				mouseIsDown = false;
+				if (elements.pick && elements.pick.tool) elements.pick.tool(pixel);
 			}
 		}
 		lastScroll = new Date().getTime();
@@ -16239,8 +16614,17 @@ behaviorRules = {
 				document.getElementById("shiftButton").setAttribute("on","true");
 			}
 		}
-		function resetPrompt() {
-			if (settings.resetwarning === 0 || currentPixels.length===0) { autoResizeCanvas(); focusGame(); return }
+		function resetPrompt(confirmed=false) {
+			if (confirmed || settings.resetwarning === 0 || currentPixels.length===0) {
+				if (changedMods) {
+					forceReload = true;
+					location.reload();
+					return;
+				}
+				autoResizeCanvas();
+				focusGame();
+				return;
+			}
 			let pause = false;
 			if (promptState) { pause = promptState.wasPaused }
 			else if (paused) { pause = true }
@@ -16248,7 +16632,7 @@ behaviorRules = {
 				text: "Are you sure you want to clear the whole scene?",
 				title: "Clear Canvas",
 				handler: (r) => {
-					if (r) autoResizeCanvas();
+					if (r) resetPrompt(true);
 					focusGame();
 				},
 				html: (standalone || !isOnSite) ? null : `<br><br><p style="text-align:center"><input id="playlightButton" class="button" type="button" onclick="loadPlaylight();" value="Play More Games" style=""></input></p>`,
@@ -16256,10 +16640,10 @@ behaviorRules = {
 				wasPaused: pause
 			}
 			showPromptScreen();
-			// promptConfirm("Are you sure you want to clear the whole scene?",(r) => {
-			// 	if (r) autoResizeCanvas();
-			// 	focusGame();
-			// },"Clear Canvas")
+		}
+		function setTPS(newtps) {
+			tps = parseInt(newtps) || 30;
+			resetInterval(tps);
 		}
 		function tpsPrompt() {
 			promptInput("Enter the new simulation Ticks Per Second (TPS) between 1 and 1000. This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".",
@@ -16270,12 +16654,16 @@ behaviorRules = {
 						else if (newtps > 1000) {
 							logMessage("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");
 							tps = 1000;
+							delete currentSaveData.oldTps;
 						}
 						else {
-							tps = parseInt(newtps);
-							if (isNaN(tps) || tps <= 0) {
+							newtps = parseInt(newtps);
+							if (isNaN(newtps) || newtps <= 0) {
 								logMessage("You did not enter a valid TPS.");
-								tps = 30;
+							}
+							else {
+								tps = newtps;
+								delete currentSaveData.oldTps;
 							}
 						}
 						resetInterval(tps);
@@ -16286,14 +16674,22 @@ behaviorRules = {
 			)
 		}
 		function doFrame() {
+			if (paused) {
+				togglePause();
+			}
+
+			tick();
+
 			if (!paused) {
 				togglePause();
 			}
-			tickPixels();
 		}
 
 		function selectElement(element) {
 			if (!elements[element]) { element = "unknown" }
+			if (showingMenu == "prompt") {
+				closeMenu();
+			}
 			if (elements[element].locked === true) {
 				logMessage("This element is locked.");
 				return;
@@ -16426,24 +16822,37 @@ behaviorRules = {
 			//color of the element
 			// if the element color is an array, make a gradient background color, otherwise, set the background color to the element color
 			let buttonColor = elements[element].buttonColor || elements[element].color;
-			if (buttonColor instanceof Array) {
-				if (buttonColor.length === 1) { button.style.background = buttonColor; }
-				else { button.style.backgroundImage = "linear-gradient(to bottom right, "+buttonColor.join(", ")+")"; }
-				// choose the middlemost item in array
-				if (elements[element].color instanceof Array) {
-					var colorObject = elements[element].colorObject[Math.floor(elements[element].colorObject.length/2)];
-					if (elements[element].darkText !== false && (elements[element].darkText || (colorObject.r+colorObject.g+colorObject.b)/3 > 200)) {
-						button.className += " bright"
+
+			let colorObjects = elements[element].colorObject;
+			if (!Array.isArray(colorObjects)) {
+				colorObjects = [colorObjects];
+			}
+			if (elements[element].buttonColor) {
+				if (Array.isArray(buttonColor)) {
+					colorObjects = [];
+					for (let i = 0; i < buttonColor.length; i++) {
+						const hex = buttonColor[i];
+						colorObjects.push(hexToRGB(hex));
 					}
 				}
+				else colorObjects = [hexToRGB(buttonColor)];
 			}
-			else {
+
+			if (colorObjects.length === 1) {
 				button.style.background = buttonColor;
 				var colorObject = elements[element].colorObject;
 				if (elements[element].darkText !== false && (elements[element].darkText || (colorObject.r+colorObject.g+colorObject.b)/3 > 200)) {
 					button.className += " bright"
 				}
 			}
+			else {
+				button.style.backgroundImage = "linear-gradient(to bottom right, "+buttonColor.join(", ")+")";
+				var colorObject = colorObjects[Math.floor(colorObjects.length/2)];
+				if (elements[element].darkText !== false && (elements[element].darkText || (colorObject.r+colorObject.g+colorObject.b)/3 > 200)) {
+					button.className += " bright"
+				}
+			}
+
 			if (elements[element].buttonGlow) {
 				button.style.boxShadow = "0px 0px 20px "+elements[element].buttonGlow
 			}
@@ -16514,6 +16923,8 @@ behaviorRules = {
 			if (!hex) {
 				let styleTag = document.getElementById("themeStyle");
 				if (styleTag) styleTag.remove();
+				mouseColor = settings.mouseColor||"rgba(255,255,255)";
+				mouseAlpha = 0.5;
 				return;
 			}
 			let rgb;
@@ -16545,6 +16956,8 @@ behaviorRules = {
 				document.body.appendChild(styleTag);
 			}
 			styleTag.innerHTML = style;
+			mouseColor = `rgb(${rgb})`;
+			mouseAlpha = 1;
 		}
 
 		worldgentypes = {
@@ -16763,7 +17176,6 @@ behaviorRules = {
 			mouseIsDown = false;
 			currentPixels = [];
 			pixelMap = [];
-			currentSaveData = defaultSaveData();
 			for (var i = 0; i <= width; i++) {
 				pixelMap[i] = [];
 				for (var j = 0; j <= height; j++) {
@@ -16779,6 +17191,11 @@ behaviorRules = {
 				settings = JSON.parse(tempSettings);
 				tempSettings = null;
 			}
+			if (currentSaveData.oldTps) setTPS(currentSaveData.oldTps);
+			if (currentSaveData.loaded && location.search) {
+				window.history.replaceState({}, '', window.location.href.split("?")[0]);
+			}
+			currentSaveData = defaultSaveData();
 			clearLog();
 			if (runAfterResetList.length) {
 				for (let i = 0; i < runAfterResetList.length; i++) {
@@ -16844,10 +17261,10 @@ behaviorRules = {
 							}
 						}
 						if (y >= height && (currentSaveData.voidY || currentSaveData.loopY)) {
-							element = "wall";
+							element = currentSaveData.borderElem ? null : "wall";
 						}
 						if ((x >= width || x === 0) && (currentSaveData.voidX || currentSaveData.loopX)) {
-							element = "wall";
+							element = currentSaveData.borderElem ? null : "wall";
 						}
 						if (element) {
 							createPixel(element,x,y);
@@ -17066,7 +17483,7 @@ function showInfo(element,back=false) { // this is such a mess please don't look
 		// replace all spaces with underscores
 		element = element.replace(/ /g,"_").toLowerCase();
 		infoSearch.value = element.toUpperCase();
-		info = elements[element];
+		let info = elements[element];
 		if (info) {
 			infoTitle.innerHTML = info.name || element.replace(/_/g," ");
 			infoTitle.innerHTML = infoTitle.innerHTML.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
@@ -17416,6 +17833,24 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			modManagerUrl.focus();
 			showingMenu = "mods";
 		}
+		function handleTab(elem) {
+			let tabID = elem.getAttribute("data-tab");
+			let parent = elem.parentElement.parentElement;
+			let currentTab = parent.querySelector('div.menuTab.selected');
+			let newTab = parent.querySelector('div.menuTab[data-tab='+tabID+']');
+			
+			if (newTab == currentTab) return;
+
+			let currentButton = parent.querySelector('button.menuTab[data-tab='+currentTab.getAttribute("data-tab")+']');
+			if (currentButton) currentButton.classList.remove("selected");
+
+			if (newTab) {
+				newTab.classList.add("selected");
+				elem.classList.add("selected");
+			}
+			else return;
+			if (currentTab) currentTab.classList.remove("selected")
+		}
 		function addMod(url,noMessage) {
 			let split = url.split(/ ?; ?/g);
 			if (split.length > 1) {
@@ -17426,7 +17861,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			while (url.charAt(url.length-1) == "/") { url = url.substring(0, url.length-1); }
 			url = url.replaceAll(/['‘’“”"\$\{\}\\]/g,"");
 			// if the url doesn't have a slash or a dot, alert
-			if (url.indexOf("/") == -1 && url.indexOf(".") == -1) {
+			if (url.indexOf("/") == -1 && url.indexOf(".") == -1 && !noMessage) {
 				promptText("Invalid mod URL.\n\nYou usually want something like 'survival.js' (without the quotes)", showModManager, "Error");
 				return;
 			}
@@ -17434,6 +17869,9 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			if (url.indexOf("http") == -1 && url.indexOf("mods/") == -1) {
 				url = "mods/"+url;
 				if (standalone) url = "https://sandboxels.r74n.com/" + url;
+			}
+			else if (standalone && url.startsWith("mods/")) {
+				url = "https://sandboxels.r74n.com/" + url;
 			}
 			// if the mod is in enabledMods, return
 			for (var i = 0; i < enabledMods.length; i++) {
@@ -17447,11 +17885,14 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			var modName = url.split("/").pop();
 			modManagerList.innerHTML += `<li><a href="${url.replaceAll('"','')}" target="_blank">${modName}</a> <span class="removeModX" onclick='removeMod("${url.replaceAll('"','\\\"')}")'>X</span></li>`
 			document.getElementById("noMods").style.display = "none";
+			document.getElementById("modManagerRefresh").style.display = "block";
 			if (!noMessage) {
-				promptText((standalone ? "Restart the app" : "Refresh the page")+" to see changes.", showModManager, "Added Mod");
+				changedMods = true;
+				promptText((standalone ? "Reset the canvas" : "Refresh the page")+" to apply changes.", showModManager, "Added Mod");
 			}
+			return url;
 		}
-		function removeMod(url) {
+		function removeMod(url,noMessage) {
 			// remove url from enabledMods and set the localStorage
 			for (var i = 0; i < enabledMods.length; i++) {
 				if (enabledMods[i] == url) {
@@ -17462,6 +17903,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			if (enabledMods.length === 0) {
 				document.getElementById("noMods").style.display = "block";
 			}
+			document.getElementById("modManagerRefresh").style.display = "block";
 			localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 			// remove from modManagerList by href
 			var modManagerList = document.getElementById("modManagerList");
@@ -17473,30 +17915,344 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 					break;
 				}
 			}
-			promptText((standalone ? "Restart the app" : "Refresh the page")+" to see changes.", showModManager, "Removed Mod");
+			if (!noMessage) {
+				changedMods = true;
+				promptText((standalone ? "Reset the canvas" : "Refresh the page")+" to apply changes.", showModManager, "Removed Mod");
+			}
+		}
+
+		function escapeHTML(unsafe) {return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");}
+
+		const rtf = new Intl.RelativeTimeFormat(langCode||"en", { style:"short", numeric:"auto" });
+
+		function saveMenuOptions(item) {
+			if (item.workshop && standalone && !item.localFile) {
+				return `
+				<span class="saveSlotOptions">
+					<span onclick="handleWorkshopAddClick(this);" data-workshop="${item.workshop}" class="saveOption saveOptionSave">${langKey("gui.saves.add","Add")}</span>
+				</span>`
+			}
+			if (item.url && !item.localFile) {
+				const url = item.url.replace(/"/g, "%22");
+				return `
+				<span class="saveSlotOptions">
+					<span onclick="loadSaveURL(this.getAttribute('data-url'))" data-url="${url}" class="saveOption saveOptionLoad">${langKey("gui.saves.load","Load")}</span>
+				</span>`
+			}
+			if (item.localFile && standalone) {
+				const filename = (item.filename || item.name).replace(/"/g,"");
+				if (item.workshop) {
+					if (item.published) {
+						return `
+						<span class="saveSlotOptions">
+							<span onclick="loadSaveFile(this.getAttribute('data-filename'))" data-filename="${filename}" class="saveOption saveOptionLoad">${langKey("gui.saves.load","Load")}</span>
+							<span ${currentSaveData.filename !== item.filename ? "disabled=true" : ""} onclick="if (!this.getAttribute('disabled')) {overwriteSaveFile(this.getAttribute('data-filename'))} else {mustBeLoaded('overwrite')}" data-filename="${filename}" class="saveOption saveOptionSave">${langKey("gui.saves.save","Save")}</span>
+							<span onclick="unpublishSaveFile(this.getAttribute('data-filename'), this.getAttribute('data-workshop'))" data-filename="${filename}" data-workshop="${item.workshop}" class="saveOption saveOptionClear">${langKey("gui.saves.unpublish","UnPublish")}</span>
+							<span ${currentSaveData.filename !== item.filename ? "disabled=true" : ""} onclick="if (!this.getAttribute('disabled')) {republishSaveFile(this.getAttribute('data-filename'), this.getAttribute('data-workshop'))} else {mustBeLoaded('publish')}" data-filename="${filename}" data-workshop="${item.workshop}" class="saveOption saveOptionSave">${langKey("gui.saves.republish","RePublish")}</span>
+						</span>`
+					}
+					return `
+					<span class="saveSlotOptions">
+						<span onclick="loadWorkshop(this.getAttribute('data-workshop'), this.getAttribute('data-filename'))" data-filename="${filename}" data-workshop="${item.workshop}" class="saveOption saveOptionLoad">${langKey("gui.saves.load","Load")}</span>
+						<span onclick="deleteWorkshop(this.getAttribute('data-workshop'), this.getAttribute('data-filename'))" data-filename="${filename}" data-workshop="${item.workshop}" class="saveOption saveOptionClear">${langKey("gui.saves.delete","Delete")}</span>
+					</span>`
+				}
+				return `
+				<span class="saveSlotOptions">
+					<span onclick="loadSaveFile(this.getAttribute('data-filename'))" data-filename="${filename}" class="saveOption saveOptionLoad">${langKey("gui.saves.load","Load")}</span>
+					<span ${currentSaveData.filename !== item.filename ? "disabled=true" : ""} onclick="if (!this.getAttribute('disabled')) {overwriteSaveFile(this.getAttribute('data-filename'))} else {mustBeLoaded('overwrite')}" data-filename="${filename}" class="saveOption saveOptionSave">${langKey("gui.saves.save","Save")}</span>
+					<span onclick="deleteSaveFile(this.getAttribute('data-filename'))" data-filename="${filename}" class="saveOption saveOptionClear">${langKey("gui.saves.delete","Delete")}</span>
+					<span ${currentSaveData.filename !== item.filename ? "disabled=true" : ""} onclick="if (!this.getAttribute('disabled')) {publishSaveFile(this.getAttribute('data-filename'))} else {mustBeLoaded('publish')}" data-filename="${filename}" class="saveOption saveOptionSave">${langKey("gui.saves.publish","Publish")}</span>
+				</span>`
+			}
+
+			return `
+				<span class="saveSlotOptions">
+					<span ${item.empty ? "disabled=true" : 'onclick="loadSlot('+item.slot+')"'} class="saveOption saveOptionLoad">${langKey("gui.saves.load","Load")}</span>
+					<span onclick="saveSlot(${item.slot})" class="saveOption saveOptionSave">${langKey("gui.saves.save","Save")}</span>
+					<span ${item.empty ? "disabled=true" : 'onclick="clearSlot('+item.slot+')"'} class="saveOption saveOptionClear">${langKey("gui.saves.clear","Clear")}</span>
+				</span>`
 		}
 		function showSaves() {
 			var savesParent = document.getElementById("savesParent");
 			var saveSlotList = document.getElementById("saveSlotList");
 			saveSlotList.innerHTML = "";
 			// loop 12 times, checking if local storage SandboxelsSaves/x exists
+			var saveItems = [];
 			for (var i = 1; i < 13; i++) {
-				var save = localStorage.getItem("SandboxelsSaves/"+i);
+				let save = localStorage.getItem("SandboxelsSaves/"+i);
 				// var name = "Slot "+i;
-				var name = langKey("guitemplate.saves.slot","Slot $1",{1:i})
+				let name = langKey("guitemplate.saves.slot","Slot $1",{1:i})
+				let time = null;
 				if (save) {
-					name = JSON.parse(save).meta.name || langKey("gui.saves.unnamed","Unnamed");
-					name = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-					// truncate
-					if (name.length > 16) { name = name.substring(0,16)+"..."; }
-					saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span onclick='clearSlot("+i+")' class='saveOption'>"+langKey("gui.saves.clear","Clear")+"</span> <span onclick='loadSlot("+i+")' class='saveOption'>"+langKey("gui.saves.load","Load")+"</span> <span onclick='saveSlot("+i+")' class='saveOption'>"+langKey("gui.saves.save","Save")+"</span></span>";
+					let parsed = JSON.parse(save);
+					name = parsed.meta.name || langKey("gui.saves.unnamed","Unnamed");
+					time = parsed.meta.updated || parsed.meta.created || null;
 				}
-				else {
-					saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span disabled='true' class='saveOption'>"+langKey("gui.saves.clear","Clear")+"</span> <span disabled='true' class='saveOption'>"+langKey("gui.saves.load","Load")+"</span> <span onclick='saveSlot("+i+")' class='saveOption'>"+langKey("gui.saves.save","Save")+"</span></span>";
-				}
+
+				saveItems.push({
+					name: name,
+					slot: i,
+					empty: save == null,
+					time: time
+				})
 			}
+			displaySavesList("saveSlotList", saveItems, true);
 			savesParent.style.display = "block";
 			showingMenu = "saves";
+		}
+		function showOnlineWarning(callback) {
+			if (settings.onlineWarning) {
+				callback();
+				return;
+			}
+			promptConfirm("Community-made saves are moderated, but some may not be appropriate for everyone. You must be 13 years old or older to view this content.\n\nConfirm if you are at least 13 years old.", (r) => {
+				if (r) {
+					settings.onlineWarning = true;
+					saveSettings();
+					callback();
+				}
+			},
+				"Warning",
+				true
+			);
+		}
+		function showFeaturedSaves() {
+			if (document.getElementById("saveFeaturedList").getAttribute("done")) return;
+			var saveItems = [];
+
+			// https://raw.githubusercontent.com/R74nCom/Sandboxels-Featured-Saves/refs/heads/main/meta.json
+
+			fetch("https://raw.githubusercontent.com/R74nCom/Sandboxels-Featured-Saves/refs/heads/main/meta.json").then(res => res.text())
+			.then(res => {
+				JSON.parse(res).forEach(info => {
+					saveItems.push({
+						name: info.file.replace(/\.sbxls$/,""),
+						author: info.author,
+						filename: info.file,
+						url: "https://raw.githubusercontent.com/R74nCom/Sandboxels-Featured-Saves/refs/heads/main/saves/"+info.file
+					})
+				})
+
+				displaySavesList("saveFeaturedList", saveItems, true);
+			})
+			.catch(error => {
+				document.getElementById("saveFeaturedList").innerText = "ERROR: Could not connect";
+			});
+
+			document.getElementById("saveFeaturedList").setAttribute("done","true");
+		}
+		async function getDiscordSaves(clear) {
+			const saveDiscordList = document.getElementById("saveDiscordList");
+			if (clear) {
+				saveDiscordList.setAttribute("data-page","1");
+				saveDiscordList.removeAttribute("data-done");
+			}
+			else if (saveDiscordList.getAttribute("data-done")) return;
+			const discordSearch = document.getElementById("discordSearch");
+			let search = discordSearch.value.trim() || undefined;
+			const discordFilter = document.getElementById("discordFilter");
+			let tag = discordFilter.value || undefined;
+			let page = parseInt(saveDiscordList.getAttribute("data-page")) || 1;
+			let sort = "likesDesc";
+			if (tag === "Recent") {
+				sort = "newest";
+				tag = undefined;
+			}
+			else if (tag === "Popular") {
+				sort = "likesDesc";
+				tag = undefined;
+			}
+			saveDiscordList.setAttribute("data-page",page.toString());
+
+			let url = "https://sandboxels.live/browser/api/threads?limit=10&";
+			url += "page="+page+"&";
+			if (sort) url += "sort="+sort+"&";
+			if (tag) url += "tags="+tag+"&";
+			if (search) url += "search="+search+"&";
+			url = url.substring(0,url.length-1);
+
+			let saveItems = [];
+
+			let response;
+			let json;
+			try {
+				response = await fetch(url, { method: 'GET' });
+				json = await response.json();
+			}
+			catch (e) {
+				saveDiscordList.innerText = "ERROR: Could not connect";
+				return;
+			}
+
+			if (json.threads.length) {
+				saveDiscordList.setAttribute("data-page",page + 1);
+			}
+			else {
+				saveDiscordList.setAttribute("data-done","true");
+			}
+
+			json.threads.forEach((item) => {
+				if (!item) return;
+				if (!tag && !search && sort !== "newest" && item.tags && item.tags.includes("Modded")) {
+					return;
+				}
+				saveItems.push({
+					name: item.name,
+					time: item.timestamp,
+					tags: (item.tags && item.tags[0]) ? item.tags : undefined,
+					modded: item.tags && item.tags.includes("Modded"),
+					url: item.saveURL,
+					viewLink: item.link,
+					author: item.author,
+					image: "https://sandboxels.live/browser/api/images/"+item.id
+				})
+			});
+
+			displaySavesList("saveDiscordList", saveItems, clear);
+			window.isLoadingDiscord = false;
+		}
+		function showDiscordSaves() {
+			const discordFilter = document.getElementById("discordFilter");
+			if (!discordFilter.getAttribute("data-loaded")) {
+				for (let tagID in saveTags) {
+					let tagName = tagID == "6" ? "Cooking" : saveTags[tagID];
+					tagID = parseInt(tagID);
+					if (tagID === 10 || tagID === 13 || tagID === 14) continue;
+					discordFilter.insertAdjacentHTML("beforeend",
+						`<option value="${tagName}">${tagName}</option>`
+					);
+				}
+				discordFilter.setAttribute("data-loaded", "true");
+			}
+
+			getDiscordSaves(true);
+		}
+
+		function handleDiscordScroll(elem) {
+			if (elem.scrollTop >= (elem.scrollHeight - elem.offsetHeight - 100)) {
+				if (window.isLoadingDiscord) return;
+				window.isLoadingDiscord = true;
+
+				// const saveDiscordList = document.getElementById("saveDiscordList");
+				// let page = parseInt(saveDiscordList.getAttribute("data-page")) + 1;
+				// saveDiscordList.setAttribute("data-page",page.toString());
+
+				getDiscordSaves();
+			}
+		}
+		window.discordSearchTimeout = null;
+		window.discordSearchChange = function() {
+			if (discordSearchTimeout) clearTimeout(discordSearchTimeout);
+
+			discordSearchTimeout = setTimeout(discordSearchComplete, 500);
+		}
+		window.discordSearchComplete = function() {
+			showDiscordSaves();
+		}
+
+		function displaySavesList(elemid,data,clear) {
+			var saveList = document.getElementById(elemid);
+			if (clear) saveList.innerHTML = "";
+			let now = Date.now();
+			for (let i = 0; i < data.length; i++) {
+				const item = data[i];
+				if (!item) continue;
+
+				let name = item.name || langKey("gui.saves.unnamed","Unnamed");
+				// truncate
+				if (name.length > 32) { name = name.substring(0,32)+"..."; }
+				let slot = item.slot || null;
+				let url = item.url || null;
+				let author;
+				if (item.author) author = "by "+item.author;
+
+				let time = item.time || null;
+				let days = null;
+				if (time) {
+					let elapsed = now - time;
+					days = rtf.format(-Math.round(elapsed/1000/24/60/60), "day");
+				}
+
+				let span = document.createElement("span");
+				span.className = "saveSlot";
+				if (slot) span.setAttribute("id","saveSlot"+slot);
+				if (currentSaveData.filename && currentSaveData.filename === item.filename) span.classList.add("current")
+				else if (currentSaveData.slot && currentSaveData.slot === item.slot) span.classList.add("current")
+				span.setAttribute("data-name",name);
+				
+				let nameSpan = document.createElement("span");
+				nameSpan.className = "saveSlotName";
+				nameSpan.innerText = name;
+
+				if (item.image) {
+					let img = document.createElement("img")
+					img.className = "saveSlotImage";
+					img.src = item.image;
+					span.appendChild(img);
+				}
+
+				if (item.url || item.viewLink) {
+					let link = document.createElement("a");
+					link.innerText = "View";
+					link.className = "texticon";
+					if (standalone && item.workshop) {
+						link.setAttribute("href",item.viewLink || item.url);
+						link.setAttribute("target","_blank");
+						link.addEventListener("click", (e)=>{
+							e.preventDefault();
+							window.viewWorkshop(item.workshop);
+							return false;
+						})
+						link.setAttribute("title","Open Workshop");
+					}
+					else {
+						link.setAttribute("href",item.viewLink || item.url);
+						link.setAttribute("target","_blank");
+						link.setAttribute("title","Open external link");
+					}
+					nameSpan.insertAdjacentText("beforeend", " ")
+					nameSpan.appendChild(link);
+				}
+
+				span.appendChild(nameSpan);
+
+				let subs = [];
+				
+				if (author) {
+					subs.push(author);
+				}
+				if (item.modded) {
+					subs.push("Modded")
+				}
+				if (days) {
+					subs.push(days)
+				}
+
+				if (subs) {
+					let subSpan = document.createElement("span");
+					subSpan.className = "saveSlotSub";
+					subSpan.innerText = subs.join(" • ");
+					span.appendChild(subSpan);
+				}
+
+				span.insertAdjacentHTML("beforeend",saveMenuOptions(item));
+
+				saveList.appendChild(span);
+			}
+		}
+		function loadSaveURL(url) {
+			promptText("Please hold :)",undefined,"Loading Save...");
+			fetch(url).then(res => res.text())
+			.then(res => {
+				loadSave(JSON.parse(res));
+				currentSaveData.filename = url.match(/\/[^\/]+$/g)[0].substring(1);
+
+				// closeMenu();
+			})
+			.catch(error => {
+				promptText("There was an error loading this save:\n\n"+error,undefined,"Error!");
+			});
 		}
 		function saveSlot(i) {
 			savingState = {slot:i};
@@ -17508,6 +18264,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			if (save) {
 				lastSaveJSON = save;
 				loadSave(JSON.parse(save));
+				currentSaveData.slot = parseInt(i);
 				closeMenu();
 			}
 		}
@@ -17517,12 +18274,24 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 					if (r) localStorage.removeItem("SandboxelsSaves/"+i);
 					showSaves();
 				},
-				"Clear Slot"
+				"Clear Slot",
+				true
 			)
 		}
-		function confirmSave() {
+		function confirmSave(confirmed=0) {
 			if (!savingState) { return }
-			if (!standalone && settings.resetwarning!==0 && localStorage["SandboxelsSaves/"+savingState.slot] && !confirm("Are you sure you want to overwrite the current save in this slot? This cannot be undone.")) { return }
+			console.log(confirmed);
+			if (confirmed < 1 && savingState.slot && settings.resetwarning!==0 && localStorage["SandboxelsSaves/"+savingState.slot]) {
+				let tempState = savingState;
+				promptConfirm("Are you sure you want to overwrite the current save in slot "+savingState.slot+"? This cannot be undone.",
+					(r) => {
+						savingState = tempState;
+						if (r) confirmSave(1);
+					},
+					"Overwrite Slot"
+				)
+				return;
+			}
 			var saveName = document.getElementById("saveName").value || "Unnamed";
 			var saveTemp = document.getElementById("saveTemp").getAttribute("state") === "1";
 			var saveColors = document.getElementById("saveColors").getAttribute("state") === "1";
@@ -17534,10 +18303,24 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				setSetting("authorName",saveAuthor)
 			}
 			var saveDesc = document.getElementById("saveDesc").value || "";
-			var config = {name:saveName,temp:saveTemp,mods:saveMods,settings:saveSettings,raw:saveRaw,keep:[],author:saveAuthor,desc:saveDesc};
+			var config = {name:saveName,temp:saveTemp,mods:saveMods,settings:saveSettings,raw:saveRaw,keep:[],author:saveAuthor,desc:saveDesc,tags:[]};
 			if (saveTemp) { config.keep.push("temp") }
 			if (saveColors) { config.keep.push("color") }
-			if (savingState.slot) {
+			var saveTagsList = document.getElementById("saveTags");
+			var enabledTags = saveTagsList.querySelectorAll('input[state="1"]');
+			enabledTags.forEach((tagElem) => {
+				config.tags.push(parseInt(tagElem.getAttribute("data-tag")));
+			})
+			if (standaloneType === "steam") {
+				if (savingState.overwrite) {
+					overwriteSaveFileConfirm(savingState.overwrite,generateSave(undefined,config))
+				}
+				else {
+					writeSaveFile(generateSave(undefined,config));
+				}
+				closeMenu();
+			}
+			else if (savingState.slot) {
 				// save stringified generateSave() to localStorage SandboxelsSaves/i
 				localStorage.setItem("SandboxelsSaves/"+savingState.slot, JSON.stringify(generateSave(undefined,config)));
 				closeMenu();
@@ -17579,6 +18362,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 					var content = readerEvent.target.result;
 					lastSaveJSON = content;
 					loadSave(JSON.parse(content));
+					currentSaveData.filename = file.name;
 				}
 				closeMenu();
 			});
@@ -17614,6 +18398,24 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				saveWarning.innerHTML += "<br>"+langKey("gui.modWarning","Mods might not be necessary to include, and may annoy the user!")+"<br><br>";
 			}
 			else { saveMods.style.display = "none"; }
+			var saveTagsSpan = document.getElementById("saveTagsSpan");
+			if (saveTagsSpan.style.display !== "none") {
+				var saveTagsList = document.getElementById("saveTags");
+				saveTagsList.innerHTML = "";
+				// <input type="button" value="Structure/City" data-tag="1" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0">
+				for (let tagID in saveTags) {
+					tagID = parseInt(tagID);
+					if (tagID >= 90) continue;
+					let tagName = saveTags[tagID];
+					saveTagsList.insertAdjacentHTML("beforeend",`<input type="button" value="${tagName}" data-tag="${tagID}" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0">`)
+				}
+				if (currentSaveData.tags) {
+					currentSaveData.tags.forEach((tagID) => {
+						let tagElem = saveTagsList.querySelector('input[data-tag="'+tagID+'"]');
+						if (tagElem) tagElem.setAttribute("state","1");
+					})
+				}
+			}
 			savePromptParent.style.display = "block";
 			showingMenu = "savePrompt";
 			document.getElementById("saveName").focus();
@@ -17635,16 +18437,22 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			let promptCancel = document.getElementById("promptCancel");
 			let promptConfirm = document.getElementById("promptConfirm");
 			let promptInput = document.getElementById("promptInput");
+			let promptChoices = document.getElementById("promptChoices");
+			let promptDirs = document.getElementById("promptDirs");
 			promptOK.style.display = "none";
 			promptCancel.style.display = "none";
 			promptConfirm.style.display = "none";
 			promptInput.style.display = "none";
+			promptChoices.style.display = "none";
+			promptDirs.style.display = "none";
+			promptConfirm.classList.remove("danger");
 			if (promptState.type === "text") {
 				promptOK.style.display = "block";
 			}
 			else if (promptState.type === "confirm") {
 				promptCancel.style.display = "block";
 				promptConfirm.style.display = "block";
+				if (promptState.danger) promptConfirm.classList.add("danger");
 			}
 			else if (promptState.type === "input") {
 				promptInput.value = "";
@@ -17652,6 +18460,21 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				if (promptState.defaultInput !== undefined) {
 					promptInput.value = ""+promptState.defaultInput;
 				}
+			}
+			else if (promptState.type === "choose" && promptState.choices) {
+				promptChoices.innerHTML = "";
+				for (let i = 0; i < promptState.choices.length; i++) {
+					const choice = promptState.choices[i];
+					let span = document.createElement("span");
+					span.className = "promptChoice";
+					span.onclick = function(){ handlePrompt(choice) };
+					span.innerText = choice;
+					promptChoices.appendChild(span);
+				}
+				promptChoices.style.display = "block";
+			}
+			else if (promptState.type === "dir") {
+				promptDirs.style.display = "block";
 			}
 			promptParent.style.display = "block";
 			showingMenu = "prompt";
@@ -17687,7 +18510,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			if (mouseSize < 1) { mouseSize = 1; }
 			if (settings.limitless && !elements[currentElement].tool) { return }
 			if (mouseSize > elements[currentElement].maxSize) { mouseSize = elements[currentElement].maxSize; }
-			if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); }
+			if (mouseSize > (height > width ? (height + height % 2) : (width + width % 2))) { mouseSize = (height > width ? (height + height % 2) : (width + width % 2)); }
 		}
 		function clearAllStains() {
 			currentPixels.forEach((pixel) => {
@@ -17743,7 +18566,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			}
 			showPromptScreen();
 		}
-		function promptConfirm(text, handler, title) {
+		function promptConfirm(text, handler, title, danger) {
 			let pause = false;
 			if (promptState) { pause = promptState.wasPaused }
 			else if (paused) { pause = true }
@@ -17752,7 +18575,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				text: text,
 				handler: handler,
 				title: title || "Are you sure?",
-				wasPaused: pause
+				wasPaused: pause,
+				danger: danger
 			}
 			showPromptScreen();
 		}
@@ -17767,6 +18591,33 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				title: title || "Input",
 				wasPaused: pause,
 				defaultInput: defaultInput
+			}
+			showPromptScreen();
+		}
+		function promptChoose(text, choices, handler, title) {
+			let pause = false;
+			if (promptState) { pause = promptState.wasPaused }
+			else if (paused) { pause = true }
+			promptState = {
+				type: "choose",
+				text: text,
+				choices: choices,
+				handler: handler,
+				title: title || "Choose",
+				wasPaused: pause
+			}
+			showPromptScreen();
+		}
+		function promptDir(text, handler, title) {
+			let pause = false;
+			if (promptState) { pause = promptState.wasPaused }
+			else if (paused) { pause = true }
+			promptState = {
+				type: "dir",
+				text: text,
+				handler: handler,
+				title: title || "Direction",
+				wasPaused: pause
 			}
 			showPromptScreen();
 		}
@@ -18458,13 +19309,19 @@ window.onload = function() {
 				reader.readAsDataURL(file);
 			}
 			else if (file.name.indexOf(".sbxls") !== -1 || file.name.indexOf(".json") !== -1) {
-				if (!standalone && currentPixels.length!==0 && !confirm("Clear this scene and load save file?")) { return }
-				var reader = new FileReader();
-				reader.onload = function(e) {
-					lastSaveJSON = e.target.result;
-					loadSave(JSON.parse(e.target.result));
+				let fn = function() {
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						lastSaveJSON = e.target.result;
+						loadSave(JSON.parse(e.target.result));
+					}
+					reader.readAsText(file);
+					currentSaveData.filename = file.name;
 				}
-				reader.readAsText(file);
+				if (currentPixels.length === 0 || settings.resetwarning === 0) fn();
+				else {
+					promptConfirm("Clear this scene and load save file?", (r) => { if (r) fn(); }, "Clear Canvas" );
+				}
 			}
 		}
 	}, false);
@@ -18486,18 +19343,25 @@ window.onload = function() {
 				img.src = source;
 			}
 			else if (item.type === "" || item.type.indexOf('application/json') !== -1) {
-				if (!standalone && currentPixels.length!==0 && !confirm("Clear this scene and load save file?")) { return }
+				let file = item.getAsFile();
 				var reader = new FileReader();
 				reader.onload = function(e) {
 					lastSaveJSON = e.target.result;
 					loadSave(JSON.parse(e.target.result));
+					currentSaveData.filename = file.name;
 				}
-				reader.readAsText(item.getAsFile());
+				let fn = function() {
+					reader.readAsText(file);
+				}
+				if (currentPixels.length === 0 || settings.resetwarning === 0) fn();
+				else {
+					promptConfirm("Clear this scene and load save file?", (r) => { if (r) fn(); }, "Clear Canvas" );
+				}
 			}
 		}
 	}, false);
 	window.onbeforeunload = function(){
-		if (currentPixels.length > 0 && !standalone){
+		if (currentPixels.length > 0 && !standalone && !forceReload){
 			return 'Are you sure you want to leave?';
 		}
 	};
@@ -18558,7 +19422,7 @@ window.onload = function() {
 				handlePrompt(true);
 			}
 			// l to closeMenu() if showing saves
-			else if (e.keyCode == 76 && showingMenu == "saves") {
+			else if (e.keyCode == 76 && showingMenu == "saves" && e.target.tagName !== "INPUT") {
 				e.preventDefault();
 				closeMenu();
 			}
@@ -18638,9 +19502,16 @@ window.onload = function() {
 	startingWindowHeight = window.innerHeight;
 	// notice when window is resized
 	window.addEventListener("resize", function(e) {
-		if (!settings.resizeNotice && Math.abs(startingWindowWidth - window.innerWidth) >= 300) {
-			promptText("Reset the canvas by pressing 'R' or the 'Reset' button.",()=>{ saveSettings(); },"Window Resized")
-			settings.resizeNotice = true;
+		if (Math.abs(startingWindowWidth - window.innerWidth) >= 300) {
+			startingWindowWidth = window.innerWidth;
+			startingWindowHeight = window.innerHeight;
+			if (currentPixels.length === 0) {
+				clearAll();
+			}
+			else if (!settings.resizeNotice) {
+				promptText("Reset the canvas by pressing 'R' or the 'Reset' button.",()=>{ saveSettings(); },"Window Resized")
+				settings.resizeNotice = true;
+			}
 		}
 	});
 
@@ -18677,9 +19548,9 @@ window.onload = function() {
 	}
 	// Set the first button in categoryControls div to be the current category
 	document.getElementById("categoryControls").children[0].click()
-	document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small class='extraInfo-right'><p>v" + currentversion + " • <span id='elementCountSpan'>" +
+	document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small class='extraInfo-right'><p><span id='extraInfo-name'>Sandboxels </span>v" + currentversion + " • <span id='elementCountSpan'>" +
 		langKey("guitemplate.elementCount","$1 elements, with $2 hidden",{1:elementCount,2:hiddenCount}) +
-		"</span>.</p></small><small><p>©2021-" + new Date().getFullYear() + ". <a href='https://sandboxels.R74n.com/license.txt' rel='license' target='_blank' id='copyrightLabel'>All Rights Reserved</a>. <a style='color:#00ffff' rel='author' href='https://r74n.com'>R74n</a></p></small>");
+		"</span>.</p></small><small id='attribution'><p>©2021-" + new Date().getFullYear() + ". <a href='https://sandboxels.R74n.com/license.txt' rel='license' target='_blank' id='copyrightLabel'>All Rights Reserved</a>. <a style='color:#00ffff' rel='author' href='https://r74n.com'>R74n</a></p></small>");
 	selectElement(currentElement);
 	focusGame();
 	// For every button element, onkeyup="event.preventDefault()"
@@ -18702,6 +19573,26 @@ window.onload = function() {
 	var firstDiv = document.getElementsByClassName("category")[0];
 	var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 	selectElement(firstElementButton.getAttribute("element"));
+
+	//post-load
+	let tempSave = localStorage.getItem("SandboxelsTempSave");
+	if (tempSave) {
+		let json = JSON.parse(tempSave);
+		lastSaveJSON = json;
+		loadSave(json,3,3)
+		localStorage.removeItem("SandboxelsTempSave")
+	}
+	else if (urlParams.has("discord")) {
+		let saveID = parseInt(urlParams.get("discord"));
+		if (saveID) loadSaveURL("https://sandboxels.live/browser/api/save/" + urlParams.get("discord"));
+	}
+	let tempMods = localStorage.getItem("SandboxelsTempMods");
+	if (tempMods) {
+		JSON.parse(tempMods).forEach((mod) => {
+			removeMod(mod,true);
+		})
+		localStorage.removeItem("SandboxelsTempMods")
+	}
 
 }
 	</script>
@@ -18766,11 +19657,11 @@ window.onload = function() {
 				<div id="categoryControls"></div>
 				<div id="elementControls"></div>
 			</div>
-			<div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;" id="feedbackButton">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span>
+			<nav id="extraInfo"><small id="extraLinks"><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;" id="feedbackButton">Feedback</a> <a href="https://store.steampowered.com/app/3664820/Sandboxels/" target="_blank" id="steamButton" title="View Sandboxels on Steam" style="color:#2cb4ee;">STEAM<span style="color:red">(NEW)</span></a> <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;<a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span>
 				<!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeYMbngtbBHZ7hkz8jpbHl7TiAItqukrhtntKgAHjH30fY08A/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>-->
-				<br><br><a style="color:lime" target="_blank" href="https://store.steampowered.com/app/3664820/Sandboxels/">SANDBOXELS ON STEAM<span style="color:red">(NEW)</span></a>
+				<!-- <br><br><a style="color:lime" target="_blank" href="https://store.steampowered.com/app/3664820/Sandboxels/">SANDBOXELS ON STEAM<span style="color:red">(NEW)</span></a> -->
 				<!--<br><br><a style="color:lime" target="_blank" href="https://r74n.com/">PLAY AD-FREE ON STEAM<span style="color:red">(NEW)</span></a>-->
-			</small></div>
+			</small></nav>
 			<script>
 				// version check
 				if (!settings["lastversion"] || settings["lastversion"]!==currentversion) {
@@ -18837,7 +19728,8 @@ window.onload = function() {
 						document.getElementById("noMods").style.display = "block";
 					}
 				</script>
-				See the <a href="https://sandboxels.R74n.com/mod-list" target="_blank">Mod List</a> or <a href="https://github.com/R74nCom/sandboxels/" target="_blank">GitHub</a>.
+				<span id="modManagerTagline">See the <a href="https://sandboxels.R74n.com/mod-list" target="_blank">Mod List</a> or <a href="https://github.com/R74nCom/sandboxels/" target="_blank">GitHub</a>.</span>
+				<a id="modManagerRefresh" style="padding-top:1em;display:none" href="#" onclick="location.reload();return false;">Reload to apply changes!</a>
 				<input type="text" id="modManagerUrl" placeholder=".JS or URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();" enterkeyhint="done"></input>
 			</div>
 			<!-- <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button> -->
@@ -18847,10 +19739,47 @@ window.onload = function() {
 			<div id="savesMenu" class="menuScreen">
 				<button class="XButton" onclick="closeMenu();">-</button>
 				<span class="menuTitle" id="savesMenuTitle">Save & Load</span>
-				<div class="menuText" style="padding-top:1em; height:70%; overflow-y:scroll" id="saveSlotList">
+				<div class="menuTabs">
+					<button class="menuTab selected" onclick="handleTab(this)" data-tab="local" id="savesTabLocal">Local</button>
+					<button class="menuTab" onclick="handleTab(this); showFeaturedSaves();" data-tab="featured" id="savesTabFeatured">Featured</button>
+					<button class="menuTab" onclick="showOnlineWarning(() => {if (showingMenu !== 'saves') showSaves(); handleTab(this); showDiscordSaves()})" data-tab="discord" id="savesTabDiscord">Discord</button>
+					<button class="menuTab" onclick="if (window.showWorkshopSaves) showOnlineWarning(() => {if (showingMenu !== 'saves') showSaves(); handleTab(this); showWorkshopSaves()}); else handleTab(this);" data-tab="workshop" id="savesTabWorkshop">Steam</button>
 				</div>
-				<span id="saveFile" onclick="saveToFile()">Save to File</span>
-				<span id="loadFile" onclick="loadFromFile()">Load File</span>
+				<div class="menuTab selected" data-tab="local">
+					<div class="menuText" id="saveSlotList"></div>
+					<span class="menuBottomButton halfLeft" id="saveFile" onclick="saveToFile()">Save to File</span>
+					<span class="menuBottomButton halfRight" id="loadFile" onclick="loadFromFile()">Load File</span>
+				</div>
+				<div class="menuTab" data-tab="featured">
+					<div class="menuText" id="saveFeaturedList">Loading saves...</div>
+					<span class="menuBottomButton" onclick="window.open('https://github.com/R74nCom/Sandboxels-Featured-Saves/tree/main', '_blank').focus();">View Source</span>
+				</div>
+				<div class="menuTab" data-tab="workshop">
+					<span class="menuTopBar" style="display:none">
+						<input type="text" placeholder="Search..." id="workshopSearch">
+						<select id="workshopFilter">
+							<option value="" disabled selected>Filter...</option>
+							<option value="0">All Saves</option>
+						</select>
+					</span>
+					<div class="menuText" id="saveWorkshopList">
+						<div style="margin-top:1em">Get <a href="https://store.steampowered.com/app/3664820/Sandboxels/" target="_blank">Sandboxels on Steam</a> to browse saves and publish your own!</div>
+					</div>
+					<span class="menuBottomButton" onclick="openWorkshopPopup();" style="display:none" id="savesOpenWorkshop">Open Workshop</span>
+					<span class="menuBottomButton" onclick="window.open('https://store.steampowered.com/app/3664820/Sandboxels/', '_blank').focus();" id="savesGetOnSteam">Get on Steam</span>
+				</div>
+				<div class="menuTab" data-tab="discord" onscroll="handleDiscordScroll(this)">
+					<span class="menuTopBar">
+						<input type="text" placeholder="Search..." id="discordSearch" oninput="discordSearchChange();">
+						<select id="discordFilter" onchange="showDiscordSaves();">
+							<option value="" disabled selected>Filter...</option>
+							<option value="Popular">Popular</option>
+							<option value="Recent">Recent</option>
+						</select>
+					</span>
+					<div class="menuText" id="saveDiscordList">Loading saves...</div>
+					<span class="menuBottomButton" onclick="window.open('https://discord.gg/ejUc6YPQuS', '_blank').focus();">Join Server</span>
+				</div>
 			</div>
 		</div>
 		<div id="savePromptParent" class="menuParent">
@@ -18870,6 +19799,9 @@ window.onload = function() {
 					<span id="saveWarning"></span>
 					<span class="setting-span"><span id="saveAuthorLabel">By</span>: <input type="text" id="saveAuthor" placeholder="Your Name..."></span>
 					<span class="setting-span"><span id="saveDescLabel">About</span>: <input type="text" id="saveDesc" placeholder="Short Description..." enterkeyhint="done"></span>
+					<span class="setting-span" id="saveTagsSpan" style="display:none"><span id="saveTagsLabel">Tags</span>:
+						<span id="saveTags"></span>
+					</span>
 					<br><br><br>
 					<span id="saveConfirm" onclick="confirmSave();">Save</span>
 				</div>
@@ -18885,6 +19817,18 @@ window.onload = function() {
 					<span id="promptOK" class="promptOK" onclick="handlePrompt()" style="display:none">OK</span>
 					<span id="promptCancel" onclick="handlePrompt(false)" style="display:none">Cancel</span>
 					<span id="promptConfirm" onclick="handlePrompt(true)" style="display:none">Confirm</span>
+					<span id="promptChoices" class="promptChoices" style="display:none">
+						<!-- <span class="promptChoice" onclick="handlePrompt(this.getAttribute('data-value'))" data-value="one">Choice</span> -->
+					</span>
+					<span id="promptDirs" class="promptChoices" style="display:none">
+						<!-- right = 0, down = 1, left = 2, up = 3 -->
+						<span class="promptChoice" onclick="handlePrompt(3)">↑</span>
+						<span class="promptChoicesSub">
+							<span class="promptChoice" onclick="handlePrompt(2)">←</span>
+							<span class="promptChoice" onclick="handlePrompt(0)">→</span>
+						</span>
+						<span class="promptChoice" onclick="handlePrompt(1)">↓</span>
+					</span>
 					<input type="text" id="promptInput" placeholder="Input..." onkeydown="if (event.keyCode == 13) {handlePrompt(this.value || null);}" enterkeyhint="done" style="display:none" autocomplete="off"></input>
 				</div>
 			</div>
@@ -18917,6 +19861,7 @@ window.onload = function() {
 					</span>
 					<span setting="bg" class="setting-span multisetting" title="Default: Black (#000000)">
 						<span id="settingLabel-bg">Background</span> <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
+						&nbsp;
 					</span>
 					<span setting="theme" class="setting-span multisetting" title="Default: Dark">
 						<span id="settingLabel-theme">Theme</span> <select onchange="setSetting('theme',this.value); setThemeElement(this.value)">
@@ -18934,12 +19879,12 @@ window.onload = function() {
 					</span>
 					<br>
 					<span setting="unhide" class="setting-span multisetting" title="Default: Hide Some Elements">
-						<span id="settingLabel-unhide">Hiding</span> <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh Page'">
+						<span id="settingLabel-unhide">Hiding</span> <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText=langKey('gui.settingsRefresh','Refresh Page')">
 							<option value="0" id="setting-unhide-0" selected>Hide Some Elements</option>
 							<option value="1" id="setting-unhide-1">Unhide All Elements</option>
 							<option value="2" id="setting-unhide-2">Unlock as Discovered</option>
 						</select>
-						<a onclick="window.location.reload();" href="#" style="font-style:italic;cursor:pointer"></a>
+						<a onclick="window.location.reload();" href="#" class="settingsRefresh"></a>
 						&nbsp;
 					</span>
 					<span setting="view" class="setting-span multisetting" title="Default: Unset">
@@ -18948,14 +19893,14 @@ window.onload = function() {
 						</select>
 					</span><br>
 					<span setting="pixelsize" class="setting-span multisetting" title="Default: Medium">
-						<span id="settingLabel-pixelsize">Canvas Size</span> <select onchange="setSetting('pixelsize',this.value);this.nextElementSibling.innerText='Reset Scene'">
+						<span id="settingLabel-pixelsize">Canvas Size</span> <select onchange="setSetting('pixelsize',this.value); if(!currentPixels.length){autoResizeCanvas()} else {this.nextElementSibling.innerText=langKey('gui.settingsReset','Reset Scene')}">
 							<option value="12" id="setting-pixelsize-12">Tiny</option>
 							<option value="8" id="setting-pixelsize-8">Small</option>
 							<option value="6" id="setting-pixelsize-6" selected>Medium</option>
 							<option value="6w" id="setting-pixelsize-6w">Wide</option>
 							<option value="4" id="setting-pixelsize-4">Large</option>
 						</select>
-						<span onclick="autoResizeCanvas(true);" style="font-style:italic;cursor:pointer"></span>
+						<span onclick="resetPrompt()" class="settingsReset"></span>
 						&nbsp;
 					</span>
 					<span setting="border" class="setting-span multisetting" title="Default: Solid">
@@ -18992,9 +19937,9 @@ window.onload = function() {
 						<input type="button" value="Limitless" id="settingLabel-limitless" class="toggleInput" onclick="toggleInput(this,'limitless',false); refreshMaxPixels(); checkMouseSize(true);" state="0">
 					</span>
 					<span setting="cheerful" class="setting-span multisetting">
-						<input type="button" value="Cheerful Mode" id="settingLabel-cheerful" class="toggleInput" onclick="toggleInput(this,'cheerful');this.nextElementSibling.innerText='Refresh Page'" state="0"><span class="helpMark" title="If you're going through a bad time, enable this to hide these elements from the menu:
+						<input type="button" value="Cheerful Mode" id="settingLabel-cheerful" class="toggleInput" onclick="toggleInput(this,'cheerful',false);this.nextElementSibling.nextElementSibling.innerText=langKey('gui.settingsRefresh','Refresh Page')" state="0"><span class="helpMark" title="If you're going through a bad time, enable this to hide these elements from the menu:
 Cancer, Landmine, Grenade, Smoke Grenade">?</span>
-						<a onclick="window.location.reload();" href="#" style="font-style:italic;cursor:pointer"></a>
+						<a onclick="window.location.reload();" href="#" class="settingsRefresh"></a>
 					</span>
 					<span setting="lang" class="setting-span" title="Default: Disabled" style="display:none" id="setting-span-lang">
 						<span id="settingLabel-lang">Language</span>
@@ -19018,16 +19963,16 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 						<span id="settingLabel-abszero">Abs Zero</span> <input type="number" value="-273.15" placeholder="-273.15" onchange="if(this.value===''){this.value=-273.15} absoluteZero=parseFloat(this.value); setSetting('abszero',absoluteZero)">&nbsp;
 					</span>
 					<span class="setting-span" style="text-align:center">
-						<input type="button" value="Reset Discovered" id="resetDiscovered" onclick="promptConfirm('This action will RESET ALL DISCOVERED ELEMENTS and refresh the page.', (r)=>{if (!r)return;settings.unlocked={};saveSettings();location.reload()}, 'WARNING')" class="settingsButton">
-						<input type="button" value="Reset All" id="resetAll" onclick="promptConfirm('This action will RESET ALL YOUR DATA, not including save slots, and refresh the page.', (r)=>{if (!r)return;localStorage.removeItem('settings');location.reload()}, 'WARNING')" class="settingsButton">
-						<input type="button" value="Clear Mods" id="clearMods" onclick="promptConfirm('This action will remove all enabled mods and refresh the page.', (r)=>{if (!r)return;localStorage.removeItem('enabledMods');location.reload()}, 'WARNING')" class="settingsButton">
-						<input type="button" value="Clear Saves" id="clearSaves" onclick="promptConfirm('This action will PERMANENTLY ERASE all local save slots.', (r)=>{if (!r)return;for (var i = 1; i <= 12; i++) {localStorage.removeItem('SandboxelsSaves/'+i)}}, 'WARNING')" class="settingsButton">
+						<input type="button" value="Reset Discovered" id="resetDiscovered" onclick="promptConfirm('This action will RESET ALL DISCOVERED ELEMENTS and refresh the page.', (r)=>{if (!r)return;settings.unlocked={};saveSettings();location.reload()}, 'WARNING', true)" class="settingsButton">
+						<input type="button" value="Reset All" id="resetAll" onclick="promptConfirm('This action will RESET ALL YOUR DATA, not including save slots, and refresh the page.', (r)=>{if (!r)return;localStorage.removeItem('settings');location.reload()}, 'WARNING', true)" class="settingsButton">
+						<input type="button" value="Clear Mods" id="clearMods" onclick="promptConfirm('This action will remove all enabled mods and refresh the page.', (r)=>{if (!r)return;localStorage.removeItem('enabledMods');location.reload()}, 'WARNING', true)" class="settingsButton">
+						<input type="button" value="Clear Saves" id="clearSaves" onclick="promptConfirm('This action will PERMANENTLY ERASE all local save slots.', (r)=>{if (!r)return;for (var i = 1; i <= 12; i++) {localStorage.removeItem('SandboxelsSaves/'+i)}}, 'WARNING', true)" class="settingsButton">
 					</span>
 					<span setting="worldgen" style="padding-bottom:0" class="setting-span" title="Default: Disabled">
-						<span id="settingLabel-worldgen">World Gen</span> <small>[Beta]</small> <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset Scene'">
+						<span id="settingLabel-worldgen">World Gen</span> <small>[Beta]</small> <select id="worldgenselect" onchange="setSetting('worldgen',this.value); if(!currentPixels.length){autoResizeCanvas()} else {this.nextElementSibling.innerText=langKey('gui.settingsReset','Reset Scene')}">
 							<option value="off" id="setting-worldgen-off" selected>Disabled</option>
 						</select>
-						<span onclick="clearAll();" style="font-style:italic;cursor:pointer"></span>
+						<span onclick="resetPrompt();" class="settingsReset"></span>
 					</span>
 					<span setting="imageelem" class="setting-span multisetting" title="Default: Wood">
 						<span id="settingLabel-imageelem">Image Elem</span> <input type="text" value="wood" placeholder="wood" onchange="if(this.value===''){this.value='wood'}; setSetting('imageelem',this.value.trim())">
@@ -19094,7 +20039,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 			</optgroup>
 		</select>
 	
-		<input id="playlightButton" type="submit" onclick="loadPlaylight();" value="More Games" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input></p>
+		<!-- <input id="playlightButton" type="submit" onclick="loadPlaylight();" value="More Games" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input></p> -->
 		<script>
 			if (standalone) { // move langSelect to Settings
 				let span = document.getElementById("setting-span-lang");
@@ -19144,16 +20089,16 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 		</script>
 		<div id="bottomTopBoxColumns">
 			<div>
-				<div id="newsletterFrame">Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
+				<div id="newsletterFrame"><a href="https://news.r74n.com/" target="_blank">R74n Newsletter</a>: Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
 					<form action="https://news.r74n.com/api/v1/free?nojs=true" method="post" class="form _form_1mxvn_6" novalidate="" target="_blank"><input type="hidden" name="first_url" value="https://news.r74n.com/embed"><input type="hidden" name="first_referrer"><input type="hidden" name="current_url" value="https://news.r74n.com/embed"><input type="hidden" name="current_referrer"><input type="hidden" name="referral_code"><input type="hidden" name="source" value="embed"><input type="hidden" name="referring_pub_id"><input type="hidden" name="additional_referring_pub_ids">
-					<input type="email" placeholder="Type your email..." name="email" style="padding:15px"><input type="submit" value="Subscribe" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input>
+					<input type="email" placeholder="Type your email..." name="email" style="padding:15px;margin-right:0;border-color:#F4ABFF;border-right:none"><input type="submit" value="Subscribe" style="background: #F4ABFF; padding:15px; border:solid 2px #F4ABFF; border-radius: 0"></input>
 					</form>
 				</div>
 			</div>
 			<div>
 				<p>Try our NEW GAME: <a href="https://R74n.com/cook/" target="_blank">Infinite Chef</a></p>
 				<p>Email us at <a href="mailto:contact@R74n.com?subject=%5BSandboxels%5D">contact@R74n.com</a> for advertising, help, or education!</p>
-				<p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p>
+				<p>Support development by subscribing on <a href="https://www.patreon.com/R74n" style="color:#f96854" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p>
 			</div>
 		</div>
 		<style>
@@ -19163,7 +20108,7 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 				padding: 5px;
 				padding-top: 15px;
 				padding-bottom: 15px;
-				border: 2px solid rgba(255, 255, 255, 0.45);
+				border: 2px solid var(--theme);
 			}
 		</style>
 		<!-- <iframe id="newsletteriframe" width="450" height="250" style="border:1px solid #EEE; background:black; max-width:90%" frameborder="0" scrolling="no"></iframe> -->
@@ -19188,7 +20133,7 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 		<p id="intro2">There are thousands of interactions between the many materials, plants, animals, fluids, and powders in the game.</p>
 		<p id="intro3">Falling-sand games are a genre of sandbox games characterized by falling particles of various types.</p>
 		<p id="intro4">Simply click or use your touchscreen to select a category, like <strong>Liquids</strong>, then pick an element, like <strong>Water</strong>. Drag on the canvas above to place your pixels, and watch them interact with others!</p>
-		<img id="introImage" src="icons/wallpaper.webp" style="width:100%" alt="Rainforest landscape made in Sandboxels" title="Rainforest landscape made in Sandboxels">
+		<img id="introImage" src="icons/cover-3840x1240px.webp" style="width:100%" alt="Magma falling into Water, creating Basalt and Steam" title="Magma falling into Water, creating Basalt and Steam">
 		<p id="intro5">Sandboxels has many <a href="https://sandboxels.R74n.com/education-use">applications in education</a>. With a hands-on experience, it can give students an understanding of emerging phenomena in many fields, such as biology, chemistry, ecology, geology, cooking, and even virology. There are countless aspects to discover.</p>
 		<p id="intro6">We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
 		<!-- <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p> -->
@@ -19235,7 +20180,7 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			<tr><td>Reset canvas</td>   <td><kbd>R</kbd></td></tr>
 			<tr><td>Single step</td>   <td><kbd>&gt;</kbd></td></tr>
 			<tr><td>Fullscreen</td>   <td><kbd>F</kbd> or <kbd>F11</kbd></td></tr>
-			<tr><td>Change view</td>   <td><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></td></tr>
+			<tr><td>Change view</td>   <td><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></td></tr>
 			<tr><td>Toggle GUI</td>   <td><kbd>F1</kbd></td></tr>
 			<tr><td>Capture screenshot</td>   <td><kbd>C</kbd> or <kbd>F2</kbd></td></tr>
 			<tr><td colspan="2" style="text-align:center"><strong><a href="https://sandboxels.r74n.com/controls" target="_blank" title="Open the controls file">More controls</a></strong></td></tr>

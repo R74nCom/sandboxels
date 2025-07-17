@@ -4,8 +4,11 @@
 // Add the file to the mods folder on GitHub, or host it somewhere else.
 // https://github.com/R74nCom/sandboxels/tree/main/mods
 
+// For more help with modding, check the wiki: https://sandboxels.wiki.gg/wiki/Modding_tutorial
+// Or join our Discord: https://r74n.com/discord/
+
 // To add it in the Mod Loader:
-// If it is in the mods folder, you can just use the name of the file.
+// If it is in the mods folder, you can just use the name of the file. (example_mod.js)
 // If it is hosted somewhere else, you can use the full URL, including the HTTPS://.
 
 // Adding elements:
@@ -15,7 +18,7 @@ elements.mayo = {
     category: "liquids",
     viscosity: 100000,
     state: "liquid",
-    density: 720,
+    density: 720
 };
 
 // Changing existing elements:
@@ -30,7 +33,7 @@ delete elements.ketchup;
 behaviors.SELFDELETE = [
     "XX|XX|XX",
     "XX|DL|XX",
-    "XX|XX|XX",
+    "XX|XX|XX"
 ];
 
 // Raw JavaScript behaviors:
@@ -58,8 +61,8 @@ elements.sand_exploder = {
 if (!elements.water.reactions) { // Include this block once
     elements.water.reactions = {} // This creates the property if it doesn't exist
 }
-elements.water.reactions.mayo = { "elem1":null, "elem2":"mayo_water" }
-elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" }
+elements.water.reactions.mayo = { "elem1":null, "elem2":"mayo_water" };
+elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" };
 
 // Run after all mods are loaded, for cross-mod compatibility
 runAfterLoad(function() {
@@ -68,15 +71,14 @@ runAfterLoad(function() {
 });
 
 // Run if another mod is active
-if (enabledMods.includes("mods/test.js")) {
-    runAfterLoad(function() {
-        // Your code here
-        console.log("Hello World!");
-    });
-}
+dependOn("mods/test.js", function(){
+    console.log("Hello World!");
+})
+// More dependency info: See dependency_test.js
 
 // Creating eLists:
 eLists.CONDIMENT = ["ketchup","melted_cheese","mayo"];
 // Adding elements to eLists:
 eLists.CONDIMENT.push("honey");
 
+// Rendering: See 1.10example.js

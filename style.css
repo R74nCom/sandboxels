@@ -2,9 +2,15 @@ html, body {
 	width:  100%;
 	min-height: 100vh;
 	margin: 0;
+	scrollbar-color: var(--theme-dark) var(--theme-darker);
+}
+html.homepage, body.homepage {
+	max-width: 100vw;
+	overflow-x: hidden;
 }
 html {
 	background-color: #000000;
+	background-color: var(--theme-darkest2);
 }
 :root {
 	--theme: rgb(127, 127, 127);
@@ -38,6 +44,9 @@ body {
 	color: #ffffff;
 	caret-color: #e6d577;
 }
+html.standalone, html.standalone body {
+	background-color: var(--theme-darkest);
+}
 ::-moz-selection {
 	background: #948a54;
 }
@@ -55,6 +64,7 @@ body {
 a, .saveOption {color: rgb(255, 0, 255);text-decoration: none;}
 a:hover, .saveOption:hover {filter: brightness(200%);}
 a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: brightness(275%);}
+a:hover { text-decoration: underline; }
 #gameDiv { /*game canvas*/
 	border: 3px solid var(--theme-opac85);
 	position: relative;
@@ -65,19 +75,15 @@ a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: 
 	-ms-user-select: none; /* Internet Explorer/Edge */
 	user-select: none;
 	/* margin-top: 15px; */
+	max-width: 100vw;
 }
 .gameDiv-wide {
 	margin-top: 0!important;
 	border: none!important;
 }
-.standalone.mobile #savesButton, .standalone.mobile #extraInfo {
-	display: none
-}
-.standalone #extraInfo {
-	display: none
-}
 #game {
 	image-rendering: pixelated;
+	max-width: 100vw;
 }
 #bottomInfoBox { /* place under the game canvas */
 	margin: 1.5em 50px 0px 50px;
@@ -111,7 +117,7 @@ a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: 
 }
 table {
 	border-collapse: collapse;
-	background-color: rgba(255, 255, 255, 0.125);
+	background-color: var(--theme-darker);
 }
 #controlsTable {
 	width: 75%;
@@ -120,12 +126,12 @@ table {
 }
 /* alternating table row colors */
 tr:nth-child(even) {
-	background-color: rgba(255, 255, 255, 0.0625);
+	background-color: var(--theme-darkest);
 }
 th, td {
 	text-align: left;
 	padding: 8px;
-	border: 1px solid #9f9f9f;
+	border: 3px solid var(--theme);
 }
 kbd {
 	/* Look like a button */
@@ -135,7 +141,7 @@ kbd {
 	font-weight: 700;
 	color: rgb(255, 255, 255);
 	background-color: rgb(95, 95, 95);
-	border-radius: 0.2em;
+	border-radius: 0;
 	border: 1px solid #000;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 2px rgba(0, 0, 0, 0.05);
 	font-family: 'Arial';
@@ -167,12 +173,15 @@ kbd:active {filter: brightness(70%);}
 	overflow-x: hidden;
 	z-index: 10;
 }
-#settingsParent {
-	height: 75%;
+#settingsParent, #savesParent, #savePromptParent {
+	height: 85%;
 	max-height: 623px;
 }
 .standalone #settingsParent {
 	height: 100%;
+}
+#saveTags .toggleInput {
+	margin-bottom: 4px;
 }
 #promptParent {
 	height: 50%;
@@ -190,7 +199,9 @@ kbd:active {filter: brightness(70%);}
 	padding: 8px;
 	font-family: 'Press Start 2P';
 	z-index: 11;
-	border: none
+	border: none;
+	margin-left: 0;
+	margin-right: 0;
 }
 #infoSearch:focus, #modManagerUrl:focus, #promptInput:focus {
 	outline: none;
@@ -238,6 +249,9 @@ kbd:active {filter: brightness(70%);}
 #modManagerList {
 	margin-top: 20px;
 }
+#modManagerTagline {
+	margin-bottom: 4em;
+}
 #modManagerList li {
 	list-style-type: none;
 	position: relative;
@@ -263,29 +277,64 @@ kbd:active {filter: brightness(70%);}
 }
 .saveSlot {
 	display: block;
-	border-top: solid var(--theme);
+	border-bottom: solid var(--theme);
 	padding-top: 1em;
 	padding-bottom: 1em;
 	padding-left: 1em;
+	position: relative;
+	z-index: 20;
 }
-.saveSlot:last-child {
+/* .saveSlot:last-child {
 	border-bottom: solid var(--theme);
+} */
+.saveSlotName, .saveSlotSub {
+	display: block;
+	line-break: anywhere;
+	z-index: 25;
+	position: relative;
+}
+.saveSlotSub {
+	color: var(--theme);
+}
+.saveSlotOptions {
+	display: block;
+    padding-top: 0.5em;
+	z-index: 25;
+	position: relative;
+}
+.saveSlotImage {
+	background-color: black;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    /* transform: translateY(-50%); */
+    right: 0;
+    z-index: 21;
+    border-left: 2px dashed var(--theme-dark);
+}
+.saveSlot.current .saveSlotName {
+	text-decoration: underline;
 }
 .saveOption {
-	float: right;
-	padding-left: 2em;
 	padding-right: 1em;
 	color: #ff00ff;
 	cursor: pointer;
 }
-.saveOption:first-child {
-	padding-right: 2em;
-}
+.saveOptionLoad { color:#5fb0ff }
+.saveOptionSave { color:#9cff5f }
+.saveOptionClear { color:#ff5f5f }
 .saveOption[disabled="true"] {
 	color: gray;
 	cursor: not-allowed;
 }
-#saveFile, #loadFile, #saveConfirm, #promptOK, .promptOK, #promptCancel, #promptConfirm {
+.saveOption[disabled="true"]:hover {
+	filter: none
+}
+.menuBottomButton {
+	left: 0;
+	width: 100%;
+}
+#saveFile, #loadFile, #saveConfirm, #promptOK, .promptOK, #promptCancel, #promptConfirm, .menuBottomButton {
 	background-color: var(--theme-darkest2);
 	text-align: center;
 	vertical-align: middle;
@@ -295,23 +344,42 @@ kbd:active {filter: brightness(70%);}
 	bottom: 0;
 	cursor: pointer;
 	border-top: 4px solid var(--theme);
+	z-index: 30;
 }
-#saveConfirm, #promptOK, .promptOK {
+#saveConfirm, #promptOK, .promptOK, .promptChoices {
 	bottom: 0;
 	position: fixed;
 }
-#saveFile, #promptCancel {
+span.danger {
+	color: red
+}
+#saveFile, #promptCancel, .menuBottomButton.halfLeft {
 	left: 0;
 	width: 50%;
 }
-#loadFile, #promptConfirm {
+#loadFile, #promptConfirm, .menuBottomButton.halfRight {
+	left: unset;
 	right: 0;
 	width: 50%;
 	border-left: 4px solid var(--theme);
 }
-#saveConfirm, #promptOK, .promptOK {
+#saveConfirm, #promptOK, .promptOK, .promptChoices {
 	left: 0;
 	width: 100%;
+}
+.promptChoices .promptChoice {
+	background-color: var(--theme-darkest2);
+	text-align: center;
+	height: 3em;
+	line-height: 3em;
+	width: 100%;
+	display: block;
+	cursor: pointer;
+	border-top: 4px solid var(--theme);
+}
+.promptChoices .promptChoicesSub {
+	display: flex;
+    flex-direction: row;
 }
 button, input[type="submit"], input[type="reset"] {
 	background: none;
@@ -320,6 +388,7 @@ button, input[type="submit"], input[type="reset"] {
 	padding: 0;
 	font: inherit;
 	cursor: pointer;
+	vertical-align: middle;
 }
 .usingTab button:focus {
 	filter: brightness(75%);
@@ -344,6 +413,7 @@ button, input[type="submit"], input[type="reset"] {
 	border: 2px solid var(--theme-opac85);
 	margin: 0px 4px 4px 4px;
 	font-variant: small-caps;
+	z-index: 15;
 }
 #controls button.bright {
 	text-shadow: 0.5px 1px 4px #ffffff;
@@ -352,21 +422,33 @@ button, input[type="submit"], input[type="reset"] {
 /*Darken when active*/
 #controls button:active, #controls button:active:hover {
 	filter: brightness(60%);
+	z-index: 14;
 }
 #controls button:hover {
 	filter: brightness(90%);
 }
 #controls button:disabled {
 	cursor: not-allowed;
+	z-index: 13;
+}
+button, input[type="button"] {
+	transition: 0.2s;
+	transition-property: transform;
+}
+/* #controls .elementButton:active, #controls .elementButton:active:hover */
+button:active, button:active:hover,
+input[type="button"]:active, input[type="button"]:active:hover {
+	transform: scale(0.95);
 }
 #controls button[current="true"], #controls button[on="true"] {
-	border: 2px solid #ffffff;
+	/* border: 2px solid #ffffff; */
 	filter: brightness(110%);
 	/* box-shadow: 0 5px 15px rgba(255, 255, 255, .4); */
 	color: rgba(255, 255, 255, 1);
 }
 #controls .elementButton[current="true"] {
-	border: 2px solid #5ee05e;
+	/* border: 2px solid #5ee05e; */
+	border-color:#5ee05e!important;
 	box-shadow: 0px 1px 15px rgba(0, 255, 0, .75);
 }
 #controls button.bright[current="true"] {
@@ -435,6 +517,17 @@ button, input[type="submit"], input[type="reset"] {
 #extraInfo small {
 	margin-bottom: 10px;
 }
+#extraInfo #extraLinks {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	margin-top: 15px;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+}
+#extraLinks a {
+	text-align: center;
+}
 .gameDiv-wide .extraInfo-right {
 	float:right
 }
@@ -495,7 +588,7 @@ button, input[type="submit"], input[type="reset"] {
 
 #categoryControls {
 	margin-bottom: 5px;
-	background-color: var(--theme-dark);
+	background-color: var(--theme-darker);
 	white-space: nowrap;
 	overflow-x: auto;
 	flex-wrap: wrap;
@@ -523,14 +616,13 @@ button, input[type="submit"], input[type="reset"] {
 	z-index:0;
 	flex-grow: 1;
 	/* border-bottom: 2px solid rgba(255, 255, 255, 0.2); */
-	border-bottom: 2px solid var(--theme-opac50);
+	border-bottom: 2px solid var(--theme-dark);
 	background-color: var(--theme-darker);
 }
 #categoryControls button:not(:last-child) {
-	border-right: 2px solid var(--theme-opac50);
+	border-right: 2px solid var(--theme-dark);
 }
 #categoryControls button[current="true"] {
-	border: none;
 	background-color: var(--theme-opac85);
 }
 .category {
@@ -566,6 +658,10 @@ button, input[type="submit"], input[type="reset"] {
 		margin: 1px;
 		text-align: left;
 	}
+	#bottomInfoBox {
+		margin-left: 10px;
+		margin-right: 10px;
+	}
 	table {
 		width: 100%;
 		margin-left: 0px;
@@ -590,6 +686,9 @@ button, input[type="submit"], input[type="reset"] {
 	}
 	.saveSlot {
 		font-size: small
+	}
+	#extraLinks a {
+		padding: 3px;
 	}
 }
 @media screen and (max-width: 600px) {
@@ -625,7 +724,7 @@ button, input { /*Disable double tap zoom on mobile devices*/
 	touch-action: manipulation;
 	color-scheme: dark;
 }
-.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"], input[type="number"], .button {
+.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], .menuScreen input[type="text"], #savePromptMenu input, input[type="email"], input[type="number"], .button {
 	background-color: var(--theme-darkest2);
 	vertical-align: middle;
 	margin-left: 4px;
@@ -635,6 +734,7 @@ button, input { /*Disable double tap zoom on mobile devices*/
 	color: white;
 	font-size: 1em;
 	font-family: Arial, Helvetica, sans-serif;
+	cursor: pointer;
 }
 #settingsMenu .menuText {
 	font-family: 'VT323';
@@ -656,6 +756,9 @@ button, input { /*Disable double tap zoom on mobile devices*/
 	padding:0;
 	background-color: var(--theme-dark);
 	border: none;
+	cursor: pointer;
+	vertical-align: middle;
+    height: 40px;
 }
 #settingsMenu select, #settingsMenu input[type=text] {
 	font-size: 1em;
@@ -674,6 +777,11 @@ button, input { /*Disable double tap zoom on mobile devices*/
 .settingsButton:active, .toggleInput:active {
 	filter: brightness(75%);
 }
+.settingsReset, .settingsRefresh {
+	font-style:italic;
+	cursor:pointer;
+	color: var(--theme);
+}
 #canvasDiv {
 	position:relative;
 	overflow-x:hidden
@@ -685,7 +793,7 @@ button, input { /*Disable double tap zoom on mobile devices*/
 	display: none;
 }
 .categoryButton.notify {
-	background-color: rgba(255, 0, 0, 0.25);
+	background-color: rgba(255, 0, 0, 0.25)!important;
 }
 /* .elementButton.notify with a red glow */
 .elementButton.notify {
@@ -725,4 +833,124 @@ button, input { /*Disable double tap zoom on mobile devices*/
 button.disabled {
 	opacity: 0.5;
 	cursor:not-allowed;
+}
+
+#savesMenu div.menuTab {
+	padding-top:0; height:75%; overflow-y:scroll;
+}
+#savesMenu .menuText {
+	padding-bottom: 3em;
+	margin-top: 0;
+}
+
+.menuTabs {
+    border-bottom: solid var(--theme) 3px;
+    margin-top: 1em;
+    padding-left: 1em;
+	white-space: nowrap;
+    overflow-x: scroll;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	display: flex;
+}
+.menuTabs::-webkit-scrollbar { 
+    display: none;
+}
+
+button.menuTab {
+    padding: 1em;
+    border: solid var(--theme) 3px;
+    border-bottom: none;
+	color: var(--theme);
+	background-color: var(--theme-darkest);
+	margin-left: 0.75em;
+}
+button.menuTab.selected {
+	filter: brightness(2);
+	background-color: var(--theme-darker);
+}
+button.menuTab:active, button.menuTab:active:hover {
+	transform: scaleY(0.9) translateY(3px);
+}
+button.menuTab:first-of-type {
+	margin-left: 0;
+}
+
+div.menuTab {
+	display: none;
+}
+div.menuTab.selected {
+	display: block;
+}
+
+.menuTopBar {
+    width: 100%;
+    display: flex;
+    position: relative;
+    flex-direction: row;
+}
+.menuTopBar input, .menuTopBar input[type="text"], .menuTopBar select, .menuTopBar button {
+	flex-grow: 1;
+	margin-left: 0;
+	margin-right: 0;
+	margin: 0;
+	border-top: none;
+	font-family: 'VT323', 'Press Start 2P', Arial;
+	font-size: 1.3em;
+}
+#workshopSearch, #discordSearch {
+    border-width: 3px;
+    border-right: none;
+}
+#workshopFilter, #discordFilter {
+	border-width: 3px;
+}
+
+.texticon {
+	color: rgba(0,0,0,0);
+	background-repeat: no-repeat;
+	background-size: contain;
+	height: 1.33em;
+	width: 1em;
+	max-width: 1em;
+	overflow: hidden;
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+}
+a.texticon {
+	background-image: url("data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%3Csvg%20width%3D%22800px%22%20height%3D%22800px%22%20viewBox%3D%220%200%2024%2024%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20stroke%3D%22%23FF00FF%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20class%3D%22feather%20feather-arrow-up-right%22%3E%3Cline%20x1%3D%222%22%20y1%3D%2222%22%20x2%3D%2222%22%20y2%3D%222%22%3E%3C%2Fline%3E%3Cpolyline%20points%3D%222%202%2022%202%2022%2022%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+}
+a.texticon:hover, a.texticon:active, a.texticon:hover:active {
+	color: rgba(0,0,0,0);
+}
+.standalone.mobile #savesButton, .standalone.mobile #extraInfo {
+	display: none
+}
+.standalone #extraLinks, .standalone #attribution {
+	display: none!important
+}
+.standalone #extraInfo .extraInfo-right {
+	margin-bottom: 0;
+	margin-right: 0;
+	float: none;
+	text-align: right;
+	display: block;
+}
+.standalone #extraInfo .extraInfo-right p {
+	margin: 0;
+}
+#extraInfo #extraInfo-name {
+	width: 0px;
+	text-overflow: clip;
+	overflow-x: hidden;
+	opacity: 0.01;
+	display: inline-block;
+}
+.standalone #extraInfo #extraInfo-name {
+	width: unset;
+	text-overflow: unset;
+	overflow-x: unset;
+	opacity: unset;
+	padding-right: 1em;
 }

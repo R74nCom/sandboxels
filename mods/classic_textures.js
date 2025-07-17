@@ -175,3 +175,12 @@ if (elements.border) {elements.border.tick = function(pixel){
 };}
 if (elements.pipe_wall) {elements.pipe_wall.color = "#808080";}
 if (elements.molten_rad_glass) {delete elements.molten_rad_glass.color;}
+if (elements.zinc) {elements.zinc.color = ["#8d8c8e","#f6f6f1","#c7c7c5","#ccccca","#6b6a6a","#848382"];}
+if (elements.gold) {elements.gold.color = ["#fff0b5","#986a1a","#f0bb62"];}
+if (elements.molten_aluminum) {delete elements.molten_aluminum.color;}
+if (elements.tungsten) {elements.tungsten.color = ["#d4d3cd","#c3c0b8","#bcbaae","#625950"];}
+if (elements.brass) {elements.brass.color = ["#cb9e5d","#865e39"];}
+if (elements.bronze) {elements.bronze.color = "#cd7f32";}
+if (elements.sterling) {elements.sterling.color = ["#858478","#eae8e2","#bfbcb7"];}
+if (elements.solder) {elements.solder.color = "#a1a19d";}
+if (elements.sulfur) {elements.sulfur.color = ["#e9d74c","#89761b","#ddc56b"];}
