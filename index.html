@@ -13263,6 +13263,11 @@ if (standalone) {
 		script.src = "mods/steam_port.js";
 		document.head.appendChild(script);
 	}
+	else if (standaloneType === "discord") {
+		var script = document.createElement('script');
+		script.src = "mods/discord_port.js";
+		document.head.appendChild(script);
+	}
 
 	document.documentElement.classList.add("standalone");
 }
