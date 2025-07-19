@@ -156,5 +156,6 @@ elements.fire_extinguisher_powder = {
             delete pixel.burnStart;
         }
     },
-    canPlace: true
+    canPlace: true,
+    category: "powders"
 }
