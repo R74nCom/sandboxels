@@ -18076,7 +18076,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			}
 			saveDiscordList.setAttribute("data-page",page.toString());
 
-			let url = "https://sandboxels.live/browser/api/threads?limit=10&";
+			let url = (standaloneType === "discord" ? "/.proxy/api" : "https://sandboxels.live/browser/api") + "/threads?limit=10&";
 			url += "page="+page+"&";
 			if (sort) url += "sort="+sort+"&";
 			if (tag) url += "tags="+tag+"&";
