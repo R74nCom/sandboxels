@@ -20249,7 +20249,16 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			document.getElementById("gameDiv").classList.add("mobile");
 		}
 		if (standaloneType === "discord") {
-			document.getElementById("savesButton").style.display = "none";
+			// document.getElementById("savesButton").style.display = "none";
+			// document.querySelector("#savesMenu .menuTabs").style.display = "none";
+			document.querySelector("#savesMenu div.menuTab[data-tab='local']").classList.remove("selected");
+			document.querySelector("#savesMenu div.menuTab[data-tab='discord']").classList.add("selected");
+			document.querySelector("#savesMenu button.menuTab[data-tab='local']").classList.remove("selected");
+			document.querySelector("#savesMenu button.menuTab[data-tab='discord']").classList.add("selected");
+			document.querySelectorAll("#savesMenu button.menuTab").forEach((e) => {
+				if (e.id !== "savesTabDiscord") e.style.display = "none";
+			})
+			document.getElementById("savesButton").addEventListener("click", showDiscordSaves);
 			document.getElementById("modsButton").style.display = "none";
 		}
 		if (standaloneType === "steam") {
