@@ -13263,6 +13263,11 @@ if (standalone) {
 		script.src = "mods/steam_port.js";
 		document.head.appendChild(script);
 	}
+	else if (standaloneType === "discord") {
+		var script = document.createElement('script');
+		script.src = "mods/discord_port.js";
+		document.head.appendChild(script);
+	}
 
 	document.documentElement.classList.add("standalone");
 }
@@ -18071,7 +18076,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			}
 			saveDiscordList.setAttribute("data-page",page.toString());
 
-			let url = "https://sandboxels.live/browser/api/threads?limit=10&";
+			let url = (standaloneType === "discord" ? "/.proxy/api" : "https://sandboxels.live/browser/api") + "/threads?limit=10&";
 			url += "page="+page+"&";
 			if (sort) url += "sort="+sort+"&";
 			if (tag) url += "tags="+tag+"&";
@@ -20249,7 +20254,16 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			document.getElementById("gameDiv").classList.add("mobile");
 		}
 		if (standaloneType === "discord") {
-			document.getElementById("savesButton").style.display = "none";
+			// document.getElementById("savesButton").style.display = "none";
+			// document.querySelector("#savesMenu .menuTabs").style.display = "none";
+			document.querySelector("#savesMenu div.menuTab[data-tab='local']").classList.remove("selected");
+			document.querySelector("#savesMenu div.menuTab[data-tab='discord']").classList.add("selected");
+			document.querySelector("#savesMenu button.menuTab[data-tab='local']").classList.remove("selected");
+			document.querySelector("#savesMenu button.menuTab[data-tab='discord']").classList.add("selected");
+			document.querySelectorAll("#savesMenu button.menuTab").forEach((e) => {
+				if (e.id !== "savesTabDiscord") e.style.display = "none";
+			})
+			document.getElementById("savesButton").addEventListener("click", showDiscordSaves);
 			document.getElementById("modsButton").style.display = "none";
 		}
 		if (standaloneType === "steam") {
