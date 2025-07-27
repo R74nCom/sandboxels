@@ -81,18 +81,11 @@ runAfterAutogen(function () {
         return movesSelf;
     }).map(([name]) => name);
 
-    console.log("🚶 Self-Moving Elements:", movableElements);
     window.movableElementsByBehavior = movableElements;
 });
 
 
 
-
-
-
-runAfterAutogen(function () {
-    console.log(behaviors)
-})
 
 // Create a global map to track delay for each position
 if (!window.fanPushDelays) {
