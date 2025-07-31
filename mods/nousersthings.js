@@ -106,7 +106,7 @@ elements.molten_caesium_137 = {
 	stateLow: "caesium_137",
 	tempHigh: 671,
     hidden: true,
-	stateHigh: "caesium_vapor_137",
+	stateHigh: "caesium_137_vapor",
 	density: 1842,
 	temp: 29,
 	conduct: 0.90,

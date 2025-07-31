@@ -10,7 +10,7 @@ function pluckMatrix(x, y, w, h) {
     for (var i = 0; i < w; i++) {
       var px = pixelMap[x + i]?.[y + j];
       if (px) {
-        row.push({ element: px.element, temp: px.temp, color: px.color });
+        row.push({ element: px.element, temp: px.temp, color: px.color, clone: px?.clone });
       } else {
         row.push("#");
       }
@@ -72,9 +72,11 @@ document.addEventListener("mousedown", (event) => {
             if (cell !== "#" && cell.element) {
             
               var px = createPixel(cell.element, x + i - (size-1)/2, y + j - (size-1)/2);
-              if (px) {
-                if (typeof cell.temp === "number") px.temp = cell.temp;
-                if (typeof cell.color === "string") px.color = cell.color;
+              var px2 = pixelMap[x + i - (size-1)/2][y + j - (size-1)/2];
+              if (px2) {
+                px2.temp = cell.temp;
+                px2.clone = cell.clone;
+                px2.color = cell.color;
               }
             }
           }
