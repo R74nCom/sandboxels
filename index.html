@@ -109,7 +109,7 @@
 
 	<script> // PWA things
 		// add service worker service-worker.js
-		if (typeof navigator !== 'undefined') {
+		if (typeof navigator !== 'undefined' && !standalone) {
 			if ('serviceWorker' in navigator) {
 				window.addEventListener('load', function() {
 					navigator.serviceWorker.register('/service-worker.js');
@@ -13248,7 +13248,7 @@ SEEDRISE: function(pixel) {
 };
 
 // detect if discord activity
-if (location.hostname.match(/discordsays/i)) {
+if (!standalone && location.hostname.match(/discordsays/i)) {
 	standalone = true;
 	standaloneType = "discord";
 }
@@ -13261,6 +13261,11 @@ if (standalone) {
 	if (standaloneType === "steam") {
 		var script = document.createElement('script');
 		script.src = "mods/steam_port.js";
+		document.head.appendChild(script);
+	}
+	else if (standaloneType === "discord") {
+		var script = document.createElement('script');
+		script.src = "mods/discord_port.js";
 		document.head.appendChild(script);
 	}
 
@@ -17923,7 +17928,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 
 		function escapeHTML(unsafe) {return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");}
 
-		const rtf = new Intl.RelativeTimeFormat(langCode||"en", { style:"short", numeric:"auto" });
+		rtf = null;
+		try {
+			rtf = new Intl.RelativeTimeFormat(langCode||"en", { style:"short", numeric:"auto" });
+		}
+		catch {
+			rtf = new Intl.RelativeTimeFormat("en", { style:"short", numeric:"auto" });
+		}
 
 		function saveMenuOptions(item) {
 			if (item.workshop && standalone && !item.localFile) {
@@ -18065,7 +18076,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			}
 			saveDiscordList.setAttribute("data-page",page.toString());
 
-			let url = "https://sandboxels.live/browser/api/threads?limit=10&";
+			let url = (standaloneType === "discord" ? "/.proxy/api" : "https://sandboxels.live/browser/api") + "/threads?limit=10&";
 			url += "page="+page+"&";
 			if (sort) url += "sort="+sort+"&";
 			if (tag) url += "tags="+tag+"&";
@@ -20243,7 +20254,16 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			document.getElementById("gameDiv").classList.add("mobile");
 		}
 		if (standaloneType === "discord") {
-			document.getElementById("savesButton").style.display = "none";
+			// document.getElementById("savesButton").style.display = "none";
+			// document.querySelector("#savesMenu .menuTabs").style.display = "none";
+			document.querySelector("#savesMenu div.menuTab[data-tab='local']").classList.remove("selected");
+			document.querySelector("#savesMenu div.menuTab[data-tab='discord']").classList.add("selected");
+			document.querySelector("#savesMenu button.menuTab[data-tab='local']").classList.remove("selected");
+			document.querySelector("#savesMenu button.menuTab[data-tab='discord']").classList.add("selected");
+			document.querySelectorAll("#savesMenu button.menuTab").forEach((e) => {
+				if (e.id !== "savesTabDiscord") e.style.display = "none";
+			})
+			document.getElementById("savesButton").addEventListener("click", showDiscordSaves);
 			document.getElementById("modsButton").style.display = "none";
 		}
 		if (standaloneType === "steam") {
