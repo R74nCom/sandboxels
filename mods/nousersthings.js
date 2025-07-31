@@ -106,7 +106,7 @@ elements.molten_caesium_137 = {
 	stateLow: "caesium_137",
 	tempHigh: 671,
     hidden: true,
-	stateHigh: "caesium_vapor_137",
+	stateHigh: "caesium_137_vapor",
 	density: 1842,
 	temp: 29,
 	conduct: 0.90,
@@ -4068,4 +4068,16 @@ elements.delay = {
             drawSquare(ctx, objectColorToString(color), pixel.x, pixel.y)
         } else {drawSquare(ctx, pixel.color, pixel.x, pixel.y)}
     }
+}
+elements.test1 = {
+    category: "solids",
+    color: ["#4b3a64", "#55416f", "#60497b", "#6a5087", "#755893", "#8160a0", "#8c68ac", "#edc3fe", "#cca4e2", "#ac85c7", "#8c68ac"]
+}
+elements.test2 = {
+    category: "solids",
+    color: ["#9c695e", "#96645a", "#915f55", "#8b5a51", "#86554d", "#805149", "#7b4c44", "#764740", "#70433c", "#6b3e38", "#d7bab2", "#c8a59c", "#ba9187", "#ab7d72", "#9c695e"]
+}
+elements.test3 = {
+    category: "solids",
+    color: ["#eaf2fa", "#dfe7ef", "#d4dbe4", "#c9d0d9", "#bec5ce", "#b4bac4", "#a9afb9", "#9fa4af", "#959aa4", "#8b8f9a"]
 }
