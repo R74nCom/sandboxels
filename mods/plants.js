@@ -1,3 +1,6 @@
+/*
+Version 2.1.0
+*/
 let is2d = (arr)=>{
   return arr.some(item => Array.isArray(item));
 }

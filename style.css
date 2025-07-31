@@ -924,9 +924,9 @@ a.texticon {
 a.texticon:hover, a.texticon:active, a.texticon:hover:active {
 	color: rgba(0,0,0,0);
 }
-.standalone.mobile #savesButton, .standalone.mobile #extraInfo {
+/* .standalone.mobile #savesButton, .standalone.mobile #extraInfo {
 	display: none
-}
+} */
 .standalone #extraLinks, .standalone #attribution {
 	display: none!important
 }
