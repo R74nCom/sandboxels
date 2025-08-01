@@ -1,8 +1,6 @@
 "use strict";
 // WorldEdit.js (compiled)
-// Version: 1.0.0
-// Other mods
-w_ensureModEnabled("mods/betterSettings.js");
+// Version: 1.0.1
 // Constants
 const w_accentColor = "#7cff62";
 const w_style = {
@@ -83,14 +81,6 @@ class Rect {
 }
 
 // Functions
-function w_ensureModEnabled(modName) {
-	if (enabledMods.includes(modName))
-		return;
-	enabledMods.unshift(modName);
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	window.location.reload();
-}
-
 function isPointInWorld(point) {
 	return point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height;
 }
