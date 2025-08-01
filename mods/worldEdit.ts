@@ -1,5 +1,5 @@
 // WorldEdit.ts
-// Version: 1.0.0
+// Version: 1.0.1
 
 // Interfaces
 interface WorldEditState {
