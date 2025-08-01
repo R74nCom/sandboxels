@@ -1884,13 +1884,15 @@ elements.molten_bismuth = {
     temp: 280,
     tick: function(pixel){
         if (pixel.temp <= 261.4){
-            pixel.tHue = 0;
+            pixel.tHue = ((pixelTicks*1.5)%360)/360;
+            let bismuthsum = 0;
             for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x, y, true)){
                   if (pixelMap[x][y].element == "bismuth"){
+                /*
                       var otherPixel = pixelMap[x][y]
                       var nR = parseInt(otherPixel.color.slice(4, otherPixel.color.indexOf(',')), 10)
 		              var nG = parseInt(otherPixel.color.slice(otherPixel.color.indexOf(',') + 1, otherPixel.color.lastIndexOf(',')), 10)
@@ -1899,16 +1901,24 @@ elements.molten_bismuth = {
                            if ((pixel.tHue+1)%1 < hsvResult.h){
                            pixel.tHue = hsvResult.h;
                          }
-                     }
+                           */
+                          bismuthsum += 1;
+                }
               }
             }
-            changePixel(pixel, "bismuth")
-            var rgbResult = HSVtoRGB(pixel.tHue + 0.02, 0.5, 0.9);
-            const hexR = rgbResult.r.toString(16).padStart(2, '0');
-            const hexG = rgbResult.g.toString(16).padStart(2, '0');
-            const hexB = rgbResult.b.toString(16).padStart(2, '0');
-            const hexCode = `#${hexR}${hexG}${hexB}`;
-            pixel.color = pixelColorPick(pixel, hexCode)
+            if (pixel.temp <= 210){
+                changePixel(pixel, "bismuth");
+                return;
+            }
+            if (Math.random() < [0.003, 0.8,0.3,0.2,0.003,0.002,0.002,0.4,0.4][bismuthsum]){
+                changePixel(pixel, "bismuth")
+                var rgbResult = HSVtoRGB(pixel.tHue, 0.5-(Math.random()/3), 0.9-((8-bismuthsum)/20));
+                const hexR = rgbResult.r.toString(16).padStart(2, '0');
+                const hexG = rgbResult.g.toString(16).padStart(2, '0');
+                const hexB = rgbResult.b.toString(16).padStart(2, '0');
+                const hexCode = `#${hexR}${hexG}${hexB}`;
+                pixel.color = pixelColorPick(pixel, hexCode)
+            }
         }
     },
     density: 10049,
