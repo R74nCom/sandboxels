@@ -1,9 +1,6 @@
 // WorldEdit.ts
 // Version: 1.0.0
 
-// Other mods
-w_ensureModEnabled("mods/betterSettings.js")
-
 // Interfaces
 interface WorldEditState {
 	firstSelectionPos: Vec2D,
@@ -124,15 +121,6 @@ class Rect {
 }
 
 // Functions
-function w_ensureModEnabled(modName: string) {
-	if (enabledMods.includes(modName))
-		return
-
-	enabledMods.unshift(modName)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods))
-	window.location.reload()
-}
-
 function isPointInWorld(point: Vec2D): boolean {
 	return point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height
 }
