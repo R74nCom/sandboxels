@@ -1,7 +1,7 @@
 // Basic Fission Mod for Sandboxels
 // Simulates simplified nuclear fission with uranium-235, neutrons, and boron control rods.
  
-// Uranium-235: emits 2-3 neutrons when hit by a neutron, heats up, no byproducts.
+// Uranium-235: emits 2-3 neutrons when hit by a neutron, heats up, no byproducts. this is by senseiollie. the creator
 elements.uranium235 = {
     color: "#4a7023", // dark green (uranium oxide green)
     behavior: behaviors.SOLID,
