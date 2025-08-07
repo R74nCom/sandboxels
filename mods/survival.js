@@ -204,7 +204,11 @@ elements.sell = {
         survivalAdd("gold_coin",elementWorth[pixel.element]||1);
     },
     toolHoverStat: function(pixel) {
-        return "$"+(elementWorth[pixel.element]||1);
+        if (!elementWorth[pixel.element] === -1) {
+            return "$"+(elementWorth[pixel.element]||1);
+        } else {
+            return "Cannot be sold!";
+        }
     },
     category: "tools",
     desc: "Exchanges pixels for their market value in Gold Coins"
