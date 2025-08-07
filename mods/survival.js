@@ -204,7 +204,7 @@ elements.sell = {
         survivalAdd("gold_coin",elementWorth[pixel.element]||1);
     },
     toolHoverStat: function(pixel) {
-        if (!elementWorth[pixel.element] === -1) {
+        if (!elementWorth[pixel.element] === 0) {
             return "$"+(elementWorth[pixel.element]||1);
         } else {
             return "Cannot be sold!";
