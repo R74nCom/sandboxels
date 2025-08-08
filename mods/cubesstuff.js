@@ -3,12 +3,17 @@
 
 /*
 V3
-🛠️ Tools: RGB LED, Dice, Custom Bomb
-🌱 Life: Pineapple Plants (seed, stem, fruit)
-⚡ Hazards: Lithium Battery, Lithium, Rubidium, Asbestos
-🪨 Minerals: Chalk, Chalk Powder, Lapis Lazuli
-💡 Light: UV Light, Phosphor, Neon Tube
-🎮 Extras: Realistic Ball
+Tools: RGB LED, Dice, Custom Bomb
+Life: Pineapple Plants (seed, stem, fruit)
+Hazards: Lithium Battery, Lithium, Rubidium, Asbestos
+Minerals: Chalk, Chalk Powder, Lapis Lazuli
+Light: UV Light, Phosphor, Neon Tube
+Extras: Realistic Ball
+
+V3.1
+Bug Fixes
+Chalk powder, Wet chalk poeder, and Obsidian shard can now be glued back as intended.
+Dog can now be smashed correctly.
 */
 
 
@@ -346,6 +351,9 @@ elements.obsidian_shard = {
     stateHigh: "magma",
     state: "solid",
     density: 2500,
+    reactions: {
+        "glue": {elem1: "obsidian", elem2: null}
+    }
 }
 
 elements.cardboard = {
@@ -906,7 +914,6 @@ elements.chalk_powder = {
     behavior: behaviors.POWDER,
     stain: 0.25,
     category: "powders",
-    breakInto: "chalk_powder",
     tempHigh: 1000,
     stateHigh: "molten_chalk",
     density: 2700,
@@ -918,7 +925,8 @@ elements.chalk_powder = {
         "sugar_water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
         "pool_water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
         "primordial_soup": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
-        "nut_milk": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 }
+        "nut_milk": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "glue": {elem1: "chalk", elem2: null}
     },
     state: "solid"
 }
@@ -949,7 +957,10 @@ elements.wet_chalk_powder = {
     onStateHigh: (pixel) => {
         releaseElement(pixel, "steam")
     },
-    state: "solid"
+    state: "solid",
+    reactions: {
+    "glue": {elem1: "chalk", elem2: null}
+    }
 }
 
 elements.lapis_lazuli = {
@@ -1401,6 +1412,7 @@ elements.dog = {
     burn: 30,
     burnTime: 50,
     burnInto: ["cooked_meat", "smoke"],
+    breakInto: ["meat", "blood"],
     reactions: {
         "meat": {elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
         "egg": {elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
