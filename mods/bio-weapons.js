@@ -127,4 +127,5 @@ elements.sonic_boom = {
     nocheer: true,
 };
 
-// Btw I Made This Entire BullSh#t Using The Modding Tutorial on The Sandboxels Wiki
+
+// Btw I Made This Entire Mod Using The Modding Tutorial on The Sandboxels Wiki
