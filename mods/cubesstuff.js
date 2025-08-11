@@ -14,6 +14,7 @@ V3.1
 Bug Fixes
 Chalk powder, Wet chalk poeder, and Obsidian shard can now be glued back as intended.
 Dog can now be smashed correctly.
+Steam support with promptInput() instead of prompt()
 */
 
 
@@ -352,7 +353,7 @@ elements.obsidian_shard = {
     state: "solid",
     density: 2500,
     reactions: {
-        "glue": {elem1: "obsidian", elem2: null}
+        "glue": { elem1: "obsidian", elem2: null }
     }
 }
 
@@ -648,23 +649,34 @@ elements.circle = {
     category: "special",
     state: "solid",
     onSelect: function () {
-        let ans1 = Number(prompt("Select the radius you want your circle to be:"));
-        let ans2 = prompt("Now give the element your circle should be made of:");
-
-        // Validate radius
-        if (Number.isInteger(ans1) && ans1 > 0) {
-            circleRad = ans1;
-        } else {
-            logMessage("Invalid radius, using default/last size: " + circleRad);
-        }
-
-        // Validate element
-        let similar = mostSimilarElement(ans2);
-        if (similar && elements[similar]) {
-            circleElem = similar;
-        } else {
-            logMessage("Invalid element, using default/last element: " + circleElem);
-        }
+        promptInput(
+            "Select the radius you want your circle to be:",
+            function (input1) {
+                let ans1 = Number(input1)
+                if (Number.isInteger(ans1) && ans1 > 0) {
+                    circleRad = ans1
+                } else {
+                    circleRad = 7
+                    logMessage("Invalid radius, using default size: " + circleRad);
+                }
+                promptInput(
+                    "Select the element you want your circle to be:",
+                    function (ans2) {
+                        let similar = mostSimilarElement(ans2);
+                        if (similar && elements[similar]) {
+                            circleElem = similar;
+                        } else {
+                            circleElem = "wood"
+                            logMessage("Invalid element, using default element: " + circleElem);
+                        }
+                    },
+                    "Element prompt",
+                    "wood"
+                );
+            },
+            "Radius prompt",
+            "7"
+        );
     },
     onPlace: function (pixel) {
         drawCircle(pixel.x, pixel.y, circleRad, circleElem);
@@ -691,7 +703,7 @@ let b = randomIntInRange(0, 255);
 elements.rgb_led = {
     buttonColor: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
     behavior: behaviors.WALL,
-    desc: "Input The red green and blue value (not exceeding 255) and get the color of",
+    desc: "Input the red, green, and blue value (not exceeding 255) and get the color.",
     renderer: renderPresets.LED,
     conduct: 1,
     state: "solid",
@@ -704,34 +716,42 @@ elements.rgb_led = {
     category: "machines",
     tempHigh: 1500,
     stateHigh: ["molten_glass", "molten_glass", "molten_glass", "molten_gallium"],
+
     onSelect: () => {
-        var r_inp = parseInt(prompt("Enter red value (0-255):"));
-        var g_inp = parseInt(prompt("Enter green value (0-255):"));
-        var b_inp = parseInt(prompt("Enter blue value (0-255):"));
+        promptInput("Enter red value (0-255):", function (r_inp) {
+            r_inp = parseInt(r_inp);
+            if (r_inp > 255 || r_inp < 0 || isNaN(r_inp)) {
+                logMessage("Red value is invalid, using default/last red value: " + r);
+            } else {
+                r = r_inp;
+            }
 
-        if (r_inp > 255 || r_inp < 0 || isNaN(r_inp)) {
-            logMessage("Red value is invalid, using default/last red value: " + r);
-        } else {
-            r = r_inp;
-        }
+            promptInput("Enter green value (0-255):", function (g_inp) {
+                g_inp = parseInt(g_inp);
+                if (g_inp > 255 || g_inp < 0 || isNaN(g_inp)) {
+                    logMessage("Green value is invalid, using default/last green value: " + g);
+                } else {
+                    g = g_inp;
+                }
 
-        if (g_inp > 255 || g_inp < 0 || isNaN(g_inp)) {
-            logMessage("Green value is invalid, using default/last green value: " + g);
-        } else {
-            g = g_inp;
-        }
-
-        if (b_inp > 255 || b_inp < 0 || isNaN(b_inp)) {
-            logMessage("Blue value is invalid, using default/last blue value: " + b);
-        } else {
-            b = b_inp;
-        }
+                promptInput("Enter blue value (0-255):", function (b_inp) {
+                    b_inp = parseInt(b_inp);
+                    if (b_inp > 255 || b_inp < 0 || isNaN(b_inp)) {
+                        logMessage("Blue value is invalid, using default/last blue value: " + b);
+                    } else {
+                        b = b_inp;
+                    }
+                }, "Blue Value", b); // optional default input
+            }, "Green Value", g);
+        }, "Red Value", r);
     },
+
     onPlace: (pixel) => {
         var ledColor = RGBToHex({ r: r, g: g, b: b });
         pixel.color = ledColor;
     }
 };
+
 
 runAfterReset(() => {
     r = 100;
@@ -926,7 +946,7 @@ elements.chalk_powder = {
         "pool_water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
         "primordial_soup": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
         "nut_milk": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
-        "glue": {elem1: "chalk", elem2: null}
+        "glue": { elem1: "chalk", elem2: null }
     },
     state: "solid"
 }
@@ -959,7 +979,7 @@ elements.wet_chalk_powder = {
     },
     state: "solid",
     reactions: {
-    "glue": {elem1: "chalk", elem2: null}
+        "glue": { elem1: "chalk", elem2: null }
     }
 }
 
@@ -1199,19 +1219,25 @@ elements.custom_bomb = {
     cooldown: defaultCooldown,
     behavior: behaviors.STURDYPOWDER,
     onSelect: function () {
-        input = prompt("Input the element you want your bomb to explode into", "fire")
-        pr1 = mostSimilarElement(input)
-        if (elements[pr1]) {
-            if (pr1 === "custom_bomb") {
-                explodeElem = 'fire'
-                logMessage("Element cannot explode to itself. Using default: fire")
-            }
-            else { explodeElem = pr1 }
-        }
-        else {
-            explodeElem = 'fire'
-            logMessage("Invalid element. Using default: fire")
-        }
+        promptInput(
+            "Input the element you want your bomb to explode into",
+            function (input) {
+                pr1 = mostSimilarElement(input)
+                if (elements[pr1]) {
+                    if (pr1 === "custom_bomb") {
+                        explodeElem = 'fire'
+                        logMessage("Element cannot explode to itself. Using default: fire")
+                    }
+                    else { explodeElem = pr1 }
+                }
+                else {
+                    explodeElem = 'fire'
+                    logMessage("Invalid element. Using default: fire")
+                }
+            },
+            "Element prompt",
+            "fire"
+        )
     },
     tick: function (pixel) {
         let belowPixel = getPixel(pixel.x, pixel.y + 1);
@@ -1414,15 +1440,15 @@ elements.dog = {
     burnInto: ["cooked_meat", "smoke"],
     breakInto: ["meat", "blood"],
     reactions: {
-        "meat": {elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
-        "egg": {elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
-        "yolk": {elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
-        "cheese": {elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
-        "cooked_meat": {elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
-        "chocolate": {elem2:null, chance: 0.2, func:behaviors.FEEDPIXEL, elem1: "rotten_meat"},
-        "grape": {elem2:null, chance: 0.2, func:behaviors.FEEDPIXEL, elem1: "rotten_meat"},
-        "rat": {elem2:null, chance: 0.3, func:behaviors.FEEDPIXEL },
-        "nut_butter": {elem2:null, chance: 0.5, func:behaviors.FEEDPIXEL },
+        "meat": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "egg": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "yolk": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "cheese": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "cooked_meat": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "chocolate": { elem2: null, chance: 0.2, func: behaviors.FEEDPIXEL, elem1: "rotten_meat" },
+        "grape": { elem2: null, chance: 0.2, func: behaviors.FEEDPIXEL, elem1: "rotten_meat" },
+        "rat": { elem2: null, chance: 0.3, func: behaviors.FEEDPIXEL },
+        "nut_butter": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
     },
     egg: "dog",
 }
