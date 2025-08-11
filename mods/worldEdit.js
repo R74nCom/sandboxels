@@ -1,6 +1,6 @@
 "use strict";
 // WorldEdit.js (compiled)
-// Version: 1.0.1
+// Version: 1.1.0
 // Constants
 const w_accentColor = "#7cff62";
 const w_style = {
@@ -92,6 +92,15 @@ function limitPointToWorld(point) {
 	};
 }
 
+function mousePosToWorldPos(pos) {
+	const rect = canvas.getBoundingClientRect();
+	let x = pos.x - rect.left;
+	let y = pos.y - rect.top;
+	x = Math.floor((x / canvas.clientWidth) * (width + 1));
+	y = Math.floor((y / canvas.clientHeight) * (height + 1));
+	return {x: x, y: y};
+}
+
 function updatePastePreviewCanvas() {
 	const clipboard = w_state.clipboard;
 	if (!clipboard)
@@ -116,7 +125,9 @@ function renderSelection(ctx) {
 	const selection = w_state.selection;
 	if (!selection)
 		return;
-	const isSelecting = (mouseIsDown && mouseType === "left" && currentElement === "w_select");
+	const isSelecting = (mouseIsDown &&
+		(mouseType !== "middle" && mouseType !== "right") &&
+		currentElement === "w_select");
 	ctx.globalAlpha = 1.0;
 	// Fill
 	if (!isSelecting) {
@@ -140,6 +151,7 @@ function renderPastePreview(ctx) {
 	if (!clipboard)
 		return;
 	const clipboardRect = Rect.fromGrid(clipboard, mousePos);
+	ctx.globalAlpha = 1.0;
 	// Fill
 	ctx.fillStyle = w_style.pasteFill;
 	ctx.fillRect(clipboardRect.x * pixelSize, clipboardRect.y * pixelSize, clipboardRect.w * pixelSize, clipboardRect.h * pixelSize);
@@ -178,6 +190,9 @@ function addWorldEditKeybinds() {
 	keybinds.Delete = () => {
 		elements.w_delete.rawOnSelect();
 	};
+	keybinds.g = () => {
+		elements.w_fill.rawOnSelect();
+	};
 }
 
 function modifySelectElement() {
@@ -212,21 +227,6 @@ function addWorldEditElements(elementsToAdd) {
 	}
 }
 
-function updateSelection() {
-	if (!mouseIsDown)
-		return;
-	if (showingMenu)
-		return;
-	if (mouseType !== "left")
-		return;
-	if (currentElement !== "w_select")
-		return;
-	const rect = Rect.fromCorners(w_state.firstSelectionPos, limitPointToWorld(mousePos)).normalized();
-	rect.x2 += 1;
-	rect.y2 += 1;
-	w_state.selection = rect;
-}
-
 // Elements
 worldEditElements.w_deselect = {
 	onSelect: function () {
@@ -242,14 +242,30 @@ worldEditElements.w_select_all = {
 	}
 };
 worldEditElements.w_select = {
-	onMouseDown: function () {
+	onPointerDown: function (e) {
+		const pos = mousePosToWorldPos({x: e.clientX, y: e.clientY});
 		if (showingMenu)
 			return;
-		if (!isPointInWorld(mousePos))
+		if (!isPointInWorld(pos))
 			return;
-		if (mouseType !== "left")
+		if (mouseType === "middle" || mouseType === "right")
 			return;
-		w_state.firstSelectionPos = mousePos;
+		w_state.firstSelectionPos = pos;
+	},
+	onPointerMove: function (e) {
+		const pos = mousePosToWorldPos({x: e.clientX, y: e.clientY});
+		if (!mouseIsDown)
+			return;
+		if (showingMenu)
+			return;
+		if (mouseType === "middle" || mouseType === "right")
+			return;
+		if (currentElement !== "w_select")
+			return;
+		const rect = Rect.fromCorners(w_state.firstSelectionPos, limitPointToWorld(pos)).normalized();
+		rect.x2 += 1;
+		rect.y2 += 1;
+		w_state.selection = rect;
 	},
 	shouldStaySelected: true
 };
@@ -275,12 +291,12 @@ worldEditElements.w_copy = {
 	}
 };
 worldEditElements.w_paste = {
-	onMouseDown: function () {
+	onPointerDown: function () {
 		if (showingMenu)
 			return;
 		if (!isPointInWorld(mousePos))
 			return;
-		if (mouseType !== "left")
+		if (mouseType === "middle" || mouseType === "right")
 			return;
 		const clipboard = w_state.clipboard;
 		if (!clipboard) {
@@ -361,6 +377,30 @@ worldEditElements.w_delete = {
 		logMessage(`Deleted ${selection.w}x${selection.h}=${selection.area} pixel area.`);
 	}
 };
+worldEditElements.w_fill = {
+	onSelect: function () {
+		const selection = w_state.selection;
+		const fillElement = w_state.prevNonWorldEditElement;
+		if (!selection) {
+			logMessage("Error: Nothing is selected.");
+			return;
+		}
+		// Fill area
+		for (let y = selection.y; y < selection.y2; y++) {
+			for (let x = selection.x; x < selection.x2; x++) {
+				const placed = currentPixels.push(new Pixel(x, y, fillElement));
+				if (!placed)
+					return;
+				if (currentPixels.length > maxPixelCount || !fillElement) {
+					currentPixels[currentPixels.length - 1].del = true;
+				} else if (elements[fillElement] && elements[fillElement].onPlace !== undefined) {
+					elements[fillElement].onPlace(currentPixels[currentPixels.length - 1]);
+				}
+			}
+		}
+		logMessage(`Filled in ${selection.w}x${selection.h}=${selection.area} pixel area.`);
+	}
+};
 // Setup and hooks
 modifySelectElement();
 addWorldEditElements(worldEditElements);
@@ -370,6 +410,20 @@ runAfterReset(() => {
 		w_state.selection = null;
 });
 runAfterReset(updatePastePreviewCanvas);
-renderPrePixel(updateSelection);
 renderPostPixel(renderSelection);
 renderPostPixel(renderPastePreview);
+// Mobile support
+let addedCustomEventListeners = false;
+runAfterReset(() => {
+	if (addedCustomEventListeners)
+		return;
+	gameCanvas.addEventListener("pointerdown", (e) => {
+		if (elements[currentElement] && elements[currentElement].onPointerDown)
+			elements[currentElement].onPointerDown(e);
+	}, {passive: false});
+	gameCanvas.addEventListener("pointermove", (e) => {
+		if (elements[currentElement] && elements[currentElement].onPointerMove)
+			elements[currentElement].onPointerMove(e);
+	}, {passive: false});
+	addedCustomEventListeners = true;
+});
