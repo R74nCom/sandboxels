@@ -1,4 +1,4 @@
-addElement("boron", {
+elements.boron = {
 color: "#635F62",
 category: "powders",
 state: "solid",
@@ -14,7 +14,7 @@ neutron: {elem2: "radiation"},
 
 }),
 
-addElement("Graphite", {
+elements.Graphite = {
 color: "#635F62",
 category: "powders",
 state: "solid",
@@ -23,9 +23,9 @@ behavior: [
 "RL:radiation%2, AND RL:neutron%5",
 ],
 
-}),
+},
 
-addElement("Plutonium", {
+elements.Plutonium = {
 color: "#FFFF7F",
 category: "powders",
 state: "solid",
@@ -44,4 +44,4 @@ elem1.temp = elem1.temp + 25
 },
 },
 
-})
+}
