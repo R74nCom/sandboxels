@@ -7,6 +7,11 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-sticky_snow")?.remove()
 })
 
+elements.tornado.maxSize = 0
+elements.earthquake.maxSize = 0
+elements.blaster.maxSize = 0
+elements.armageddon.maxSize = 0
+
 elements.volcano = {
     color:  ["#ff6f00","#ff8c00","#ff4d00"],
     behavior: [
@@ -19,7 +24,7 @@ elements.volcano = {
     state: "solid",
     density: 100000000,
     category: "weapons",
-	maxSize: 1,
+	maxSize: 0,
 	cooldown: defaultCooldown,
 	excludeRandom: true,
 }
@@ -160,7 +165,7 @@ elements.avalanche = {
     temp: -10,
 	category: "weapons",
 	state: "liquid",
-	maxSize: 1,
+	maxSize: 0,
 	density: 997,
 	cooldown: defaultCooldown,
 	excludeRandom: true,
@@ -276,51 +281,217 @@ elements.sticky_snow = {
 	density: 100
 }
 
-/*elements.sinkhole = {
+elements.sinkhole = {
     color: ["#2e2e2e","#808080","#4f4f4f","#949494","#76552b","#5c4221"],
     tick: function(pixel) {
+        if (!isEmpty(pixel.x,pixel.y+1,true) && !outOfBounds(pixel.x,pixel.y+1) && pixel.color !== pixelMap[pixel.x][pixel.y+1].color) {
+			pixel.color = pixelMap[pixel.x][pixel.y+1].color
+		}
 	    if ((pixel.hit === true || !tryMove(pixel, pixel.x, pixel.y+1) && pixel.h > 1 && pixel.active != true)) {
             if (pixel.hit != true) {
                 pixel.hit = true
             }
-            if (isEmpty(pixel.x+1,pixel.y) && pixel.h > 1) {
+            if (isEmpty(pixel.x+1,pixel.y) && pixel.h > 2 && !isEmpty(pixel.x+1,pixel.y+1,true)) {
                 createPixel("sinkhole", pixel.x+1, pixel.y)
                 pixelMap[pixel.x+1][pixel.y].h = (pixel.h-1)
             }
-            if (isEmpty(pixel.x-1,pixel.y) && pixel.h > 1) {
+            if (isEmpty(pixel.x-1,pixel.y) && pixel.h > 2 && !isEmpty(pixel.x-1,pixel.y+1,true)) {
                 createPixel("sinkhole", pixel.x-1, pixel.y)
                 pixelMap[pixel.x-1][pixel.y].h = (pixel.h-1)
             }
 	    }
         if (!isEmpty(pixel.x,pixel.y-1) || pixel.active == true) {
-            if (!isEmpty(pixel.x-1, pixel.y) && !outOfBounds(pixel.x-1, pixel.y)) {
+            if (!isEmpty(pixel.x-1, pixel.y) && !outOfBounds(pixel.x-1, pixel.y) && elements[pixelMap[pixel.x-1][pixel.y].element].movable == elements[pixel.element].movable) {
                 pixelMap[pixel.x-1][pixel.y].active = true
             }
-            if (!isEmpty(pixel.x+1, pixel.y) && !outOfBounds(pixel.x+1, pixel.y)) {
+            if (!isEmpty(pixel.x+1, pixel.y) && !outOfBounds(pixel.x+1, pixel.y) && elements[pixelMap[pixel.x+1][pixel.y].element].movable == elements[pixel.element].movable) {
                 pixelMap[pixel.x+1][pixel.y].active = true
             }
             var x = pixel.x;
-            for (var y = (pixel.y + 1); y < (height + 1); y++) {
-                if (outOfBounds(x, y) || isEmpty(x, y-1)) {
+            for (var y = (pixel.y + 3); y < (height + 3); y++) {
+                if (outOfBounds(x, y+1) || isEmpty(x+1, y) &&  isEmpty(x-1, y) &&  isEmpty(x, y+2) && isEmpty(x, y+1)) {
                     deletePixel(pixel.x,pixel.y)
                     break;
                 }
                 if (!isEmpty(x, y) && !outOfBounds(x,y)) {
-                    deletePixel(x,y)
+                    if (Math.random() > 0.05) {
+                        deletePixel(x,y)
+                    }
+                    else {
+                        if (isBreakable(pixelMap[x][y])) {
+			                breakPixel(pixelMap[x][y]);
+		                }
+                        else if (Math.random() > 0.25) {
+                            deletePixel(x,y)
+                        }
+                    }
+                }
+                if (!isEmpty(x+1, y) && !outOfBounds(x+1,y)) {
+                    if (Math.random() > 0.05) {
+                        if (isBreakable(pixelMap[x+1][y])) {
+			                breakPixel(pixelMap[x+1][y]);
+		                }
+                        else if (Math.random() > 0.9) {
+                            deletePixel(x+1,y)
+                        }
+                    }
+                }
+                if (!isEmpty(x-1, y) && !outOfBounds(x-1,y)) {
+                    if (Math.random() > 0.5) {
+                        if (isBreakable(pixelMap[x-1][y])) {
+			                breakPixel(pixelMap[x-1][y]);
+		                }
+                        else if (Math.random() > 0.9) {
+                            deletePixel(x-1,y)
+                        }
+                    }
                 }
             }
         }
 	    doDefaults(pixel);
     },
     properties: {
-		alpha: 0,
         h: 10,
 	},
+    canContain: true,
+    forceSaveColor: true,
     category: "weapons",
     state: "solid",
     density: 100000000,
     category: "weapons",
-	maxSize: 1,
+	maxSize: 0,
 	cooldown: defaultCooldown,
 	excludeRandom: true,
-} */
+} 
+
+elements.meteor = {
+	color: ["#782828","#783b28","#784b28"],
+    behavior: [
+		"XX|XX|XX",
+		"XX|CC:782828,783b28,784b28%25|XX",
+		"M2|XX|M2",
+	],
+    tick: function(pixel) {
+        if (pixel.start === pixelTicks && pixel.y != 1) {
+            tryMove(pixel, pixel.x, 1)
+        }
+        if (pixel.start === pixelTicks && pixel.material === undefined) {
+			if (Math.random() < 0.5) {
+				if (Math.random() < 0.5) {
+			    	if (Math.random() < 0.5) {
+			        	if (Math.random() < 0.5) {
+			            	if (Math.random() < 0.25) {
+			            	    pixel.material = "magma"
+                                pixel.material2 = "uranium"
+			                }
+                            else {
+                                pixel.material = "molten_iron"
+                                pixel.material2 = "molten_nickel"
+                            }
+			            }
+                        else {
+                            pixel.material = "molten_iron"
+                            pixel.material2 = "magma"
+                        }
+			        }
+                    else {
+                        pixel.material = "magma"
+                        pixel.material2 = "molten_iron"
+                    }
+			    }
+                else {
+			    	if (Math.random() < 0.5) {
+			        	if (Math.random() < 0.5) {
+			        	    if (Math.random() < 0.75) {
+			        	        if (Math.random() < 0.25) {
+			        	            pixel.material = "ice"
+                                    pixel.material2 = "dna"
+			                    }
+                                else {
+                                    pixel.material = "ice"
+                                    pixel.material2 = "iron"
+                                }
+			                }
+                            else {
+                                pixel.material = "ice"
+                                pixel.material2 = "uranium"
+                            }
+			            }
+                        else {
+                            pixel.material = "rock"
+                            pixel.material2 = "ice"
+                        }
+			        }
+                    else {
+                        pixel.material = "magma"
+                        pixel.material2 = "ice"
+                    }
+			    }
+			}
+			else { 
+                pixel.material = "magma" 
+                pixel.material2 = "clay" 
+            }
+		}
+        if (isEmpty(pixel.x, pixel.y-1)) {
+            if (pixel.material === "ice" || pixel.material2 === "ice") {
+                if (Math.random() < 0.5) {
+			        createPixel("steam", pixel.x, pixel.y-1)
+			    }
+                else {
+                    createPixel("fire", pixel.x, pixel.y-1)
+                }
+		    }
+            else if (pixel.material === "uranium" || pixel.material2 === "uranium") {
+                if (Math.random() < 0.5) {
+			        createPixel("radiation", pixel.x, pixel.y-1)
+			    }
+                else {
+                    createPixel("fire", pixel.x, pixel.y-1)
+                }
+		    }
+            else if (elements[pixel.material].state === "gas") {
+                if (Math.random() < 0.5) {
+			        createPixel(pixel.material, pixel.x, pixel.y-1)
+			    }
+                else {
+                    createPixel("fire", pixel.x, pixel.y-1)
+                }
+		    }
+            else {
+                createPixel("fire", pixel.x, pixel.y-1)
+		    }
+		}
+		if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+            deletePixel(pixel.x,pixel.y) 
+            if (Math.random() > 0.5) {
+			    explodeAt(pixel.x,pixel.y,50,[pixel.material,pixel.material,pixel.material,pixel.material,pixel.material2,"explosion","explosion","explosion","magma"])
+            }
+            else {
+                explodeAt(pixel.x,pixel.y,30,[pixel.material,pixel.material,pixel.material,pixel.material2,pixel.material2,"explosion","explosion","explosion","magma"])
+            }
+		}
+	},
+    renderer: function(pixel,ctx) {
+		drawSquare(ctx,"#F0F08B",pixel.x-2,pixel.y-2,5,0.5);
+        drawSquare(ctx,pixel.color,pixel.x-1,pixel.y-1,3,1);
+        drawDefault(ctx,pixel);
+	},
+	reactions: {
+		"water": { elem1:"rock", elem2:"explosion" }
+	},
+	category: "weapons",
+	temp:1500,
+	tempLow: -100,
+	stateLow: "rock",
+	burning: true,
+	burnInto: "rock",
+	burnTime: 170,
+	burn: 100,
+	state: "solid",
+	density: 1600,
+	maxSize: 0,
+	cooldown: defaultCooldown,
+	excludeRandom: true,
+	glow: true
+}
