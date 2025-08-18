@@ -15,6 +15,12 @@ Bug Fixes
 Chalk powder, Wet chalk poeder, and Obsidian shard can now be glued back as intended.
 Dog can now be smashed correctly.
 Steam support with promptInput() instead of prompt()
+
+V3.2
+Machines: Robot, Adjustable heater/cooler
+
+Bug Fixes
+Fixed compatibility issue with nousersthings.js
 */
 
 
@@ -641,7 +647,7 @@ function drawCircle(x0, y0, radius, element) {
 
 
 let circleRad = 7;
-let circleElem = "wood";
+let circle_element = "wood";
 
 elements.circle = {
     color: "#ffffff",
@@ -664,10 +670,10 @@ elements.circle = {
                     function (ans2) {
                         let similar = mostSimilarElement(ans2);
                         if (similar && elements[similar]) {
-                            circleElem = similar;
+                            circle_element = similar;
                         } else {
-                            circleElem = "wood"
-                            logMessage("Invalid element, using default element: " + circleElem);
+                            circle_element = "wood"
+                            logMessage("Invalid element, using default element: " + circle_element);
                         }
                     },
                     "Element prompt",
@@ -679,9 +685,9 @@ elements.circle = {
         );
     },
     onPlace: function (pixel) {
-        drawCircle(pixel.x, pixel.y, circleRad, circleElem);
-        changePixel(pixel, circleElem);
-        pixel.temp = (elements[circleElem].temp || 20)
+        drawCircle(pixel.x, pixel.y, circleRad, circle_element);
+        changePixel(pixel, circle_element);
+        pixel.temp = (elements[circle_element].temp || 20)
     },
     maxSize: 1,
     excludeRandom: true
@@ -689,7 +695,7 @@ elements.circle = {
 
 runAfterReset(function () {
     circleRad = 7;
-    circleElem = "wood";
+    circle_element = "wood";
 })
 
 function randomIntInRange(min, max) {
@@ -1452,3 +1458,388 @@ elements.dog = {
     },
     egg: "dog",
 }
+
+// Keyboard state tracking
+const robotKeys = {
+    left: false,
+    right: false,
+    jump: false
+};
+
+// Set up keyboard listeners
+window.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    if (key === 'a' || key === 'arrowleft') robotKeys.left = true;
+    if (key === 'd' || key === 'arrowright') robotKeys.right = true;
+    if (key === 'w' || key === 'arrowup') robotKeys.jump = true;
+});
+
+window.addEventListener('keyup', (e) => {
+    const key = e.key.toLowerCase();
+    if (key === 'a' || key === 'arrowleft') robotKeys.left = false;
+    if (key === 'd' || key === 'arrowright') robotKeys.right = false;
+    if (key === 'w' || key === 'arrowup') robotKeys.jump = false;
+});
+
+// Helper function for movement
+function tryMoveRobot(headPixel, direction) {
+    const newX = headPixel.x + direction;
+    const body = getPixel(headPixel.x, headPixel.y + 1);
+
+    if (body && body.element === "robot_body" &&
+        isEmpty(newX, headPixel.y) &&
+        isEmpty(newX, body.y)) {
+        movePixel(body, newX, body.y);
+        movePixel(headPixel, newX, headPixel.y);
+        return true;
+    }
+    return false;
+}
+
+function tryJump(headPixel) {
+    const body = getPixel(headPixel.x, headPixel.y + 1);
+    if (!body || body.element !== "robot_body") return false;
+
+    // Check if grounded (on solid surface or bottom of screen)
+    const underBody = getPixel(body.x, body.y + 1);
+    const isGrounded = (!isEmpty(body.x, body.y + 1) || outOfBounds(body.x, body.y + 1));
+
+    if (isGrounded) {
+        // Check space above
+        if (isEmpty(headPixel.x, headPixel.y - 1) &&
+            isEmpty(headPixel.x, headPixel.y - 2)) {
+
+            // Two-stage jump animation
+            pixelTicks = 0;
+            headPixel.jumping = true;
+
+            // First frame - small hop
+            movePixel(headPixel, headPixel.x, headPixel.y - 1);
+            movePixel(body, body.x, headPixel.y + 1);
+
+            // Second frame - complete jump (after small delay)
+            setTimeout(() => {
+                if (headPixel.jumping) {  // Only if still jumping
+                    movePixel(headPixel, headPixel.x, headPixel.y - 1);
+                    movePixel(body, body.x, headPixel.y + 1);
+                    headPixel.jumping = false;
+                }
+            }, 100);  // 100ms delay for smoother animation
+            return true;
+        }
+    }
+    return false;
+}
+// Robot elements
+elements.robot_head = {
+    color: "#d9d9d9",
+    category: "machines",
+    tick(pixel) {
+        const body = getPixel(pixel.x, pixel.y + 1);
+
+        if (body && body.element === "robot_body") {
+            pixel.connected = true;
+            body.connected = true;
+
+            // Controlled movement
+            if (pixel.mode === "Controlled") {
+                if (robotKeys.left) {
+                    tryMoveRobot(pixel, -1);
+                }
+                else if (robotKeys.right) {
+                    tryMoveRobot(pixel, 1);
+                }
+
+                if (robotKeys.jump && !pixel.jumping) {
+                    tryJump(pixel);
+                }
+            }
+            // Aimless wandering
+            else if (pixel.mode === "Aimless" && Math.random() < 0.02) {
+                pixel.dir = pixel.dir || (Math.random() < 0.5 ? -1 : 1);
+                if (!tryMoveRobot(pixel, pixel.dir)) {
+                    pixel.dir *= -1;
+                }
+            }
+        }
+        else {
+            pixel.connected = false;
+            tryMove(pixel, pixel.x, pixel.y + 1);
+        }
+    }
+};
+
+elements.robot_body = {
+    color: "#b1b1b1",
+    category: "machines",
+    tick(pixel) {
+        const head = getPixel(pixel.x, pixel.y - 1);
+
+        if (head && head.element === "robot_head") {
+            pixel.connected = true;
+            head.connected = true;
+
+            // Gravity - move down if space below
+            if (isEmpty(pixel.x, pixel.y + 1)) {
+                let oldY = pixel.y;
+                movePixel(pixel, pixel.x, pixel.y + 1);
+                movePixel(head, head.x, oldY);
+            }
+        }
+        else {
+            pixel.connected = false;
+            tryMove(pixel, pixel.x, pixel.y + 1);
+        }
+    }
+};
+
+// Robot creator element
+elements.robot = {
+    color: "#b1b1b1",
+    category: "machines",
+    onSelect() {
+        promptChoose(
+            "Choose robot mode",
+            ["Aimless", "Controlled"],
+            (choice) => {
+                if (choice === "Controlled" && isMobile) {
+                    logMessage("Controlled mode doesn't work on mobile");
+                    mode = "Aimless";
+                } else {
+                    mode = choice || "Aimless";
+                    if (mode === "Controlled") {
+                        logMessage("Controls: A/D to move and W to jump or (Not reccomended) ←/→ to move, and ↑ to jump");
+                    }
+                }
+            },
+            "Robot Mode"
+        );
+    },
+    onPlace(pixel) {
+        // Try to create head above
+        if (isEmpty(pixel.x, pixel.y - 1)) {
+            createPixel("robot_head", pixel.x, pixel.y - 1);
+            const head = getPixel(pixel.x, pixel.y - 1);
+            head.mode = mode;
+            changePixel(pixel, "robot_body");
+            pixel.mode = mode;
+        }
+        // Try to create body below if above is blocked
+        else if (isEmpty(pixel.x, pixel.y + 1)) {
+            createPixel("robot_body", pixel.x, pixel.y + 1);
+            const body = getPixel(pixel.x, pixel.y + 1);
+            body.mode = mode;
+            changePixel(pixel, "robot_head");
+            pixel.mode = mode;
+        }
+        // Delete if no space
+        else {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    cooldown: defaultCooldown
+};
+
+elements.mercury_gas.behaviorOn = [
+    "M2|CR:uv_light%10 AND M1|M2",
+    "CR:uv_light%10 AND M1|XX|CR:uv_light%10 AND M1",
+    "M2|CR:uv_light%10 AND M1|M2"
+]
+
+adjusted_heater_temp = 100
+elements.broken_adjustable_heater = {
+    color: "#ff0000",
+    category: "extras",
+    insulate: true,
+    behavior: behaviors.WALL,
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to adjust to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_heater_temp = choice
+                    logMessage("Occasionally creates superheated pixels")
+                }
+            },
+            "Temperature Prompt", adjusted_heater_temp
+        )
+    },
+    tick(pixel) {
+        pixel.heat_temp ??= adjusted_heater_temp
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate
+                && current_pixel.temp < pixel.heat_temp
+            ) {
+                current_pixel.temp = Math.min(current_pixel.temp + 2, pixel.heat_temp);
+            }
+        }
+    }
+};
+
+adjusted_temp = 100
+heatAmount = 2
+
+elements.adjustable_heater = {
+    color: "#ff0000",
+    category: "machines",
+    insulate: true,
+    behavior: behaviors.WALL,
+
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to adjust to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_temp = Number(choice);
+                }
+            },
+            "Temperature Prompt", adjusted_temp
+        );
+    },
+
+    tick(pixel) {
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate
+            ) {
+                // Heat or cool toward the adjusted temp
+                if (current_pixel.temp < adjusted_temp) {
+                    current_pixel.temp = Math.min(current_pixel.temp + heatAmount, adjusted_temp);
+                } else if (current_pixel.temp > adjusted_temp) {
+                    current_pixel.temp = Math.max(current_pixel.temp - heatAmount, adjusted_temp);
+                }
+
+                // Phase change check (forces melting/boiling/etc.)
+                let elemDef = elements[current_pixel.element];
+                if (elemDef) {
+                    // Too hot for current state → change to high state
+                    if (typeof elemDef.tempHigh === "number" &&
+                        current_pixel.temp >= elemDef.tempHigh &&
+                        elemDef.stateHigh) {
+                        changePixel(current_pixel, elemDef.stateHigh);
+                    }
+
+                    // Too cold for current state → change to low state
+                    if (typeof elemDef.tempLow === "number" &&
+                        current_pixel.temp <= elemDef.tempLow &&
+                        elemDef.stateLow) {
+                        changePixel(current_pixel, elemDef.stateLow);
+                    }
+                }
+            }
+        }
+    }
+};
+
+adjusted_cooler_temp = 0; // default cooling target
+
+elements.broken_adjustable_cooler = {
+    color: "#0000ff",
+    category: "extras",
+    insulate: true,
+    behavior: behaviors.WALL,
+
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to cool to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_cooler_temp = Number(choice);
+                    logMessage("Occasionally creates supercooled pixels");
+                }
+            },
+            "Temperature Prompt", adjusted_cooler_temp
+        );
+    },
+
+    tick(pixel) {
+        pixel.cool_temp ??= adjusted_cooler_temp;
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate &&
+                current_pixel.temp > pixel.cool_temp
+            ) {
+                // Cool the pixel toward the target
+                current_pixel.temp = Math.max(current_pixel.temp - 2, pixel.cool_temp);
+            }
+        }
+    }
+};
+
+adjusted_cool_temp = 0; // default cooling target
+coolAmount = 2; // adjustable step
+
+elements.adjustable_cooler = {
+    color: "#0000ff",
+    category: "machines",
+    insulate: true,
+    behavior: behaviors.WALL,
+
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to cool to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_cool_temp = Number(choice);
+                }
+            },
+            "Temperature Prompt", adjusted_cool_temp
+        );
+    },
+
+    tick(pixel) {
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate
+            ) {
+                // Cool or heat toward target (mirrors fixed heater logic)
+                if (current_pixel.temp > adjusted_cool_temp) {
+                    current_pixel.temp = Math.max(current_pixel.temp - coolAmount, adjusted_cool_temp);
+                } else if (current_pixel.temp < adjusted_cool_temp) {
+                    current_pixel.temp = Math.min(current_pixel.temp + coolAmount, adjusted_cool_temp);
+                }
+
+                // Phase change check (forces melting/freezing/etc.)
+                let elemDef = elements[current_pixel.element];
+                if (elemDef) {
+                    // Too hot → change to high state
+                    if (typeof elemDef.tempHigh === "number" &&
+                        current_pixel.temp >= elemDef.tempHigh &&
+                        elemDef.stateHigh) {
+                        changePixel(current_pixel, elemDef.stateHigh);
+                    }
+
+                    // Too cold → change to low state
+                    if (typeof elemDef.tempLow === "number" &&
+                        current_pixel.temp <= elemDef.tempLow &&
+                        elemDef.stateLow) {
+                        changePixel(current_pixel, elemDef.stateLow);
+                    }
+                }
+            }
+        }
+    }
+};
+
+
