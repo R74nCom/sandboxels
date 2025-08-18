@@ -82,10 +82,8 @@ elements.breakable_art = {
 	tempHigh: 204.444444,
 	stateHigh: "gas_art",
 	breakInto: "powder_art",
-	breakIntoColorMultiplier: [1.1,1,0.86],
+	breakIntoColorMultiplier: [1,1,1],
 }
 
-elements.art.related = ["powder_art", "liquid_art", "gas_art", "breakable_art"]
-elements.art.hardness = 1
 elements.art.related = ["powder_art", "liquid_art", "gas_art", "breakable_art"]
 elements.art.hardness = 1
