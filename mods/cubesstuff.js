@@ -1533,7 +1533,6 @@ function tryJump(headPixel) {
 // Robot elements
 elements.robot_head = {
     color: "#d9d9d9",
-    behavior: behaviors.SOLID,
     category: "machines",
     tick(pixel) {
         const body = getPixel(pixel.x, pixel.y + 1);
@@ -1572,7 +1571,6 @@ elements.robot_head = {
 
 elements.robot_body = {
     color: "#b1b1b1",
-    behavior: behaviors.SOLID,
     category: "machines",
     tick(pixel) {
         const head = getPixel(pixel.x, pixel.y - 1);
@@ -1598,7 +1596,6 @@ elements.robot_body = {
 // Robot creator element
 elements.robot = {
     color: "#b1b1b1",
-    behavior: behaviors.SOLID,
     category: "machines",
     onSelect() {
         promptChoose(
@@ -1844,4 +1841,5 @@ elements.adjustable_cooler = {
         }
     }
 };
+
 
