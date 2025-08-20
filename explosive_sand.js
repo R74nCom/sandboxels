@@ -1,22 +1,31 @@
-
-
 // explosive_sand.js
-// Mod: Arena explosiva al tocar humanos
+// Mod: Arena explosiva al tocar humanos (con delay)
 
 elements.explosive_sand = {
     name: "Explosive Sand",
-    desc: "Arena que explota al tocar un humano.",
+    desc: "Arena que explota unos segundos después de tocar un humano.",
     color: ["#e0c068", "#d9b55f", "#fcae52"],
     behavior: behaviors.LIQUID,
     category: "land",
     state: "solid",
     density: 1600,
     hardness: 0.2,
+    _armed: false, // para evitar múltiples activaciones
     reactions: {
         human: function(pixel, humanPixel) {
-            // Explota cuando toca a un humano
-            explodeAt(pixel.x, pixel.y, 40); // 💥 Radio 40
-            deletePixel(pixel); // La arena desaparece tras explotar
+            if (!pixel._armed) {
+                pixel._armed = true; // marcar como activada
+                let flashInterval = setInterval(() => {
+                    // alterna colores para el efecto de parpadeo
+                    pixel.color = pixel.color === "#ff0000" ? "#fcae52" : "#ff0000";
+                }, 200); // parpadeo cada 0.2s
+
+                setTimeout(() => {
+                    clearInterval(flashInterval); // parar parpadeo
+                    explodeAt(pixel.x, pixel.y, 60); // 💥 Explosión más grande
+                    deletePixel(pixel);
+                }, 3000); // explota después de 3 segundos
+            }
         },
     },
     tempHigh: 1700,
@@ -25,4 +34,6 @@ elements.explosive_sand = {
     stateLow: "packed_snow",
     conduct: 0.2,
 };
+
+
 
