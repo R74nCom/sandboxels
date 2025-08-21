@@ -399,6 +399,116 @@ elements.cured_meat.reactions.smoke = { elem1: "brisket", elem2: null }
 
 elements.cured_meat.tempHigh = 111
 
+// spices
+
+elements.star_anise = {
+    color: ["#8B4513", "#A0522D", "#D2691E"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.curry_leaves = {
+    color: ["#228B22", "#32CD32", "#6B8E23"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.laksa_leaves = {
+    color: ["#6a8e3d", "#7d9a57", "#8ea54b"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.bay_leaves = {
+    color: ["#556B2F", "#808000", "#9ACD32"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.rosemary = {
+    color: ["#483C32", "#708238", "#8FBC8F"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.coriander_leaves = {
+    color: ["#4b5f44", "#6b7b55", "#3f5c32"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.coriander_seeds = {
+    color: ["#F4A460", "#D2691E"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.parsley = {
+    color: ["#228B22", "#32CD32", "#3CB371"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
+elements.cloves = {
+    color: ["#654321", "#8B4513", "#A0522D"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 20,
+    hidden: true,
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+}
+
 
 
 
