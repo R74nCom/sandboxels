@@ -1,12 +1,12 @@
 // WorldEdit.ts
-// Version: 1.1.0
+// Version: 1.2.0
 
 // Interfaces
 interface WorldEditState {
 	firstSelectionPos: Vec2D,
 	clipboard: Pixel[][] | null
 	selection: Rect | null
-	prevNonWorldEditElement: string
+	lastNonWorldEditElement: string
 }
 
 interface WorldEditStyle {
@@ -16,17 +16,21 @@ interface WorldEditStyle {
 	selectDash: boolean
 	pasteFill: string
 	pasteStroke: string
+	pastePixelColor: string
 }
 
 // Constants
 const w_accentColor = "#7cff62"
 const w_style: WorldEditStyle = {
 	strokeWidth: 1,
+
 	selectFill: "#57b64530",
 	selectStroke: w_accentColor,
 	selectDash: true,
+
 	pasteFill: "#00FFFF40",
-	pasteStroke: "#00FFFF"
+	pasteStroke: "#00FFFF",
+	pastePixelColor: "#00FFFF44"
 }
 
 // Global variables
@@ -37,7 +41,7 @@ let w_state: WorldEditState = {
 	firstSelectionPos: {x: 0, y: 0},
 	selection: null,
 	clipboard: null,
-	prevNonWorldEditElement: "unknown"
+	lastNonWorldEditElement: "unknown"
 }
 
 // Define settings
@@ -121,6 +125,10 @@ class Rect {
 }
 
 // Functions
+function reverseString(str: string): string {
+	return [...str].reverse().join("")
+}
+
 function isPointInWorld(point: Vec2D): boolean {
 	return point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height
 }
@@ -159,10 +167,17 @@ function updatePastePreviewCanvas(): void {
 
 	buffer.fill(0x00000000)
 
+	const pixelColorBinary: number = parseInt(
+		reverseString(
+			w_style.pastePixelColor.slice(1)
+		),
+		16
+	);
+
 	for (let y = 0; y < clipboardRect.h; y++) {
 		for (let x = 0; x < clipboardRect.w; x++) {
 			if (clipboard[y][x])
-				buffer[y * clipboardRect.w + x] = 0x44FFFF00
+				buffer[y * clipboardRect.w + x] = pixelColorBinary
 		}
 	}
 
@@ -280,8 +295,8 @@ function modifySelectElement(): void {
 	// @ts-ignore
 	selectElement = (element: string): void => {
 		// Keep track of last non-worldEdit element
-		if (!worldEditElements.hasOwnProperty(currentElement))
-			w_state.prevNonWorldEditElement = currentElement
+		if (!worldEditElements.hasOwnProperty(element))
+			w_state.lastNonWorldEditElement = element
 
 		originalSelectElement(element)
 	}
@@ -304,7 +319,7 @@ function addWorldEditElements(elementsToAdd: ElementsType): void {
 			element.rawOnSelect = originalOnSelect
 			element.onSelect = function (...args: any[]) {
 				originalOnSelect(...args)
-				selectElement(w_state.prevNonWorldEditElement)
+				selectElement(w_state.lastNonWorldEditElement)
 			}
 		}
 	}
@@ -334,16 +349,16 @@ worldEditElements.w_select = {
 
 		if (showingMenu) return
 		if (!isPointInWorld(pos)) return
-		if (mouseType === "middle" || mouseType === "right") return
+		if (e.button === 1 || e.button === 2) return
 
 		w_state.firstSelectionPos = pos
 	},
-	onPointerMove: function (e: PointerEvent): void {
+	onPointerMoveAnywhere: function (e: PointerEvent): void {
 		const pos = mousePosToWorldPos({x: e.clientX, y: e.clientY})
 
 		if (!mouseIsDown) return
 		if (showingMenu) return
-		if (mouseType === "middle" || mouseType === "right") return
+		if (e.button === 1 || e.button === 2) return
 		if (currentElement !== "w_select") return
 
 		const rect = Rect.fromCorners(
@@ -388,10 +403,11 @@ worldEditElements.w_copy = {
 }
 
 worldEditElements.w_paste = {
-	onPointerDown: function (): void {
+	onPointerDown: function (e: PointerEvent): void {
 		if (showingMenu) return
 		if (!isPointInWorld(mousePos)) return
-		if (mouseType === "middle" || mouseType === "right") return
+
+		if (e.button === 1 || e.button === 2) return
 
 		const clipboard = w_state.clipboard
 
@@ -429,7 +445,6 @@ worldEditElements.w_paste = {
 worldEditElements.w_cut = {
 	onSelect: function (): void {
 		const selection = w_state.selection
-
 
 		if (!selection) {
 			logMessage("Error: Nothing is selected.")
@@ -489,7 +504,7 @@ worldEditElements.w_delete = {
 worldEditElements.w_fill = {
 	onSelect: function (): void {
 		const selection = w_state.selection
-		const fillElement = w_state.prevNonWorldEditElement
+		const fillElement = w_state.lastNonWorldEditElement
 
 		if (!selection) {
 			logMessage("Error: Nothing is selected.")
@@ -499,8 +514,10 @@ worldEditElements.w_fill = {
 		// Fill area
 		for (let y = selection.y; y < selection.y2; y++) {
 			for (let x = selection.x; x < selection.x2; x++) {
+				if (pixelMap[x][y]) continue
+
 				const placed = currentPixels.push(new Pixel(x, y, fillElement))
-				if (!placed) return
+				if (!placed) continue
 
 				if (currentPixels.length > maxPixelCount || !fillElement) {
 					currentPixels[currentPixels.length - 1].del = true
@@ -542,6 +559,11 @@ runAfterReset(() => {
 		if (elements[currentElement] && elements[currentElement].onPointerMove)
 			elements[currentElement].onPointerMove(e)
 	}, {passive: false})
+
+	document.addEventListener("pointermove", (e: PointerEvent) => {
+		if (elements[currentElement] && elements[currentElement].onPointerMoveAnywhere)
+			elements[currentElement].onPointerMoveAnywhere(e)
+	})
 
 	addedCustomEventListeners = true
 })
