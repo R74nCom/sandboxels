@@ -1,23 +1,13 @@
 // created by SquareScreamYT
 // the sequel to aChefsDream!
 
-runAfterLoad(function() {
-    console.log("Thanks for using aChefsDream2.js! -sqec")
-})
+dependOn("aChefsDream.js", function(){
 
-var mods_to_include = ["mods/aChefsDream.js"]
+console.log("we recommend using nousersthings.js, elementEraser.js and delete_all_of_element.js for a better cooking experience!")
 
-var mods_included = mods_to_include.map(mod => enabledMods.includes(mod));
-var all_mods_included = mods_included.reduce(function(a,b) { return a && b });
 
-if(!all_mods_included) {
-    var mods_needed = mods_to_include.filter(function(modPath) { return !(enabledMods.includes(modPath)) });
 
-    mods_needed.forEach(function(modPath) {
-		enabledMods.splice(enabledMods.indexOf("mods/aChefsDream2"),0,modPath);
-	});
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-}
+
 
 // Pork and Pigs
 
@@ -391,3 +381,26 @@ if (!elements.sugar_water.reactions) elements.sugar_water.reactions = {};
 elements.sugar_water.reactions.lemon_juice = { elem1: "sugar_water", elem2: null, color1: "#fff7ba" }
 if (!elements.sugar_water.reactions) elements.sugar_water.reactions = {};
 elements.sugar_water.reactions.cinnamon_powder = { elem1: "cola_syrup", elem2: null }
+
+elements.brisket = {
+    color:["#704534", "#6b3d2b", "#733526"],
+    behavior: behaviors.SUPPORT,
+    category: "food",
+    state: "solid",
+    temp:55,
+    tempHigh: 600,
+    stateHigh: ["ash","smoke"],
+    isFood: true,
+    hidden: true,
+}
+
+if (!elements.cured_meat.reactions) elements.cured_meat.reactions = {};
+elements.cured_meat.reactions.smoke = { elem1: "brisket", elem2: null }
+
+elements.cured_meat.tempHigh = 111
+
+
+
+
+
+},true)
