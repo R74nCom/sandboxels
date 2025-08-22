@@ -1,13 +1,17 @@
-// created by SquareScreamYT
 // the sequel to aChefsDream!
+// created by SquareScreamYT/sq
+// https://github.com/SquareScreamYT/
+// https://youtube.com/@sqec
+
+version = "v2.1.0"
+
+runAfterLoad(function() {
+    console.log("Current aChefsDream version: "+version)
+})
 
 dependOn("aChefsDream.js", function(){
 
 console.log("we recommend using nousersthings.js, elementEraser.js and delete_all_of_element.js for a better cooking experience!")
-
-
-
-
 
 // Pork and Pigs
 
@@ -553,7 +557,42 @@ var spices = [
   }
 }*/
 
+elements.pistachio = {
+  color: ["#E8D5B7", "#F2E3C1", "#DDD0A8"],
+  behavior: behaviors.POWDER,
+  category: "food",
+  state: "solid",
+  isFood: true,
+  temp: 20,
+  tempHigh: 250,
+  stateHigh: ["ash", "smoke"],
+  breakInto: "pistachio_powder",
+  cutInto: "pistachio_meat"
+}
 
+elements.pistachio_meat = {
+  color: ["#98C93A", "#A3D645", "#8BB832"],
+  behavior: behaviors.POWDER,
+  category: "food",
+  state: "solid",
+  isFood: true,
+  temp: 20,
+  tempHigh: 250,
+  stateHigh: ["ash", "smoke"],
+  breakInto: "pistachio_powder",
+  hidden: true
+}
 
+elements.pistachio_powder = {
+  color: ["#7A9B2F", "#85A635", "#6F8728"],
+  behavior: behaviors.POWDER,
+  category: "food",
+  state: "solid",
+  isFood: true,
+  temp: 20,
+  tempHigh: 250,
+  stateHigh: ["ash", "smoke"],
+  hidden: true
+}
 
 },true)
