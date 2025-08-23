@@ -1,6 +1,6 @@
 "use strict";
 // WorldEdit.js (compiled)
-// Version: 1.1.0
+// Version: 1.2.0
 // Constants
 const w_accentColor = "#7cff62";
 const w_style = {
@@ -9,7 +9,8 @@ const w_style = {
 	selectStroke: w_accentColor,
 	selectDash: true,
 	pasteFill: "#00FFFF40",
-	pasteStroke: "#00FFFF"
+	pasteStroke: "#00FFFF",
+	pastePixelColor: "#00FFFF44"
 };
 // Global variables
 let worldEditElements = {};
@@ -18,7 +19,7 @@ let w_state = {
 	firstSelectionPos: {x: 0, y: 0},
 	selection: null,
 	clipboard: null,
-	prevNonWorldEditElement: "unknown"
+	lastNonWorldEditElement: "unknown"
 };
 // Define settings
 let w_settingsTab;
@@ -81,6 +82,10 @@ class Rect {
 }
 
 // Functions
+function reverseString(str) {
+	return [...str].reverse().join("");
+}
+
 function isPointInWorld(point) {
 	return point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height;
 }
@@ -112,10 +117,11 @@ function updatePastePreviewCanvas() {
 	const imageData = pastePreviewCtx.createImageData(clipboardRect.w, clipboardRect.h);
 	const buffer = new Uint32Array(imageData.data.buffer);
 	buffer.fill(0x00000000);
+	const pixelColorBinary = parseInt(reverseString(w_style.pastePixelColor.slice(1)), 16);
 	for (let y = 0; y < clipboardRect.h; y++) {
 		for (let x = 0; x < clipboardRect.w; x++) {
 			if (clipboard[y][x])
-				buffer[y * clipboardRect.w + x] = 0x44FFFF00;
+				buffer[y * clipboardRect.w + x] = pixelColorBinary;
 		}
 	}
 	pastePreviewCtx.putImageData(imageData, 0, 0);
@@ -200,8 +206,8 @@ function modifySelectElement() {
 	// @ts-ignore
 	selectElement = (element) => {
 		// Keep track of last non-worldEdit element
-		if (!worldEditElements.hasOwnProperty(currentElement))
-			w_state.prevNonWorldEditElement = currentElement;
+		if (!worldEditElements.hasOwnProperty(element))
+			w_state.lastNonWorldEditElement = element;
 		originalSelectElement(element);
 	};
 }
@@ -221,7 +227,7 @@ function addWorldEditElements(elementsToAdd) {
 			element.rawOnSelect = originalOnSelect;
 			element.onSelect = function (...args) {
 				originalOnSelect(...args);
-				selectElement(w_state.prevNonWorldEditElement);
+				selectElement(w_state.lastNonWorldEditElement);
 			};
 		}
 	}
@@ -248,17 +254,17 @@ worldEditElements.w_select = {
 			return;
 		if (!isPointInWorld(pos))
 			return;
-		if (mouseType === "middle" || mouseType === "right")
+		if (e.button === 1 || e.button === 2)
 			return;
 		w_state.firstSelectionPos = pos;
 	},
-	onPointerMove: function (e) {
+	onPointerMoveAnywhere: function (e) {
 		const pos = mousePosToWorldPos({x: e.clientX, y: e.clientY});
 		if (!mouseIsDown)
 			return;
 		if (showingMenu)
 			return;
-		if (mouseType === "middle" || mouseType === "right")
+		if (e.button === 1 || e.button === 2)
 			return;
 		if (currentElement !== "w_select")
 			return;
@@ -291,12 +297,12 @@ worldEditElements.w_copy = {
 	}
 };
 worldEditElements.w_paste = {
-	onPointerDown: function () {
+	onPointerDown: function (e) {
 		if (showingMenu)
 			return;
 		if (!isPointInWorld(mousePos))
 			return;
-		if (mouseType === "middle" || mouseType === "right")
+		if (e.button === 1 || e.button === 2)
 			return;
 		const clipboard = w_state.clipboard;
 		if (!clipboard) {
@@ -380,7 +386,7 @@ worldEditElements.w_delete = {
 worldEditElements.w_fill = {
 	onSelect: function () {
 		const selection = w_state.selection;
-		const fillElement = w_state.prevNonWorldEditElement;
+		const fillElement = w_state.lastNonWorldEditElement;
 		if (!selection) {
 			logMessage("Error: Nothing is selected.");
 			return;
@@ -388,9 +394,11 @@ worldEditElements.w_fill = {
 		// Fill area
 		for (let y = selection.y; y < selection.y2; y++) {
 			for (let x = selection.x; x < selection.x2; x++) {
+				if (pixelMap[x][y])
+					continue;
 				const placed = currentPixels.push(new Pixel(x, y, fillElement));
 				if (!placed)
-					return;
+					continue;
 				if (currentPixels.length > maxPixelCount || !fillElement) {
 					currentPixels[currentPixels.length - 1].del = true;
 				} else if (elements[fillElement] && elements[fillElement].onPlace !== undefined) {
@@ -425,5 +433,9 @@ runAfterReset(() => {
 		if (elements[currentElement] && elements[currentElement].onPointerMove)
 			elements[currentElement].onPointerMove(e);
 	}, {passive: false});
+	document.addEventListener("pointermove", (e) => {
+		if (elements[currentElement] && elements[currentElement].onPointerMoveAnywhere)
+			elements[currentElement].onPointerMoveAnywhere(e);
+	});
 	addedCustomEventListeners = true;
 });
