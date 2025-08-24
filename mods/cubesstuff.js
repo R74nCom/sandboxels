@@ -567,10 +567,17 @@ keybinds["KeyT"] = function () {
     tpsPrompt()
 }
 
-function addRow() {
+function addRowWhenReady() {
     const table = document.getElementById("controlsTable");
-    const rowCount = table.rows.length;
 
+    if (!table) {
+        // Table not ready yet, try again in 100ms
+        setTimeout(addRowWhenReady, 100);
+        return;
+    }
+
+    // Table exists, add the row
+    const rowCount = table.rows.length;
     const newRow = table.insertRow(rowCount - 1);
 
     const cell1 = newRow.insertCell(0);
@@ -578,9 +585,13 @@ function addRow() {
 
     cell1.textContent = "Change TPS";
     cell2.innerHTML = "<kbd>T</kbd>";
+
+    console.log("Row added successfully!");
 }
 
-addRow()
+// Start the process
+addRowWhenReady();
+
 
 elements.randomizer = {
     buttonColor: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
@@ -1841,5 +1852,6 @@ elements.adjustable_cooler = {
         }
     }
 };
+
 
 
