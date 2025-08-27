@@ -10,26 +10,30 @@ document.addEventListener("keydown", function(e) { //replace prompt listener
 });
 
 function replaceElementPrompt() {
-	var fromElement = prompt("Enter the element you want to change");
-	// replace spaces with underscores
-	fromElement = fromElement.replace(/ /g, "_");
-	fromElementS = mostSimilarElement(fromElement);
-	if (fromElementS === null || fromElementS === undefined || fromElementS === "") {
-		alert("Element \"" + fromElement + "\" not found! Defaulting to rock.");
-		fromElementS = "rock";
-	};
-
-	var toElement = prompt("Enter what you want to replace \"" + fromElementS + "\" with");
-	// replace spaces with underscores
-	toElement = toElement.replace(/ /g, "_");
-	toElementS = mostSimilarElement(toElement);
-	if (toElementS === null || toElementS === undefined || toElementS === "") {
-		alert("Element \"" + toElement + "\" not found! Defaulting to sand.");
-		toElementS = "sand";
-	};
-	replaceFrom = fromElementS;
-	replaceTo = toElementS;
-	updateReplaceDescriptions();	
+	promptInput("Enter the element you want to change", (fromElement) => {
+		// var fromElement = prompt("Enter the element you want to change");
+		// replace spaces with underscores
+		fromElement = fromElement.replace(/ /g, "_");
+		fromElementS = mostSimilarElement(fromElement);
+		if (fromElementS === null || fromElementS === undefined || fromElementS === "") {
+			alert("Element \"" + fromElement + "\" not found! Defaulting to rock.");
+			fromElementS = "rock";
+		};
+	
+		promptInput("Enter what you want to replace \"" + fromElementS + "\" with", (toElement) => {
+			// var toElement = prompt("Enter what you want to replace \"" + fromElementS + "\" with");
+			// replace spaces with underscores
+			toElement = toElement.replace(/ /g, "_");
+			toElementS = mostSimilarElement(toElement);
+			if (toElementS === null || toElementS === undefined || toElementS === "") {
+				alert("Element \"" + toElement + "\" not found! Defaulting to sand.");
+				toElementS = "sand";
+			};
+			replaceFrom = fromElementS;
+			replaceTo = toElementS;
+			updateReplaceDescriptions();	
+		},"Replace With")
+	},"Replace Element")
 }
 
 function updateReplaceDescriptions() {
