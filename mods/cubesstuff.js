@@ -1,3 +1,30 @@
+// Changelog
+// Starts at version 3
+
+/*
+V3
+Tools: RGB LED, Dice, Custom Bomb
+Life: Pineapple Plants (seed, stem, fruit)
+Hazards: Lithium Battery, Lithium, Rubidium, Asbestos
+Minerals: Chalk, Chalk Powder, Lapis Lazuli
+Light: UV Light, Phosphor, Neon Tube
+Extras: Realistic Ball
+
+V3.1
+Bug Fixes
+Chalk powder, Wet chalk poeder, and Obsidian shard can now be glued back as intended.
+Dog can now be smashed correctly.
+Steam support with promptInput() instead of prompt()
+
+V3.2
+Machines: Robot, Adjustable heater/cooler
+
+Bug Fixes
+Fixed compatibility issue with nousersthings.js
+*/
+
+
+
 elements.button = {
     color: "#970000",
     conduct: 1,
@@ -117,7 +144,8 @@ elements.disco_ball = {
             }
             else { pixel.color = "#ebebc3" }
         }
-    }
+    },
+    state: "solid"
 }
 
 elements.molten_iron.reactions.sulfur = { elem1: "pyrite", elem2: null, chance: 0.25 }
@@ -162,7 +190,8 @@ elements.fire_extinguisher_powder = {
         }
     },
     canPlace: true,
-    category: "powders"
+    category: "powders",
+    state: "solid"
 }
 
 elements.pie_crust = {
@@ -186,7 +215,8 @@ elements.pie_crust = {
         "potato": { elem1: "pie", elem2: null, tempMin: 200 },
         "mashed_potato": { elem1: "pie", elem2: null, tempMin: 200 },
         "baked_potato": { elem1: "pie", elem2: null, tempMin: 200 },
-        "grape": { elem1: "pie", elem2: null, tempMin: 200 }
+        "grape": { elem1: "pie", elem2: null, tempMin: 200, func: function (pixel) { pixel.originColor = "#8200fc" } },
+        "pineapple": { elem1: "pie", elem2: null, tempMin: 200, func: function (pixel) { pixel.originColor = "#ffd900" } }
     }
 }
 
@@ -204,7 +234,12 @@ elements.pie = {
     tempHigh: 500,
     stateHigh: "ash",
     breakInto: "sauce",
-    breakIntoColor: ["#ff822e", "#ff8c2e"]
+    breakIntoColor: ["#ff822e", "#ff8c2e"],
+    tick: function (pixel) {
+        if (pixel.originColor) {
+            pixel.breakIntoColor = pixel.originColor
+        }
+    }
 }
 
 elements.gasoline = {
@@ -248,6 +283,7 @@ elements.disco_floor = {
     forceSaveColor: true,
     conduct: 1,
     behavior: behaviors.WALL,
+    state: "solid",
     tick: function (pixel) {
         pixel.changeCd ??= 20;
         pixel.changeCd--;
@@ -288,7 +324,8 @@ elements.moss = {
         "rock_wall": { elem2: "dirt", chance: 0.0025 },
         "gravel": { elem2: "dirt", chance: 0.0025 },
     },
-    category: "life"
+    category: "life",
+    state: "solid"
 }
 
 elements.magma.extraTempLow = { "700": "obsidian" }
@@ -321,6 +358,9 @@ elements.obsidian_shard = {
     stateHigh: "magma",
     state: "solid",
     density: 2500,
+    reactions: {
+        "glue": { elem1: "obsidian", elem2: null }
+    }
 }
 
 elements.cardboard = {
@@ -352,31 +392,45 @@ elements.cardboard = {
 
 elements.paper.pressInto = "cardboard"
 
+function pressPixel(pixel) {
+    if (elements[pixel.element].pressInto === undefined) { return; }
+    // if it is an array, choose a random item, else just use the value
+    let result;
+    if (elements[pixel.element].pressInto !== undefined) {
+        if (Array.isArray(elements[pixel.element].pressInto)) {
+            result = elements[pixel.element].pressInto[Math.floor(Math.random() * elements[pixel.element].pressInto.length)];
+        }
+        else {
+            result = elements[pixel.element].pressInto;
+        }
+    }
+    // change the pixel to the result
+    if (result === null) {
+        deletePixel(pixel.x, pixel.y);
+        return;
+    }
+
+    else if (result !== undefined) {
+        changePixel(pixel, result);
+    }
+}
+
 elements.press = {
     color: ["#999999", "#c0c0c0", "#999999"],
     category: "tools",
     tool: function (pixel) {
         // edited smash code
         if (isPressable(pixel)) {
-            if (elements[pixel.element].pressInto === undefined) { return; }
-            // if it is an array, choose a random item, else just use the value
-            let result;
-            if (elements[pixel.element].pressInto !== undefined) {
-                if (Array.isArray(elements[pixel.element].pressInto)) {
-                    result = elements[pixel.element].pressInto[Math.floor(Math.random() * elements[pixel.element].pressInto.length)];
-                }
-                else {
-                    result = elements[pixel.element].pressInto;
-                }
-            }
-            // change the pixel to the result
-            if (result === null) {
-                deletePixel(pixel.x, pixel.y);
-                return;
+            let old = pixel.element
+            if (Math.random() < (1 - (elements[pixel.element].resistPress || 0)) / (shiftDown ? 1 : 4)) {
+                pressPixel(pixel)
             }
 
-            else if (result !== undefined) {
-                changePixel(pixel, result);
+            else if (old === pixel.element && elements[pixel.element].movable && !isEmpty(pixel.x, pixel.y + 1) && !paused) {
+                let x = 0; let y = 0;
+                if (Math.random() < 0.66) x = Math.random() < 0.5 ? 1 : -1;
+                if (Math.random() < 0.66) y = Math.random() < 0.5 ? 1 : -1;
+                tryMove(pixel, pixel.x + x, pixel.y + y)
             }
         }
     }
@@ -397,6 +451,7 @@ elements.faulty_wire = {
     insulate: true,
     conduct: 0.7,
     noMix: true,
+    state: "solid"
 }
 
 elements.lighter_fluid = {
@@ -415,7 +470,7 @@ elements.lighter_fluid = {
             var coord = squareCoordsShuffle[i];
             var x = pixel.x + coord[0];
             var y = pixel.y + coord[1];
-            if (isEmpty(x, y)) {
+            if (isEmpty(x, y) && Math.random() >= 0.75) {
                 createPixel("lighter_fluid_gas", x, y)
                 pixel.gasMade += 1
             }
@@ -438,7 +493,7 @@ elements.lighter_fluid_gas = {
     hidden: true,
     density: 20,
     tick: function (pixel) {
-        if (Math.random() <= 0.25) {
+        if (Math.random() <= 0.1) {
             deletePixel(pixel.x, pixel.y)
         }
     }
@@ -477,27 +532,52 @@ elements.glow_stick = {
     glow: true,
     behavior: behaviors.POWDER,
     breakInto: "glow_stick_liquid",
-    category: "powders"
+    category: "powders",
+    tempHigh: 300,
+    stateHigh: ["molten_plastic", "stench"],
+    state: "solid"
 }
 
 elements.glow_stick_liquid = {
     color: ["#00ff00", "#ea00ff", "#00eeff"],
     glow: true,
     behavior: behaviors.LIQUID,
-    breakInto: "glow_stick_liquid",
-    category: "liquids"
+    category: "liquids",
+    hidden: true,
+    tempHigh: 300,
+    stateHigh: "stench",
+    tempLow: -5,
+    stateLow: "glow_stick_ice",
+    state: "solid"
 }
 
+elements.glow_stick_ice = {
+    color: ["#00ff00", "#ea00ff", "#00eeff"],
+    behavior: behaviors.WALL,
+    category: "states",
+    hidden: true,
+    temp: -5,
+    tempHigh: -5,
+    stateHigh: "glow_stick_liquid",
+    state: "solid"
+}
 
 // Add TPS keybind
 keybinds["KeyT"] = function () {
     tpsPrompt()
 }
 
-function addRow() {
+function addRowWhenReady() {
     const table = document.getElementById("controlsTable");
-    const rowCount = table.rows.length;
 
+    if (!table) {
+        // Table not ready yet, try again in 100ms
+        setTimeout(addRowWhenReady, 100);
+        return;
+    }
+
+    // Table exists, add the row
+    const rowCount = table.rows.length;
     const newRow = table.insertRow(rowCount - 1);
 
     const cell1 = newRow.insertCell(0);
@@ -505,9 +585,13 @@ function addRow() {
 
     cell1.textContent = "Change TPS";
     cell2.innerHTML = "<kbd>T</kbd>";
+
+    console.log("Row added successfully!");
 }
 
-addRow()
+// Start the process
+addRowWhenReady();
+
 
 elements.randomizer = {
     buttonColor: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
@@ -532,7 +616,8 @@ elements.randomizer = {
     behavior: behaviors.WALL,
     insulate: true,
     hardness: 1,
-    category: "special"
+    category: "special",
+    state: "solid"
 }
 
 elements.cloner.ignore.push("randomizer")
@@ -573,39 +658,1200 @@ function drawCircle(x0, y0, radius, element) {
 
 
 let circleRad = 7;
-let circleElem = "wood";
+let circle_element = "wood";
 
 elements.circle = {
-    color: "#FF0000",
+    color: "#ffffff",
     behavior: behaviors.WALL,
     category: "special",
-    onSelect: function() {
-        let ans1 = Number(prompt("Select the radius you want your circle to be:"));
-        let ans2 = prompt("Now give the element your circle should be made of:");
-
-        // Validate radius
-        if (Number.isInteger(ans1) && ans1 > 0) {
-            circleRad = ans1;
-        } else {
-            logMessage("Invalid radius, using default/last size: " + circleRad);
-        }
-
-        // Validate element
-        let similar = mostSimilarElement(ans2);
-        if (similar && elements[similar]) {
-            circleElem = similar;
-        } else {
-            logMessage("Invalid element, using default/last element: " + circleElem);
-        }
+    state: "solid",
+    onSelect: function () {
+        promptInput(
+            "Select the radius you want your circle to be:",
+            function (input1) {
+                let ans1 = Number(input1)
+                if (Number.isInteger(ans1) && ans1 > 0) {
+                    circleRad = ans1
+                } else {
+                    circleRad = 7
+                    logMessage("Invalid radius, using default size: " + circleRad);
+                }
+                promptInput(
+                    "Select the element you want your circle to be:",
+                    function (ans2) {
+                        let similar = mostSimilarElement(ans2);
+                        if (similar && elements[similar]) {
+                            circle_element = similar;
+                        } else {
+                            circle_element = "wood"
+                            logMessage("Invalid element, using default element: " + circle_element);
+                        }
+                    },
+                    "Element prompt",
+                    "wood"
+                );
+            },
+            "Radius prompt",
+            "7"
+        );
     },
-    onPlace: function(pixel) {
-        drawCircle(pixel.x, pixel.y, circleRad, circleElem);
-        changePixel(pixel, circleElem);
+    onPlace: function (pixel) {
+        drawCircle(pixel.x, pixel.y, circleRad, circle_element);
+        changePixel(pixel, circle_element);
+        pixel.temp = (elements[circle_element].temp || 20)
     },
-    maxSize: 1
+    maxSize: 1,
+    excludeRandom: true
 };
 
-runAfterReset(function() {
+runAfterReset(function () {
     circleRad = 7;
-    circleElem = "wood";
+    circle_element = "wood";
 })
+
+function randomIntInRange(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+let r = randomIntInRange(0, 255);
+let g = randomIntInRange(0, 255);
+let b = randomIntInRange(0, 255);
+
+elements.rgb_led = {
+    buttonColor: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
+    behavior: behaviors.WALL,
+    desc: "Input the red, green, and blue value (not exceeding 255) and get the color.",
+    renderer: renderPresets.LED,
+    conduct: 1,
+    state: "solid",
+    breakInto: "glass_shard",
+    forceSaveColor: true,
+    reactions: {
+        "light": { charge1: 1, elem2: null },
+        "liquid_light": { charge1: 1, elem2: null }
+    },
+    category: "machines",
+    tempHigh: 1500,
+    stateHigh: ["molten_glass", "molten_glass", "molten_glass", "molten_gallium"],
+
+    onSelect: () => {
+        promptInput("Enter red value (0-255):", function (r_inp) {
+            r_inp = parseInt(r_inp);
+            if (r_inp > 255 || r_inp < 0 || isNaN(r_inp)) {
+                logMessage("Red value is invalid, using default/last red value: " + r);
+            } else {
+                r = r_inp;
+            }
+
+            promptInput("Enter green value (0-255):", function (g_inp) {
+                g_inp = parseInt(g_inp);
+                if (g_inp > 255 || g_inp < 0 || isNaN(g_inp)) {
+                    logMessage("Green value is invalid, using default/last green value: " + g);
+                } else {
+                    g = g_inp;
+                }
+
+                promptInput("Enter blue value (0-255):", function (b_inp) {
+                    b_inp = parseInt(b_inp);
+                    if (b_inp > 255 || b_inp < 0 || isNaN(b_inp)) {
+                        logMessage("Blue value is invalid, using default/last blue value: " + b);
+                    } else {
+                        b = b_inp;
+                    }
+                }, "Blue Value", b); // optional default input
+            }, "Green Value", g);
+        }, "Red Value", r);
+    },
+
+    onPlace: (pixel) => {
+        var ledColor = RGBToHex({ r: r, g: g, b: b });
+        pixel.color = ledColor;
+    }
+};
+
+
+runAfterReset(() => {
+    r = 100;
+    g = 100;
+    b = 100;
+})
+
+elements.malware.reactions.rgb_led = { elem2: ["led_r", "led_g", "led_b"], chance: 0.01 }
+elements.malware.reactions.led_r = { elem2: ["rgb_led", "led_g", "led_b"], chance: 0.01 }
+elements.malware.reactions.led_g = { elem2: ["rgb_led", "led_r", "led_b"], chance: 0.01 }
+elements.malware.reactions.led_b = { elem2: ["rgb_led", "led_g", "led_r"], chance: 0.01 }
+
+elements.dice = {
+    color: "#d5d5d5",
+    state: "solid",
+    onClicked(pixel) {
+        pixel.clicked = true;
+    },
+
+    tick(pixel) {
+        if (pixel.rolled === undefined) {
+            pixel.rolled = false;
+        }
+
+        if (pixel.clicked && !pixel.rolled) {
+            const roll = randomIntInRange(1, 6);
+            clearLog()
+            logMessage("Dice roll: " + roll);
+            pixel.rolled = true;
+        }
+
+        if (!pixel.clicked) {
+            pixel.rolled = false;
+        }
+
+        pixel.clicked = false;
+    },
+    behavior: behaviors.WALL,
+    density: 500,
+    category: "special",
+    onSelect: () => {
+        logMessage("Click The Dice to Roll")
+        logMessage("It is reccomended to roll only one dice at a time as it will only show one value")
+    }
+}
+
+elements.wood.pressInto = "plank";
+elements.wood.resistPress = 0.5;
+
+elements.plank = {
+    color: "#98633B",
+    behavior: behaviors.WALL,
+    renderer: renderPresets.WOODCHAR,
+    tempHigh: 400,
+    stateHigh: ["ember", "charcoal", "fire", "fire", "fire"],
+    category: "solids",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember", "charcoal", "fire"],
+    state: "solid",
+    hardness: 0.50,
+    breakInto: "sawdust",
+    forceSaveColor: true
+}
+
+elements.sand.pressInto = "packed_sand";
+elements.sand.resistPress = 0.2
+elements.snow.pressInto = "packed_snow";
+elements.snow.resistPress = 0.2
+
+elements.asbestos = {
+    color: "#f1f5f1",
+    behavior: [
+        "SP|XX|SP",
+        "XX|XX|XX",
+        "SA AND M2|M1|SP AND M2"
+    ],
+    category: "powders",
+    state: "solid",
+    tempHigh: 800,
+    stateHigh: ["dust", "ash", "fire"],
+    breakInto: ["gravel", "sand", "dust"],
+    reactions: {
+        "body": { elem2: "cancer", chance: 0.5 },
+        "head": { elem2: "cancer", chance: 0.5 }
+    },
+    nocheer: true
+}
+
+elements.lithium_battery = {
+    color: "#616161",
+    behavior: [
+        "XX|SH|XX",
+        "SH|XX|SH",
+        "XX|SH|XX"
+    ],
+    tempHigh: 1400,
+    stateHigh: ["explosion", "lithium", "acid_gas"],
+    hardness: 0.8,
+    breakInto: ["lithium", "acid"],
+    category: "machines",
+    alias: "lithium-ion battery",
+    state: "solid"
+}
+
+elements.lithium = {
+    color: "#acacac",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "salt_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "pool_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "sugar_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "seltzer": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "dirty_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "primordial_soup": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "nut_milk": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 }
+    },
+    density: 533.4,
+    tempHigh: 180.5,
+    conduct: 0.45,
+    category: "powders",
+    state: "solid"
+}
+
+elements.molten_lithium = {
+    tempHigh: 1344,
+    stateHigh: 'lithium_gas',
+    reactions: {
+        "water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "salt_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "pool_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "sugar_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "seltzer": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "dirty_water": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "primordial_soup": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 },
+        "nut_milk": { elem1: ["pop", "pop", "pop", "hydrogen"], chance: 0.01, temp2: 200 }
+    },
+    state: "liquid"
+}
+
+elements.lithium_gas = {
+    color: "#cccccc",
+    behavior: behaviors.GAS,
+    isGas: true,
+    tempLow: 1334,
+    stateLow: "molten_lithium",
+    density: 533.4,
+    conduct: 0.45,
+    temp: 1334,
+    category: "states",
+    hidden: true,
+    state: "gas"
+}
+
+elements.chalk = {
+    color: "#fff3ac",
+    behavior: behaviors.WALL,
+    stain: 0.25,
+    category: "land",
+    breakInto: "chalk_powder",
+    tempHigh: 1000,
+    density: 2700,
+    reactions: {
+        "water": { elem1: "wet_chalk", elem2: null, chance: 0.5 },
+        "salt_water": { elem1: "wet_chalk", elem2: null, chance: 0.5 },
+        "seltzer": { elem1: "wet_chalk", elem2: null, chance: 0.5 },
+        "dirty_water": { elem1: "wet_chalk", elem2: null, chance: 0.5 },
+        "sugar_water": { elem1: "wet_chalk", elem2: null, chance: 0.5 },
+        "pool_water": { elem1: "wet_chalk", elem2: null, chance: 0.5 },
+        "primordial_soup": { elem1: "wet_chalk", elem2: null, chance: 0.5 },
+        "nut_milk": { elem1: "wet_chalk", elem2: null, chance: 0.5 }
+    },
+    alias: "calcite",
+    state: "solid"
+}
+
+elements.chalk_powder = {
+    color: "#fff3ac",
+    behavior: behaviors.POWDER,
+    stain: 0.25,
+    category: "powders",
+    tempHigh: 1000,
+    stateHigh: "molten_chalk",
+    density: 2700,
+    reactions: {
+        "water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "salt_water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "seltzer": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "dirty_water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "sugar_water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "pool_water": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "primordial_soup": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "nut_milk": { elem1: "wet_chalk_powder", elem2: null, chance: 0.5 },
+        "glue": { elem1: "chalk", elem2: null }
+    },
+    state: "solid"
+}
+
+elements.wet_chalk = {
+    color: "#bbb17b",
+    behavior: behaviors.WALL,
+    stain: 0.25,
+    category: "land",
+    breakInto: "wet_chalk_powder",
+    tempHigh: 100,
+    stateHigh: "chalk",
+    density: 2300,
+    onStateHigh: (pixel) => {
+        releaseElement(pixel, "steam")
+    },
+    state: "solid"
+}
+
+elements.wet_chalk_powder = {
+    color: "#bbb17b",
+    behavior: behaviors.POWDER,
+    stain: 0.25,
+    category: "powders",
+    tempHigh: 100,
+    stateHigh: "chalk_powder",
+    density: 2000,
+    onStateHigh: (pixel) => {
+        releaseElement(pixel, "steam")
+    },
+    state: "solid",
+    reactions: {
+        "glue": { elem1: "chalk", elem2: null }
+    }
+}
+
+elements.lapis_lazuli = {
+    color: ["#0000df", "#1212cc", "#120A8F", "#060080"],
+    behavior: behaviors.WALL,
+    breakInto: "lapis_lazuli_powder",
+    tempHigh: 1100,
+    stateHigh: 'magma',
+    state: "solid",
+    category: "solids"
+}
+
+elements.lapis_lazuli_powder = {
+    color: "#120A8F",
+    behavior: behaviors.POWDER,
+    tempHigh: 1100,
+    stateHigh: "magma",
+    alias: "Ultramarine",
+    category: "powders",
+    state: "solid"
+}
+
+elements.uv_light = {
+    color: "#440088",
+    behavior: [
+        "XX|XX|XX",
+        "XX|DL%1|XX",
+        "XX|XX|XX"
+    ],
+    glow: true,
+    tick: behaviors.BOUNCY,
+    temp: 35,
+    tempLow: -273,
+    stateLow: ["liquid_light", null],
+    stateLowColorMultiplier: 0.8,
+    breakInto: "light",
+    breakIntoColor: "#ffcfcf",
+    category: "energy",
+    state: "gas",
+    density: 0.00001,
+    ignoreAir: true,
+    reactions: {
+        "ozone": { elem1: null, chance: 0.9 },
+    }
+};
+
+if (!settings.cheerful) {
+    elements.uv_light.reactions.cell = { elem2: "cancer", chance: 0.05 },
+        elements.uv_light.reactions.skin = { elem2: "cancer", chance: 0.005 }
+}
+else {
+    if (elements.uv_light.reactions.cell) {
+        delete elements.uv_light.reactions.cell
+    }
+    if (elements.uv_light.reactions.skin) {
+        delete elements.uv_light.reactions.skin
+    }
+}
+
+function fadeColor(base, glow, ratio) {
+    // ratio 1 = full glow, 0 = base color
+    let r1 = parseInt(glow.substr(1, 2), 16);
+    let g1 = parseInt(glow.substr(3, 2), 16);
+    let b1 = parseInt(glow.substr(5, 2), 16);
+    let r2 = parseInt(base.substr(1, 2), 16);
+    let g2 = parseInt(base.substr(3, 2), 16);
+    let b2 = parseInt(base.substr(5, 2), 16);
+    let r = Math.round(r1 * ratio + r2 * (1 - ratio));
+    let g = Math.round(g1 * ratio + g2 * (1 - ratio));
+    let b = Math.round(b1 * ratio + b2 * (1 - ratio));
+    return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
+
+
+elements.phosphor = {
+    color: "#fffbe7",
+    behavior: behaviors.POWDER,
+    tick: function (pixel) {
+        let nearUV = false;
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let p = getPixel(x, y);
+            if (p && p.element == "uv_light") {
+                nearUV = true;
+                break;
+            }
+        }
+
+        if (nearUV) {
+            pixel.colorStay = 60; // longer for realism
+        }
+
+        if (pixel.colorStay > 0) {
+            let ratio = pixel.colorStay / 60; // exponential fade would be even better
+            pixel.color = fadeColor("#fffbe7", "#00c500", ratio);
+            pixel.colorStay--;
+        } else {
+            pixel.color = "#fffbe7"
+        }
+        if (enabledMods.includes("mods/glow.js")) {
+            if (pixel.color !== "#fffbe7") {
+                pixel.emit = pixel.colorStay / 10
+            }
+        }
+    },
+    category: "powders",
+    state: "solid",
+};
+
+elements.packed_sand.pressInto = "sandstone"
+elements.packed_sand.resistPress = 0.7
+elements.packed_snow.pressInto = "ice"
+elements.packed_snow.resistPress = 0.7
+
+elements.sandstone = {
+    color: "#d3bc56",
+    behavior: behaviors.WALL,
+    breakInto: "sand",
+    hardness: 0.5,
+    state: "solid",
+    stateHigh: "glass",
+    tempHigh: 1700,
+    category: "solids"
+}
+
+// Glow.js integrtion
+if (enabledMods.includes("mods/glow.js")) {
+    elements.uv_light.emit = true
+    elements.glow_stick.emit = true
+    delete elements.glow_stick.glow
+    elements.glow_stick_liquid.emit = true
+    delete elements.glow_stick_liquid.glow
+}
+
+
+let neonTubeChoice = "#00ff00"; // default color
+
+elements.neon_tube = {
+    color: "#d1d1b5",
+    renderer: renderPresets.BORDER,
+    alpha: 0.25,
+    conduct: 1,
+    behavior: behaviors.WALL,
+    breakInto: ["neon", "glass_shard"],
+    grain: 0,
+    category: "machines",
+    state: "solid",
+    tick: (pixel) => {
+        pixel.def_color ??= pixel.color;
+        pixel.glow_color ??= neonTubeChoice;
+
+        if (pixel.charge) {
+            pixel.alpha = 1;
+            pixel.color = pixel.glow_color;
+        } else {
+            pixel.alpha = 0.25;
+            pixel.color = pixel.def_color;
+        }
+
+        if (enabledMods.includes("mods/glow.js")) {
+            if (pixel.charge) {
+                pixel.emit = true;
+                pixel.emitColor = pixel.glow_color;
+            } else {
+                delete pixel.emit;
+                delete pixel.emitColor;
+            }
+        }
+    },
+    // Broken since yellow stacks above color
+    // only green is good
+    /*
+    onSelect() {
+        promptChoose(
+            "Pick a color for your neon tube:",
+            ["Red", "Green", "Blue", "Pink"],
+            function(choice) {
+                let colors = {
+                    "Red": "#ff0000",
+                    "Green": "#00ff00",
+                    "Blue": "#0000ff",
+                    "Pink": "#ff66cc"
+                };
+                neonTubeChoice = colors[choice] || "#00ff00";
+                logMessage("Neon tube color set to " + choice);
+            },
+            "Neon Tube Setup"
+        );
+    }
+    */
+};
+
+elements.realistic_ball = {
+    color: "#e35693",
+    tempHigh: 250,
+    stateHigh: "molten_plastic",
+    category: "special",
+    state: "solid",
+    density: 1052,
+    hidden: true,
+    tick: function (pixel) {
+        // initialize velocity
+        if (pixel.vy === undefined) {
+            pixel.vy = 0;
+        }
+
+        // gravity
+        pixel.vy += 0.3;
+
+        // predict next position
+        let nextY = pixel.y + Math.sign(pixel.vy);
+
+        if (isEmpty(pixel.x, nextY)) {
+            // free space → move
+            tryMove(pixel, pixel.x, pixel.y + Math.sign(pixel.vy));
+        } else {
+            // collision: reverse velocity (bounce)
+            pixel.vy *= -0.7;
+
+            // stop very small bounces
+            if (Math.abs(pixel.vy) < 0.5) {
+                pixel.vy = 0;
+            }
+        }
+    }
+}
+
+explodeElem = "fire"
+elements.custom_bomb = {
+    color: "#49443b",
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown,
+    behavior: behaviors.STURDYPOWDER,
+    onSelect: function () {
+        promptInput(
+            "Input the element you want your bomb to explode into",
+            function (input) {
+                pr1 = mostSimilarElement(input)
+                if (elements[pr1]) {
+                    if (pr1 === "custom_bomb") {
+                        explodeElem = 'fire'
+                        logMessage("Element cannot explode to itself. Using default: fire")
+                    }
+                    else { explodeElem = pr1 }
+                }
+                else {
+                    explodeElem = 'fire'
+                    logMessage("Invalid element. Using default: fire")
+                }
+            },
+            "Element prompt",
+            "fire"
+        )
+    },
+    tick: function (pixel) {
+        let belowPixel = getPixel(pixel.x, pixel.y + 1);
+
+        // If pixel is at the bottom or resting on a solid
+        if (outOfBounds(pixel.x, pixel.y + 1) || (belowPixel && belowPixel.element !== "custom_bomb" && !isEmpty(pixel.x, pixel.y + 1) && belowPixel.element !== "fire" && belowPixel.element !== "smoke")) {
+            explodeAt(pixel.x, pixel.y, 10, explodeElem);
+            deletePixel(pixel.x, pixel.y);
+        }
+    }
+}
+
+runAfterReset(() => {
+    explodeElem = 'fire'
+})
+
+elements.pineapple = {
+    color: "#ffd900",
+    isFood: true,
+    behavior: behaviors.STURDYPOWDER,
+    breakInto: ["juice", "juice", "juice", "juice", "juice", "pineapple_seed"],
+    breakIntoColor: "#fffc00",
+    category: "food",
+    state: "solid",
+    seed: "pineapple_seed"
+}
+
+elements.pineapple_seed = {
+    color: "#695531",
+    behavior: behaviors.STURDYPOWDER,
+    cooldown: defaultCooldown,
+    category: "life",
+    tempHigh: 400,
+    stateHigh: "fire",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 50,
+    burnTime: 20,
+    state: "solid",
+    tick: function (pixel) {
+        let belowPixel = getPixel(pixel.x, pixel.y + 1)
+        if (
+            !isEmpty(pixel.x, pixel.y + 1) &&
+            belowPixel &&
+            Math.random() <= 0.05
+        ) {
+            changePixel(pixel, "pineapple_stem")
+            pixel.growthState = 1
+            pixel.growDiagLeft = true
+            pixel.growDiagRight = true
+        }
+    },
+    seed: true
+}
+
+eListAdd("SEEDS", "pineapple_seed")
+
+elements.pineapple_stem = {
+    color: "#3aab11",
+    behavior: behaviors.WALL,
+    movable: false,
+    category: "life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn: 15,
+    burnTime: 60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    tick: function (pixel) {
+        let left = pixel.x - 1
+        let right = pixel.x + 1
+        let up = pixel.y - 1
+        let down = pixel.y + 1
+        let belowPixel = getPixel(pixel.x, down)
+        pixel.fruitCD ??= 60
+        if (!outOfBounds(pixel.x, down) && belowPixel && eLists.SOIL.includes(belowPixel.element) && pixel.growthState === 1) {
+            changePixel(belowPixel, "root")
+        }
+        if (pixel.growthState === 1 && Math.random() <= 0.05) {
+            if (isEmpty(left, up) && pixel.growDiagLeft === true) {
+                createPixel("pineapple_stem", left, up)
+                let newPixel = getPixel(left, up)
+                if (newPixel) {
+                    newPixel.growthState = 2
+                    newPixel.growDiagLeft = true
+                    delete newPixel.growDiagRight
+                }
+            }
+            else {
+                delete pixel.growDiagLeft
+            }
+            if (isEmpty(right, up) && pixel.growDiagRight === true) {
+                createPixel("pineapple_stem", right, up)
+                let newPixel = getPixel(right, up)
+                if (newPixel) {
+                    newPixel.growthState = 2
+                    newPixel.growDiagRight = true
+                    delete newPixel.growDiagLeft
+                }
+            }
+            else {
+                delete pixel.growDiagRight
+            }
+        }
+        if (!pixel.growDiagLeft && !pixel.growDiagRight && pixel.growthState === 1) {
+            if (Math.random() <= 0.05 && isEmpty(pixel.x, up) && !pixel.fruitCD && !pixel.pineappleGrown) {
+                createPixel("pineapple", pixel.x, up)
+                pixel.fruitCD = 60
+                pixel.pineappleGrown = true
+            }
+            if (pixel.fruitCD && !pixel.pineappleGrown) {
+                pixel.fruitCD--
+            }
+        }
+        if (isEmpty(pixel.x, up)) {
+            pixel.pineappleGrown = false
+        }
+        if (pixel.growthState === 2 && Math.random() <= 0.05) {
+            if (isEmpty(left, up) && pixel.growDiagLeft === true) {
+                createPixel("pineapple_stem", left, up)
+            }
+            if (isEmpty(right, up) && pixel.growDiagRight === true) {
+                createPixel("pineapple_stem", right, up)
+            }
+        }
+    }
+}
+
+// making redstone conductive bc idk why its not
+if (enabledMods.includes("mods/minecraft.js")) {
+    runAfterLoad(() => {
+        elements.redstone_dust.conduct = 1
+    })
+}
+
+elements.rubidium = {
+    color: "#c0c0c0",
+    state: "solid",
+    behavior: behaviors.POWDER,
+    tempHigh: 39.30,
+    stateHigh: "liquid_rubidium",
+    density: 1534,
+    conduct: 0.6,
+    reactions: {
+        "water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "salt_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "sugar_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "pool_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "dirty_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "salt_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "seltzer": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "primordial_soup": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "nut_milk": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 }
+    },
+    category: "powders"
+}
+
+elements.liquid_rubidium = {
+    color: "#d0d0d0",
+    state: "liquid",
+    behavior: behaviors.LIQUID,
+    tempHigh: 688,
+    density: 1460,
+    conduct: 0.6,
+    tempLow: 39.30,
+    stateLow: "rubidium",
+    temp: 40,
+    reactions: {
+        "water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "salt_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "sugar_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "pool_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "dirty_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "salt_water": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "seltzer": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "primordial_soup": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 },
+        "nut_milk": { elem1: ["explosion", "explosion", "hydrogen"], temp2: 200 }
+    },
+    category: "states",
+    hidden: true
+}
+
+elements.dog = {
+    color: ["#221d0c", "#5c4300", "#7c5b00", "#fcfceb"],
+    behavior: [
+        "XX|XX|M2%3",
+        "XX|FX%5|M2%5",
+        "XX|M1|XX"
+    ],
+    tempHigh: 100,
+    stateHigh: "cooked_meat",
+    tempLow: -10,
+    stateLow: "frozen_meat",
+    category: "life",
+    state: "solid",
+    burn: 30,
+    burnTime: 50,
+    burnInto: ["cooked_meat", "smoke"],
+    breakInto: ["meat", "blood"],
+    reactions: {
+        "meat": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "egg": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "yolk": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "cheese": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "cooked_meat": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "chocolate": { elem2: null, chance: 0.2, func: behaviors.FEEDPIXEL, elem1: "rotten_meat" },
+        "grape": { elem2: null, chance: 0.2, func: behaviors.FEEDPIXEL, elem1: "rotten_meat" },
+        "rat": { elem2: null, chance: 0.3, func: behaviors.FEEDPIXEL },
+        "nut_butter": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+    },
+    egg: "dog",
+}
+
+// Keyboard state tracking
+const robotKeys = {
+    left: false,
+    right: false,
+    jump: false
+};
+
+// Set up keyboard listeners
+window.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    if (key === 'a' || key === 'arrowleft') robotKeys.left = true;
+    if (key === 'd' || key === 'arrowright') robotKeys.right = true;
+    if (key === 'w' || key === 'arrowup') robotKeys.jump = true;
+});
+
+window.addEventListener('keyup', (e) => {
+    const key = e.key.toLowerCase();
+    if (key === 'a' || key === 'arrowleft') robotKeys.left = false;
+    if (key === 'd' || key === 'arrowright') robotKeys.right = false;
+    if (key === 'w' || key === 'arrowup') robotKeys.jump = false;
+});
+
+// Helper function for movement
+function tryMoveRobot(headPixel, direction) {
+    const newX = headPixel.x + direction;
+    const body = getPixel(headPixel.x, headPixel.y + 1);
+
+    if (body && body.element === "robot_body" &&
+        isEmpty(newX, headPixel.y) &&
+        isEmpty(newX, body.y)) {
+        movePixel(body, newX, body.y);
+        movePixel(headPixel, newX, headPixel.y);
+        return true;
+    }
+    return false;
+}
+
+function tryJump(headPixel) {
+    const body = getPixel(headPixel.x, headPixel.y + 1);
+    if (!body || body.element !== "robot_body") return false;
+
+    // Check if grounded (on solid surface or bottom of screen)
+    const underBody = getPixel(body.x, body.y + 1);
+    const isGrounded = (!isEmpty(body.x, body.y + 1) || outOfBounds(body.x, body.y + 1));
+
+    if (isGrounded) {
+        // Check space above
+        if (isEmpty(headPixel.x, headPixel.y - 1) &&
+            isEmpty(headPixel.x, headPixel.y - 2)) {
+
+            // Two-stage jump animation
+            pixelTicks = 0;
+            headPixel.jumping = true;
+
+            // First frame - small hop
+            movePixel(headPixel, headPixel.x, headPixel.y - 1);
+            movePixel(body, body.x, headPixel.y + 1);
+
+            // Second frame - complete jump (after small delay)
+            setTimeout(() => {
+                if (headPixel.jumping) {  // Only if still jumping
+                    movePixel(headPixel, headPixel.x, headPixel.y - 1);
+                    movePixel(body, body.x, headPixel.y + 1);
+                    headPixel.jumping = false;
+                }
+            }, 100);  // 100ms delay for smoother animation
+            return true;
+        }
+    }
+    return false;
+}
+// Robot elements
+elements.robot_head = {
+    color: "#d9d9d9",
+    category: "machines",
+    tick(pixel) {
+        const body = getPixel(pixel.x, pixel.y + 1);
+
+        if (body && body.element === "robot_body") {
+            pixel.connected = true;
+            body.connected = true;
+
+            // Controlled movement
+            if (pixel.mode === "Controlled") {
+                if (robotKeys.left) {
+                    tryMoveRobot(pixel, -1);
+                }
+                else if (robotKeys.right) {
+                    tryMoveRobot(pixel, 1);
+                }
+
+                if (robotKeys.jump && !pixel.jumping) {
+                    tryJump(pixel);
+                }
+            }
+            // Aimless wandering
+            else if (pixel.mode === "Aimless" && Math.random() < 0.02) {
+                pixel.dir = pixel.dir || (Math.random() < 0.5 ? -1 : 1);
+                if (!tryMoveRobot(pixel, pixel.dir)) {
+                    pixel.dir *= -1;
+                }
+            }
+        }
+        else {
+            pixel.connected = false;
+            tryMove(pixel, pixel.x, pixel.y + 1);
+        }
+    }
+};
+
+elements.robot_body = {
+    color: "#b1b1b1",
+    category: "machines",
+    tick(pixel) {
+        const head = getPixel(pixel.x, pixel.y - 1);
+
+        if (head && head.element === "robot_head") {
+            pixel.connected = true;
+            head.connected = true;
+
+            // Gravity - move down if space below
+            if (isEmpty(pixel.x, pixel.y + 1)) {
+                let oldY = pixel.y;
+                movePixel(pixel, pixel.x, pixel.y + 1);
+                movePixel(head, head.x, oldY);
+            }
+        }
+        else {
+            pixel.connected = false;
+            tryMove(pixel, pixel.x, pixel.y + 1);
+        }
+    }
+};
+
+// Robot creator element
+elements.robot = {
+    color: "#b1b1b1",
+    category: "machines",
+    onSelect() {
+        promptChoose(
+            "Choose robot mode",
+            ["Aimless", "Controlled"],
+            (choice) => {
+                if (choice === "Controlled" && isMobile) {
+                    logMessage("Controlled mode doesn't work on mobile");
+                    mode = "Aimless";
+                } else {
+                    mode = choice || "Aimless";
+                    if (mode === "Controlled") {
+                        logMessage("Controls: A/D to move and W to jump or (Not reccomended) ←/→ to move, and ↑ to jump");
+                    }
+                }
+            },
+            "Robot Mode"
+        );
+    },
+    onPlace(pixel) {
+        // Try to create head above
+        if (isEmpty(pixel.x, pixel.y - 1)) {
+            createPixel("robot_head", pixel.x, pixel.y - 1);
+            const head = getPixel(pixel.x, pixel.y - 1);
+            head.mode = mode;
+            changePixel(pixel, "robot_body");
+            pixel.mode = mode;
+        }
+        // Try to create body below if above is blocked
+        else if (isEmpty(pixel.x, pixel.y + 1)) {
+            createPixel("robot_body", pixel.x, pixel.y + 1);
+            const body = getPixel(pixel.x, pixel.y + 1);
+            body.mode = mode;
+            changePixel(pixel, "robot_head");
+            pixel.mode = mode;
+        }
+        // Delete if no space
+        else {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    cooldown: defaultCooldown
+};
+
+elements.mercury_gas.behaviorOn = [
+    "M2|CR:uv_light%10 AND M1|M2",
+    "CR:uv_light%10 AND M1|XX|CR:uv_light%10 AND M1",
+    "M2|CR:uv_light%10 AND M1|M2"
+]
+
+adjusted_heater_temp = 100
+elements.broken_adjustable_heater = {
+    color: "#ff0000",
+    category: "extras",
+    insulate: true,
+    behavior: behaviors.WALL,
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to adjust to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_heater_temp = choice
+                    logMessage("Occasionally creates superheated pixels")
+                }
+            },
+            "Temperature Prompt", adjusted_heater_temp
+        )
+    },
+    tick(pixel) {
+        pixel.heat_temp ??= adjusted_heater_temp
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate
+                && current_pixel.temp < pixel.heat_temp
+            ) {
+                current_pixel.temp = Math.min(current_pixel.temp + 2, pixel.heat_temp);
+            }
+        }
+    }
+};
+
+adjusted_temp = 100
+heatAmount = 2
+
+elements.adjustable_heater = {
+    color: "#ff0000",
+    category: "machines",
+    insulate: true,
+    behavior: behaviors.WALL,
+
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to adjust to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_temp = Number(choice);
+                }
+            },
+            "Temperature Prompt", adjusted_temp
+        );
+    },
+
+    tick(pixel) {
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate
+            ) {
+                // Heat or cool toward the adjusted temp
+                if (current_pixel.temp < adjusted_temp) {
+                    current_pixel.temp = Math.min(current_pixel.temp + heatAmount, adjusted_temp);
+                } else if (current_pixel.temp > adjusted_temp) {
+                    current_pixel.temp = Math.max(current_pixel.temp - heatAmount, adjusted_temp);
+                }
+
+                // Phase change check (forces melting/boiling/etc.)
+                let elemDef = elements[current_pixel.element];
+                if (elemDef) {
+                    // Too hot for current state → change to high state
+                    if (typeof elemDef.tempHigh === "number" &&
+                        current_pixel.temp >= elemDef.tempHigh &&
+                        elemDef.stateHigh) {
+                        changePixel(current_pixel, elemDef.stateHigh);
+                    }
+
+                    // Too cold for current state → change to low state
+                    if (typeof elemDef.tempLow === "number" &&
+                        current_pixel.temp <= elemDef.tempLow &&
+                        elemDef.stateLow) {
+                        changePixel(current_pixel, elemDef.stateLow);
+                    }
+                }
+            }
+        }
+    }
+};
+
+adjusted_cooler_temp = 0; // default cooling target
+
+elements.broken_adjustable_cooler = {
+    color: "#0000ff",
+    category: "extras",
+    insulate: true,
+    behavior: behaviors.WALL,
+
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to cool to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_cooler_temp = Number(choice);
+                    logMessage("Occasionally creates supercooled pixels");
+                }
+            },
+            "Temperature Prompt", adjusted_cooler_temp
+        );
+    },
+
+    tick(pixel) {
+        pixel.cool_temp ??= adjusted_cooler_temp;
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate &&
+                current_pixel.temp > pixel.cool_temp
+            ) {
+                // Cool the pixel toward the target
+                current_pixel.temp = Math.max(current_pixel.temp - 2, pixel.cool_temp);
+            }
+        }
+    }
+};
+
+adjusted_cool_temp = 0; // default cooling target
+coolAmount = 2; // adjustable step
+
+elements.adjustable_cooler = {
+    color: "#0000ff",
+    category: "machines",
+    insulate: true,
+    behavior: behaviors.WALL,
+
+    onSelect() {
+        promptInput(
+            "Select the temperature you want to cool to",
+            function (choice) {
+                if (choice && !isNaN(Number(choice))) {
+                    adjusted_cool_temp = Number(choice);
+                }
+            },
+            "Temperature Prompt", adjusted_cool_temp
+        );
+    },
+
+    tick(pixel) {
+        for (let i = 0; i < adjacentCoords.length; i++) {
+            let x = pixel.x + adjacentCoords[i][0];
+            let y = pixel.y + adjacentCoords[i][1];
+            let current_pixel = getPixel(x, y);
+
+            if (
+                current_pixel &&
+                !elements[current_pixel.element]?.insulate
+            ) {
+                // Cool or heat toward target (mirrors fixed heater logic)
+                if (current_pixel.temp > adjusted_cool_temp) {
+                    current_pixel.temp = Math.max(current_pixel.temp - coolAmount, adjusted_cool_temp);
+                } else if (current_pixel.temp < adjusted_cool_temp) {
+                    current_pixel.temp = Math.min(current_pixel.temp + coolAmount, adjusted_cool_temp);
+                }
+
+                // Phase change check (forces melting/freezing/etc.)
+                let elemDef = elements[current_pixel.element];
+                if (elemDef) {
+                    // Too hot → change to high state
+                    if (typeof elemDef.tempHigh === "number" &&
+                        current_pixel.temp >= elemDef.tempHigh &&
+                        elemDef.stateHigh) {
+                        changePixel(current_pixel, elemDef.stateHigh);
+                    }
+
+                    // Too cold → change to low state
+                    if (typeof elemDef.tempLow === "number" &&
+                        current_pixel.temp <= elemDef.tempLow &&
+                        elemDef.stateLow) {
+                        changePixel(current_pixel, elemDef.stateLow);
+                    }
+                }
+            }
+        }
+    }
+};
+
+
+
