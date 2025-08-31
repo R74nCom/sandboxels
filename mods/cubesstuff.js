@@ -25,6 +25,14 @@ Machines: Robot, Adjustable heater/cooler
 
 Bug Fixes
 Fixed compatibility issue with nousersthings.js
+
+V4
+Machines: Paper filter, Indestructable filter, and Note block
+Life: Cacao Plants (seed, stem, fruit)
+Tools: Polish
+Extras: 2 ways to make an element with no name
+Special: Black hole
+Building Materials: Roman concrete/cement
 */
 
 
