@@ -1,3 +1,7 @@
+// TypeScript integration for Sandboxels modding
+// Enables function autocomplete & element definition hints
+/// <reference path="./sandboxels-types.d.ts" />
+// Get the file here: https://github.com/Cube14yt/sandboxels-types
 // Changelog
 // Starts at version 3
 
@@ -22,7 +26,6 @@ Machines: Robot, Adjustable heater/cooler
 Bug Fixes
 Fixed compatibility issue with nousersthings.js
 */
-
 
 
 elements.button = {
@@ -1545,6 +1548,7 @@ function tryJump(headPixel) {
 elements.robot_head = {
     color: "#d9d9d9",
     category: "machines",
+    state: "solid",
     tick(pixel) {
         const body = getPixel(pixel.x, pixel.y + 1);
 
@@ -1583,6 +1587,7 @@ elements.robot_head = {
 elements.robot_body = {
     color: "#b1b1b1",
     category: "machines",
+    state: "solid",
     tick(pixel) {
         const head = getPixel(pixel.x, pixel.y - 1);
 
@@ -1608,6 +1613,7 @@ elements.robot_body = {
 elements.robot = {
     color: "#b1b1b1",
     category: "machines",
+    state: "solid",
     onSelect() {
         promptChoose(
             "Choose robot mode",
@@ -1663,6 +1669,7 @@ elements.broken_adjustable_heater = {
     category: "extras",
     insulate: true,
     behavior: behaviors.WALL,
+
     onSelect() {
         promptInput(
             "Select the temperature you want to adjust to",
@@ -1730,24 +1737,7 @@ elements.adjustable_heater = {
                 } else if (current_pixel.temp > adjusted_temp) {
                     current_pixel.temp = Math.max(current_pixel.temp - heatAmount, adjusted_temp);
                 }
-
-                // Phase change check (forces melting/boiling/etc.)
-                let elemDef = elements[current_pixel.element];
-                if (elemDef) {
-                    // Too hot for current state → change to high state
-                    if (typeof elemDef.tempHigh === "number" &&
-                        current_pixel.temp >= elemDef.tempHigh &&
-                        elemDef.stateHigh) {
-                        changePixel(current_pixel, elemDef.stateHigh);
-                    }
-
-                    // Too cold for current state → change to low state
-                    if (typeof elemDef.tempLow === "number" &&
-                        current_pixel.temp <= elemDef.tempLow &&
-                        elemDef.stateLow) {
-                        changePixel(current_pixel, elemDef.stateLow);
-                    }
-                }
+                pixelTempCheck(current_pixel)
             }
         }
     }
@@ -1831,27 +1821,633 @@ elements.adjustable_cooler = {
                     current_pixel.temp = Math.min(current_pixel.temp + coolAmount, adjusted_cool_temp);
                 }
 
-                // Phase change check (forces melting/freezing/etc.)
-                let elemDef = elements[current_pixel.element];
-                if (elemDef) {
-                    // Too hot → change to high state
-                    if (typeof elemDef.tempHigh === "number" &&
-                        current_pixel.temp >= elemDef.tempHigh &&
-                        elemDef.stateHigh) {
-                        changePixel(current_pixel, elemDef.stateHigh);
-                    }
-
-                    // Too cold → change to low state
-                    if (typeof elemDef.tempLow === "number" &&
-                        current_pixel.temp <= elemDef.tempLow &&
-                        elemDef.stateLow) {
-                        changePixel(current_pixel, elemDef.stateLow);
-                    }
-                }
+                pixelTempCheck(current_pixel)
             }
         }
     }
 };
 
 
+let polishedList = new Set()
+elements.polish = {
+    category: "tools",
+    color: ["#a0dff0", "#c0e8f8", "#e0f5ff"],
+    tool(pixel) {
+        let element = pixel.element
+        if ((elements[pixel.element].colorPattern && !polishedList.has(`${pixel.x}, ${pixel.y}`)) || shiftDown) {
+            deletePixel(pixel.x, pixel.y)
+            createPixel(element, pixel.x, pixel.y)
+            polishedList.add(`${pixel.x}, ${pixel.y}`)
+        }
+    },
+    onUnselect() {
+        polishedList.clear()
+    }
+}
 
+elements[" "] = {
+    category: "extras",
+    onSelect() {
+        logMessage("This Element has weird properties since its a space ' '")
+    },
+    alias: "space"
+}
+
+elements.paper_filter = {
+    desc: "Filters solids from liquids",
+    color: "#ececec",
+    behavior: behaviors.WALL,
+    reactions: {
+        "light": { stain1: "#ebdfa7" },
+        "oxygen": { stain1: "#ebdfa7" }
+    },
+    tempHigh: 248,
+    stateHigh: ["fire", "fire", "fire", "fire", "fire", "ash"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["fire", "fire", "fire", "fire", "fire", "ash"],
+    category: "machines",
+    density: 1201,
+    breakInto: "confetti",
+    breakIntoColor: ["#ffffff", "#e6e6e6", "#dbdbdb"],
+    tick(pixel) {
+        let upPixel = getPixel(pixel.x, pixel.y - 1)
+
+        if (upPixel && elements[upPixel.element].state == "liquid" && !pixel.con) {
+            deletePixel(pixel.x, pixel.y - 1)
+            pixel.con = upPixel
+        }
+
+        if (upPixel && (upPixel.element === "paper_filter" || upPixel.element === "indestructable_filter") && upPixel.con && !pixel.con) {
+            let liquid = upPixel.con
+            let viscMove = true
+
+            if (elements[liquid.element].viscosity) {
+                viscMove = (Math.random() * 100) < (100 / Math.pow(elements[liquid.element].viscosity, 0.5))
+            }
+
+            if (viscMove) {
+                pixel.con = liquid
+                delete upPixel.con
+            }
+        }
+
+        if (isEmpty(pixel.x, pixel.y + 1) && !outOfBounds(pixel.x, pixel.y + 1) && pixel.con) {
+            let liquid = pixel.con
+            let viscExit = true
+
+            if (elements[liquid.element].viscosity) {
+                viscExit = (Math.random() * 100) < (100 / Math.pow(elements[liquid.element].viscosity, 0.5))
+            }
+
+            if (viscExit) {
+                createPixel(liquid.element, pixel.x, pixel.y + 1)
+                delete pixel.con
+            }
+        }
+    }
+}
+
+elements.indestructable_filter = {
+    desc: "Filters solids from liquids",
+    color: "#aaaaaa",
+    behavior: behaviors.WALL,
+    category: "machines",
+    state: "solid",
+    movable: false,
+    tick(pixel) {
+        let upPixel = getPixel(pixel.x, pixel.y - 1)
+        let belowPixel = getPixel(pixel.x, pixel.y + 1)
+
+        if (upPixel && elements[upPixel.element].state == "liquid" && !pixel.con) {
+            deletePixel(pixel.x, pixel.y - 1)
+            pixel.con = upPixel
+        }
+
+        if (upPixel && (upPixel.element === "indestructable_filter" || upPixel.element === "paper_filter") && upPixel.con && !pixel.con) {
+            let liquid = upPixel.con
+            let viscMove = true
+
+            if (elements[liquid.element].viscosity) {
+                viscMove = (Math.random() * 100) < (100 / Math.pow(elements[liquid.element].viscosity, 0.5))
+            }
+
+            if (viscMove) {
+                pixel.con = liquid
+                delete upPixel.con
+            }
+        }
+
+        if (isEmpty(pixel.x, pixel.y + 1) && !outOfBounds(pixel.x, pixel.y + 1) && pixel.con) {
+            let liquid = pixel.con
+            let viscExit = true
+
+            if (elements[liquid.element].viscosity) {
+                viscExit = (Math.random() * 100) < (100 / Math.pow(elements[liquid.element].viscosity, 0.5))
+            }
+
+            if (viscExit) {
+                createPixel(liquid.element, pixel.x, pixel.y + 1)
+                delete pixel.con
+            }
+        }
+    }
+}
+
+let black_hole_expand = false
+elements.black_hole = {
+    color: "#111111",
+    hardness: 1,
+    category: "special",
+    properties: {
+        absorbed: 0
+    },
+    renderer: function (pixel, ctx) {
+        if (!viewInfo[view].colorEffects) { drawDefault(ctx, pixel); return }
+        renderPresets.HEATGLOW(pixel, ctx);
+        if (pixel.alpha === 0) return;
+
+        let edge = false;
+        pixel.edge = false;
+        pixel.color = "#111111";
+
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coords = adjacentCoords[i];
+            var x = pixel.x + coords[0];
+            var y = pixel.y + coords[1];
+            if (!outOfBounds(x, y)) {
+                let neighbor = getPixel(x, y);
+                if (!neighbor || elements[neighbor.element].movable !== elements[pixel.element].movable) {
+                    edge = true;
+                    break;
+                }
+            }
+        }
+        if (edge) { pixel.color = "#ffae00"; pixel.edge = true }
+    },
+    tick(pixel) {
+        // Glow effect
+        if (pixel.edge) {
+            pixel.glow = true;
+            if (enabledMods.includes("mods/glow.js")) {
+                pixel.emit = 10;
+            }
+        }
+        else {
+            pixel.glow = false;
+            if (enabledMods.includes("mods/glow.js")) {
+                pixel.emit = 0;
+            }
+        }
+
+        // Suction physics
+        let radius = 20; // how far the suction reaches
+        for (let dx = -radius; dx <= radius; dx++) {
+            for (let dy = -radius; dy <= radius; dy++) {
+                if (dx === 0 && dy === 0) continue;
+
+                let x = pixel.x + dx;
+                let y = pixel.y + dy;
+
+                if (!outOfBounds(x, y)) {
+                    let other = getPixel(x, y);
+                    if (other && other !== pixel) {
+                        let elemDef = elements[other.element];
+
+                        // Skip if indestructible
+                        if (elemDef.hardness === 1) continue;
+
+                        // Distance to black hole
+                        let dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist <= radius) {
+                            // Suction chance: closer = stronger pull
+                            let chance = 1 / dist;
+                            if (Math.random() < chance) {
+                                let stepX = Math.sign(pixel.x - x);
+                                let stepY = Math.sign(pixel.y - y);
+
+                                let newX = x + stepX;
+                                let newY = y + stepY;
+
+                                if (isEmpty(newX, newY) && !outOfBounds(newX, newY)) {
+                                    movePixel(other, newX, newY);
+                                }
+                                else if (dist <= 1.5) {
+                                    deletePixel(x, y); // absorb it
+                                    pixel.absorbed++
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (black_hole_expand) {
+                for (var i = 0; i < adjacentCoords.length; i++) {
+                    var x = pixel.x + adjacentCoords[i][0];
+                    var y = pixel.y + adjacentCoords[i][1];
+                    if (pixel.absorbed >= 30 && isEmpty(x, y)) {
+                        createPixel("black_hole", x, y)
+                        pixel.absorbed = 0
+                    }
+                }
+            }
+        }
+    },
+    forceSaveColor: true,
+    onSelect() {
+        promptChoose(
+            "Do you want the black hole to grow?",
+            ["Yes", "No"],
+            (choice) => {
+                if (!choice) {
+                    choice = false
+                }
+                if (choice == "Yes") {
+                    black_hole_expand = true
+                }
+                else {
+                    black_hole_expand = false
+                }
+            }
+        )
+    }
+};
+
+elements.cacao_fruit = {
+    color: "#854700",
+    behavior: [
+        "XX|ST:cacao_stem|XX",
+        "ST:cacao_stem|XX|ST:cacao_stem",
+        "XX|ST:cacao_stem AND M1|XX"
+    ],
+    isFood: true,
+    burn: 10,
+    burnTime: 100,
+    burnInto: "ash",
+    breakInto: "cacao_bean",
+    category: "food",
+    state: "solid",
+    density: 1000
+}
+
+elements.cacao_bean = {
+    color: "#ffe7ba",
+    isFood: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2%10|M1|M2%10"
+    ],
+    tempHigh: 100,
+    stateHigh: "dried_cacao_bean",
+    onStateHigh(pixel) { releaseElement(pixel, "steam") },
+    state: "solid",
+    category: "food",
+    density: 1000
+}
+
+elements.dried_cacao_bean = {
+    color: "#61321e",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "sugar_water": { elem2: "melted_chocolate", tempMin: 65 },
+        "water": { elem2: "melted_chocolate", tempMin: 65 }
+    },
+    tempHigh: 400,
+    stateHigh: "ash",
+    isFood: true,
+    category: "food",
+    state: "solid",
+    density: 1000
+}
+
+elements.coffee_bean.reactions.sugar_water = { elem2: "coffee", tempMin: 80 }
+elements.coffee.reactions.sugar_water = { elem2: "coffee", tempMin: 70, chance: 0.2 }
+elements.coffee_ground.reactions.sugar_water = elements.coffee_ground.reactions.water
+
+elements._ = {
+    category: "extras",
+    onSelect() {
+        logMessage("Another way to make an element with no name \"_\"")
+    },
+    alias: ["underscore"]
+}
+
+elements.cacao_seed = {
+    color: "#8b3f00",
+    behavior: behaviors.STURDYPOWDER,
+    cooldown: defaultCooldown,
+    category: "life",
+    tempHigh: 400,
+    stateHigh: "fire",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 50,
+    burnTime: 20,
+    state: "solid",
+    tick(pixel) {
+        let belowPixel = getPixel(pixel.x, pixel.y + 1)
+        if ((!isEmpty(pixel.x, pixel.y + 1) && belowPixel) || outOfBounds(pixel.x, pixel.y + 1) && Math.random() <= 0.005) {
+            changePixel(pixel, "cacao_stem")
+            pixel.stage = 1
+        }
+    }
+}
+
+elements.cacao_stem = {
+    color: "#916a00",
+    renderer: renderPresets.WOODCHAR,
+    movable: false,
+    tempHigh: 100,
+    stateHigh: "wood",
+    tempLow: -30,
+    stateLow: "wood",
+    category: "life",
+    burn: 2,
+    burnTime: 300,
+    burnInto: ["sap", "ember", "charcoal", "smoke"],
+    state: "solid",
+    density: 1500,
+    hardness: 0.15,
+    breakInto: ["sap", "sawdust"],
+    seed: "cacao_seed",
+    forceSaveColor: true,
+    stateHighColorMultiplier: 0.95,
+    onPlace(pixel) {
+        pixel.stage = 1
+    },
+    hoverStat(pixel) {
+        if (pixel.stage) return pixel.stage;
+        else return 0;
+    },
+    tick(pixel) {
+        // 1 = trunk
+        // 2 = spread
+        // 3 = stop
+        if (pixel.stage === 1 && isEmpty(pixel.x, pixel.y - 1) && Math.random() <= 0.05) {
+            tryMove(pixel, pixel.x, pixel.y - 1, "cacao_stem")
+            let oldPixel = getPixel(pixel.x, pixel.y + 1)
+            delete oldPixel.stage
+            if (Math.random() <= 0.3) {
+                pixel.stage = 2
+            }
+        }
+        if (pixel.stage === 2) {
+            let rand = Math.random()
+            let nx;
+            if (rand < 0.4) {
+                nx = 1
+            }
+            else if (rand < 0.8) {
+                nx = -1
+            }
+            else nx = 0;
+            if (isEmpty(pixel.x + nx, pixel.y - 1) && Math.random() <= 0.05) {
+                createPixel(["cacao_stem", "plant"], pixel.x + nx, pixel.y - 1)
+                newPixel = getPixel(pixel.x + nx, pixel.y - 1)
+                if (Math.random() <= 0.2) {
+                    newPixel.stage = 3
+                }
+                else newPixel.stage = 2;
+            }
+            if (!isEmpty(pixel.x + 1, pixel.y - 1) && !isEmpty(pixel.x, pixel.y - 1) && !isEmpty(pixel.x - 1, pixel.y - 1) && Math.random() <= 0.005) {
+                shuffleArray(adjacentCoordsShuffle)
+                for (var i = 0; i < adjacentCoordsShuffle.length; i++) {
+                    var x = pixel.x + adjacentCoordsShuffle[i][0];
+                    var y = pixel.y + adjacentCoordsShuffle[i][1];
+                    if (isEmpty(x, y) && !pixel.fruitMade) {
+                        createPixel("cacao_fruit", x, y)
+                        pixel.fruitMade = true
+                        pixel.fruitCoordsx = x
+                        pixel.fruitCoordsy = y
+                        break
+                    }
+                }
+            }
+        }
+        if (pixel.fruitCoordsx && pixel.fruitCoordsy) {
+            if (getPixel(pixel.fruitCoordsx, pixel.fruitCoordsy) && getPixel(pixel.fruitCoordsx, pixel.fruitCoordsy).element === "cacao_fruit") return;
+            pixel.fruitMade = false
+            delete pixel.fruitCoordsx
+            delete pixel.fruitCoordsy
+        }
+    }
+}
+
+
+// --- audio setup ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playNote(frequency, duration = 1, type = "sine", volume = 0.1) {
+    if (!Number.isFinite(frequency)) {
+        console.error("Invalid frequency:", frequency);
+        return;
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = type;
+    osc.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+
+const pianoFrequencies = {
+    "A0": 27.500, "A#0": 29.135, "BB0": 29.135, "B0": 30.868,
+    "C1": 32.703, "C#1": 34.648, "DB1": 34.648, "D1": 36.708,
+    "D#1": 38.891, "EB1": 38.891, "E1": 41.203, "F1": 43.654,
+    "F#1": 46.249, "GB1": 46.249, "G1": 48.999, "G#1": 51.913,
+    "AB1": 51.913, "A1": 55.000, "A#1": 58.270, "BB1": 58.270,
+    "B1": 61.735,
+
+    "C2": 65.406, "C#2": 69.296, "DB2": 69.296, "D2": 73.416,
+    "D#2": 77.782, "EB2": 77.782, "E2": 82.407, "F2": 87.307,
+    "F#2": 92.499, "GB2": 92.499, "G2": 97.999, "G#2": 103.826,
+    "AB2": 103.826, "A2": 110.000, "A#2": 116.541, "BB2": 116.541,
+    "B2": 123.471,
+
+    "C3": 130.813, "C#3": 138.591, "DB3": 138.591, "D3": 146.832,
+    "D#3": 155.563, "EB3": 155.563, "E3": 164.814, "F3": 174.614,
+    "F#3": 184.997, "GB3": 184.997, "G3": 195.998, "G#3": 207.652,
+    "AB3": 207.652, "A3": 220.000, "A#3": 233.082, "BB3": 233.082,
+    "B3": 246.942,
+
+    "C4": 261.626, "C#4": 277.183, "DB4": 277.183, "D4": 293.665,
+    "D#4": 311.127, "EB4": 311.127, "E4": 329.628, "F4": 349.228,
+    "F#4": 369.994, "GB4": 369.994, "G4": 391.995, "G#4": 415.305,
+    "AB4": 415.305, "A4": 440.000, "A#4": 466.164, "BB4": 466.164,
+    "B4": 493.883,
+
+    "C5": 523.251, "C#5": 554.365, "DB5": 554.365, "D5": 587.330,
+    "D#5": 622.254, "EB5": 622.254, "E5": 659.255, "F5": 698.456,
+    "F#5": 739.989, "GB5": 739.989, "G5": 783.991, "G#5": 830.609,
+    "AB5": 830.609, "A5": 880.000, "A#5": 932.328, "BB5": 932.328,
+    "B5": 987.767,
+
+    "C6": 1046.502, "C#6": 1108.731, "DB6": 1108.731, "D6": 1174.659,
+    "D#6": 1244.508, "EB6": 1244.508, "E6": 1318.510, "F6": 1396.913,
+    "F#6": 1479.978, "GB6": 1479.978, "G6": 1567.982, "G#6": 1661.219,
+    "AB6": 1661.219, "A6": 1760.000, "A#6": 1864.655, "BB6": 1864.655,
+    "B6": 1975.533,
+
+    "C7": 2093.005, "C#7": 2217.461, "DB7": 2217.461, "D7": 2349.318,
+    "D#7": 2489.016, "EB7": 2489.016, "E7": 2637.020, "F7": 2793.826,
+    "F#7": 2959.955, "GB7": 2959.955, "G7": 3135.963, "G#7": 3322.438,
+    "AB7": 3322.438, "A7": 3520.000, "A#7": 3729.310, "BB7": 3729.310,
+    "B7": 3951.066,
+
+    "C8": 4186.009
+};
+
+
+let note = 261.626; // default C4
+let notesToPlay = [];
+
+function flushNotes() {
+    if (notesToPlay.length === 0) return;
+
+
+    let baseVolume = 0.2;
+    let volume = baseVolume / Math.sqrt(notesToPlay.length);
+
+    for (let f of notesToPlay) {
+        playNote(f, 1, "sine", volume);
+    }
+
+    notesToPlay = [];
+}
+
+elements.note_block = {
+    color: "#965500",
+    behavior: behaviors.WALL,
+    onSelect() {
+        promptInput(
+            "Select the note this note block should be",
+            function (choice) {
+                if (!choice) {
+                    if (!note) { note = 261.626; }
+                    return;
+                }
+                let key = choice.toUpperCase();
+                if (key in pianoFrequencies) {
+                    note = pianoFrequencies[key];
+                } else {
+                    note = 261.626; // fallback = C4
+                }
+            },
+            "Note prompt"
+        );
+    },
+    onPlace(pixel) {
+        pixel.note = note;
+    },
+    tick(pixel) {
+        if (pixel.charge) {
+            notesToPlay.push(Number(pixel.note));
+        }
+    },
+    conduct: 1,
+    category: "machines"
+};
+
+runEveryTick(function () { flushNotes() });
+
+/*
+elements.uncook = {
+    color: ["#4dcdff", "#70ddff", "#bcddff", "#ffffff"],
+    category: "tools",
+    tool(pixel) {
+        if (!pixel || !pixel.element) return;
+
+        // 1) If the current element itself defines stateLow, use it (common case)
+        const cur = elements[pixel.element];
+        if (cur && cur.stateLow !== undefined) {
+            const low = cur.stateLow;
+            pixel.element = Array.isArray(low) ? low[Math.floor(Math.random() * low.length)] : low;
+            if (typeof pixel.temp === "number") pixel.temp = Math.max(0, pixel.temp - 1);
+            return; // done
+        }
+
+        // 2) Otherwise search for an element whose stateHigh === the current element
+        for (const key in elements) {
+            const el = elements[key];
+            if (!el) continue;
+            if (el.stateHigh === pixel.element) {
+                // 'key' is the low-state element name
+                changePixel(pixel, key)
+                if (typeof pixel.temp === "number") pixel.temp = Math.max(0, pixel.temp - 1);
+                return; // done
+            }
+            // If el.stateHigh can be an array of high-state names:
+            if (Array.isArray(el.stateHigh) && el.stateHigh.includes(pixel.element)) {
+                changePixel(pixel, key)
+                if (typeof pixel.temp === "number") pixel.temp = Math.max(0, pixel.temp - 1);
+                return;
+            }
+        }
+    }
+};
+*/
+
+elements.roman_cement = {
+    color: "#b8b8b8",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    viscosity: 1000,
+    density: 1400,
+    state: "solid",
+    tempLow: -10,
+    stateLow: "roman_concrete",
+    tempHigh: 1550,
+    stateHigh: "magma",
+    tick(pixel) {
+        if (pixelTicks - pixel.start > 100 && Math.random() <= 0.1) {
+            changePixel(pixel, "roman_concrete")
+        }
+    }
+}
+
+elements.roman_concrete = {
+    color: "#ababab",
+    behavior: behaviors.SUPPORT,
+    tempHigh: 1500,
+    stateHigh: "magma",
+    category: "powders",
+    state: "solid",
+    density: 2400,
+    hardness: 0.5,
+    breakInto: "dust",
+    darkText: true
+}
+
+/**
+ * 
+ * @param {string} element 
+ * @param {object} reaction 
+ * @returns {void}
+ */
+function doWaterReactions(element, reaction) {
+    if (!elements[element].reactions) {
+        elements[element].reactions = {}
+    }
+    elements[element].reactions.water = reaction
+    elements[element].reactions.salt_water = reaction
+    elements[element].reactions.pool_water = reaction
+    elements[element].reactions.sugar_water = reaction
+    elements[element].reactions.dirty_water = reaction
+    elements[element].reactions.selter = reaction
+    elements[element].reactions.primordial_soup = reaction
+    elements[element].reactions.nut_milk = reaction
+}
+
+doWaterReactions("slaked_lime", {elem1:"roman_cement", elem2: null, chance: 0.25})
