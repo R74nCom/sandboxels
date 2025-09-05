@@ -2336,7 +2336,7 @@ elements.lemon_juice = {
     hidden: true,
     tempLow: 0,
     reactions: {
-        "sugar": {elem1:"lemonade", elem2: "null", chance:0.35}
+        "sugar": {elem1:"lemonade", elem2: null, chance:0.35}
     }
 };
 eLists.JUICEMIXABLE.push("lemon_juice");
