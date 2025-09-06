@@ -13,7 +13,6 @@ elements.output = {
                 if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate == 0){
                     if (pixelMap[x][y].lastUpdate == pixelTicks){
                         pixelMap[x][y].lstate = 2
-                        pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#ffe49c")
                     } else {
                         pixelMap[x][y].lstate = 1
                     }
@@ -40,18 +39,11 @@ elements.logic_wire = {
                 if (!isEmpty(x,y,true)) {           
                     if (pixelMap[x][y].element == "output" && pixelMap[x][y].charge == 1){
                         pixel.lstate = 2;
-                        pixel.color = pixelColorPick(pixel, "#ffe49c");
                     }
                 }
             }
         }
         if (pixel.lstate == 2){
-            // lightmap.js integration
-            if (enabledMods.includes("mods/lightmap.js")){
-                let x = Math.floor(pixel.x / lightmapScale);
-                let y = Math.floor(pixel.y / lightmapScale);
-                lightmap[y][x] = { color: [255/4, 228/4, 156/4]};
-            }
             for (var i = 0; i < adjacentCoords.length; i++) {
                 var coord = adjacentCoords[i];
                 var x = pixel.x+coord[0];
@@ -60,13 +52,12 @@ elements.logic_wire = {
                     if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate == 0){
                         if (pixelMap[x][y].lastUpdate == pixelTicks){
                             pixelMap[x][y].lstate = 2
-                            pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#ffe49c")
+                            pixelMap[x][y].color = "rgb(255, 228, 156)"
                         } else {
                             pixelMap[x][y].lstate = 1
                         }
                     } else if (pixelMap[x][y].element == "output" && pixelMap[x][y].charged == 0){
                         pixel.lstate = -2
-                        pixel.color = pixelColorPick(pixel, "#3d4d2c")
                     }
                 }
             }
@@ -90,7 +81,7 @@ elements.logic_wire = {
                     if (pixelMap[x][y].element == "logic_wire" && (pixelMap[x][y].lstate == 1 || pixelMap[x][y].lstate == 2)){
                         if (pixelMap[x][y].lastUpdate == pixelTicks){
                             pixelMap[x][y].lstate = -2
-                            pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#3d4d2c")
+                            pixelMap[x][y].color = "rgb(61, 77, 44)"
                         } else {
                             pixelMap[x][y].lstate = -1
                         }
@@ -101,7 +92,11 @@ elements.logic_wire = {
         }
         if (pixel.lstate == -1){
             pixel.lstate = -2
-            pixel.color = pixelColorPick(pixel, "#3d4d2c");
+        }
+        if (pixel.lstate > 0){
+                pixel.color = "rgb(255, 228, 156)"
+        } else {
+                pixel.color = "rgb(61, 77, 44)"
         }
     }
 }
@@ -188,7 +183,7 @@ elements.xor_gate = {
     behavior: behaviors.WALL,
     tick: function(pixel){
         var countNeighborsResult = countNeighbors(pixel)
-        if (countNeighborsResult.charged == 1){
+        if (countNeighborsResult.charged % 2 == 1){
             chargeOutputs(pixel);
         } else {
             unchargeOutputs(pixel);
@@ -244,7 +239,7 @@ elements.nxor_gate = {
     behavior: behaviors.WALL,
     tick: function(pixel){
         var countNeighborsResult = countNeighbors(pixel)
-        if (!(countNeighborsResult.charged == 1)){
+        if (!(countNeighborsResult.charged % 2 == 1)){
             chargeOutputs(pixel);
         } else {
             unchargeOutputs(pixel);
@@ -275,10 +270,8 @@ elements.E2L_lever = {
                             if (pixelMap[x][y].element == "logic_wire"){
                                 if (pixel.toggleMode == 1){
                                 pixelMap[x][y].lstate = 2
-                                pixelMap[x][y].color = pixelColorPick(pixel, "#ffe49c");
                                 } else {
                                 pixelMap[x][y].lstate = -2
-                                pixelMap[x][y].color = pixelColorPick(pixel, "#3d4d2c");
                                 }
                             }
                         }
@@ -316,7 +309,6 @@ elements.E2L_button = {
                         if (!isEmpty(x,y,true)) {           
                             if (pixelMap[x][y].element == "logic_wire"){
                                 pixelMap[x][y].lstate = 2
-                                pixelMap[x][y].color = pixelColorPick(pixel, "#ffe49c");
                             }
                         }
                     }
@@ -331,7 +323,6 @@ elements.E2L_button = {
             if (!isEmpty(x,y,true)) {
                 if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate > 0){
                     pixelMap[x][y].lstate = -2
-                    pixelMap[x][y].color = pixelColorPick(pixel, "#3d4d2c");
                 }
             }
         }
@@ -444,7 +435,7 @@ elements.logic_shock = {
     color: elements.shock.color,
     category: "tools",
     tool: function(pixel){
-        if (pixel.element == "logic_wire"){pixel.lstate = 2; pixel.color = pixelColorPick(pixel, "#ffe49c")}
+        if (pixel.element == "logic_wire"){pixel.lstate = 2;}
     },
     excludeRandom: true,
 }
@@ -452,7 +443,7 @@ elements.logic_unshock = {
     color: elements.uncharge.color,
     category: "tools",
     tool: function(pixel){
-        if (pixel.element == "logic_wire"){pixel.lstate = -2; pixel.color = pixelColorPick(pixel, "#3d4d2c")}
+        if (pixel.element == "logic_wire"){pixel.lstate = -2;}
     },
     excludeRandom: true,
 }
