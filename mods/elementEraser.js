@@ -4,9 +4,11 @@ let finalEraseElement = null;
 elements.element_eraser = {
     color: "#eeeeee",
     onSelect: function() {
-        var answer = prompt("Please input the element you wish to delete. It will not work if you enter multiple element types while paused.",(finalEraseElement||undefined));
-        if (!answer) { return }
-        finalEraseElement = mostSimilarElement(answer);
+        promptInput("Please input the element you wish to delete. It will not work if you enter multiple element types while paused.", (answer) => {
+            // var answer = prompt("Please input the element you wish to delete. It will not work if you enter multiple element types while paused.",(finalEraseElement||undefined));
+            if (!answer) { return }
+            finalEraseElement = mostSimilarElement(answer);
+        }, "Delete Element")
     },
     tool: function(pixel) {
         if (pixel.element === finalEraseElement) {
@@ -21,9 +23,11 @@ let finalEraseElement2 = null;
 elements.exclusive_element_eraser = {
     color: "#eeeeee",
     onSelect: function() {
-        var answer = prompt("Please input the element you do not wish to delete. It will not work if you enter multiple element types while paused.",(finalEraseElement2||undefined));
-        if (!answer2) { return }
-        finalEraseElement2 = mostSimilarElement(answer2);
+        promptInput("Please input the element you do not wish to delete. It will not work if you enter multiple element types while paused.", (answer2) => {
+            // var answer2 = prompt("Please input the element you do not wish to delete. It will not work if you enter multiple element types while paused.",(finalEraseElement2||undefined));
+            if (!answer2) { return }
+            finalEraseElement2 = mostSimilarElement(answer2);
+        }, "Don't Delete")
     },
     tool: function(pixel) {
         if (pixel.element != finalEraseElement2) {
