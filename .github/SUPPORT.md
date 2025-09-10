@@ -1,6 +1,6 @@
-Controls for Sandboxels are listed underneath [the game](https://sandboxels.R74n.com).
+Controls for Sandboxels are listed underneath [the game](https://sandforge.github.io/).
 
-Use the [feedback form](https://sandboxels.r74n.com/feedback) linked under the game for suggestions or bug reports. You can also join our [Discord server](https://discord.gg/ejUc6YPQuS) for support and everything else.
+Use the [feedback form](https://sandforge.github.io//feedback) linked under the game for suggestions or bug reports. You can also join our [Discord server](https://discord.gg/ejUc6YPQuS) for support and everything else.
 
 This isn't preferred, but you can also report issues on this GitHub repository [here](https://github.com/R74nCom/sandboxels/issues).
 

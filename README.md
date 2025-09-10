@@ -1,7 +1,7 @@
 # Sandboxels
 A falling sand simulation game with hundreds of elements, heat simulation, chemical reactions, fire, density, electricity, and more.
 
-Play for free at [Sandboxels.R74n.com](https://sandboxels.r74n.com/).
+Play for free at [Sandboxels.R74n.com](https://sandforge.github.io//).
 
 Join the [Discord server](https://discord.com/invite/ejUc6YPQuS).
 

@@ -1,8 +1,8 @@
-Suggest new additions at https://sandboxels.R74n.com/feedback
+Suggest new additions at https://sandforge.github.io//feedback
 
 See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
 
-A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
+A fancier version of this changelog can be found here: https://sandforge.github.io//changelog
 
 [Version 1.12 - July 17, 2025 - Saves For All]
     + Featured Saves tab

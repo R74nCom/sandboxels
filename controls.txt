@@ -1,4 +1,4 @@
-A fancier version of this can be found here: https://sandboxels.r74n.com/controls
+A fancier version of this can be found here: https://sandforge.github.io//controls
 
 [Sandboxels Controls]
 Left Click        =  Place Pixels

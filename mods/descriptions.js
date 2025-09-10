@@ -3,7 +3,7 @@ console.log("descriptions.js: Loading vanilla descriptions...");
 fetch (
   "https://mollthecoder.github.io/Sandboxels-Descriptions/descriptions/vanilla.json", 
   {
-    referrer: "https://sandboxels.r74n.com/mods/descriptions.js"
+    referrer: "https://sandforge.github.io//mods/descriptions.js"
   }
 ).then(res=>{
     res.json().then(json=>{

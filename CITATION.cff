@@ -18,7 +18,7 @@ identifiers:
   - type: swh
     value: 'swh:1:rev:5a5813a8f4f418540f1bdb765d293735541bf7fd'
   - type: url
-    value: 'https://sandboxels.r74n.com/'
+    value: 'https://sandforge.github.io//'
   - type: doi
     value: 10.5281/zenodo.10044909
   - type: other
@@ -31,7 +31,7 @@ identifiers:
     value: 'https://w3id.org/r74n/sandboxels'
     description: W3ID
 repository-code: 'https://github.com/R74nCom/sandboxels'
-url: 'https://sandboxels.r74n.com'
+url: 'https://sandforge.github.io/'
 abstract: >-
   Sandboxels is a free falling-sand simulator that can be
   played in your browser. It features heat simulation,

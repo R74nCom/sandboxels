@@ -5,7 +5,7 @@
   "background_color": "#000000",
   "display": "standalone",
   "scope": "/",
-  "start_url": "https://sandboxels.r74n.com",
+  "start_url": "https://sandforge.github.io/",
   "description": "A falling sand simulation game",
   "orientation": "any",
   "icons": [
