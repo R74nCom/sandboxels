@@ -75,22 +75,22 @@ renderPresets.FLESHBURN = function(pixel,ctx) {
     var ratio = ((pixel.char/max*100)|0)/100;
     if (ratio < 0.5) { return }
     if (ratio > 1) { ratio = 1 }
-    drawSquare(ctx,"#000000",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)*0.8));
+    drawSquare(ctx,"rgb(0,0,0)",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)*0.8));
 },
 
 renderPresets.NERVE = function(pixel,ctx) {
     drawDefault(ctx,pixel)
         if (pixel.darkcharge === true) {
-            drawSquare(ctx,"#000000",pixel.x,pixel.y,undefined,Math.min(0.8,0.55));
+            drawSquare(ctx,"rgb(0,0,0)",pixel.x,pixel.y,undefined,Math.min(0.8,0.55));
         }
         if (pixel.darkchargeCD === true) {
-            drawSquare(ctx,"#000000",pixel.x,pixel.y,undefined,Math.min(0.8,0.5));
+            drawSquare(ctx,"rgb(0,0,0)",pixel.x,pixel.y,undefined,Math.min(0.8,0.5));
         }
         if (pixel.lightcharge === true) {
-            drawSquare(ctx,"#ffffff",pixel.x,pixel.y,undefined,Math.min(0.8,0.55));
+            drawSquare(ctx,"rgb(255,255,255)",pixel.x,pixel.y,undefined,Math.min(0.8,0.55));
         }
         if (pixel.lightchargeCD === true) {
-            drawSquare(ctx,"#ffffff",pixel.x,pixel.y,undefined,Math.min(0.8,0.5));
+            drawSquare(ctx,"rgb(255,255,255)",pixel.x,pixel.y,undefined,Math.min(0.8,0.5));
         }
 },
 

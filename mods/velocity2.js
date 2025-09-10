@@ -1,9 +1,11 @@
 airResistance = 0.1;
 terminalVelocity = 5;
 gravityPull = 0.2;
+elements.head.noGravity = true;
+elements.body.noGravity = true;
 
 validateMoves((pixel,nx,ny) => {
-    if (elements[pixel.element].isGas) return true;
+    if (elements[pixel.element].isGas || elements[pixel.element].noGravity) return true;
     if (isEmpty(pixel.x,pixel.y+1) && pixel.y-ny < 0) { //goes down usually
         pixel.vy = (pixel.vy||0) + gravityPull;
     }

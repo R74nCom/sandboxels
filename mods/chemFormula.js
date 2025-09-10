@@ -23,6 +23,7 @@ styleElement.innerHTML = `
   
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    font-variant: normal;
 }
 `
 
@@ -32,7 +33,7 @@ runAfterLoad(async () => {
     const data = await fetch('mods/chemFormulas.json').then((res) => res.json());
     for (const element in data) {   
         if (elements[element]) {
-            elements[element].hoverStat = () => data[element].length > 1 ? "Multiple compounds" : data[element][0].replace(/\<\/?su[bp]\>/g, "");
+            elements[element].hoverStat = () => data[element].join(", ").replace(/\<.*?\>/g, "");
             document.querySelector(`button[element='${element}']`)?.classList.add('tooltip');
             const span = document.createElement('span');
             span.classList.add('tooltiptext');

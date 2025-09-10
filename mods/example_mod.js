@@ -1,22 +1,24 @@
-// This is how to add a new mod to the game.
-
+// To create a mod:
 // Create a new Javascript file like this one.
 // Add the file to the mods folder on GitHub, or host it somewhere else.
 // https://github.com/R74nCom/sandboxels/tree/main/mods
 
-// To add it in the Mod Loader:
-// If it is in the mods folder, you can just use the name of the file.
+// To learn about modding, check the wiki: https://sandboxels.wiki.gg/wiki/Modding
+// Or join our Discord: https://r74n.com/discord/
+
+// To add it in the Mod Manager:
+// If it is in the mods folder, you can just use the name of the file. (example_mod.js)
 // If it is hosted somewhere else, you can use the full URL, including the HTTPS://.
 
 // Adding elements:
-elements.mayo = {
-    color: "#ffffff",
+elements.mustard = {
+    color: "#ffff00",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    viscosity: 100000,
     state: "liquid",
-    density: 720,
-};
+    density: 1100,
+    viscosity: 60000,
+}
 
 // Changing existing elements:
 elements.water.color = "#ff0000";
@@ -26,15 +28,20 @@ elements.water.behavior = behaviors.WALL;
 // Be aware, things may break
 delete elements.ketchup;
 
-// Adding behavior presets:
-behaviors.SELFDELETE = [
-    "XX|XX|XX",
-    "XX|DL|XX",
-    "XX|XX|XX",
-];
+// Custom behaviors:
+elements.blue_sand = {
+    color: "#0000ff",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2"
+    ],
+    category: "land",
+    state: "solid"
+}
 
 // Raw JavaScript behaviors:
-behaviors.mud.tick = function(pixel) {
+elements.mud.tick = function(pixel) {
     if (tryMove(pixel, pixel.x, pixel.y+1)) {
         console.log("Moved!");
     }
@@ -54,29 +61,29 @@ elements.sand_exploder = {
     category: "tools",
 };
 
-// Add reactions to existing elements
-if (!elements.water.reactions) { // Include this block once
-    elements.water.reactions = {} // This creates the property if it doesn't exist
-}
-elements.water.reactions.mayo = { "elem1":null, "elem2":"mayo_water" }
-elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" }
-
-// Run after all mods are loaded, for cross-mod compatibility
-runAfterLoad(function() {
-    // Your code here
-    console.log("Hello World!");
-});
-
-// Run if another mod is active
-if (enabledMods.includes("mods/test.js")) {
-    runAfterLoad(function() {
-        // Your code here
-        console.log("Hello World!");
-    });
+// Reactions:
+elements.sugar_stick = {
+    color: "#ffffff",
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "water": { elem1:null, elem2:"sugar_water", chance:0.1 },
+        "salt_water": { elem1:null, elem2:"sugar_water", chance:0.1 }
+    },
+    state: "solid",
+    density: 1580
 }
 
-// Creating eLists:
-eLists.CONDIMENT = ["ketchup","melted_cheese","mayo"];
-// Adding elements to eLists:
-eLists.CONDIMENT.push("honey");
+// Add reactions to existing elements:
+// Include this block once to ensure the property exists
+if (!elements.water.reactions) elements.water.reactions = {};
+elements.water.reactions.mustard = { "elem1":null, "elem2":"mustard_water" };
+elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" };
 
+// Custom element renderers:
+elements.ball.renderer = function(pixel,ctx) {
+    // Draw three horizontal squares
+    drawSquare(ctx,"#00ff00",pixel.x-1,pixel.y);
+    drawSquare(ctx,"#00ff00",pixel.x,pixel.y);
+    drawSquare(ctx,"#00ff00",pixel.x+1,pixel.y);
+};
+// See 1.10example.js for more rendering examples.

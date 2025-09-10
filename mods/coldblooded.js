@@ -73,6 +73,10 @@ function poisonOther(pixel1, pixel2) {
   pixel2.poisoned ??= 30;
 }
 
+function isInBounds(x, y) {
+  return x >= 0 && x < width && y >= 0 && y < height;
+}
+
 elements.human.reactions.snake =
   { attr1: { panic: 5 } }
 
@@ -700,6 +704,11 @@ elements.turtle = {
   state: "solid",
   category: "life",
   foodNeed: 10,
+  tempHigh: 100,
+  stateHigh: "cooked_meat",
+  tempLow: -10,
+  stateLow: "frozen_meat",
+  breakInto: ["scute", "blood", "meat", "limestone"],
   reactions: {
     "fish": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.1 },
     "kelp": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.5 },
@@ -717,16 +726,44 @@ elements.turtle = {
     "poison": { elem1: "limestone" },
     "poison_gas": { elem1: "limestone" },
   },
-  tick: function (pixel) {
-    pixel.cd ??= 600;
-    pixel.cd--;
-    for (let i = 0; i < squareCoords.length; i++) {
-      let x = pixel.x + squareCoords[i][0];
-      let y = pixel.y + squareCoords[i][1];
-      if (isEmpty(x, y) && pixel.cd <= 0 && Math.random() <= 0.005) {
-        createPixel("scute", x, y);
-        pixel.cd = 600;
-      }
-    }
+}
+
+elements.tortoise = {
+  color: ["#47b000", "#406000"],
+  behavior: [
+    "XX|XX|XX",
+    "XX|FX%1|M2%5",
+    "M2|M1|M2",
+  ],
+  density: 1080,
+  state: "solid",
+  category: "life",
+  foodNeed: 10,
+  tempHigh: 100,
+  stateHigh: "cooked_meat",
+  tempLow: -10,
+  stateLow: "frozen_meat",
+  breakInto: ["blood", "meat", "limestone"],
+  reactions: {
+    "grass": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "plant": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "evergreen": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "pistil": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "petal": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "lettuce": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "tomato": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "pumpkin": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "radiation": { elem1: ["ash", "meat", "cooked_meat", "rotten_meat", "limestone"], chance: 0.4 },
+    "oxygen": { elem2: "carbon_dioxide", chance: 0.5 },
+    "mercury": { elem1: "rotten_meat", chance: 0.1 },
+    "bleach": { elem1: "rotten_meat", chance: 0.1 },
+    "infection": { elem1: "rotten_meat", chance: 0.025 },
+    "uranium": { elem1: "rotten_meat", chance: 0.1 },
+    "cyanide": { elem1: "rotten_meat", chance: 0.1 },
+    "chlorine": { elem1: "meat", chance: 0.1 },
+    "alcohol": { elem1: "meat", chance: 0.025 },
+    "vinegar": { elem1: "rotten_meat", chance: 0.001 },
+    "poison": { elem1: "limestone" },
+    "poison_gas": { elem1: "limestone" },
   }
 }
