@@ -1,5 +1,5 @@
 /*
-Version 1.0.0
+*Version 1.0.0
 */
 function noiseify(color, range){
     if(color.startsWith("#")){
@@ -14,7 +14,7 @@ function noiseify(color, range){
     return `rgb(${color.r},${color.g},${color.b})`;
 }
 
-let is2d = (arr)=>{
+function is2d(arr){
   return arr.some(item => Array.isArray(item));
 }
 
