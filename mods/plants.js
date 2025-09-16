@@ -1,17 +1,8 @@
 /*
-Version 2.2.1
+*Version 2.2.1
 */
 let plants;
-if(!enabledMods.includes("/mods/orchidslibrary.js")){
-    let continueWithout = confirm("Missing dependency for plants.js: \"orchidslibrary.js\". Continue without? (cancel will add mod and refresh the page)");
-    if(!continueWithout){
-        addMod("/mods/orchidslibrary.js", true);
-        window.location.reload();
-    }
-} else {
-    let is2d = (arr)=>{
-      return arr.some(item => Array.isArray(item));
-    }
+dependOn("orchidslibrary.js", ()=>{
     class growInterval {
         constructor(seedPixel, pattern, basePos, c = 0.025, dieAfter = undefined, fruit = undefined, elems = undefined){
             let currentLength = 0;
@@ -1622,4 +1613,4 @@ if(!enabledMods.includes("/mods/orchidslibrary.js")){
     };
 
     
-}
+}, true);
