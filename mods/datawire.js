@@ -1,13 +1,7 @@
 /*
-Version 1.0.0
+*Version 1.0.0
 */
-if(!enabledMods.includes("/mods/orchidslibrary.js")){
-    let continueWithout = confirm("Missing dependency for datawire.js: \"orchidslibrary.js\". Continue without? (cancel will add mod and refresh the page)");
-    if(!continueWithout){
-        addMod("/mods/orchidslibrary.js", true);
-        window.location.reload();
-    }
-} else {
+dependOn("orchidslibrary.js", ()=>{
     elements.data_wire = {
         desc: "Transfers data.",
         color: ["#6b1502", "#631402", "#6e1400", "#631200"],
@@ -241,4 +235,4 @@ if(!enabledMods.includes("/mods/orchidslibrary.js")){
         }
     };
     
-}
+}, true);
