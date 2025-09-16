@@ -1,14 +1,8 @@
 /*
-Version 2.2.0
+*Version 2.2.0
 */
 
-if(!enabledMods.includes("/mods/orchidslibrary.js")){
-    let continueWithout = confirm("Missing dependency for morechemistry.js: \"orchidslibrary.js\". Continue without? (cancel will add mod and refresh the page)");
-    if(!continueWithout){
-        addMod("/mods/orchidslibrary.js", true);
-        window.location.reload();
-    }
-} else {
+dependOn("orchidslibrary.js", ()=>{
     elements.cloner.keyInput = "str:clone", elements.ecloner.keyInput = "str:clone", elements.slow_cloner.keyInput = "str:clone", elements.floating_cloner.keyInput = "str:clone";
     let xDown = false;
     elements.copper_sulfate = {
@@ -1568,4 +1562,4 @@ if(!enabledMods.includes("/mods/orchidslibrary.js")){
         stateLow: "bismuth",
         temp: 270,
     };
-};
+}, true);
