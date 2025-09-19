@@ -3207,6 +3207,7 @@ elements.element_line = {
     hidden: true,
     excludeRandom: true,
     insulate: true,
+    movable: false,
     onSelect() {
         promptInput("Input the element it should use", (input) => {
             if (!input) return;
@@ -3323,3 +3324,4 @@ elements.replace_all_of_element = {
         }
     }
 }
+
