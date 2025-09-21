@@ -270,7 +270,7 @@ elements.h_bomb.behavior = [
 ]
 
 elements.hydrogen.reactions["hydrogen"] = {
-    elem1: "custom_fusion_2" , elem2: null, tempMin: 70000
+    elem1: "h_explosion" , elem2: null, tempMin: 70000
 }
 
 elements.h_explosion = {
