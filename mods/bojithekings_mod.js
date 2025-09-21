@@ -255,7 +255,7 @@ elements.molten_stainless_steel = {
 
 elements.infinite_burn = {
     color: "#a16868",
-    behavor: behaviors.WALL,
+    behavior: behaviors.WALL,
     state: "solid",
     burn: 100,
     burnTime: 1e9, //more then one irl year
