@@ -1,24 +1,12 @@
-if (!elements.categories.custom) {
-    elements.categories.custom = "custom";
-}
-
-elements.hello_test = {
-    color: "#ff00ff",
-    behavior: behaviors.POWDER,
-    category: "custom",
-    state: "solid",
-};
-
-
-// Ensure category exists
-if (!elements.categories.special) {
-    elements.categories.special = "special";
-}
+runAfterLoad(function() {
+    console.log("Liquefier Mod loaded!")
+    console.log("Created by Hitochi — turns elements into liquid forms.")
+})
 
 elements.liquefier = {
     color: "#33ccff",
-    behavior: behaviors.POWDER, // stays in place better than liquid
-    category: "liquids",
+    behavior: behaviors.POWDER, // sits in place
+    category: "machines",
     state: "solid",
     density: 2000,
     tick: function(pixel) {
@@ -37,19 +25,25 @@ elements.liquefier = {
 
             const liquidName = target.element + "_liquid";
 
-            // Define the "liquid" version if missing
+            // Define the liquid version if missing
             if (!elements[liquidName]) {
                 let baseColor = elements[target.element]?.color || "#654321";
                 if (Array.isArray(baseColor)) baseColor = baseColor[0];
 
+                // check if original is food
+                const isEdible =
+                    elements[target.element]?.isFood === true ||
+                    elements[target.element]?.category === "food";
+
                 elements[liquidName] = {
-                    color: [baseColor, "#3399ff"], // tint
+                    color: [baseColor, "#3399ff"], // tinted version
                     behavior: behaviors.LIQUID,
                     category: "liquids",
                     state: "liquid",
                     density: 1050,
                     viscosity: 8,
-                    isFood: elements[target.element]?.isFood || false,
+                    isFood: isEdible, // only food is edible
+                    desc: "Liquefied form of " + target.element
                 };
             }
 
@@ -57,4 +51,5 @@ elements.liquefier = {
             changePixel(target, liquidName);
         }
     },
+    desc: "Liquefies nearby pixels into their liquid versions. Food becomes drinkable."
 };
