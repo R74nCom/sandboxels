@@ -4258,8 +4258,11 @@ elements.body_457 = {
 		dir: 1,
 		panic: 0,
 		fuel: 500,
+		alpha: 0,
 	},
 	renderer: function(pixel,ctx) {
+		drawDefault(ctx,pixel);
+		if (!viewInfo[view].colorEffects) { return }
 		if (pixel.fuel > 1) {
 			drawPlus(ctx,"#ff6b21",pixel.x,pixel.y,undefined,Math.min(1,pixel.fuel/8));
 			drawPlus(ctx,"#ffa600",pixel.x,pixel.y-1,undefined,Math.min(1,pixel.fuel/9));
