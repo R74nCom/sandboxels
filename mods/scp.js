@@ -3725,7 +3725,7 @@ elements.scp_229 = {
 			for (var i = 0; i < coords.length; i++) {
 				if (!isEmpty(coords[i].x,coords[i].y) && !outOfBounds(coords[i].x,coords[i].y)) {
 					var electric = pixelMap[coords[i].x][coords[i].y]
-                    if (elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.charge || electric.element == "brain" || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_1000" || electric.element == "head_035" || electric.element == "head_008" || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
+                    if (elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.charge || electric.element == "scp_804" && electric.active == true || electric.element == "brain" || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_1000" || electric.element == "head_035" || electric.element == "head_008" || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
                         if (electric.y > pixel.y && electric.x > pixel.x && isEmpty(pixel.x+1,pixel.y+1)) {
                             createPixel("scp_229",pixel.x+1,pixel.y+1)
 							var electric2 = pixelMap[pixel.x+1][pixel.y+1]
@@ -3813,7 +3813,7 @@ elements.scp_229 = {
                 if (!isEmpty(x,y) && !outOfBounds(x,y) && pixel.nCD == undefined) {
                     var electric = pixelMap[x][y]
                     let old = electric.element;
-                    if (electric.element == "brain" || elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_035" || electric.element == "head_1000" || electric.element == "head_008" || elements[electric.element].category == "machines" && Math.random() > 0.5 || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
+                    if (electric.element == "brain" || electric.element == "scp_804" && electric.active == true || elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_035" || electric.element == "head_1000" || electric.element == "head_008" || elements[electric.element].category == "machines" && Math.random() > 0.5 || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
                         deletePixel(electric.x,electric.y)
                         createPixel("scp_229",electric.x,electric.y)
 						electric = pixelMap[electric.x][electric.y]
@@ -4931,7 +4931,7 @@ elements.scp_804 = {
                             }
                         }
                     }
-                    else if (manmade.element == "unknown" || manmade.element == "scp_035" || elements[manmade.element].category == "machines" || manmade.element == "metal_scrap" || manmade.element == "solid_mercury" || manmade.element == "molten_gallium" || manmade.element == "steel" || manmade.element == "galvanized_steel" || manmade.element == "brass" || manmade.element == "bronze" || manmade.element == "invar" || manmade.element == "sterling" || manmade.element == "rose_gold" || manmade.element == "purple_gold" || manmade.element == "blue_gold" || manmade.element == "electrum" || manmade.element == "solder" || manmade.element == "particleboard") {
+                    else if (manmade.element == "unknown" || manmade.element == "scp_035" || manmade.element == "scp_229" || elements[manmade.element].category == "machines" || manmade.element == "metal_scrap" || manmade.element == "solid_mercury" || manmade.element == "molten_gallium" || manmade.element == "steel" || manmade.element == "galvanized_steel" || manmade.element == "brass" || manmade.element == "bronze" || manmade.element == "invar" || manmade.element == "sterling" || manmade.element == "rose_gold" || manmade.element == "purple_gold" || manmade.element == "blue_gold" || manmade.element == "electrum" || manmade.element == "solder" || manmade.element == "particleboard") {
                         if (!manmade.repair) {
                             manmade.repair = 15
                         }
