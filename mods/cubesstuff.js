@@ -2182,7 +2182,7 @@ elements.white_hole = {
                     if (other && other !== pixel) {
                         let elemDef = elements[other.element];
 
-                        if (elemDef.hardness === 1 && !other.element === "white_hole") continue;
+                        if (elemDef.hardness === 1) continue;
 
                         let dist = Math.sqrt(dx * dx + dy * dy);
 
@@ -3241,7 +3241,7 @@ elements.element_line = {
             }
         }
         if (pixel.dir === 3) {
-            if (!tryMove(pixel, pixel.x, pixel.y - 1, pixel.clone)) {
+            if (!tryMove(pixel, pixel.x, pixel.y + 1, pixel.clone)) {
                 changePixel(pixel, pixel.clone, true)
             }
         }
@@ -3324,4 +3324,5 @@ elements.replace_all_of_element = {
         }
     }
 }
+
 
