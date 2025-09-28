@@ -1,8 +1,8 @@
 async function _modprompt(message, defaultValue = "") { // thanks to ggod for this prompt function. Taken from nousersthings.js
     return new Promise(resolve => {
         promptInput(message, (result) => {
-            resolve(result)
-        }, "bf.js is asking you...", defaultValue)
+            resolve(result);
+        }, "bf.js is asking you...", defaultValue);
     })
 }
 
@@ -93,7 +93,6 @@ class Interpreter {
 const bftokens = {
     bf_base: "#00ff00",
     bf_remote_base: "#008600",
-    bf_electric_base: "#5cb334",
     ">": "#ff7f00",
     "<": "#ff00ff",
     "+": "#00ffff",
@@ -103,8 +102,8 @@ const bftokens = {
     ".": "#ffd700",
     ",": "#ff4500",
     "!": "#ff69b4",
-    "/": "#bd1515",
-    "split": "#565656"
+    "split": "#565656",
+    "act": "#ffc400",
 }
 const bftokenslist = Object.keys(bftokens)
 
@@ -121,13 +120,17 @@ elements.bf_base = {
             px.base = [px.x, px.y]
             px.running = false
         }
+
+        if (!(px.interpreter instanceof Interpreter)) {
+            px.interpreter = new Interpreter()
+        }
     },
+
 }
 
 let remotebase1 = undefined
 let bfreader = undefined
 let bfreader2 = undefined
-let bfelectricbase = undefined
 
 elements.bf_remote_base = {
     category: "bf",
@@ -135,7 +138,7 @@ elements.bf_remote_base = {
     state: "solid",
     behavior: behaviors.WALL,
     onSelect: async function () {
-        var bfans1 = await _modprompt("Please input in the coordinates of the desired pixel. When it activates, this activates. (X,Y)", "0,0")
+        var bfans1 = await _modprompt("Please input in the coordinates of the desired pixel. When it activates, this activates. (X,Y)", "0,0");
         if (!bfans1) { return }
         let [x, y] = bfans1.split(",")
         remotebase1 = [Number(x), Number(y)]
@@ -153,38 +156,6 @@ elements.bf_remote_base = {
     },
 }
 
-elements.bf_electric_base = {
-    category: "bf",
-    color: "#5cb334",
-    state: "solid",
-    behavior: behaviors.WALL,
-    onSelect: async function () {
-        var bfans4 = await _modprompt("Please input in the coordinates of the desired base. (X,Y)", "0,0")
-        if (!bfans4) { return }
-        let [x, y] = bfans4.split(",")
-        bfelectricbase = [Number(x), Number(y)]
-    },
-    tick: (px) => {
-        if (pixelTicks == px.start) {
-            const base = pixelMap[bfelectricbase[0]][bfelectricbase[1]]
-            if (base.element == "bf_base") {
-                px.act = false
-                px.interpreter = base.interpreter
-                px.base = [px.x, px.y]
-                px.running = false
-            }
-        }
-        if (px.interpreter && pixel.charge && !px.running) {
-            px.running = true
-            px.act = true
-            px.interpreter.map.fill(0)
-            px.interpreter.code = ""
-            px.interpreter.index = 0
-            px.interpreter.ci = 0
-        }
-    }
-}
-
 elements.reader = {
     category: "bf",
     color: "#008600",
@@ -192,7 +163,7 @@ elements.reader = {
     behavior: behaviors.WALL,
     conduct: 1,
     onSelect: async function () {
-        var bfans2 = await _modprompt("Please input in the desired value to activate when read.", "0")
+        var bfans2 = await _modprompt("Please input in the desired value to activate when read.", "0");
         if (!bfans2) { return }
         bfreader = Number(bfans2)
     },
@@ -210,7 +181,7 @@ elements.pointer_reader = {
     behavior: behaviors.WALL,
     conduct: 1,
     onSelect: async function () {
-        var bfans3 = await _modprompt("Please input in the desired pointer and value to activate when read. (pointer,value)", "0,0")
+        var bfans3 = await _modprompt("Please input in the desired pointer and value to activate when read. (pointer,value)", "0,0");
         if (!bfans3) { return }
         let [x, y] = bfans3.split(",")
         bfreader2 = [Number(x), Number(y)]
@@ -226,7 +197,7 @@ elements.bf_runner = {
     category: "bf",
     color: "#ababab",
     tool: (px) => {
-        if ((px.element == "bf_base" || px.element == "bf_electric_base") && !px.running) {
+        if (px.element == "bf_base" && !px.running) {
             px.running = true
             px.act = true
             px.interpreter.map.fill(0)
@@ -237,8 +208,8 @@ elements.bf_runner = {
     }
 }
 
-bftokenslist.forEach(token => {
-    if (token == "bf_base" || token == "bf_remote_base" || token == "bf_electric_base") { return }
+for (let token of bftokenslist) {
+    if (token == "bf_base" || token == "bf_remote_base") { continue }
     elements[token] = {
         category: "bf",
         color: bftokens[token],
@@ -272,21 +243,14 @@ bftokenslist.forEach(token => {
                             px.act = true
                             pixelMap[px.base[0]][px.base[1]].interpreter.code += token
                             if (isEmpty(px.x + 1, px.y)) {
-                                if (!px.remotes) {
-                                    try {
-                                        pixelMap[px.base[0]][px.base[1]].interpreter.run(pixelMap[px.base[0]][px.base[1]])
-                                    } catch {
-                                        const code = pixelMap[px.base[0]][px.base[1]].interpreter.code
-                                        pixelMap[px.base[0]][px.base[1]].interpreter = new Interpreter()
-                                        pixelMap[px.base[0]][px.base[1]].interpreter.code = code
-                                        pixelMap[px.base[0]][px.base[1]].interpreter.run(pixelMap[px.base[0]][px.base[1]])
-                                    }
-                                    px.act = false
-                                } else {
+                                if (px.remotes) {
                                     px.remotes.forEach(remote => {
                                         pixelMap[remote[0]][remote[1]].act = true
                                     })
+                                } else {
+                                    pixelMap[px.base[0]][px.base[1]].interpreter.run(pixelMap[px.base[0]][px.base[1]])
                                 }
+                                px.act = false
                             }
                         }
                     }
@@ -303,5 +267,17 @@ bftokenslist.forEach(token => {
             }
         }
     }
-})
+}
 
+elements.act.conduct = 0.1
+const oldact = elements.act.tick
+elements.act.tick = (px) => {
+    oldact(px)
+
+    if (px.charge && !px.act) {
+        px.act = true
+        px.charge = 0
+    } else {
+        px.charge = 0
+    }
+}
