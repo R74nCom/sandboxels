@@ -296,33 +296,30 @@ elements.E2L_button = {
     state: "solid",
     category: "logic",
     tick: function(pixel){
+        if (typeof pixel.db == "undefined"){pixel.db = 0}
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = adjacentCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x, y, true)){
+                let newPixel = pixelMap[x][y]
+                if (newPixel.charge || newPixel.chargeCD){
+                    pixel.db = 5
+                }
+            }
+        }
+        pixel.db--
         for (var i = 0; i < adjacentCoords.length; i++) {
             var coord = adjacentCoords[i];
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y,true)) {           
-                if ((pixelMap[x][y].charge || pixelMap[x][y].chargeCD)){
-                    for (var j = 0; j < adjacentCoords.length; j++) {
-                        var coord = adjacentCoords[j];
-                        var x = pixel.x+coord[0];
-                        var y = pixel.y+coord[1];
-                        if (!isEmpty(x,y,true)) {           
-                            if (pixelMap[x][y].element == "logic_wire"){
-                                pixelMap[x][y].lstate = 2
-                            }
-                        }
+                if (pixelMap[x][y].element == "logic_wire"){
+                    if (pixel.db > 0){
+                        pixelMap[x][y].lstate = 2
+                    } else {
+                        pixelMap[x][y].lstate = -2
                     }
-                    return;
-                }
-            }
-        }
-        for (var i = 0; i < adjacentCoords.length; i++) {
-            var coord = adjacentCoords[i];
-            var x = pixel.x+coord[0];
-            var y = pixel.y+coord[1];
-            if (!isEmpty(x,y,true)) {
-                if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate > 0){
-                    pixelMap[x][y].lstate = -2
                 }
             }
         }
