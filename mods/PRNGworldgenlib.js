@@ -152,3 +152,10 @@ elements.PRNGgenerate = {
         }, "Enter seed:");
     }
 }
+elements.view_seed = {
+    category: "tools",
+    onSelect: function(){
+        alert(seed);
+        selectElement("dirt");
+    }
+}
