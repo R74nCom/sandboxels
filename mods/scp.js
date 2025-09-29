@@ -104,17 +104,17 @@ elements.metanarrative_ontokinetic_hume_stabilizing_anomaly_neutralizing_all_pow
 
 elements.site_nuke = {
 	color: "#815E2B",
+	behavior: behaviors.WALL,
 	behaviorOn: [
 		"XX|XX|XX",
-		"XX|XX|XX",
-		"M2|M1 AND EX:500>plasma,plasma,plasma,plasma,plasma,radiation,radiation,radiation,rad_steam,electric|M2",
+		"XX|EX:250>molten_glass,molten_glass,plasma,plasma,plasma,plasma,plasma,plasma,plasma,radiation,radiation,radiation,rad_steam,electric,electric,electric|XX",
+		"M2|M1|M2",
 	],
-	conduct: 0.75,
+	conduct: 1,
 	category: "scp",
 	state: "solid",
 	density: 1500,
 	excludeRandom: true,
-	cooldown: defaultCooldown
 }
 
 elements.d_class = {
@@ -3843,7 +3843,7 @@ elements.scp_229 = {
 						pixel.nCD = 2
                     }
 					else if (electric.element == "site_nuke") {
-						explodeAt(electric.x,electric.y,500,["plasma","plasma","plasma","plasma","plasma","plasma","plasma","radiation","radiation","radiation","radiation","rad_steam","electric","electric"])
+						explodeAt(electric.x,electric.y,100,["plasma","plasma","plasma","plasma","plasma","plasma","plasma","radiation","radiation","radiation","radiation","rad_steam","electric","electric"])
 						pixel.nCD = 2
                     }
                     else if (electric.charge) {
