@@ -2757,7 +2757,7 @@ elements.scp_063 = {
 	    "DL|XX|DL",
 	    "M2%80 AND DL|M1 AND DL|M2%80 AND DL",
     ],
-    ignore: ["scp_063","head_049","body_049","head_096","body_096","head_049_1","body_049_1","head_008_1","body_008_1","head_012_1","body_012_1","scp_999","scp_682","head","body","plant","grass","algae","cell","cancer","worm","flea","termite","ant","spider","fly","firefly","bee","stink_bug","human","bird","rat","frog","tadpole","fish","slug","snail","sapling","evergreen","cactus","kelp","coral","pistil","tree_branch","vine","bamboo_plant","mushroom_stalk","mushroom_gill","mushroom_cap","lichen","homunculus","root","hyphae","skin"],
+    ignore: ["scp_063","head_049","body_049","head_096","body_096","head_049_1","body_049_1","head_008_1","body_008_1","head_012_1","body_012_1","scp_999","scp_682","head","body","plant","grass","algae","cell","cancer","worm","flea","termite","ant","spider","fly","firefly","bee","stink_bug","human","bird","rat","frog","tadpole","fish","slug","snail","sapling","evergreen","cactus","kelp","coral","pistil","tree_branch","vine","bamboo_plant","mushroom_stalk","mushroom_gill","mushroom_cap","lichen","homunculus","root","hyphae","skin","porcelain"],
 	category: "scp",
 	tempHigh: 190,
 	stateHigh: ["molten_plastic","molten_plastic","fire","dioxin"],
@@ -3410,6 +3410,7 @@ elements.body_173 = {
                             seenPixel.dead = pixelTicks
                         }
 					}
+					break;
 				}
 			}
 		}
@@ -3453,6 +3454,7 @@ elements.body_173 = {
                             seenPixel.dead = pixelTicks
                         }
 					}
+					break;
 				}
 			}
 		}
@@ -3725,7 +3727,7 @@ elements.scp_229 = {
 			for (var i = 0; i < coords.length; i++) {
 				if (!isEmpty(coords[i].x,coords[i].y) && !outOfBounds(coords[i].x,coords[i].y)) {
 					var electric = pixelMap[coords[i].x][coords[i].y]
-                    if (elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.charge || electric.element == "scp_804" && electric.active == true || electric.element == "brain" || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_1000" || electric.element == "head_035" || electric.element == "head_008" || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
+                    if (elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.element == "thunder_cloud" || electric.charge || electric.element == "scp_804" && electric.active == true || electric.element == "brain" || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_1000" || electric.element == "head_035" || electric.element == "head_008" || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
                         if (electric.y > pixel.y && electric.x > pixel.x && isEmpty(pixel.x+1,pixel.y+1)) {
                             createPixel("scp_229",pixel.x+1,pixel.y+1)
 							var electric2 = pixelMap[pixel.x+1][pixel.y+1]
@@ -3813,7 +3815,7 @@ elements.scp_229 = {
                 if (!isEmpty(x,y) && !outOfBounds(x,y) && pixel.nCD == undefined) {
                     var electric = pixelMap[x][y]
                     let old = electric.element;
-                    if (electric.element == "brain" || electric.element == "scp_804" && electric.active == true || elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_035" || electric.element == "head_1000" || electric.element == "head_008" || elements[electric.element].category == "machines" && Math.random() > 0.5 || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
+                    if (electric.element == "brain" || electric.element == "thunder_cloud" || electric.element == "scp_804" && electric.active == true || elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_035" || electric.element == "head_1000" || electric.element == "head_008" || elements[electric.element].category == "machines" && Math.random() > 0.5 || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
                         deletePixel(electric.x,electric.y)
                         createPixel("scp_229",electric.x,electric.y)
 						electric = pixelMap[electric.x][electric.y]
@@ -5145,7 +5147,7 @@ elements.scp_999 = {
     conduct: .5,
     temp: 37,
     extinguish: true,
-    stain: 0.03,
+    stain: -0.03,
 	cooldown: defaultCooldown,
 }
 
