@@ -102,6 +102,21 @@ elements.metanarrative_ontokinetic_hume_stabilizing_anomaly_neutralizing_all_pow
     hidden: true,
 }
 
+elements.site_nuke = {
+	color: "#815E2B",
+	behaviorOn: [
+		"XX|XX|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:500>plasma,plasma,plasma,plasma,plasma,radiation,radiation,radiation,rad_steam,electric|M2",
+	],
+	conduct: 0.75,
+	category: "scp",
+	state: "solid",
+	density: 1500,
+	excludeRandom: true,
+	cooldown: defaultCooldown
+}
+
 elements.d_class = {
 	// color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
     color: ["#f3e7db","#f7ead0","#eadaba","#d7bd96","#a07e56","#825c43","#604134","#3a312a"],
@@ -3827,6 +3842,10 @@ elements.scp_229 = {
 						electric.element = "glass_shard"
 						pixel.nCD = 2
                     }
+					else if (electric.element == "site_nuke") {
+						explodeAt(electric.x,electric.y,500,["plasma","plasma","plasma","plasma","plasma","plasma","plasma","radiation","radiation","radiation","radiation","rad_steam","electric","electric"])
+						pixel.nCD = 2
+                    }
                     else if (electric.charge) {
 						deletePixel(electric.x,electric.y)
                         createPixel("scp_229",electric.x,electric.y)
@@ -4933,7 +4952,7 @@ elements.scp_804 = {
                             }
                         }
                     }
-                    else if (manmade.element == "unknown" || manmade.element == "scp_035" || manmade.element == "scp_229" || elements[manmade.element].category == "machines" || manmade.element == "metal_scrap" || manmade.element == "solid_mercury" || manmade.element == "molten_gallium" || manmade.element == "steel" || manmade.element == "galvanized_steel" || manmade.element == "brass" || manmade.element == "bronze" || manmade.element == "invar" || manmade.element == "sterling" || manmade.element == "rose_gold" || manmade.element == "purple_gold" || manmade.element == "blue_gold" || manmade.element == "electrum" || manmade.element == "solder" || manmade.element == "particleboard") {
+                    else if (manmade.element == "unknown" || manmade.element == "site_nuke" || manmade.element == "scp_035" || manmade.element == "scp_229" || elements[manmade.element].category == "machines" || manmade.element == "metal_scrap" || manmade.element == "solid_mercury" || manmade.element == "molten_gallium" || manmade.element == "steel" || manmade.element == "galvanized_steel" || manmade.element == "brass" || manmade.element == "bronze" || manmade.element == "invar" || manmade.element == "sterling" || manmade.element == "rose_gold" || manmade.element == "purple_gold" || manmade.element == "blue_gold" || manmade.element == "electrum" || manmade.element == "solder" || manmade.element == "particleboard") {
                         if (!manmade.repair) {
                             manmade.repair = 15
                         }
