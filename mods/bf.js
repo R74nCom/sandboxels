@@ -16,9 +16,10 @@ class Interpreter {
         this.tsay = ""
     }
 
-    async run(px) {
-        while (this.ci < this.code.length) {
-            const token = this.code[this.ci]
+    async run(px, code = this.code) {
+        this.ci = 0
+        while (this.ci < code.length) {
+            const token = code[this.ci]
 
             switch (token) {
                 case ">":
@@ -66,8 +67,8 @@ class Interpreter {
                         let open = 1
                         while (open > 0) {
                             this.ci++
-                            if (this.code[this.ci] === "[") open++
-                            else if (this.code[this.ci] === "]") open--
+                            if (code[this.ci] === "[") open++
+                            else if (code[this.ci] === "]") open--
                         }
                     } else {
                         this.loops.push(this.ci)
@@ -90,6 +91,22 @@ class Interpreter {
     }
 }
 
+class RemoteBase {
+    constructor(base) {
+        this.base = base
+        this.code = ""
+    }
+
+    run() {
+        pixelMap[this.base[0]][this.base[1]].interpreter.run(pixelMap[this.base[0]][this.base[1]], this.code)
+        this.code = ""
+    }
+
+    getMap() {
+        return pixelMap[this.base[0]][this.base[1]].interpreter.map
+    }
+}
+
 const bftokens = {
     bf_base: "#00ff00",
     bf_remote_base: "#008600",
@@ -104,6 +121,7 @@ const bftokens = {
     "!": "#ff69b4",
     "split": "#565656",
     "act": "#ffc400",
+    "bf_gate": "#ffc400",
 }
 const bftokenslist = Object.keys(bftokens)
 
@@ -146,14 +164,21 @@ elements.bf_remote_base = {
     tick: (px) => {
         if (pixelTicks == px.start) {
             px.act = false
-            px.base = pixelMap[remotebase1[0]][remotebase1[1]].base
+            px.interpreter = new RemoteBase(pixelMap[remotebase1[0]][remotebase1[1]].base)
+            px.base = [px.x, px.y]
             if (!pixelMap[remotebase1[0]][remotebase1[1]].remotes) {
                 pixelMap[remotebase1[0]][remotebase1[1]].remotes = []
             }
             pixelMap[remotebase1[0]][remotebase1[1]].remotes.push([px.x, px.y])
+            px.parent = remotebase1
             px.cd = false
         }
     },
+    onDelete: (px) => {
+        if (!isEmpty(px.parent[0], px.parent[1]) && pixelMap[px.parent[0]][px.parent[1]].remotes) {
+            pixelMap[px.parent[0]][px.parent[1]].remotes.filter(a => !(a[0] === px.x && a[1] === px.y))
+        }
+    }
 }
 
 elements.reader = {
@@ -208,8 +233,85 @@ elements.bf_runner = {
     }
 }
 
+dependOn("logicgates.js", () => {
+    elements.bf_gate = {
+        category: "bf",
+        color: "#ffc400",
+        state: "solid",
+        behavior: behaviors.WALL,
+        tick: (px) => {
+            if (!px.base) {
+                px.act = false
+                const ns = getNeighbors(px)
+                if (ns.length > 0) {
+                    if (!isEmpty(px.x - 1, px.y)) {
+                        const left = ns[0]
+                        if (bftokenslist.includes(left.element) && left.base) {
+                            px.base = left.base
+                        }
+                    }
+                }
+            } else {
+                if (px.act) {
+                    px.color = "#00ff00"
+                } else {
+                    px.color = "#ffc400"
+                }
+                var countNeighborsResult = countNeighbors(pixel)
+                if (countNeighborsResult.charged > 0) {
+                    px.can = true
+                } else {
+                    px.can = false
+                }
+
+                if (!isEmpty(px.x - 1, px.y)) {
+                    const left = pixelMap[px.x - 1][px.y]
+                    if (bftokenslist.includes(left.element) && left.base) {
+                        if (left.act && !px.act && px.can) {
+                            left.act = false
+                            px.act = true
+                            pixelMap[px.base[0]][px.base[1]].interpreter.code += "g"
+                            if (isEmpty(px.x + 1, px.y) || !pixelMap[px.x][px.y].base || (pixelMap[px.x][px.y].element == "bf_gate" && !pixelMap[px.x][px.y].can)) {
+                                px.act = false
+                            }
+                            if (px.remotes) {
+                                px.remotes.forEach(remote => {
+                                    pixelMap[remote[0]][remote[1]].act = true
+                                })
+                            } else {
+                                pixelMap[px.base[0]][px.base[1]].interpreter.run(pixelMap[px.base[0]][px.base[1]])
+                            }
+                        }
+                    }
+                }
+
+                const ns = getNeighbors(px)
+                ns.forEach(n => {
+                    if (pixelMap[px.base[0]][px.base[1]].interpreter instanceof Interpreter) {
+                        if (n.element == "reader" && pixelMap[px.base[0]][px.base[1]].interpreter.map[pixelMap[px.base[0]][px.base[1]].interpreter.index] == n.tread) {
+                            n.charge = 1
+                        } else if (n.element == "pointer_reader" && pixelMap[px.base[0]][px.base[1]].interpreter.map[n.tread[0]] == n.tread[1]) {
+                            n.charge = 1
+                        }
+                    } else {
+                        if (n.element == "reader" && pixelMap[px.base[0]][px.base[1]].interpreter.getMap()[pixelMap[px.base[0]][px.base[1]].interpreter.index] == n.tread) {
+                            n.charge = 1
+                        } else if (n.element == "pointer_reader" && pixelMap[px.base[0]][px.base[1]].interpreter.getMap()[n.tread[0]] == n.tread[1]) {
+                            n.charge = 1
+                        }
+                    }
+                })
+            }
+
+            if (isEmpty(px.x + 1, px.y) || !pixelMap[px.x + 1][px.y].base || (pixelMap[px.x + 1][px.y].element == "bf_gate" && !pixelMap[px.x + 1][px.y].can)) {
+                px.act = false
+            }
+        }
+    }
+}, true)
+
 for (let token of bftokenslist) {
-    if (token == "bf_base" || token == "bf_remote_base") { continue }
+    if (token == "bf_base" || token == "bf_remote_base" || token == "bf_gate") { continue }
     elements[token] = {
         category: "bf",
         color: bftokens[token],
@@ -217,7 +319,6 @@ for (let token of bftokenslist) {
         behavior: behaviors.WALL,
         tick: (px) => {
             if (!px.base) {
-                px.way = "l"
                 px.act = false
                 const ns = getNeighbors(px)
                 if (ns.length > 0) {
@@ -235,35 +336,45 @@ for (let token of bftokenslist) {
                     px.color = bftokens[token]
                 }
                 const ns = getNeighbors(px)
-                if (ns.length > 0) {
-                    const left = ns[0]
+                if (ns.length > 0 && !isEmpty(px.x - 1, px.y)) {
+                    const left = pixelMap[px.x - 1][px.y]
                     if (bftokenslist.includes(left.element) && left.base) {
                         if (left.act && !px.act) {
                             left.act = false
                             px.act = true
                             pixelMap[px.base[0]][px.base[1]].interpreter.code += token
-                            if (isEmpty(px.x + 1, px.y)) {
-                                if (px.remotes) {
-                                    px.remotes.forEach(remote => {
-                                        pixelMap[remote[0]][remote[1]].act = true
-                                    })
-                                } else {
-                                    pixelMap[px.base[0]][px.base[1]].interpreter.run(pixelMap[px.base[0]][px.base[1]])
-                                }
-                                px.act = false
+                            if (px.remotes) {
+                                px.remotes.forEach(remote => {
+                                    pixelMap[remote[0]][remote[1]].act = true
+                                    console.log(pixelMap[remote[0]][remote[1]].act)
+                                })
+                            } else {
+                                pixelMap[px.base[0]][px.base[1]].interpreter.run(pixelMap[px.base[0]][px.base[1]])
                             }
                         }
                     }
-                    if (ns.length >= 2) {
-                        ns.forEach(n => {
+                }
+                if (ns.length >= 2) {
+                    ns.forEach(n => {
+                        if (pixelMap[px.base[0]][px.base[1]].interpreter instanceof Interpreter) {
                             if (n.element == "reader" && pixelMap[px.base[0]][px.base[1]].interpreter.map[pixelMap[px.base[0]][px.base[1]].interpreter.index] == n.tread) {
                                 n.charge = 1
                             } else if (n.element == "pointer_reader" && pixelMap[px.base[0]][px.base[1]].interpreter.map[n.tread[0]] == n.tread[1]) {
                                 n.charge = 1
                             }
-                        })
-                    }
+                        } else {
+                            if (n.element == "reader" && pixelMap[px.base[0]][px.base[1]].interpreter.getMap()[pixelMap[px.base[0]][px.base[1]].interpreter.index] == n.tread) {
+                                n.charge = 1
+                            } else if (n.element == "pointer_reader" && pixelMap[px.base[0]][px.base[1]].interpreter.getMap()[n.tread[0]] == n.tread[1]) {
+                                n.charge = 1
+                            }
+                        }
+                    })
                 }
+            }
+
+            if (isEmpty(px.x + 1, px.y) || !pixelMap[px.x + 1][px.y].base || (pixelMap[px.x + 1][px.y].element == "bf_gate" && !pixelMap[px.x + 1][px.y].can)) {
+                px.act = false
             }
         }
     }
