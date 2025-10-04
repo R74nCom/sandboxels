@@ -2174,7 +2174,7 @@ elements.scp_035 = {
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     buttonColor: ["#11111f","#f7ead0","#f7ead0","#f7ead0","#f7ead0","#11111f","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#11111f","#e9e6db","#e9e6db","#e9e6db","#e9e6db","#11111f"],
 	name: "SCP-035",
-    hardness: 0.6,
+    hardness: 0.9,
     category: "scp",
     behavior: [
         "CR:black_acid%0.05|CR:black_acid%0.25|CR:black_acid%0.05",
@@ -3946,6 +3946,8 @@ elements.body_173 = {
                             break;
                         }
 					}
+					pixel.frozen1 = false
+					break;
 				}
                 if (x >= 99) {
                     pixel.frozen1 = false
@@ -3978,6 +3980,8 @@ elements.body_173 = {
                             break;
                         }
 					}
+					pixel.frozen2 = false
+					break;
 				}
                 if (x <= -99) {
                     pixel.frozen2 = false
@@ -5421,7 +5425,7 @@ elements.scp_804 = {
                             }
                         }
                     }
-                    else if (manmade.panic && manmade.element == "bone" || elements[manmade.element].category == "medicine" || manmade.panic && manmade.element == "quicklime" || manmade.panic && manmade.element == "rotten_meat" || manmade.panic && manmade.element == "meat" || manmade.element == "cooked_meat" || manmade.element == "blood" || manmade.element == "infection" || manmade.element == "seltzer" || Math.random() > 0.9 && manmade.element == "dirty_water" || manmade.element == "pool_water" || manmade.element == "lamp_oil" || manmade.element == "neutral_acid" || manmade.element == "glue" || manmade.element == "soda" || manmade.element == "melted_wax" || manmade.element == "chocolate_milk" || manmade.element == "fruit_milk" || manmade.element == "pilk" || manmade.element == "eggnog" || manmade.element == "cream" || manmade.element == "nut_milk" || manmade.element == "vinegar" || manmade.element == "soap" || manmade.element == "bleach" || manmade.element == "dye" || manmade.element == "ink" || manmade.element == "vaccine" || manmade.element == "antidote" || manmade.element == "tea" || manmade.element == "coffee" || manmade.element == "caramel" || manmade.element == "molasses" || manmade.element == "ketchup"  || manmade.element == "sauce" || manmade.element == "mayo" || manmade.element == "cyanide") {
+                    else if (manmade.panic && manmade.element == "bone" || elements[manmade.element].category == "medicine" || manmade.panic && manmade.element == "quicklime" || manmade.panic && manmade.element == "rotten_meat" || manmade.panic && manmade.element == "meat" || manmade.element == "cooked_meat" || manmade.element == "blood" || manmade.element == "infection" || manmade.element == "infected_blood" || manmade.element == "seltzer" || Math.random() > 0.9 && manmade.element == "dirty_water" || manmade.element == "pool_water" || manmade.element == "lamp_oil" || manmade.element == "neutral_acid" || manmade.element == "glue" || manmade.element == "soda" || manmade.element == "melted_wax" || manmade.element == "chocolate_milk" || manmade.element == "fruit_milk" || manmade.element == "pilk" || manmade.element == "eggnog" || manmade.element == "cream" || manmade.element == "nut_milk" || manmade.element == "vinegar" || manmade.element == "soap" || manmade.element == "bleach" || manmade.element == "dye" || manmade.element == "ink" || manmade.element == "vaccine" || manmade.element == "antidote" || manmade.element == "tea" || manmade.element == "coffee" || manmade.element == "caramel" || manmade.element == "molasses" || manmade.element == "ketchup"  || manmade.element == "sauce" || manmade.element == "mayo" || manmade.element == "cyanide") {
                         if (!manmade.repair) {
                             manmade.repair = 3
                         }
