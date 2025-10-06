@@ -83,7 +83,7 @@ elements.pumpkin_mash = {
 	tempHigh: 125,
 	stateHigh: ["pumpkin_spice","pumpkin_spice",null],
 	category: "food",
-	state: "solid",
+	state: "liquid",
 	density: 490.3,
 	isFood: true,
 	hidden: true,
@@ -107,3 +107,30 @@ elements.pumpkin_spice = {
 
 elements.coffee.reactions.pumpkin_spice = { elem2:null, color1:"#6A2F03", chance:0.005 };
 elements.coffee.reactions.pumpkin_mash = { elem2:null, color1:"#6A2F03", chance:0.005 };
+
+elements.apple = {
+	color: ["#b22424","#f5c517","#66b447"],
+	grain: 2,
+	behavior: behaviors.POWDER,
+	// singleColor: true,
+	category: "food",
+	state: "solid",
+	density: 750,
+	isFood: true,
+	breakInto: "juice",
+	tempHigh: 175,
+	stateHigh: ["applesauce",null]
+}
+
+elements.applesauce = {
+	color: "#E7C45A",
+	behavior: behaviors.LIQUID,
+	viscosity: 50000,
+	tempHigh: 400,
+	stateHigh: "smoke",
+	category: "food",
+	state: "liquid",
+	density: 750,
+	isFood: true,
+	hidden: true,
+}
