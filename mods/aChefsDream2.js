@@ -3,7 +3,7 @@
 // https://github.com/SquareScreamYT/
 // https://youtube.com/@sqec
 
-version = "v2.1.0"
+version = "v2.1.1"
 
 runAfterLoad(function() {
     console.log("Current aChefsDream version: "+version)
@@ -594,5 +594,148 @@ elements.pistachio_powder = {
   stateHigh: ["ash", "smoke"],
   hidden: true
 }
+
+elements.pumpkin_mash = {
+	color: ["#f59c2f", "#efa810", "#e38f1a"],
+	behavior: behaviors.STURDYPOWDER,
+	tempHigh: 125,
+	stateHigh: ["pumpkin_spice","pumpkin_spice","smoke"],
+	category: "food",
+	state: "liquid",
+	density: 500,
+	isFood: true,
+	hidden: true,
+}
+
+elements.pumpkin.breakInto = ["pumpkin_seed", "pumpkin_mash", "pumpkin_mash", "pumpkin_mash", "pumpkin_mash", null];
+
+elements.pumpkin_spice = {
+	color: ["#95570b", "#ba7f36"],
+	behavior: behaviors.POWDER,
+	tempHigh: 400,
+	stateHigh: ["smoke","smoke","smoke","smoke","ash"],
+	category: "food",
+	state: "solid",
+	density: 500,
+	isFood: true,
+	hidden: true,
+}
+
+elements.cinnamon_powder.reactions.nutmeg_powder = { elem1: "pumpkin_spice", elem2: null, chance: 0.5 };
+
+elements.coffee.reactions.pumpkin_mash = { elem2: null, color1: "#7e3c09", chance: 0.005 };
+elements.coffee.reactions.pumpkin_spice = { elem2: null, color1: "#7e3c09", chance: 0.005 };
+
+elements.nutmeg_tree = {
+    color: "#6B4226",
+    behavior: behaviors.WALL,
+    tempHigh: 400,
+    stateHigh: ["ember", "charcoal", "fire"],
+    category: "solids",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember", "charcoal", "fire"],
+    state: "solid",
+    hardness: 0.2,
+    breakInto: "sawdust",
+    hidden: true
+};
+
+elements.nutmeg_branch = {
+    color: "#5c3b23",
+    behavior: [
+        "CR:nutmeg_leaves,nutmeg_branch%2|CR:nutmeg_leaves,nutmeg_branch%2|CR:nutmeg_leaves,nutmeg_branch%2",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tempHigh: 100,
+    stateHigh: "nutmeg_tree",
+    tempLow: -30,
+    stateLow: "nutmeg_tree",
+    category: "life",
+    burn: 30,
+    burnTime: 60,
+    burnInto: ["sap", "ember"],
+    hidden: true,
+    state: "solid",
+    density: 1400,
+    breakInto: ["sap", "sawdust"]
+};
+
+elements.nutmeg_leaves = {
+    color: ["#4b7d3d", "#558c40"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|CR:nutmeg_fruit%0.1|XX",
+    ],
+    reactions: {
+        "vinegar": { elem1: "dead_plant", chance: 0.035 },
+        "baking_soda": { elem1: "dead_plant", chance: 0.01 },
+        "bleach": { elem1: "dead_plant", chance: 0.05 },
+        "alcohol": { elem1: "dead_plant", chance: 0.035 },
+    },
+    category: "life",
+    tempHigh: 90,
+    stateHigh: "dead_plant",
+    tempLow: -1.5,
+    stateLow: "frozen_plant",
+    burn: 60,
+    burnTime: 60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true
+};
+
+elements.nutmeg_fruit = {
+    color: ["#c0a25d", "#ddb86c"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn: 60,
+    burnTime: 60,
+    cutInto: ["mace", "nutmeg", "nutmeg"],
+    breakInto: ["mace", "nutmeg", "nutmeg"],
+    state: "solid",
+    density: 1050
+};
+
+elements.mace = {
+    color: ["#e04e1b", "#cc3614"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+    isFood: true,
+    state: "solid",
+    density: 900,
+    hidden: false
+};
+
+elements.nutmeg = {
+    color: ["#8b5a2b", "#A0522D"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+    isFood: true,
+    state: "solid",
+    density: 1000,
+    breakInto: "nutmeg_powder",
+};
+
+elements.nutmeg_powder = {
+    color: "#C58940",
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 250,
+    stateHigh: ["ash", "smoke"],
+    isFood: true,
+    state: "solid",
+    density: 950,
+    hidden: false
+};
 
 },true)
