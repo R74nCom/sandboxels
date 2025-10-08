@@ -7,4 +7,4 @@ Rules for publishing mods:
 
 Failure to follow these rules may result in your pull request being ignored!
 
-Learn more about [submitting your mod](https://sandboxels.wiki.gg/wiki/Modding_tutorial#Putting_it_online).
+Learn more about [submitting your mod](https://sandboxels.wiki.gg/wiki/Modding/Putting_it_online).

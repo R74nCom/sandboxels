@@ -1,5 +1,6 @@
-// created by SquareScreamYT
-// https://github.com/SquareScreamYT/aChefsDream.js
+// created by SquareScreamYT/sq
+// https://github.com/SquareScreamYT/
+// https://youtube.com/@sqec
 
 runAfterLoad(function() {
     console.log("Thanks for using aChefsDream.js! -sqec")
@@ -2335,7 +2336,7 @@ elements.lemon_juice = {
     hidden: true,
     tempLow: 0,
     reactions: {
-        "sugar": {elem1:"lemonade", elem2: "null", chance:0.35}
+        "sugar": {elem1:"lemonade", elem2: null, chance:0.35}
     }
 };
 eLists.JUICEMIXABLE.push("lemon_juice");
@@ -7447,8 +7448,8 @@ elements.raw_beef = {
     stateHigh: "steak",
     reactions: {
         "smoke": {elem1: "smoked_beef"},
-        "charcoal": {elem1: "barbecued_beef", tempMin: 70},
-        "fire": {elem1: "barbecued_beef"}
+        "charcoal": {elem1: "brisket", tempMin: 70},
+        "fire": {elem1: "brisket"}
     }
 };
 

@@ -1892,19 +1892,9 @@ elements.molten_bismuth = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x, y, true)){
                   if (pixelMap[x][y].element == "bismuth"){
-                /*
-                      var otherPixel = pixelMap[x][y]
-                      var nR = parseInt(otherPixel.color.slice(4, otherPixel.color.indexOf(',')), 10)
-		              var nG = parseInt(otherPixel.color.slice(otherPixel.color.indexOf(',') + 1, otherPixel.color.lastIndexOf(',')), 10)
-		              var nB = parseInt(otherPixel.color.slice(otherPixel.color.lastIndexOf(',') + 1, -1), 10)
-                      var hsvResult = RGBtoHSV(nR, nG, nB)
-                           if ((pixel.tHue+1)%1 < hsvResult.h){
-                           pixel.tHue = hsvResult.h;
-                         }
-                           */
-                          bismuthsum += 1;
+                    bismuthsum += 1;
+                    }
                 }
-              }
             }
             if (pixel.temp <= 210){
                 changePixel(pixel, "bismuth");
@@ -2454,7 +2444,8 @@ elements.transparency = {
     },
     behavior: behaviors.WALL,
     category: "special",
-    state: "solid"
+    state: "solid",
+    grain: 0
 }
 elements.textured_steel = {
     color: ["#708196", "#8895ad", "#596B77", "#525D6B", "#404954"],
@@ -3910,6 +3901,13 @@ elements.false_vacuum = {
         if (!pixel.timeAlive){
             pixel.timeAlive = 0
         }
+        if (!pixel.generations){
+            pixel.generations = 0
+        }
+        if (pixel.generations > Math.max(width, height)){
+            deletePixel(pixel.x, pixel.y)
+            return
+        }
         pixel.color = `rgb(${180/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)})`
         if (pixel.timeAlive === 0){
             for (i = 0; i < squareCoords.length; i++){
@@ -3919,9 +3917,11 @@ elements.false_vacuum = {
                     if (pixelMap[x][y].element !== "false_vacuum"){
                         deletePixel(x, y)
                         createPixel("false_vacuum", x, y)
+                        pixelMap[x][y].generations = pixel.generations + 1
                     }
                 } else if (isEmpty(x, y)){
                     createPixel("false_vacuum", x, y)
+                    pixelMap[x][y].generations = pixel.generations + 1
                 }
             }
         }

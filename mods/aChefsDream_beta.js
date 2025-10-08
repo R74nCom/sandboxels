@@ -1,7 +1,7 @@
 // created by SquareScreamYT
 // please visit the repo to see the code
 
-fetch('https://raw.githubusercontent.com/SquareScreamYT/aChefsDream.js/main/aChefsDream.js')
+fetch('https://raw.githubusercontent.com/SquareScreamYT/sandboxels/main/mods/aChefsDream2.js')
     .then(response => response.text())
     .then(code => {
         eval(code);
