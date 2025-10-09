@@ -1,43 +1,37 @@
-// mod moment
-// also made by 3pm
+// made by 3pm
 
-// starting the initiation
-version = "0.0.1"
-subversion = "0.0.12"
-versionname = "Gullible On The Ceilling"
+version = "0.0.2"
+subversion = "0.0.21"
+versionname = "Let's take a look..."
 
 console.log("3pms_mod.js " + version + " \"" + versionname + "\"")
 console.log("3pms_mod.js | Initiating...")
 
 // bypassing the tps limit
-// nvm this is useless
-// whatever im keeping it
 
-setTimeout(() => {
-    const tpsbutton = document.getElementById("tpsButton");
-    tpsbutton.onclick = () => {
-        var tpsprompt = prompt(
-            "Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\n" +
-            "The default is 30.\n\nThe current TPS is " + tps + ".\n\nNOTE: 3pms_mod.js removes the TPS limit.\n" +
-            "Any TPS higher than 1000 isn\'t recommended.\n\n"
-        );
-
-        var newtps = parseInt(tpsprompt);
-        if (tpsprompt !== null) {
-            if (isNaN(newtps) || newtps == "") {
-            alert("You did not enter a valid TPS.");
-            } else {
-            tps = parseInt(newtps);
-            if (isNaN(tps) || tps <= 0) {
-                alert("You did not enter a valid TPS.");
-                tps = 30;
+function tpsPrompt() {
+    promptInput("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".\n\nNOTE: 3pms_mod.js removes the TPS limit.\nAny TPS higher than 1000 isn't recommended.\n\n",
+        (r) => {
+            var newtps = parseInt(r);
+            if (r !== null) {
+                if (isNaN(newtps) || newtps == "") logMessage("You did not enter a valid TPS.");
+                else {
+                    newtps = parseInt(newtps);
+                    if (isNaN(newtps) || newtps <= 0) {
+                        logMessage("You did not enter a valid TPS.");
+                    }
+                    else {
+                        tps = newtps;
+                        delete currentSaveData.oldTps;
+                    }
+                }
+                resetInterval(tps);
             }
-            }
-            resetInterval(tps);
-        }
-        focusGame();
-    };
-}, 1000);
+            focusGame();
+        },
+        "Change TPS"
+    )
+}
 
 // more settings
 
@@ -60,7 +54,7 @@ setTimeout(() => {
                 </div>
             </div>
         </div>`);
-    const menuText = document.getElementsByClassName("menuText")[6]
+    const menuText = document.getElementsByClassName("menuText")[9]
     const newButton = document.createElement("button")
     newButton.innerText = "More Settings"
     newButton.className = "settingsButton"
@@ -73,7 +67,7 @@ setTimeout(() => {
 
 // elements
 
-elements.calcium_oxide = { // most of this is taken off calcium
+elements.calcium_oxide = {
     color: ["#544E45","#6A635E","#6E6A61","#756F62","#918A7B"],
     tick: function(pixel) {
         behaviors.POWDER(pixel);
@@ -95,39 +89,56 @@ elements.calcium_oxide = { // most of this is taken off calcium
     fireColor: "#ff6b21"
 }
 
-elements.eeraser = { // finally integrating it after over a year
+elements.eeraser = {
     color: "#FFFF00",
-	behavior: behaviors.WALL,
-    behaviorON: [
-        "DL|DL|DL",
-        "DL|DL|DL",
+    behaviorOn: [
+        "DL|XX|DL",
+        "DL|XX|DL",
         "DL|DL|DL",
     ],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX"
+    ],
+    conduct: 0.5,
     category: "machines",
-    insulate: elements.wire.insulate,
-    conduct: elements.wire.conduct,
-    noMix: elements.wire.noMix
+    state: "solid",
 };
 
-// stopping the initiation
+// tools
+elements.replace_all_of_element = {
+    color: ["#ff3030", "#800000"],
+    name: "replace all of element",
+    onSelect: async function() {
+        promptInput(
+            "Enter the element to be replaced.",
+            (r) => {
+                if (r in elements) {
+                    elements.replace_all_of_element.tool = function(pixel) {
+                        elementbefore = pixel.element
+                        for (var i = 0; i <= width; i++) {
+                            for (var j = 0; j <= height; j++) {
+                                if (!isEmpty(i,j,true)) {
+                                    if(pixelMap[i][j].element == elementbefore) {
+                                        changePixel(pixelMap[i][j], r)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    logMessage("You did not enter an existing element.");
+                }
+            },
+            "3pms_mod.js"
+        );
+    },
+    category: "tools",
+};
+
+
 
 setTimeout(() => {
     console.log("3pms_mod.js | Initiated. Thank you.")
 }, 1000);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const thing=document.createElement("p");thing.innerText="MY NAME 📛 IS DAVID 👨‍🎤 DAD 👨‍👩‍👧‍👦👨‍👩‍👧‍👧 I ℹ️ WANT SOME ICE 🧊🇦🇶 CREAM 🧴🧴 DAVID 👨‍🎤 THAT IS MY NAME 📛 DAVID 👨‍🎤👨‍🎤 I ℹ️ WANT ANOTHER WHERE ❔❓ IS MY BALL 🏈🏈 I’M RUNNING 🏃‍♂️🏃‍♀️ OUT ON 🔛 THE ROAD 🚧 THERE IS A 🅰️ CAR 🚔🚖 AND IT IS GOING TO HIT 👊 ME 🖐🙋‍♀️ HEEEEEEEEELP HELP 💁 MEEEEEEE HEEEEEEEEEEEEEEEEELP\n\nthanks for using 3pms_mod.js :3";document.body.appendChild(thing)

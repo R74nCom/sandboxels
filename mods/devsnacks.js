@@ -74,3 +74,63 @@ elements.tea_powder = {
     hidden: true
 }
 elements.water.reactions.tea_powder = { elem1:"tea", chance:0.0002 }
+
+elements.pumpkin.breakInto = ["pumpkin_seed","pumpkin_mash","pumpkin_mash","pumpkin_mash",null];
+
+elements.pumpkin_mash = {
+	color: ["#DF7E06","#eba100"],
+	behavior: behaviors.STURDYPOWDER,
+	tempHigh: 125,
+	stateHigh: ["pumpkin_spice","pumpkin_spice",null],
+	category: "food",
+	state: "liquid",
+	density: 490.3,
+	isFood: true,
+	hidden: true,
+}
+
+elements.pumpkin_seed.tempHigh = 125;
+elements.pumpkin_seed.stateHigh = ["pumpkin_spice","pumpkin_spice",null];
+
+elements.pumpkin_spice = {
+	color: "#8d4f03",
+	grain: 1.5,
+	behavior: behaviors.POWDER,
+	tempHigh: 400,
+	stateHigh: ["smoke","smoke","smoke","smoke","ash"],
+	category: "food",
+	state: "solid",
+	density: 490.3,
+	isFood: true,
+	hidden: true,
+}
+
+elements.coffee.reactions.pumpkin_spice = { elem2:null, color1:"#6A2F03", chance:0.005 };
+elements.coffee.reactions.pumpkin_mash = { elem2:null, color1:"#6A2F03", chance:0.005 };
+
+elements.apple = {
+	color: ["#b22424","#f5c517","#66b447"],
+	grain: 2,
+	behavior: behaviors.POWDER,
+	// singleColor: true,
+	category: "food",
+	state: "solid",
+	density: 750,
+	isFood: true,
+	breakInto: "juice",
+	tempHigh: 175,
+	stateHigh: ["applesauce",null]
+}
+
+elements.applesauce = {
+	color: "#E7C45A",
+	behavior: behaviors.LIQUID,
+	viscosity: 50000,
+	tempHigh: 400,
+	stateHigh: "smoke",
+	category: "food",
+	state: "liquid",
+	density: 750,
+	isFood: true,
+	hidden: true,
+}

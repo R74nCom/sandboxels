@@ -3901,6 +3901,13 @@ elements.false_vacuum = {
         if (!pixel.timeAlive){
             pixel.timeAlive = 0
         }
+        if (!pixel.generations){
+            pixel.generations = 0
+        }
+        if (pixel.generations > Math.max(width, height)){
+            deletePixel(pixel.x, pixel.y)
+            return
+        }
         pixel.color = `rgb(${180/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)})`
         if (pixel.timeAlive === 0){
             for (i = 0; i < squareCoords.length; i++){
@@ -3910,9 +3917,11 @@ elements.false_vacuum = {
                     if (pixelMap[x][y].element !== "false_vacuum"){
                         deletePixel(x, y)
                         createPixel("false_vacuum", x, y)
+                        pixelMap[x][y].generations = pixel.generations + 1
                     }
                 } else if (isEmpty(x, y)){
                     createPixel("false_vacuum", x, y)
+                    pixelMap[x][y].generations = pixel.generations + 1
                 }
             }
         }
