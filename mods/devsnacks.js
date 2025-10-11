@@ -134,3 +134,27 @@ elements.applesauce = {
 	isFood: true,
 	hidden: true,
 }
+
+if (!elements.mayo.reactions) elements.mayo.reactions = {};
+elements.mayo.reactions.ketchup = { elem1:"mayochup", elem2:"mayochup" }
+
+elements.mayochup = {
+	color: "#FDCC94",
+	behavior: behaviors.LIQUID,
+	reactions: {
+		"rust": { elem2:"iron", chance:0.005 },
+		"oxidized_copper": { elem2:"copper", chance:0.005 },
+		"baking_soda": { "elem1":"carbon_dioxide", elem2:"foam", chance:0.005, attr2:{"foam":3} },
+		"glue": { elem2:null, chance:0.005 },
+		"oil": { elem2:null, chance:0.005 },
+		"sap": { elem2:null, chance:0.005 }
+	},
+	viscosity: 26745.5,
+	tempHigh: 180.3,
+	stateHigh: ["carbon_dioxide","methane","steam","salt","sugar","steam","carbon_dioxide","methane"],
+	category:"liquids",
+	state: "liquid",
+	density: 1072.5,
+	isFood: true,
+	hidden: true
+};
