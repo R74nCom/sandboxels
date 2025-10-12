@@ -3207,6 +3207,7 @@ elements.liver = {
         poisoned: false,
         immune: false,
     },
+	
     tempHigh: 175,
     stateHigh: "meat",
     tempLow: -50,
@@ -3297,6 +3298,1457 @@ elements.blood_vessel = {
     extinguish: true,
     isBio: true,
     isBlood: true,
+}
+
+/////////////////////
+// BASES NITROGENADAS
+/////////////////////
+
+elements.adenina = {
+    name: "Adenina",
+    nameEnglish: "Adenine",
+    category: "bioquimic",
+    color: "#fff700ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1200
+};
+
+elements.guanina = {
+    name: "Guanina",
+    nameEnglish: "Guanine",
+    category: "bioquimic",
+    color: "#00ff08ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1200
+};
+
+elements.citosina = {
+    name: "Citosina",
+    nameEnglish: "Cytosine",
+    category: "bioquimic",
+    color: "#0080ffff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1200
+};
+
+elements.timina = {
+    name: "Timina",
+    nameEnglish: "Thymine",
+    category: "bioquimic",
+    color: "#ff0000ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1200
+};
+
+elements.uracila = {
+    name: "Uracila",
+    nameEnglish: "Uracil",
+    category: "bioquimic",
+    color: "#f96000ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1200
+};
+
+elements.rna = {
+    name: "RNA",
+    nameEnglish: "RNA",
+    category: "bioquimic",
+    color: "#66ccff",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1000
+};
+
+elements.parede_acucar_fosfato = {
+    name: "Parede de Açúcar-Fosfato",
+    nameEnglish: "Sugar-Phosphate Backbone",
+    category: "bioquimic",
+    color: "#2c2b28ff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1400
+};
+
+/////////////////////
+// ORGANELAS / ESTRUTURAS CELULARES
+/////////////////////
+
+elements.citoplasma = {
+    name: "Citoplasma",
+    nameEnglish: "Cytoplasm",
+    category: "bioquimic",
+    color: "#05d9ffff",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1005
+};
+
+elements.membrana_celular = {
+    name: "Membrana Celular",
+    nameEnglish: "Cell Membrane",
+    category: "bioquimic",
+    color: "#00bbffff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1100
+};
+
+elements.nucleo_celular = {
+    name: "Núcleo Celular",
+    nameEnglish: "Cell Nucleus",
+    category: "bioquimic",
+    color: "#ffddee",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1300
+};
+
+elements.mitocondria = {
+    name: "Mitocôndria",
+    nameEnglish: "Mitochondrion",
+    category: "bioquimic",
+    color: "#ffcc88",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1400
+};
+
+elements.ribossomo = {
+    name: "Ribossomo",
+    nameEnglish: "Ribosome",
+    category: "bioquimic",
+    color: "#aaddff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1300
+};
+
+elements.lisosomo = {
+    name: "Lisosomo",
+    nameEnglish: "Lysosome",
+    category: "bioquimic",
+    color: "#ff9999",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1250,
+    reactions: {
+        virus_dengue: { elem1: null, chance: 0.6 },
+        bacteria_tetano: { elem1: null, chance: 0.6 }
+    }
+};
+
+elements.reticulo_endoplasmatico_liso = {
+    name: "Retículo Endoplasmático Liso",
+    nameEnglish: "Smooth ER",
+    category: "bioquimic",
+    color: "#eeddff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1200
+};
+
+elements.reticulo_endoplasmatico_rugoso = {
+    name: "Retículo Endoplasmático Rugoso",
+    nameEnglish: "Rough ER",
+    category: "bioquimic",
+    color: "#ddccff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1220
+};
+
+elements.aparelho_de_golgi = {
+    name: "Aparelho de Golgi",
+    nameEnglish: "Golgi Apparatus",
+    category: "bioquimic",
+    color: "#ffd188",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1200
+};
+
+elements.citoesqueleto = {
+    name: "Citoesqueleto",
+    nameEnglish: "Cytoskeleton",
+    category: "bioquimic",
+    color: "#ccbbaa",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1250
+};
+
+elements.vacuolo = {
+    name: "Vacúolo",
+    nameEnglish: "Vacuole",
+    category: "bioquimic",
+    color: "#bbffcc",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1000
+};
+
+/////////////////////
+// CÉLULAS E COMPONENTES SANGUÍNEOS
+/////////////////////
+
+elements.globulo_branco = {
+    name: "Glóbulo Branco",
+    nameEnglish: "White Blood Cell",
+    category: "bioquimic",
+    color: "#ffffff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1080,
+    reactions: {
+        coronavirus: { elem1: null, chance: 0.8 },
+        virus_dengue: { elem1: null, chance: 0.75 },
+        bacteria_tetano: { elem1: null, chance: 0.7 },
+        opsonized_pathogen: { elem1: null, chance: 1.0 }
+    }
+};
+
+elements.globulo_vermelho = {
+    name: "Glóbulo Vermelho",
+    nameEnglish: "Red Blood Cell",
+    category: "bioquimic",
+    color: "#ff0000",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1120
+};
+
+elements.plaqueta = {
+    name: "Plaqueta",
+    nameEnglish: "Platelet",
+    category: "bioquimic",
+    color: "#ffee99",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1090,
+    reactions: {
+        epiderme: { elem1: "clot", chance: 0.6 }
+    }
+};
+
+elements.clot = {
+    name: "Clot",
+    nameEnglish: "Clot",
+    category: "bioquimic",
+    color: "#6b2b2b",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1200
+};
+
+elements.fagocito = {
+    name: "Fagócito",
+    nameEnglish: "Phagocyte",
+    category: "bioquimic",
+    color: "#99ff99",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1100,
+    reactions: {
+        opsonized_pathogen: { elem1: "digested_pathogen", chance: 1.0 },
+        pathogen: { elem1: "digested_pathogen", chance: 0.5 }
+    }
+};
+
+elements.digested_pathogen = {
+    name: "Patógeno Digerido",
+    nameEnglish: "Digested Pathogen",
+    category: "bioquimic",
+    color: "#666666",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 900
+};
+
+/////////////////////
+// NEURÔNIO / NERVO / CÉLULA DE MEMÓRIA
+/////////////////////
+
+elements.neuronio = {
+    name: "Neurônio",
+    nameEnglish: "Neuron",
+    category: "bioquimic",
+    color: "#ffaa88",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1050
+};
+
+elements.nerve = {
+    name: "Nervo",
+    nameEnglish: "Nerve",
+    category: "bioquimic",
+    color: "#cc8866",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1050
+};
+
+elements.celula_memoria = {
+    name: "Célula de Memória",
+    nameEnglish: "Memory Cell",
+    category: "bioquimic",
+    color: "#66ddff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1080
+};
+
+/////////////////////
+// HORMÔNIOS / NEUROTRANSMISSORES
+/////////////////////
+
+elements.adrenalina = {
+    name: "Adrenalina",
+    nameEnglish: "Adrenaline",
+    category: "bioquimic",
+    color: "#ff8800",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1020
+};
+
+elements.dopamina = {
+    name: "Dopamina",
+    nameEnglish: "Dopamine",
+    category: "bioquimic",
+    color: "#aa55ff",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1020
+};
+
+elements.insulina = {
+    name: "Insulina",
+    nameEnglish: "Insulin",
+    category: "bioquimic",
+    color: "#ffee55",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1020
+};
+
+elements.glucagon = {
+    name: "Glucagon",
+    nameEnglish: "Glucagon",
+    category: "bioquimic",
+    color: "#ffdd66",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1020
+};
+
+elements.GH = {
+    name: "GH",
+    nameEnglish: "Growth Hormone",
+    category: "bioquimic",
+    color: "#88ff88",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1005
+};
+
+elements.t3 = {
+    name: "T3",
+    nameEnglish: "T3",
+    category: "bioquimic",
+    color: "#ddddee",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1005
+};
+
+elements.t4 = {
+    name: "T4",
+    nameEnglish: "T4",
+    category: "bioquimic",
+    color: "#ccccdd",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1005
+};
+
+elements.tireoide = {
+    name: "Tireoide",
+    nameEnglish: "Thyroid",
+    category: "bioquimic",
+    color: "#ccffaa",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1400
+};
+
+/////////////////////
+// VITAMINAS (principais)
+/////////////////////
+
+elements.vitamina_A = {
+    name: "Vitamina A",
+    nameEnglish: "Vitamin A",
+    category: "bioquimic",
+    color: "#ffdd66",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1000
+};
+
+elements.vitamina_C = {
+    name: "Vitamina C",
+    nameEnglish: "Vitamin C",
+    category: "bioquimic",
+    color: "#fff8aa",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1000
+};
+
+elements.vitamina_D = {
+    name: "Vitamina D",
+    nameEnglish: "Vitamin D",
+    category: "bioquimic",
+    color: "#fff0cc",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1000
+};
+
+elements.vitamina_B12 = {
+    name: "Vitamina B12",
+    nameEnglish: "Vitamin B12",
+    category: "bioquimic",
+    color: "#ffddee",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1000
+};
+
+elements.vitamina_K = {
+    name: "Vitamina K",
+    nameEnglish: "Vitamin K",
+    category: "bioquimic",
+    color: "#eeddff",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1000
+};
+
+/////////////////////
+// MINERAIS (principais)
+/////////////////////
+
+elements.ferro = {
+    name: "Ferro",
+    nameEnglish: "Iron",
+    category: "bioquimic",
+    color: "#aa3333",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 7874
+};
+
+elements.calcio = {
+    name: "Cálcio",
+    nameEnglish: "Calcium",
+    category: "bioquimic",
+    color: "#ffffdd",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1500
+};
+
+elements.zinco = {
+    name: "Zinco",
+    nameEnglish: "Zinc",
+    category: "bioquimic",
+    color: "#cccccc",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 7135
+};
+
+elements.potassio = {
+    name: "Potássio",
+    nameEnglish: "Potassium",
+    category: "bioquimic",
+    color: "#ffd1a1",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 862
+};
+
+elements.sodio = {
+    name: "Sódio",
+    nameEnglish: "Sodium",
+    category: "bioquimic",
+    color: "#eef5ff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 970
+};
+
+/////////////////////
+// MICRORGANISMOS (BACTÉRIAS E VÍRUS)
+/////////////////////
+
+elements.coronavirus = {
+    name: "Coronavírus",
+    nameEnglish: "Coronavirus",
+    category: "bioquimic",
+    color: "#6666ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 900,
+    reactions: {
+        membrana_celular: { elem1: "infected_cell", chance: 0.8 }
+    }
+};
+
+elements.influenza = {
+    name: "Influenza",
+    nameEnglish: "Influenza",
+    category: "bioquimic",
+    color: "#aabbff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 900,
+    reactions: {
+        membrana_celular: { elem1: "infected_cell", chance: 0.6 }
+    }
+};
+
+elements.virus_dengue = {
+    name: "Vírus da Dengue",
+    nameEnglish: "Dengue Virus",
+    category: "bioquimic",
+    color: "#ffee66",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 900
+};
+
+elements.virus_raiva = {
+    name: "Vírus da Raiva",
+    nameEnglish: "Rabies Virus",
+    category: "bioquimic",
+    color: "#ff6666",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 900
+};
+
+elements.virus_variola = {
+    name: "Vírus da Variola",
+    nameEnglish: "Smallpox Virus",
+    category: "bioquimic",
+    color: "#999999",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 950
+};
+
+elements.virus_zika = {
+    name: "Vírus da Zika",
+    nameEnglish: "Zika Virus",
+    category: "bioquimic",
+    color: "#ff99ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 900
+};
+
+elements.bacteria_tetano = {
+    name: "Bactéria do Tétano",
+    nameEnglish: "Tetanus Bacterium",
+    category: "bioquimic",
+    color: "#994422",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1250
+};
+
+elements.lactobacilo = {
+    name: "Lactobacilo",
+    nameEnglish: "Lactobacillus",
+    category: "bioquimic",
+    color: "#ccffcc",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1000
+};
+
+elements.cianobacteria = {
+    name: "Cianobactéria",
+    nameEnglish: "Cyanobacteria",
+    category: "bioquimic",
+    color: "#88dd88",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 800
+};
+
+/////////////////////
+// OUTROS / PLACEHOLDERS (reduzidos para otimização)
+/////////////////////
+
+elements.opsonized_pathogen = {
+    name: "Patógeno Opsonizado",
+    nameEnglish: "Opsonized Pathogen",
+    category: "bioquimic",
+    color: "#55ff55",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 950
+};
+
+elements.Celula_Infectada = {
+    name: "Celula Infectada",
+    nameEnglish: "Infected Cell",
+    category: "bioquimic",
+    color: "#552200",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1200,
+    reactions: {
+        globulo_branco: { elem1: null, chance: 0.7 }
+    }
+};
+
+elements.Nucleo_Infectado = {
+    name: Nucleo_Infectado",
+    nameEnglish: "Infected Nucleus",
+    category: "bioquimic",
+    color: "#442244",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1400
+};
+
+elements.blood_vesel 
+    name: "blood vesel",
+    nameEnglish: "blood vesel",
+    category: "bioquimic",
+    color: "#e31919e1",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    
+};
+/////////////////////
+// SISTEMA COMPLEMENTO (SIMPLIFICADO, final)
+/////////////////////
+
+elements.c3 = {
+    name: "C3",
+    nameEnglish: "C3",
+    category: "bioquimic",
+    color: "#66ccff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1020,
+    reactions: {
+        c3_convertase: { elem1: "c3a", elem2: "c3b", chance: 1.0 }
+    }
+};
+
+elements.c3a = {
+    name: "C3A",
+    nameEnglish: "C3a",
+    category: "bioquimic",
+    color: "#99ffff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1010,
+    reactions: {
+        globulo_branco: { elem2: "activated_globulo_branco", chance: 1.0 },
+        fagocito: { elem2: "activated_fagocito", chance: 1.0 }
+    }
+};
+
+elements.c3b = {
+    name: "C3B",
+    nameEnglish: "C3b",
+    category: "bioquimic",
+    color: "#44bbff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1020,
+    reactions: {
+        pathogen: { elem2: "opsonized_pathogen", chance: 1.0 },
+        c3b_receptor: { elem1: "c3b_receptor", elem2: "bound_c3b", chance: 1.0 },
+        c5b: { elem1: "c5b", chance: 1.0 }
+    }
+};
+
+elements.c3_convertase = {
+    name: "C3 Convertase",
+    nameEnglish: "C3 Convertase",
+    category: "bioquimic",
+    color: "#2288ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1030,
+    reactions: {
+        c3: { elem1: "c3a", elem2: "c3b", chance: 1.0 }
+    }
+};
+
+elements.c3b_receptor = {
+    name: "C3B Receptor",
+    nameEnglish: "C3b Receptor",
+    category: "bioquimic",
+    color: "#99bbff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1050,
+    reactions: {
+        c3b: { elem2: "bound_c3b", chance: 1.0 }
+    }
+};
+
+elements.c5_receptor = {
+    name: "C5 Receptor",
+    nameEnglish: "C5 Receptor",
+    category: "bioquimic",
+    color: "#88aaff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1050,
+    reactions: {
+        c5b: { elem2: "bound_c5b", chance: 1.0 }
+    }
+};
+
+elements.c5b = {
+    name: "C5B",
+    nameEnglish: "C5b",
+    category: "bioquimic",
+    color: "#4466ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1020,
+    reactions: {
+        c6: { elem1: "c6", chance: 1.0 }
+    }
+};
+
+elements.c6 = {
+    name: "C6",
+    nameEnglish: "C6",
+    category: "bioquimic",
+    color: "#3344ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1020,
+    reactions: {
+        c7: { elem1: "c7", chance: 1.0 }
+    }
+};
+
+elements.c7 = {
+    name: "C7",
+    nameEnglish: "C7",
+    category: "bioquimic",
+    color: "#5522ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1020,
+    reactions: {
+        c8: { elem1: "c8", chance: 1.0 }
+    }
+};
+
+elements.c8 = {
+    name: "C8",
+    nameEnglish: "C8",
+    category: "bioquimic",
+    color: "#7722ff",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1020,
+    reactions: {
+        pathogen: { elem2: "complexo_ataque_membrana", chance: 1.0 }
+    }
+};
+
+elements.complexo_ataque_membrana = {
+    name: "Complexo de Ataque à Membrana",
+    nameEnglish: "Membrane Attack Complex",
+    category: "bioquimic",
+    color: "#0000aa",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1100,
+    reactions: {
+        pathogen: { elem2: "lysed_pathogen", chance: 1.0 }
+    }
+};
+
+elements.lysed_pathogen = {
+    name: "Patógeno Lisado",
+    nameEnglish: "Lysed Pathogen",
+    category: "bioquimic",
+    color: "#000000",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 900
+};
+
+/////////////////////
+// TORRE E BURACO (MAC VISUAL)
+/////////////////////
+
+elements.protein_tower = {
+    name: "Torre de Proteínas",
+    nameEnglish: "Protein Tower",
+    category: "bioquimic",
+    color: "#ffdd77",
+    behavior: [
+        "XX|XX|XX",
+        "XX|C9|XX",
+        "XX|C9|XX",
+        "XX|XX|XX"
+    ],
+    state: "solid",
+    density: 1050
+};
+
+elements.protein_hole = {
+    name: "Buraco de Proteínas",
+    nameEnglish: "Protein Hole",
+    category: "bioquimic",
+    color: "#000000",
+    behavior: [
+        "XX|XX|XX",
+        "XX|VOID|XX",
+        "XX|VOID|XX",
+        "XX|XX|XX"
+    ],
+    state: "solid",
+    density: 900,
+    reactions: {
+        pathogen: { elem2: "lysed_pathogen", chance: 1.0 }
+    }
+};
+/* ---------------- ADIÇÕES AO Bioquimic.js ----------------
+   - Enzimas (não transportáveis)
+   - Vaso sanguíneo com transporte + variantes envenenado / infectado
+   - Melanina e líquido que escurece a pele
+   - Epiderme, Derme, Tecido Adiposo, Musculo, Carne, Osso
+   - Açúcares extras garantidos (lactose/sacarose)
+   - Dente (esmalte, dentina, polpa)
+   - Olho (cornea, iris, lente, retina)
+   - Língua, Gengiva, Papila Gustativa
+   - Biotubo
+-----------------------------------------------------------*/
+
+/* ---------------- ENZIMAS (NÃO TRANSPORTÁVEIS) ---------------- */
+elements.enzima_amilase = {
+    name: "Amilase",
+    nameEnglish: "Amylase",
+    category: "bioquimic",
+    color: "#ffb366",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1010,
+    transportable: false,
+    description: "Decompõe amido em maltose."
+
+    vvvvvvvv/* ---------------- ADIÇÕES AO Bioquimic.js ----------------
+   - Enzimas (não transportáveis)
+   - Vaso sanguíneo com transporte + variantes envenenado / infectado
+   - Melanina e líquido que escurece a pele
+   - Epiderme, Derme, Tecido Adiposo, Musculo, Carne, Osso
+   - Açúcares extras garantidos (lactose/sacarose)
+   - Dente (esmalte, dentina, polpa)
+   - Olho (cornea, iris, lente, retina)
+   - Língua, Gengiva, Papila Gustativa
+   - Biotubo
+-----------------------------------------------------------*/
+
+/* ---------------- ENZIMAS (NÃO TRANSPORTÁVEIS) ---------------- */
+elements.enzima_amilase = {
+    name: "Amilase",
+    nameEnglish: "Amylase",
+    category: "bioquimic",
+    color: "#ffb366",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1010,
+    transportable: false,
+    description: "Decompõe amido em maltose."
+};
+
+elements.enzima_maltase = {
+    name: "Maltase",
+    nameEnglish: "Maltase",
+    category: "bioquimic",
+    color: "#66d9ff",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1010,
+    transportable: false,
+    description: "Decompõe maltose em glicose."
+};
+
+elements.enzima_pepsina = {
+    name: "Pepsina",
+    nameEnglish: "Pepsin",
+    category: "bioquimic",
+    color: "#ff9966",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1010,
+    transportable: false,
+    description: "Degrada proteínas em peptídeos."
+};
+
+elements.enzima_tripsina = {
+    name: "Tripsina",
+    nameEnglish: "Trypsin",
+    category: "bioquimic",
+    color: "#b399ff",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1010,
+    transportable: false,
+    description: "Ajuda na digestão de proteínas no intestino delgado."
+};
+
+elements.enzima_amilase_pancreatica = {
+    name: "Amilase Pancreática",
+    nameEnglish: "Pancreatic Amylase",
+    category: "bioquimic",
+    color: "#99e699",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1010,
+    transportable: false,
+    description: "Decompõe amido em açúcares simples no intestino."
+};
+
+/* ---------------- AÇÚCARES (assegurando lactose/sacarose) ---------------- */
+if (!elements.lactose) {
+    elements.lactose = {
+        name: "Lactose",
+        nameEnglish: "Lactose",
+        category: "bioquimic",
+        color: "#add8e6",
+        behavior: behaviors.POWDER,
+        state: "solid",
+        density: 1600,
+        reactions: { "acido_estomacal": { elem1: null, elem2: "glicose" } },
+        description: "Açúcar do leite (vira glicose no trato digestivo)."
+    };
+}
+
+if (!elements.sacarose) {
+    elements.sacarose = {
+        name: "Sacarose",
+        nameEnglish: "Sucrose",
+        category: "bioquimic",
+        color: "#ffb6c1",
+        behavior: behaviors.POWDER,
+        state: "solid",
+        density: 1600,
+        reactions: { "acido_estomacal": { elem1: null, elem2: "glicose" } },
+        description: "Açúcar de mesa (é convertido em glicose no trato digestivo)."
+    };
+}
+
+/* ---------------- MELANINA E LÍQUIDO DE ESCURECIMENTO ---------------- */
+elements.melanina = {
+    name: "Melanina",
+    nameEnglish: "Melanin",
+    category: "bioquimic",
+    color: "#4b2e2e",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 1200,
+    description: "Pigmento que escurece a pele."
+};
+
+elements.melanin_liquid = {
+    name: "Melanin Liquid",
+    nameEnglish: "Melanin Liquid",
+    category: "bioquimic",
+    color: "#2f1f1f",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1020,
+    tick: function(pixel) {
+        // escurece epiderme que tocar
+        let adj = [[0,1],[0,-1],[1,0],[-1,0]];
+        for (let c of adj) {
+            let x = pixel.x + c[0];
+            let y = pixel.y + c[1];
+            if (!outOfBounds(x,y) && !isEmpty(x,y)) {
+                let other = pixelMap[x][y];
+                if (other && other.element === "epiderme") {
+                    // troca epiderme por versão escurecida (cria melanized_epidermis)
+                    createPixel("epiderme_melanizada", x, y);
+                }
+            }
+        }
+    },
+    transportable: false
+};
+
+elements.epiderme_melanizada = {
+    name: "Epiderme Melanizada",
+    nameEnglish: "Melanized Epidermis",
+    category: "bioquimic",
+    color: "#6b4b3b",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1020,
+    description: "Epiderme com maior concentração de melanina (pele escurecida)."
+};
+
+/* ---------------- TECIDOS: EPIDERME / DERME / ADIPOSO / MUSCULO / CARNE / OSSO ---------------- */
+elements.epiderme = {
+    name: "Epiderme",
+    nameEnglish: "Epidermis",
+    category: "bioquimic",
+    color: "#f1d0b5",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1010,
+    description: "Camada externa da pele."
+};
+
+elements.derme = {
+    name: "Derme",
+    nameEnglish: "Dermis",
+    category: "bioquimic",
+    color: "#e0a689",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1050,
+    description: "Camada intermediária da pele."
+};
+
+elements.tecido_adiposo = {
+    name: "Tecido Adiposo",
+    nameEnglish: "Adipose Tissue",
+    category: "bioquimic",
+    color: "#ffdcb2",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 900,
+    description: "Armazenamento de gordura."
+};
+
+elements.musculo = {
+    name: "Músculo",
+    nameEnglish: "Muscle",
+    category: "bioquimic",
+    color: "#b35050",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1060,
+    description: "Tecido contrátil (carne)."
+};
+
+elements.carne = {
+    name: "Carne",
+    nameEnglish: "Meat",
+    category: "bioquimic",
+    color: "#9b3a3a",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1080,
+    description: "Tecido muscular processado."
+};
+
+elements.osso = {
+    name: "Osso",
+    nameEnglish: "Bone",
+    category: "bioquimic",
+    color: "#f5f5f0",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1800,
+    description: "Tecido ósseo duro."
+};
+
+/* ---------------- DENTE (ESMALTE, DENTINA, POLPA) ---------------- */
+elements.dente = {
+    name: "Dente",
+    nameEnglish: "Tooth",
+    category: "bioquimic",
+    color: "#fffaf0",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 2000,
+    reactions: {
+        acid: { elem1: "dentin_exposed", chance: 0.4 } // se ácido, expõe dentina
+    }
+};
+
+elements.esmalte = {
+    name: "Esmalte",
+    nameEnglish: "Enamel",
+    category: "bioquimic",
+    color: "#ffffff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 2200,
+    description: "Camada protetora do dente."
+};
+
+elements.dentina = {
+    name: "Dentina",
+    nameEnglish: "Dentin",
+    category: "bioquimic",
+    color: "#fff0d0",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 2100,
+    description: "Camada interna do dente."
+};
+
+elements.polpa = {
+    name: "Polpa",
+    nameEnglish: "Pulp",
+    category: "bioquimic",
+    color: "#ffcccc",
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    density: 1020,
+    description: "Tecidos e vasos dentro do dente."
+};
+
+elements.dentin_exposed = {
+    name: "Dentina Exposta",
+    nameEnglish: "Exposed Dentin",
+    category: "bioquimic",
+    color: "#ffd8b0",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 2050
+};
+
+/* ---------------- OLHO (CÓRNEA, ÍRIS, LENTE, RETINA) ---------------- */
+elements.olho = {
+    name: "Olho",
+    nameEnglish: "Eye",
+    category: "bioquimic",
+    color: "#ffffff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1050
+};
+
+elements.cornea = {
+    name: "Córnea",
+    nameEnglish: "Cornea",
+    category: "bioquimic",
+    color: "#e6f7ff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1030
+};
+
+elements.iris = {
+    name: "Íris",
+    nameEnglish: "Iris",
+    category: "bioquimic",
+    color: "#6b8e23",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1030
+};
+
+elements.lente = {
+    name: "Lente",
+    nameEnglish: "Lens",
+    category: "bioquimic",
+    color: "#f0f8ff",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1030
+};
+
+elements.retina = {
+    name: "Retina",
+    nameEnglish: "Retina",
+    category: "bioquimic",
+    color: "#ffccdd",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1030
+};
+
+/* ---------------- LÍNGUA / GENGIVA / PAPILA GUSTATIVA ---------------- */
+elements.lingua = {
+    name: "Língua",
+    nameEnglish: "Tongue",
+    category: "bioquimic",
+    color: "#ff99aa",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1040
+};
+
+elements.gengiva = {
+    name: "Gengiva",
+    nameEnglish: "Gum",
+    category: "bioquimic",
+    color: "#ffb7b7",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1030
+};
+
+elements.papila_gustativa = {
+    name: "Papila Gustativa",
+    nameEnglish: "Taste Bud",
+    category: "bioquimic",
+    color: "#ffeecc",
+    behavior: behaviors.SOLID,
+    state: "solid",
+    density: 1025
+};
+
+/* ---------------- BIOTUBO ---------------- */
+elements.biotubo = {
+    name: "Biotubo",
+    nameEnglish: "Biotube",
+    category: "bioquimic",
+    color: "#dd9999",
+    behavior: behaviors.WALL,
+    state: "solid",
+    density: 1100,
+    description: "Tubo biológico (pode ser usado como canal)."
+};
+
+/* ---------------- VASO SANGUÍNEO (IMPLEMENTAÇÃO DE TRANSPORTE + EXPULSÃO) ---------------- */
+/* Substitui/atualiza a definição anterior para incluir transporte real */
+elements.vaso_sanguineo = {
+    name: "Vaso Sanguíneo",
+    nameEnglish: "Blood Vessel",
+    category: "bioquimic",
+    color: "#8b0000",
+    behavior: behaviors.WALL,
+    state: "solid",
+    density: 1020,
+    tick: function(pixel) {
+        // segurança: engine util funcs
+        if (typeof pixelMap === "undefined") return;
+
+        // Lista dos elementos que podem circular no sangue (strings correspondem a element keys)
+        const permitidos = new Set([
+            "globulo_vermelho","globulo_branco","plaqueta",
+            "proteina_complemento","c3","c3a","c3b","c3_convertase","c3b_receptor",
+            "c5_receptor","c5b","c6","c7","c8","complexo_ataque_membrana",
+            "virus","coronavirus","influenza","virus_dengue","virus_raiva","virus_variola","virus_zika",
+            "bacteria_tetano","lactobacilo","cianobacteria",
+            "vitamina_A","vitamina_C","vitamina_D","vitamina_B12","vitamina_K",
+            "ferro","calcio","zinco","potassio","sodio",
+            "insulina","adrenalina","dopamina","GH","t3","t4",
+            "glicose",
+            "fagocito","clot","opsonized_pathogen","digested_pathogen"
+        ]);
+
+        // direção preferencial de fluxo local — por simplicidade, empurra para a direita quando possível
+        // percorre 4 direções ao redor para captar pixels dentro do vaso (pode variar conforme mapa)
+        const area = [
+            [0,0],[1,0],[-1,0],[0,1],[0,-1],
+            [1,1],[1,-1],[-1,1],[-1,-1]
+        ];
+
+        for (let c of area) {
+            const x = pixel.x + c[0];
+            const y = pixel.y + c[1];
+            if (outOfBounds(x,y)) continue;
+            if (isEmpty(x,y,true)) continue;
+            const other = pixelMap[x][y];
+            if (!other) continue;
+
+            const elem = other.element;
+
+            // Enzimas NÃO são permitidas (não circulam no sangue)
+            if (other.transportable === false) {
+                // expulsa o pixel para fora do vaso (tenta 6 direções)
+                const tries = [[1,0],[-1,0],[0,1],[0,-1],[2,0],[-2,0]];
+                for (let t of tries) {
+                    const nx = x + t[0];
+                    const ny = y + t[1];
+                    if (!outOfBounds(nx,ny) && isEmpty(nx,ny)) {
+                        movePixel(other, nx, ny);
+                        break;
+                    }
+                }
+                continue;
+            }
+
+            // Se permitido — tenta mover para frente (direção x+1). Se bloqueado, tenta deslocar lateralmente.
+            if (permitidos.has(elem)) {
+                const nx = x + 1;
+                const ny = y;
+                if (!outOfBounds(nx,ny) && isEmpty(nx,ny)) {
+                    movePixel(other, nx, ny);
+                } else {
+                    // tenta empurrar para cima/baixo
+                    const alt = [[0,1],[0,-1],[-1,0]];
+                    for (let a of alt) {
+                        const ax = x + a[0];
+                        const ay = y + a[1];
+                        if (!outOfBounds(ax,ay) && isEmpty(ax,ay)) {
+                            movePixel(other, ax, ay);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                // elemento indesejado: expulsa para fora
+                const tries = [[1,0],[-1,0],[0,1],[0,-1]];
+                for (let t of tries) {
+                    const nx = x + t[0];
+                    const ny = y + t[1];
+                    if (!outOfBounds(nx,ny) && isEmpty(nx,ny)) {
+                        movePixel(other, nx, ny);
+                        break;
+                    }
+                }
+            }
+        }
+    },
+    description: "Vaso que transporta sangue, glicose, vitaminas, minerais e proteínas do complemento. Expulsa enzimas e substâncias não-transportáveis."
+};
+
+/* ---------------- VASO SANGUÍNEO ENVENENADO ---------------- */
+/* Variante que aplica dano/veneno aos elementos que circulam (quando transporta) */
+elements.vaso_sanguineo_envenenado = {
+    name: "Vaso Envenenado",
+    nameEnglish: "Poisoned Vessel",
+    category: "bioquimic",
+    color: "#553333",
+    behavior: behaviors.WALL,
+    state: "solid",
+    density: 1020,
+    tick: function(pixel) {
+        if (typeof pixelMap === "undefined") return;
+
+        const permitidos = new Set(["globulo_vermelho","glicose","vitamina_A","vitamina_C","insulina","globulo_branco"]);
+
+        const area = [[0,0],[1,0],[-1,0],[0,1],[0,-1]];
+        for (let c of area) {
+            const x = pixel.x + c[0];
+            const y = pixel.y + c[1];
+            if (outOfBounds(x,y) || isEmpty(x,y,true)) continue;
+            const other = pixelMap[x][y];
+            if (!other) continue;
+
+            // aplica envenenamento leve: reduz "health" se existir, ou transforma em 'toxic_particle'
+            if (other.health) {
+                other.health -= 1;
+                if (other.health <= 0) {
+                    deletePixel(x,y);
+                }
+            } else {
+                // chance de converter em particula toxica
+                if (Math.random() < 0.02 && !permitidos.has(other.element)) {
+                    createPixel("toxic_particle", x, y);
+                }
+            }
+
+            // tenta transportar glicose e glóbulos normalmente
+            if (permitidos.has(other.element)) {
+                const nx = x + 1;
+                if (!outOfBounds(nx,y) && isEmpty(nx,y)) movePixel(other, nx, y);
+            } else {
+                // expulsa
+                const tries = [[1,0],[-1,0],[0,1],[0,-1]];
+                for (let t of tries) {
+                    const nx = x + t[0];
+                    const ny = y + t[1];
+                    if (!outOfBounds(nx,ny) && isEmpty(nx,ny)) { movePixel(other, nx, ny); break; }
+                }
+            }
+        }
+    },
+    description: "Vaso contaminado que espalha toxinas e prejudica partículas que passam por ele."
+};
+
+elements.toxic_particle = {
+    name: "Partícula Tóxica",
+    nameEnglish: "Toxic Particle",
+    category: "bioquimic",
+    color: "#553322",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 950
+};
+
+/* ---------------- VASO SANGUÍNEO INFECTADO ---------------- */
+/* Variante que facilita circulação de patógenos e aumenta chances de infecção */
+elements.vaso_sanguineo_infectado = {
+    name: "Vaso Infectado",
+    nameEnglish: "Infected Vessel",
+    category: "bioquimic",
+    color: "#663333",
+    behavior: behaviors.WALL,
+    state: "solid",
+    density: 1020,
+    tick: function(pixel) {
+        if (typeof pixelMap === "undefined") return;
+
+        const permitidos = new Set(["globulo_vermelho","glicose","virus","bacteria","globulo_branco"]);
+        const area = [[0,0],[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+
+        for (let c of area) {
+            const x = pixel.x + c[0];
+            const y = pixel.y + c[1];
+            if (outOfBounds(x,y) || isEmpty(x,y,true)) continue;
+            const other = pixelMap[x][y];
+            if (!other) continue;
+
+            // se for patógeno, aumenta chance de replicação
+            if (other.element === "virus" || other.element === "coronavirus" || other.element === "bacteria_tetano") {
+                if (Math.random() < 0.03) {
+                    // cria outro patógeno próximo
+                    const nx = x + (Math.random()<0.5?1:-1);
+                    const ny = y + (Math.random()<0.5?1:-1);
+                    if (!outOfBounds(nx,ny) && isEmpty(nx,ny)) createPixel(other.element, nx, ny);
+                }
+            }
+
+            // transporta permitidos
+            if (permitidos.has(other.element)) {
+                const nx = x + 1;
+                if (!outOfBounds(nx,y) && isEmpty(nx,y)) movePixel(other, nx, y);
+            } else {
+                // expulsa
+                const tries = [[1,0],[-1,0],[0,1],[0,-1]];
+                for (let t of tries) {
+                    const nx = x + t[0];
+                    const ny = y + t[1];
+                    if (!outOfBounds(nx,ny) && isEmpty(nx,ny)) { movePixel(other, nx, ny); break; }
+                }
+            }
+        }
+    },
+    description: "Vaso infectado: patógenos tendem a se replicar dentro dele."
+};
+
+/* ---------------- OUTROS (TOOL / PLACEHOLDERS) ---------------- */
+elements.tooth_fragment = {
+    name: "Fragmento de Dente",
+    nameEnglish: "Tooth Fragment",
+    category: "bioquimic",
+    color: "#fff2e6",
+    behavior: behaviors.POWDER,
+    state: "solid",
+    density: 2000
 }
 
 elements.infected_vessel = {
@@ -8692,3 +10144,4 @@ elements.salt_water.stateHigh = ["steam","steam","salt"]
 
 elements.vaccine.category = "medicine"
 elements.antidote.category = "medicine"
+
