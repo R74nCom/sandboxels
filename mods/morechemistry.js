@@ -1,96 +1,77 @@
 /*
-*Version 2.2.0
+*Version 2.2.1
 */
 
 dependOn("orchidslibrary.js", ()=>{
     elements.cloner.keyInput = "str:clone", elements.ecloner.keyInput = "str:clone", elements.slow_cloner.keyInput = "str:clone", elements.floating_cloner.keyInput = "str:clone";
     let xDown = false;
-    elements.copper_sulfate = {
-        behavior: behaviors.POWDER,
-        color: ["#4391fd","#004cfe"],
-        reactions: {
-            ant: {"elem2": "dead_bug"},
-            fly: {"elem2": "dead_bug"},
-            firefly: {"elem2": "dead_bug"},
-            stink_bug: {"elem2": "dead_bug"},
-            bee: {"elem2": "dead_bug"},
-            termite: {"elem2": "dead_bug"},
-            spider: {"elem2": "dead_bug"},
-            plant: {"elem2": "dead_plant"},
-            grass: {"elem2": "dead_plant"},
-            algae: {"elem2": null},
-            kelp: {"elem2": "water"},
-            coral: {"elem2": "water"},
-            mushroom_cap: {"elem2": null},
-            mushroom_stalk: {"elem2": null},
-            mushroom_gill: {"elem2": null},
-            mushroom_spore: {"elem2": null},
-            zinc: {"stain2": "#2A1210"},
-            fire: {"elem1": null,"elem2": "poison_gas","chance": 0.1},
-            sugar: {"elem1": "oxidized_copper","elem2": null,"color1": ["#CB3D3D","#A6292B","#6E1B1B"]},
-            magnesium: {elem1: "copper", elem2: "epsom_salt"},
-            wood: {stain2: "#043023"},
-        },
-        tempHigh: 110,
-        fireColor: [
-            "#91d106",
-            "#feff97",
-            "#248e01"
-        ],
-        state: "solid",
-        density: 3600,
-        hidden: true,
-        category: "powders",
-        id: 509,
-        movable: true,
-        properties: {
-            anhydrous: false
-        },
-        tick: function(pixel){
-            if(pixelTicks-pixel.start == 2 && xDown){
-                pixel.anhydrous = true;
-                let rgb = {r: 235, g: 247, b: 250};
+    elements.copper_sulfate.reactions = {
+        ant: {"elem2": "dead_bug"},
+        fly: {"elem2": "dead_bug"},
+        firefly: {"elem2": "dead_bug"},
+        stink_bug: {"elem2": "dead_bug"},
+        bee: {"elem2": "dead_bug"},
+        termite: {"elem2": "dead_bug"},
+        spider: {"elem2": "dead_bug"},
+        plant: {"elem2": "dead_plant"},
+        grass: {"elem2": "dead_plant"},
+        algae: {"elem2": null},
+        kelp: {"elem2": "water"},
+        coral: {"elem2": "water"},
+        mushroom_cap: {"elem2": null},
+        mushroom_stalk: {"elem2": null},
+        mushroom_gill: {"elem2": null},
+        mushroom_spore: {"elem2": null},
+        zinc: {"stain2": "#2A1210"},
+        fire: {"elem1": null,"elem2": "poison_gas","chance": 0.1},
+        sugar: {"elem1": "oxidized_copper","elem2": null,"color1": ["#CB3D3D","#A6292B","#6E1B1B"]},
+        magnesium: {elem1: "copper", elem2: "epsom_salt"},
+        wood: {stain2: "#043023"},
+    }
+    elements.copper_sulfate.tick = function(pixel){
+        if(pixelTicks-pixel.start == 2 && xDown){
+            pixel.anhydrous = true;
+            let rgb = {r: 235, g: 247, b: 250};
+            let num = 6 - (Math.round(Math.random()*12));
+            for(let key in rgb){
+                rgb[key] += num;
+            }
+            pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+        }
+        let multi = (pixel.temp-70)/100;
+        multi = (multi < 0) ? 0 : ((multi > 1) ? 1 : multi);
+        if(Math.random() < 0.05*multi){
+            pixel.anhydrous = true;
+            let rgb = {r: 235, g: 247, b: 250};
+            let num = 6 - (Math.round(Math.random()*12));
+            for(let key in rgb){
+                rgb[key] += num;
+            }
+            pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+        }
+        if(pixel.anhydrous){
+            let neighbors = [];
+            for(let coords of squareCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                neighbors[neighbors.length] = (isEmpty(x,y) && !outOfBounds(x,y)) ? "air" : (!outOfBounds(x,y)) ? pixelMap[x][y].element : undefined;
+            }
+            if(neighbors.includes("air") && pixel.temp < 50 && Math.random() < 0.00035){
+                pixel.anhydrous = false;
+                let rgb = (Math.random() > 0.5) ? {r: 67, g: 145, b: 253} :  {r: 0, g: 76, b: 254};
                 let num = 6 - (Math.round(Math.random()*12));
                 for(let key in rgb){
                     rgb[key] += num;
                 }
                 pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-            }
-            let multi = (pixel.temp-70)/100;
-            multi = (multi < 0) ? 0 : ((multi > 1) ? 1 : multi);
-            if(Math.random() < 0.05*multi){
-                pixel.anhydrous = true;
-                let rgb = {r: 235, g: 247, b: 250};
+                
+            } else if (neighbors.includes("steam") || neighbors.includes("water") || neighbors.includes("salt_water") || neighbors.includes("sugar_water") || neighbors.includes("dirty_water") || neighbors.includes("seltzer") || neighbors.includes("pool_water") || neighbors.includes("slush")){
+                pixel.anhydrous = false;
+                let rgb = (Math.random() > 0.5) ? {r: 67, g: 145, b: 253} :  {r: 0, g: 76, b: 254};
                 let num = 6 - (Math.round(Math.random()*12));
                 for(let key in rgb){
                     rgb[key] += num;
                 }
                 pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-            }
-            if(pixel.anhydrous){
-                let neighbors = [];
-                for(let coords of squareCoords){
-                    let x = pixel.x+coords[0], y = pixel.y+coords[1];
-                    neighbors[neighbors.length] = (isEmpty(x,y) && !outOfBounds(x,y)) ? "air" : (!outOfBounds(x,y)) ? pixelMap[x][y].element : undefined;
-                }
-                if(neighbors.includes("air") && pixel.temp < 50 && Math.random() < 0.00035){
-                    pixel.anhydrous = false;
-                    let rgb = (Math.random() > 0.5) ? {r: 67, g: 145, b: 253} :  {r: 0, g: 76, b: 254};
-                    let num = 6 - (Math.round(Math.random()*12));
-                    for(let key in rgb){
-                        rgb[key] += num;
-                    }
-                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-                    
-                } else if (neighbors.includes("steam") || neighbors.includes("water") || neighbors.includes("salt_water") || neighbors.includes("sugar_water") || neighbors.includes("dirty_water") || neighbors.includes("seltzer") || neighbors.includes("pool_water") || neighbors.includes("slush")){
-                    pixel.anhydrous = false;
-                    let rgb = (Math.random() > 0.5) ? {r: 67, g: 145, b: 253} :  {r: 0, g: 76, b: 254};
-                    let num = 6 - (Math.round(Math.random()*12));
-                    for(let key in rgb){
-                        rgb[key] += num;
-                    }
-                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-                }
             }
         }
     }
@@ -806,6 +787,7 @@ dependOn("orchidslibrary.js", ()=>{
         category: "salts",
         state: "solid", 
         density: 3900,
+        solubility: {water: 3.5},
         reactions: {
             potassium: {elem1: "gold_coin", elem2: "potassium_salt", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("hydrogen", x, y);}}}, color1: ["#574000", "#705200", "#634900", "#755600"]},
             sodium: {elem1: "gold_coin", elem2: "salt", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("hydrogen", x, y);}}}, color1: ["#574000", "#705200", "#634900", "#755600"]},
@@ -823,6 +805,7 @@ dependOn("orchidslibrary.js", ()=>{
         state: "solid",
         color: ["#f2f2f2", "#f5f5f5", "#ebebeb", "#e6e6e6"],
         density: 2320,
+        solubility: {water: 0.543, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
         reactions: {
             baking_soda: {elem1: "magnesium_carbonate", elem2: "salt"},
             lye: {elem1: "magnesium_hydroxide", elem2: "salt"},
@@ -852,6 +835,7 @@ dependOn("orchidslibrary.js", ()=>{
         behavior: behaviors.POWDER,
         state: "solid",
         color: ["#f2f2f2", "#f5f5f5", "#ebebeb", "#e6e6e6"],
+        solubility: {water: 0.745, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
         reactions: {
             baking_soda: {elem1: "limestone", elem2: "salt"},
             lye: {elem1: "slaked_lime", elem2: "salt"},
@@ -941,6 +925,7 @@ dependOn("orchidslibrary.js", ()=>{
         state: "solid",
         color: ["#ffffff", "#fcfcfc", "#ffffff", "#ededed"],
         density: 2470,
+        solubility: {water: 0.8, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
         reactions: {
             water: {elem1: "gallium", elem2: "acid"},
             steam: {elem1: "gallium", elem2: "acid_gas"},
@@ -972,6 +957,7 @@ dependOn("orchidslibrary.js", ()=>{
         density: 2480,
         tempHigh: 630,
         stateHigh: ["chlorine", "aluminum"],
+        solubility: {water: 0.458, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
     }
     elements.acid.reactions.aluminum = {elem1: "hydrogen", elem2: "aluminum_chloride"};
     elements.acid.reactions.purple_gold = {elem1: ["aluminum_chloride", "aluminum_chloride", "hydrogen"], elem2: "gold"};
@@ -1079,6 +1065,7 @@ dependOn("orchidslibrary.js", ()=>{
         state: "solid",
         category: "salts",
         alias: "Mg(CH₃COO)₂",
+        solubility: {water: 0.53, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
         reactions: {
             acid: {elem1: "magnesium_chloride", elem2: "vinegar"},
             baking_soda: {elem1: "magnesium_carbonate", elem2: "sodium_acetate"},
@@ -1095,6 +1082,7 @@ dependOn("orchidslibrary.js", ()=>{
         state: "solid",
         category: "salts",
         alias: "Ca(CH₃COO)₂",
+        solubility: {water: 0.347, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
         reactions: {
             acid: {elem1: "calcium_chloride", elem2: "vinegar"},
             baking_soda: {elem1: "limestone", elem2: "sodium_acetate"},
@@ -1113,6 +1101,7 @@ dependOn("orchidslibrary.js", ()=>{
         state: "solid",
         category: "salts",
         alias: "CH₃COOK",
+        solubility: {water: 2.55, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
         reactions: {
             acid: {elem1: "potassium_salt", elem2: "vinegar"},
             baking_soda: {elem1: "caustic_potash", elem2: "sodium_acetate"},
@@ -1128,6 +1117,7 @@ dependOn("orchidslibrary.js", ()=>{
         state: "solid",
         category: "salts",
         alias: "Cu(CH₃COO)₂",
+        solubility: {water: 0.072},
         reactions: {
             sodium: {elem1: "copper", elem2: "sodium_acetate"},
             potassium: {elem1: "copper", elem2: "potassium_acetate"},
@@ -1148,6 +1138,7 @@ dependOn("orchidslibrary.js", ()=>{
         state: "solid",
         category: "salts",
         alias: "CuCl₂",
+        solubility: {water: 0.743},
         reactions: {
             sodium: {elem1: "copper", elem2: "sodium_acetate"},
             potassium: {elem1: "copper", elem2: "potassium_acetate"},
@@ -1265,6 +1256,7 @@ dependOn("orchidslibrary.js", ()=>{
         alias: "H₂PtCl₆",
         tempHigh: 500,
         stateHigh: ["acid_gas", "chlorine", "platinum", "platinum"],
+        solubility: {water: 1, },
         reactions: {
             sodium: {elem1: "salt", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
             potassium: {elem1: "potassium_salt", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
