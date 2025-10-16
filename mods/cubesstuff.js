@@ -3231,7 +3231,7 @@ elements.element_line = {
             }
         }
         if (pixel.dir === 1) {
-            if (!tryMove(pixel, pixel.x, pixel.y - 1, pixel.clone)) {
+            if (!tryMove(pixel, pixel.x, pixel.y + 1, pixel.clone)) {
                 changePixel(pixel, pixel.clone, true)
             }
         }
@@ -3241,7 +3241,7 @@ elements.element_line = {
             }
         }
         if (pixel.dir === 3) {
-            if (!tryMove(pixel, pixel.x, pixel.y + 1, pixel.clone)) {
+            if (!tryMove(pixel, pixel.x, pixel.y - 1, pixel.clone)) {
                 changePixel(pixel, pixel.clone, true)
             }
         }
@@ -3324,5 +3324,6 @@ elements.replace_all_of_element = {
         }
     }
 }
+
 
 
