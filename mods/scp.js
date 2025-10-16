@@ -1,6 +1,12 @@
 /* by nekonico */
 
 window.addEventListener("load", () => { 
+	document.getElementById("elementButton-scp_001_light")?.remove()
+	document.getElementById("elementButton-melted_head")?.remove()
+	document.getElementById("elementButton-melted_body")?.remove()
+	document.getElementById("elementButton-melted_animal")?.remove()
+	document.getElementById("elementButton-melted_plant")?.remove()
+	document.getElementById("elementButton-fused_organism")?.remove()
     document.getElementById("elementButton-head_008")?.remove()
     document.getElementById("elementButton-body_008")?.remove()
     document.getElementById("elementButton-head_012_1")?.remove()
@@ -15,6 +21,8 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-head_173")?.remove()
     document.getElementById("elementButton-body_173")?.remove()
     document.getElementById("elementButton-scp_229")?.remove()
+	document.getElementById("elementButton-packet")?.remove()
+	document.getElementById("elementButton-can")?.remove()
 	document.getElementById("elementButton-head_457")?.remove()
     document.getElementById("elementButton-body_457")?.remove()
 	document.getElementById("elementButton-head_1000")?.remove()
@@ -34,9 +42,25 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-scp_009_plant")?.remove()
     document.getElementById("elementButton-red_cloud")?.remove()
     document.getElementById("elementButton-red_rain")?.remove()
-    document.getElementById("elementButton-shy_head")?.remove()
-    document.getElementById("elementButton-shy_body")?.remove()
+    document.getElementById("elementButton-head_096")?.remove()
+    document.getElementById("elementButton-body_096")?.remove()
     document.getElementById("elementButton-REDACTED")?.remove()
+
+vendingNormD = Object.keys(elements).filter(function(e) {
+	return elements[e].state == "liquid" && elements[e].movable == true && elements[e].category != "scp" && (elements[e].category == "food" || (elements[e].id == elements.water.id || elements[e].id == elements.sugar_water.id || elements[e].id == elements.seltzer.id || elements[e].id == elements.dirty_water.id || elements[e].id == elements.slime.id || elements[e].id == elements.neutral_acid.id || elements[e].id == elements.blood.id || elements[e].id == elements.sap.id || elements[e].id == elements.dye.id) || elements[e].isFood) && !elements[e].tool;
+});
+
+vendingNormF = Object.keys(elements).filter(function(e) {
+	return (elements[e].state != "liquid" && elements[e].state != "gas") && elements[e].category != "scp" && elements[e].movable == true && (elements[e].category == "food" || elements[e].isFood) && !elements[e].tool;
+});
+
+vendingWeirdD = Object.keys(elements).filter(function(e) {
+	return (elements[e].state == "liquid" || elements[e].state == "gas") && elements[e].movable == true && (elements[e].category == "food" || elements[e].category == "liquids" || elements[e].category == "life" || elements[e].category == "gases" || elements[e].category == "energy") && !elements[e].tool;
+});
+
+vendingWeirdF = Object.keys(elements).filter(function(e) {
+	return elements[e].state != "gas" && elements[e].movable == true && (elements[e].id != elements.armageddon.id && elements[e].id != elements.blaster.id && elements[e].id != elements.false_vacuum_decay_bomb.id && elements[e].id != elements.earthquake.id && elements[e].id != elements.tsunami.id && elements[e].id != elements.volcano.id && elements[e].id != elements.sinkhole.id) && (elements[e].category == "food" || elements[e].category == "life" || elements[e].category == "land" || elements[e].category == "weapons" || elements[e].category == "energy" || elements[e].isFood) && !elements[e].tool;
+});
 }) 
 
 async function _scpAskPrompt(message, defaultValue = "") { 
@@ -229,7 +253,7 @@ elements.access_door = {
 		if (!isEmpty(pixel.x-1, pixel.y, true) && !outOfBounds(pixel.x-1, pixel.y) && Math.random() > 0.9){
 			let neighbor = pixelMap[pixel.x-1][pixel.y]
 			if (pixel.levelReq && elements[neighbor.element].level < pixel.levelReq) {}
-			else if (neighbor.level >= pixel.levelReq && (neighbor.element == "body" || neighbor.element == "body_1000" || neighbor.element == "body_008" || neighbor.element == "body_1015" || neighbor.element == "body_035" || neighbor.element == "body_012_1")) {
+			else if (neighbor.level >= pixel.levelReq && (neighbor.element == "body" || neighbor.element == "melted_body" || neighbor.element == "fused_organism" && Math.random() > 0.75 || neighbor.element == "body_1000" || neighbor.element == "body_008" || neighbor.element == "body_1015" || neighbor.element == "body_035" || neighbor.element == "body_012_1")) {
 				if (neighbor.dir == 1 && !isEmpty(neighbor.x,neighbor.y-1) && !outOfBounds(neighbor.x,neighbor.y-1)) {
 					if (isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x+1,pixel.y-1)) {
 						if (tryMove(pixelMap[neighbor.x][neighbor.y-1],pixel.x+1,pixel.y-1)) {
@@ -246,13 +270,33 @@ elements.access_door = {
 							movePixel(neighbor,pixel.x+1,pixel.y+1)
 						}
 					}
-					else if (!isEmpty(pixel.x+1,pixel.y) && !isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x+2,pixel.y+1) && isEmpty(pixel.x+2,pixel.y)) {
+					else if (!isEmpty(pixel.x+1,pixel.y) && !isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x+2,pixel.y) && isEmpty(pixel.x+2,pixel.y-1)) {
 						let doorB = pixelMap[pixel.x+1][pixel.y]
 						let doorH = pixelMap[pixel.x+1][pixel.y-1]
 						if (doorB.levelReq <= pixel.levelReq && doorH.levelReq <= pixel.levelReq) {
 							if (tryMove(pixelMap[neighbor.x][neighbor.y-1],pixel.x+2,pixel.y-1)) {
 								movePixel(neighbor,pixel.x+2,pixel.y)
 							}
+						}
+					}
+				}
+			}
+			else if (neighbor.level >= pixel.levelReq && neighbor.element == "fused_organism" && Math.random() > 0.5) {
+				if (neighbor.dir == 1 && !isEmpty(neighbor.x,neighbor.y-1) && !outOfBounds(neighbor.x,neighbor.y-1)) {
+					if (isEmpty(pixel.x+1,pixel.y)) {
+						tryMove(pixelMap[neighbor.x][neighbor.y],pixel.x+1,pixel.y)
+					}
+					else if (isEmpty(pixel.x+1,pixel.y-1)) {
+						tryMove(pixelMap[neighbor.x][neighbor.y],pixel.x+1,pixel.y-1)
+					}
+					else if (isEmpty(pixel.x+1,pixel.y+1)) {
+						tryMove(pixelMap[neighbor.x][neighbor.y],pixel.x+1,pixel.y+1)
+					}
+					else if (!isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x+2,pixel.y)) {
+						let doorB = pixelMap[pixel.x+1][pixel.y]
+						let doorH = pixelMap[pixel.x+1][pixel.y-1]
+						if (doorB.levelReq <= pixel.levelReq && doorH.levelReq <= pixel.levelReq) {
+							tryMove(pixelMap[neighbor.x][neighbor.y],pixel.x+2,pixel.y)
 						}
 					}
 				}
@@ -305,6 +349,40 @@ elements.access_door = {
 	category: "scp",
 	state: "solid",
 	density: 7850,
+}
+
+elements.alarm = {
+	color: "#ff2222",
+	buttonColor: "#660000",
+	behavior: behaviors.WALL,
+	renderer: renderPresets.LED,
+	properties: {
+		radius: 8,
+	},
+    tick: function(pixel) {
+        doDefaults(pixel)
+		if (!pixel.radius || pixel.radius != 8) {
+			pixel.radius = 8
+		}
+        if (pixel.radius > 0 && (pixel.charge || pixel.chargeCD)) {
+            var coords = circleCoords(pixel.x,pixel.y,pixel.radius);
+			for (var i = 0; i < coords.length; i++) {
+				if (!isEmpty(coords[i].x,coords[i].y) && !outOfBounds(coords[i].x,coords[i].y)) {
+					var panic = pixelMap[coords[i].x][coords[i].y]
+                    if (panic.panic != undefined && (panic.element == "body" || panic.element == "body_1000" || panic.element == "body_1015")) {
+						panic.panic += 0.025
+					}
+				}
+			}
+        }
+    },
+	category: "scp",
+	tempHigh: 1500,
+	stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium","molten_aluminum","molten_copper","molten_plastic","molten_plastic"],
+	conduct: 1,
+	breakInto: ["glass_shard","bead","glass_shard","bead","copper"],
+	breakIntoColorMultiplier: [1.1,1,0.86],
+	forceSaveColor: true
 }
 
 elements.level_0 = {
@@ -467,6 +545,61 @@ elements.d_class = {
 			pixelMap[pixel.x][pixel.y-1].color = pixel.color;
 			changePixel(pixel,"body");
             pixel.color = pixelColorPick(pixel, elements.d_class.buttonColor);
+		}
+		else {
+			deletePixel(pixel.x, pixel.y);
+		}
+	},
+	reactions: {
+		"fire": { attr1:{panic:5} },
+		"plasma": { attr1:{panic:5} },
+		"cold_fire": { attr1:{panic:5} },
+		"electric": { attr1:{panic:5} },
+		"blood": { attr1:{panic:1} },
+		"infection": { attr1:{panic:2} },
+		"cancer": { attr1:{panic:3} },
+		"plague": { attr1:{panic:5} },
+		"radiation": { attr1:{panic:5} },
+		"tnt": { attr1:{panic:5} },
+		"dynamite": { attr1:{panic:5} },
+		"c4": { attr1:{panic:5} },
+		"grenade": { attr1:{panic:5} },
+		"gunpowder": { attr1:{panic:5} },
+		"acid": { attr1:{panic:5} },
+		"acid_gas": { attr1:{panic:5} },
+		"stench": { attr1:{panic:2} }
+	},
+	related: ["body","head"],
+	cooldown: defaultCooldown,
+	forceSaveColor: true,
+}
+
+elements.maintenance = {
+	// color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
+	color: ["#f3e7db","#f7ead0","#eadaba","#d7bd96","#a07e56","#825c43","#604134","#3a312a"],
+    buttonColor: ["#111188","#1111dd","#047e99"],
+	name: "Technician",
+	category: "scp",
+	properties: {
+		dead: false,
+		dir: 1,
+		panic: 0
+	},
+	onPlace: function(pixel) {
+		if (isEmpty(pixel.x, pixel.y+1)) {
+			createPixel("body", pixel.x, pixel.y+1);
+            pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1], elements.maintenance.buttonColor)
+			pixelMap[pixel.x][pixel.y+1].level = 1
+			var color = pixel.color;
+			changePixel(pixel,"head");
+			pixel.color = color;
+		}
+		else if (isEmpty(pixel.x, pixel.y-1)) {
+			createPixel("head", pixel.x, pixel.y-1);
+			pixelMap[pixel.x][pixel.y-1].color = pixel.color;
+			changePixel(pixel,"body");
+            pixel.color = pixelColorPick(pixel, elements.maintenance.buttonColor);
+			pixel.level = 1
 		}
 		else {
 			deletePixel(pixel.x, pixel.y);
@@ -661,6 +794,706 @@ elements.director = {
 	forceSaveColor: true,
 }
 
+elements.scp_001_sdl = {
+    name: "SCP-001 CN: Locke",
+    color: "#c12600",
+    tick: function(pixel) {
+        // minimum 1726
+        // maximum 7726
+        if (pixel.eclipse) { pixel.color = pixelColorPick(pixel,"#f68656"); var c=0.01}
+        else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43"); }
+        else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.05 }
+        else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#c12600"); var c=0.1 }
+        else if (pixel.temp < 11000) { pixel.color = pixelColorPick(pixel,"#ffb09c"); var c=0.25 }
+        else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#f7fff5"); var c=0.5 }
+        else { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
+        if (pixel.temp < 1500) { var c=0 }
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var x = pixel.x+adjacentCoords[i][0];
+            var y = pixel.y+adjacentCoords[i][1];
+            if (isEmpty(x,y)) {
+                if (Math.random() > c) {continue}
+                createPixel("scp_001_light", x, y);
+                pixelMap[x][y].color = pixel.color;
+            }
+            else if (!outOfBounds(x,y)) {
+                var newPixel = pixelMap[x][y];
+                if (elements[newPixel.element].id === elements.scp_001_sdl.id) {
+                    if (pixel.eclipse) { newPixel.eclipse = true }
+                    if (pixel.temp!==newPixel.temp) {
+                        var avg = (pixel.temp + newPixel.temp)/2;
+                        pixel.temp = avg;
+                        newPixel.temp = avg;
+                        pixelTempCheck(pixel);
+                        pixelTempCheck(newPixel);
+                    }
+                }
+                else if (elements[newPixel.element].id === elements.sun.id) {
+                    changePixel(newPixel, "scp_001_sdl");
+                }
+            }
+        }
+    },
+    tool: function(pixel) {
+        if (pixel.element === "light") {
+            deletePixel(pixel.x,pixel.y);
+        }
+        if (pixel.element === "scp_001_light") {
+            deletePixel(pixel.x,pixel.y);
+        }
+    },
+    canPlace: true,
+    reactions: {
+        "hydrogen": { elem2:"helium", temp1:5 },
+        "helium": { elem2:"carbon_dioxide", temp1:5, tempMax:3600 },
+        "carbon_dioxide": { elem2:"neon", temp1:5, tempMax:1800 },
+        "sun": { elem2:"scp_001_sdl", },
+        "light": { elem2:"scp_001_light" },
+    },
+    temp: 5504,
+    tempLow: -100,
+    stateLow: "supernova",
+    category: "scp",
+    state: "gas",
+    //density: 1408,
+    insulate: true,
+    noMix: true,
+    movable: false
+}
+
+elements.scp_001_light = {
+    hidden: true,
+    name: "light",
+    color: "#c12600",
+    tick: function(pixel) {
+    if (Math.random() < 0.01) {
+        deletePixel(pixel.x,pixel.y);
+        return;
+    }
+    if (pixel.bx===undefined) {
+        // choose 1, 0, or -1
+        pixel.bx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+        pixel.by = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+        // if both are 0, make one of them 1 or -1
+        if (pixel.bx===0 && pixel.by===0) {
+            if (Math.random() < 0.5) { pixel.bx = Math.random() < 0.5 ? 1 : -1; }
+            else { pixel.by = Math.random() < 0.5 ? 1 : -1; }
+        }
+    }
+    // move and invert direction if hit
+    if (pixel.bx && !tryMove(pixel, pixel.x+pixel.bx, pixel.y)) {
+        var newX = pixel.x + pixel.bx;
+        if (!isEmpty(newX, pixel.y, true)) {
+            var newPixel = pixelMap[pixel.x+pixel.bx][pixel.y];
+            if (!elements[newPixel.element].insulate) {
+                newPixel.temp += 1;
+                pixelTempCheck(newPixel);
+            }
+            if (!elements.light.reactions[newPixel.element]) {
+                pixel.color = newPixel.color;
+            }
+            else if (!elements.scp_001_light.reactions[newPixel.element]) {
+                pixel.color = newPixel.color;
+            }
+        }
+        pixel.bx = -pixel.bx;
+    }
+    if (pixel.by && !tryMove(pixel, pixel.x, pixel.y+pixel.by)) {
+        var newY = pixel.y + pixel.by;
+        if (!isEmpty(pixel.x, newY, true)) {
+            var newPixel = pixelMap[pixel.x][pixel.y+pixel.by];
+            if (!elements[newPixel.element].insulate && newPixel.temp < 200) {
+                newPixel.temp += 0.1;
+                pixelTempCheck(newPixel);
+            }
+            if (!elements.light.reactions[newPixel.element]) {
+                pixel.color = newPixel.color;
+            }
+            else if (!elements.scp_001_light.reactions[newPixel.element]) {
+                pixel.color = newPixel.color;
+            }
+        }
+        pixel.by = -pixel.by;
+    }
+    },
+    onCollide: function(pixel1,pixel2) {
+		if (pixel2.element == "head") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_head"
+		}
+        else if (pixel2.element == "body") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_body"
+		}
+        else if (pixel2.element == "plant" || pixel2.element == "grass" || pixel2.element == "lichen" || pixel2.element == "kelp" || pixel2.element == "evergreen" || pixel2.element == "pistil" || pixel2.element == "petal" || pixel2.element == "bamboo" || pixel2.element == "bamboo_plant" || pixel2.element == "cactus" || pixel2.element == "corn" || pixel2.element == "wheat" || pixel2.element == "dead_plant" || pixel2.element == "sapling" || pixel2.element == "pinecone") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_plant"
+		}
+        else if (pixel2.element == "tree_branch") {
+            pixel2.element = "wood"
+        }
+        else if (pixel2.element == "cell" || pixel2.element == "cancer" || pixel2.element == "worm" || pixel2.element == "flea" || pixel2.element == "termite" || pixel2.element == "ant" || pixel2.element == "spider" || pixel2.element == "fly" || pixel2.element == "firefly" || pixel2.element == "bee" || pixel2.element == "stink_bug" || pixel2.element == "dead_bug" || pixel2.element == "bird" || pixel2.element == "rat" || pixel2.element == "frog" || pixel2.element == "tadpole" || pixel2.element == "fish" || pixel2.element == "slug" || pixel2.element == "snail" || pixel2.element == "coral") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_animal"
+        }
+        else if (pixel2.element == "head_008" || pixel2.element == "head_012_1" || pixel2.element == "head_035" || pixel2.element == "head_049" || pixel2.element == "head_096" || pixel2.element == "head_1000" || pixel2.element == "head_1015") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_head"
+		}
+        else if (pixel2.element == "body_008" || pixel2.element == "body_012_1" || pixel2.element == "body_035" || pixel2.element == "body_049" || pixel2.element == "body_096" || pixel2.element == "body_1000" || pixel2.element == "body_1015") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_body"
+		}
+        else if (pixel2.element == "scp_236" || pixel2.element == "scp_391" || pixel2.element == "scp_1424") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_animal"
+		}	
+        else if (pixel2.element == "skin" || pixel2.element == "meat" || pixel2.element == "cured_meat" || pixel2.element == "rotten_meat" || pixel2.element == "cooked_meat") {
+			pixel2.origElem = pixel2.element
+            pixel2.element = "fused_organism"
+		}
+		else if (pixel2.element == "dust" || pixel2.element == "cloth" || pixel2.element == "cloth_scrap" || pixel2.element == "hair" || pixel2.element == "loose_hair") {
+            deletePixel(pixel2.x,pixel2.y)
+		}
+		if (elements[pixel2.element].isBio) {
+			pixel2.origElem = pixel2.element
+			if (pixel2.con) {
+				delete pixel2.con
+			}
+			pixel2.element = "melted_animal"
+		}
+		else if (elements[pixel2.element].isHair || pixel2.element == "loose_hair" || pixel2.element == "gaseous_material" || pixel2.element == "digested_material" || pixel2.element == "urine" || pixel2.element == "excrement" || pixel2.element == "brain_jar_juice") {
+			deletePixel(pixel2.x,pixel2.y)
+		}
+	},
+    reactions: {
+        "glass": { "color1":["#ff0000","#ff0000","#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+        "glass_shard": { "color1":["#ff0000","#ff0000","#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+        "rad_glass": { "color1":["#ff0000","#ff0000","#9f6060","#9f8260","#9f9f60","#609f60","#609f9f","#60609f","#9f609f"] },
+        "rad_shard": { "color1":["#ff0000","#ff0000","#9f6060","#9f8260","#9f9f60","#609f60","#609f9f","#60609f","#9f609f"] },
+        "steam": { "color1":["#ff0000","#ff0000","#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+        "rain_cloud": { "color1":["#ff0000","#ff0000","#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+        "cloud": { "color1":["#ff0000","#ff0000","#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+        "smog": { "color1":["#ff0000","#ff0000","#9f6060","#9f8260","#9f9f60","#609f60","#609f9f","#60609f","#9f609f"] },
+        "ice": { "color1":["#ff0000","#c2fff9"] },
+        "rime": { "color1":["#ff0000","#c2fff9"] },
+        "water": { "color1":["#ff0000","#a1bac9"] },
+        "salt_water": { "color1":["#ff0000","#a1bac9"] },
+        "sugar_water": { "color1":["#ff0000","#a1bac9"] },
+        "dirty_water": { "color1":["#ff0000","#a1c9a8"] },
+        "seltzer": { "color1":["#ff0000","#c2fff9"] },
+        "diamond": { "color1":["#ff0000","#c2c5ff","#c2d9ff"] },
+        "rainbow": { "color1":["#ff0000","#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+        "static": { "color1":["#ff0000","#ffffff","#bdbdbd","#808080","#424242","#1c1c1c"] },
+        "light": { elem2:"scp_001_light" },
+    },
+    temp: 35,
+    tempLow: -273,
+    stateLow: ["liquid_light",null],
+    stateLowColorMultiplier: 0.8,
+    category: "scp",
+    state: "gas",
+    density: 0.00001,
+    ignoreAir: true,
+    insulate: true
+}
+
+elements.melted_body = {
+	color: ["#f3e7db","#f7ead0","#eadaba","#d7bd96","#a07e56","#825c43","#604134","#3a312a"],
+    name: "SCP-001-A",
+	category: "scp",
+	hidden: true,
+	density: 1500,
+	state: "solid",
+	conduct: .05,
+	temp: 37,
+	tempHigh: 150,
+	stateHigh: "cooked_meat",
+	tempLow: -30,
+	stateLow: "frozen_meat",
+	burn: 10,
+	burnTime: 250,
+	burnInto: "cooked_meat",
+	breakInto: ["blood","meat","bone"],
+	forceSaveColor: true,
+	pickElement: "human",
+    onCollide: function(pixel1,pixel2) {
+		if (elements[pixel2.element].melteda && pixel2.element != "melted_head" && Math.random() > 0.9 && pixel2.origElem != pixel1.origElem) {
+			pixel2.element = "fused_organism"
+            pixel1.element = "fused_organism"
+		}
+	},
+    melteda: true,
+    stain: 0.01875,
+    stainSelf: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.005 },
+		"radiation": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.4 },
+		"neutron": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.01 },
+		"fallout": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.01 },
+		"plague": { elem1:"plague", chance:0.05 },
+		"egg": { elem2:"yolk", chance:0.5, oneway:true },
+		"grape": { elem2:"juice", chance:0.5, color2:"#291824", oneway:true },
+		"ant": { elem2:"dead_bug", chance:0.05, oneway:true },
+		"spider": { elem2:"dead_bug", oneway:true },
+		"fly": { elem2:"dead_bug", oneway:true },
+		"firefly": { elem2:"dead_bug", oneway:true },
+		"bee": { elem2:"dead_bug", oneway:true },
+		"flea": { elem2:"dead_bug", oneway:true },
+		"termite": { elem2:"dead_bug", oneway:true },
+		"worm": { elem2:"slime", chance:0.05, oneway:true },
+		"stink_bug": { elem2:"stench", oneway:true },
+		"grass_seed": { elem2:null, chance:0.05 },
+		"sun": { elem1:"cooked_meat" },
+		"alcohol": { chance:0.2, attr1:{"panic":0} },
+		"anesthesia": { attr1:{"panic":0} },
+		"alcohol_gas": { chance:0.2, attr1:{"panic":0} },
+	},
+	properties: {
+		dead: false,
+		dir: 1,
+		panic: 0,
+	},
+	tick: function(pixel) {
+		if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
+			if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
+				var headpixel = pixelMap[pixel.x][pixel.y-2];
+				if (headpixel.element === "melted_head") {
+					if (isEmpty(pixel.x, pixel.y-1)) {
+						movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+					}
+					else {
+						swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+					}
+				}
+			}
+		}
+		doHeat(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
+		if (pixel.dead) {
+			// Turn into rotten_meat if pixelTicks-dead > 500
+			if (pixelTicks-pixel.dead > 200 && Math.random() < 0.1) {
+				pixel.element = "rotten_meat"
+			}
+			return
+		}
+
+		// Find the head
+		if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "melted_head") {
+			var head = pixelMap[pixel.x][pixel.y-1];
+            if (pixel.color != head.color) {
+				pixel.color = head.color
+                pixel.shirtless = true
+			}
+            else {
+                pixel.shirtless = true
+            }
+			if (head.dead) { // If head is dead, kill body
+				pixel.dead = head.dead;
+			}
+			else if (head.panic > 0) {
+				delete head.panic;
+			}
+		}
+        else if (!isEmpty(pixel.x, pixel.y-1, true) && (pixelMap[pixel.x][pixel.y-1].element == "head" || pixelMap[pixel.x][pixel.y-1].element == "head_008" || pixelMap[pixel.x][pixel.y-1].element == "head_012_1" || pixelMap[pixel.x][pixel.y-1].element == "head_035" || pixelMap[pixel.x][pixel.y-1].element == "head_049" || pixelMap[pixel.x][pixel.y-1].element == "head_1000" || pixelMap[pixel.x][pixel.y-1].element == "head_1015")) {
+			var head = pixelMap[pixel.x][pixel.y-1];
+            if (pixel.color != head.color) {
+				pixel.color = head.color
+			}
+			head.element = "melted_head"
+		}
+		else { var head = null }
+
+		if (isEmpty(pixel.x, pixel.y-1)) {
+			// create blood if decapitated 10% chance
+			if (Math.random() < 0.05 && !pixel.charge) {
+				createPixel("blood", pixel.x, pixel.y-1);
+			}
+            if (Math.random() < 0.15) {
+				pixel.dead = pixelTicks;
+			}
+		}
+		else if (head === null) { return }
+		else if (Math.random() < 0.1*(isEmpty(pixel.x, pixel.y+1) ? 1 : pixel.panic+1)) { // Move 10% chance
+			var movesToTry = [
+				[1*pixel.dir,0],
+				[1*pixel.dir,-1],
+			];
+			let moved = false;
+			// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+			while (movesToTry.length > 0) {
+				var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+				if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+					var origx = pixel.x+move[0];
+					var origy = pixel.y+move[1];
+					if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1]) && pixel.x===origx && pixel.y===origy) {
+						movePixel(head, head.x+move[0], head.y+move[1]);
+						moved = true;
+						break;
+					}
+				}
+                else if (!isEmpty(pixel.x+move[0], pixel.y+move[1], true)) {
+					var hitPixel = pixelMap[pixel.x+move[0]][pixel.y+move[1]];
+					if (elements[hitPixel.element].melteda == true) {
+						hitPixel.element == "fused_organism"
+                        pixel.element == "fused_organism"
+					}
+				}
+			}
+			// 15% chance to change direction
+			if (Math.random() < 0.2 || !moved) {
+				pixel.dir *= -1;
+			}
+		}
+
+	}
+}
+
+elements.melted_head = {
+	color: ["#f3e7db","#f7ead0","#eadaba","#d7bd96","#a07e56","#825c43","#604134","#3a312a"],
+    name: "SCP-001-A",
+	category: "scp",
+	hidden: true,
+	density: 1080,
+	state: "solid",
+	conduct: .05,
+	temp: 37,
+	tempHigh: 150,
+	stateHigh: "cooked_meat",
+	tempLow: -30,
+	stateLow: "frozen_meat",
+	burn: 10,
+	burnTime: 250,
+	burnInto: "cooked_meat",
+	breakInto: ["blood","meat","bone"],
+	forceSaveColor: true,
+	pickElement: "human",
+    onCollide: function(pixel1,pixel2) {
+		if (elements[pixel2.element].melteda && pixel2.element != "melted_body" && Math.random() > 0.9 && pixel2.origElem != pixel1.origElem) {
+			pixel2.element = "fused_organism"
+            pixel1.element = "fused_organism"
+		}
+	},
+    melteda: true,
+    stain: 0.0375,
+    stainSelf: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.005 },
+		"radiation": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.4 },
+		"neutron": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.03 },
+		"fallout": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.03 },
+		"plague": { elem1:"plague", chance:0.05 },
+		"oxygen": { elem2:"carbon_dioxide", chance:0.5 },
+		"beans": { elem2:[null,null,null,null,null,null,null,null,"stench"], chance:0.2 },
+		"sun": { elem1:"cooked_meat" },
+		"light": { stain1:"#825043" },
+		"bee": { stain1:"#cc564b", chance:0.2 },
+		"water": { elem2:"bubble", attr2:{"clone":"water"}, chance:0.001 },
+		"salt_water": { elem2:"bubble", attr2:{"clone":"salt_water"}, chance:0.001 },
+		"pool_water": { elem2:"bubble", attr2:{"clone":"pool_water"}, chance:0.001 },
+		"alcohol": { chance:0.2, attr1:{"panic":0} },
+		"anesthesia": { attr1:{"panic":0} },
+		"alcohol_gas": { chance:0.2, attr1:{"panic":0} }
+	},
+	properties: {
+		dead: false,
+	},
+	tick: function(pixel) {
+		doHeat(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
+		if (pixel.dead) {
+			// Turn into rotten_meat if pixelTicks-dead > 500
+			if (pixelTicks-pixel.dead > 200 && Math.random() < 0.1) {
+				pixel.element = "rotten_meat"
+				return
+			}
+		}
+
+		// Find the body
+		if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "melted_body") {
+			var body = pixelMap[pixel.x][pixel.y+1];
+			if (body.dead) { // If body is dead, kill head
+				pixel.dead = body.dead;
+			}
+		}
+        else if (!isEmpty(pixel.x, pixel.y+1, true) && (pixelMap[pixel.x][pixel.y+1].element == "body" || pixelMap[pixel.x][pixel.y+1].element == "body_008" || pixelMap[pixel.x][pixel.y+1].element == "body_012_1" || pixelMap[pixel.x][pixel.y+1].element == "body_035" || pixelMap[pixel.x][pixel.y+1].element == "body_049" || pixelMap[pixel.x][pixel.y+1].element == "body_1000" || pixelMap[pixel.x][pixel.y+1].element == "body_1015")) {
+			var body = pixelMap[pixel.x][pixel.y+1];
+			body.element = "melted_body"
+		}
+		else { var body = null }
+
+		// check for eating food
+		if (body && !pixel.dead && Math.random() < 0.1) {
+			shuffleArray(interactCoordsShuffle);
+			for (var i = 0; i < interactCoordsShuffle.length; i++) {
+				var x = pixel.x+interactCoordsShuffle[i][0];
+				var y = pixel.y+interactCoordsShuffle[i][1];
+				if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].isFood && pixelMap[x][y].panic === undefined) {
+					deletePixel(x,y);
+					break;
+				}
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].melteda == true && pixelMap[pixel.x][pixel.y+1] != pixelMap[x][y] && Math.random() > 0.9) {
+					pixelMap[x][y].element = "fused_organism"
+					break;
+				}
+			}
+		}
+
+		if (tryMove(pixel, pixel.x, pixel.y+1)) {
+			// create blood if severed 10% chance
+			if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.5 && !pixel.charge) {
+				// set dead to true 15% chance
+				if (Math.random() < 0.15) {
+					pixel.dead = pixelTicks;
+				}
+			}
+		}
+	},
+}
+
+elements.melted_animal = {
+    color: ["#997457","#a698a9","#ac8650","#997457","#a698a9","#ac8650","#997457","#a698a9","#ac8650","#4c4e42","#5e0b04","#4c4e42","#5e0b04","#56482d","#52472c","#635443"],
+    name: "SCP-001-A",
+    behavior: [
+		"XX|M2%0.5|M2%2.5",
+		"XX|FX%2|M2%25 AND BO",
+		"XX|M1|M2",
+	],
+	tick: function(pixel) {
+		if (pixel.r != undefined) {
+			delete pixel.r
+		}
+	},
+    reactions: {
+        "oxygen": { elem2:"carbon_dioxide", chance:0.5 },
+        "meat": { color2: ["#9e4839","#ba6449","#d2856c","#a14940"], elem2:"melted_animal", chance:0.1 },
+        "sun": { elem2:"scp_001_sdl", elem1:"cooked_meat" },
+    },
+    onCollide: function(pixel1,pixel2) {
+		if (elements[pixel2.element].melteda || pixel1.origElem != pixel2.origElem) {
+			pixel1.element = "fused_organism"
+            pixel2.element = "fused_organism"
+		}
+	},
+    melteda: true,
+    stain: 0.04,
+    stainSelf: true,
+    tempHigh: 275,
+    stateHigh: "cooked_meat",
+    tempLow: -20,
+    stateLow: "frozen_meat",
+    burn: 10,
+    burnTime: 300,
+    burnInto: "cooked_meat",
+    state: "liquid",
+    density: 900,
+    category: "scp",
+}
+
+elements.melted_plant = {
+    color: ["#00bf00","#439809","#258b08","#118511","#127b12","#136d14"],
+    name: "SCP-001-A",
+    behavior: [
+	    "XX|ST|XX",
+	    "SP|XX|SP",
+	    "M2%0.1|M1|M2%0.1",
+    ],
+    reactions: {
+        "sun": { elem2:"scp_001_sdl", elem1:"dead_plant" },
+        "light": { elem2:"scp_001_light" },
+        "carbon_dioxide": { elem2:"oxygen" },
+        "tree_branch": { elem2:"wood"  },
+    },
+    onCollide: function(pixel1,pixel2) {
+		if (elements[pixel2.element].melteda && pixel2.element != "melted_plant" && pixel2.origElem != pixel1.origElem) {
+			pixel2.element = "fused_organism"
+            pixel1.element = "fused_organism"
+		}
+	},
+    melteda: true,
+    stain: 0.025,
+    stainSelf: true,
+    tempHigh: 250,
+    stateHigh: "dead_plant",
+    tempLow: -20,
+    stateLow: "frozen_plant",
+    burn: 10,
+    burnTime: 200,
+    burnInto: ["dead_plant","fire","fire","fire","ash"],
+    state: "liquid",
+    density: 1200,
+    category: "scp",
+	isFood: true,
+}
+
+elements.fused_organism = {
+    color: ["#E5D6C7","#f7ead0"],
+    name: "SCP-001-A",
+    behavior: behaviors.LIQUID,
+    viscosity: 6000,
+    reactions: {
+        "meat": { color2: ["#9e4839","#ba6449","#d2856c","#a14940"], elem2:"fused_organism", chance:0.1 },
+        "blood": { color2: ["#9e4839","#ba6449","#d2856c","#a14940"], elem2:"fused_organism", chance:0.1 },
+        "infection": { color2: ["#9e4839","#ba6449","#d2856c","#a14940"], elem2:"fused_organism", chance:0.1 },
+        "cooked_meat": { color2: ["#9e4839","#ba6449","#d2856c","#a14940"], elem2:"fused_organism", chance:0.1 },
+        "sun": { elem2:"scp_001_sdl", elem1:"cooked_meat" },
+        "light": { elem2:"scp_001_light" },
+    },
+    tick: function(pixel) {
+        if (Math.random() < 0.45) {
+			let y = Math.random() < 0.5 ? 0 : -1;
+            let xDir = Math.random() < 0.5 ? 1 : -1;
+			for (let x = 1; x < 20; x++) {
+				let x2 = pixel.x+(x*xDir);
+				let y2 = pixel.y+y;
+				if (!isEmpty(x2,y2,true)) {
+					let seenPixel = pixelMap[x2][y2];
+                    if (elements[seenPixel.element].category == "life") {
+                        if (pixel.dir != 1 && pixelMap[x2][y2].x > pixel.x) {
+                            pixel.dir = 1
+                        }
+                        else if (pixel.dir != -1 && pixelMap[x2][y2].x < pixel.x) {
+                            pixel.dir = -1
+                        }
+		    		}
+                    if (elements[seenPixel.element].id != elements.glass.id && elements[seenPixel.element].id != elements.stained_glass.id && elements[seenPixel.element].id != elements.glass_shard.id) {
+		    			break;
+		    		}
+				}
+			}
+		}
+
+        if (!pixel.dir || pixel.dir == undefined) {
+			pixel.dir = 0;
+		}
+
+		if (pixel.panic > 0 || !pixel.panic || pixel.panic == undefined) {
+			pixel.panic = 0;
+		}
+        if (Math.random() < 0.05) { // Move 5% chance
+			var movesToTry = [
+				[1*pixel.dir,0],
+				[1*pixel.dir,-1],
+			];
+			let moved = false;
+			// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+			while (movesToTry.length > 0) {
+				var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+				if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+					var origx = pixel.x+move[0];
+					var origy = pixel.y+move[1];
+					tryMove(pixel, pixel.x+move[0], pixel.y+move[1]) && pixel.x===origx && pixel.y===origy
+				}
+                if (!isEmpty(pixel.x+move[0], pixel.y+move[1], true)) {
+					var hitPixel = pixelMap[pixel.x+move[0]][pixel.y+move[1]];
+					if (hitPixel.element == "fused_organism" && hitPixel.dir != pixel.dir) {
+						hitPixel.dir = pixel.dir;
+					}
+                    if (hitPixel.element == "fused_organism" && pixel.level && (hitPixel.level < pixel.level || !hitPixel.level )) {
+						hitPixel.level = pixel.level;
+					}
+				}
+			}
+			// 5% chance to change direction
+			if (Math.random() < 0.05 || !moved) {
+				pixel.dir *= -1;
+			}
+		}
+        // homeostasis
+		if (pixel.temp > 47) { pixel.temp -= 1; }
+		else if (pixel.temp < 20) { pixel.temp += 1; }
+		for (var i = 0; i < adjacentCoords.length; i++) {
+                var coords = adjacentCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (!isEmpty(x,y) && !outOfBounds(x,y) && Math.random() > 0.05) {
+                    var shatter = pixelMap[x][y]
+                    let old = shatter.element;
+                    if (shatter.element == "glass" || shatter.element == "rad_glass" || shatter.element == "stained_glass") {
+						breakPixel(shatter)
+                    }
+                }
+        }
+	},
+    onCollide: function(pixel1,pixel2) {
+		if (elements[pixel2.element].category == "life") {
+			if (pixel2.element == "head") {
+                pixel2.origElem = pixel2.element
+                pixel2.element = "melted_head"
+			}
+            else if (pixel2.element == "body") {
+                pixel2.origElem = pixel2.element
+                pixel2.element = "melted_body"
+			}
+            else if (pixel2.element == "plant" || pixel2.element == "grass" || pixel2.element == "kelp" || pixel2.element == "coral" || pixel2.element == "evergreen" || pixel2.element == "pistil" || pixel2.element == "petal" || pixel2.element == "bamboo" || pixel2.element == "bamboo_plant" || pixel2.element == "cactus" || pixel2.element == "corn" || pixel2.element == "wheat" || pixel2.element == "dead_plant" || pixel2.element == "sapling" || pixel2.element == "pinecone") {
+                pixel2.origElem = pixel2.element
+                pixel2.element = "melted_plant"
+			}
+            else if (pixel2.element == "tree_branch") {
+                pixel2.element = "wood"
+            }
+            else {
+                pixel2.element = "fused_organism"
+            }
+		}
+		if (elements[pixel2.element].category == "food") {
+			if (pixel2.element != "salt" && pixel2.element != "sugar" && pixel2.element != "broth" && pixel2.element != "hard_yolk" && pixel2.element != "sauce" && pixel2.element != "popcorn" && pixel2.element != "baked_potato" && pixel2.element != "mashed_potato" && pixel2.element != "bread" && pixel2.element != "toast" && pixel2.element != "gingerbread" && pixel2.element != "crumb" && pixel2.element != "baked_batter" && pixel2.element != "candy" && pixel2.element != "coffee_ground" && pixel2.element != "nut_oil" && pixel2.element != "baking_soda" && pixel2.element != "yogurt" && pixel2.element != "frozen_yogurt" && pixel2.element != "ice_cream" && pixel2.element != "ramen" && pixel2.element != "frosting" && pixel2.element != "soy_sauce" && pixel2.element != "corn_starch" && pixel2.element != "boba" && pixel2.element != "curry_powder" && pixel2.element != "olive_oil" && pixel2.element != "tatorade" && pixel2.element != "plain_cookie" && pixel2.element != "cookie") {
+                pixel2.element = "fused_organism"
+			}
+		}
+		if (pixel2.element == "paper" || pixel2.element == "confetti") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_plant"
+		}
+        if (pixel2.element == "head_008" || pixel2.element == "head_012_1" || pixel2.element == "head_035" || pixel2.element == "head_1000" || pixel2.element == "head_1015") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_head"
+		}
+        else if (pixel2.element == "body_008" || pixel2.element == "body_012_1" || pixel2.element == "body_035" || pixel2.element == "body_1000" || pixel2.element == "body_1015") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_body"
+		}
+        else if (pixel2.element == "scp_236" || pixel2.element == "scp_391" || pixel2.element == "scp_1424") {
+            pixel2.origElem = pixel2.element
+            pixel2.element = "melted_animal"
+		}
+        else if (pixel2.element == "skin" || pixel2.element == "meat" || pixel2.element == "cured_meat" || pixel2.element == "rotten_meat" || pixel2.element == "cooked_meat" ) {
+            pixel2.element = "fused_organism"
+		}
+		else if (pixel2.element == "dust" || pixel2.element == "cloth" || pixel2.element == "cloth_scrap" || pixel2.element == "hair" || pixel2.element == "loose_hair") {
+            deletePixel(pixel2.x,pixel2.y)
+		}
+        if (elements[pixel2.element].melteda && (pixel2.element != "melted_body" || pixel2.shirtless == true && Math.random() > 0.5) && pixel2.element != "fused_organism") {
+			pixel2.element = "fused_organism"
+		}
+		else if (elements[pixel2.element].isBio == true) {
+			pixel2.origElem = pixel2.element
+			if (pixel2.con) {
+				delete pixel2.con
+			}
+			pixel2.element = "melted_animal"
+		}
+		else if (elements[pixel2.element].isHair == true || pixel2.element == "gaseous_material" || pixel2.element == "digested_material" || pixel2.element == "urine" || pixel2.element == "excrement" || pixel2.element == "brain_jar_juice") {
+			deletePixel(pixel2.x,pixel2.y)
+		}
+	},
+	melteda: true,
+    stain: 0.125,
+    stainSelf: true,
+    tempHigh: 300,
+    stateHigh: "cooked_meat",
+    tempLow: -15,
+    stateLow: "frozen_meat",
+    burn: 5,
+    burnTime: 400,
+    burnInto: "cooked_meat",
+    state: "liquid",
+    density: 2000,
+    category: "scp",
+}
+
 elements.scp_008 = {
 	name: "SCP-008",
     color: "#11111f",
@@ -741,7 +1574,7 @@ elements.frozen_008 = {
 elements.body_008 = {
 	name: "SCP-008-1",
 	color: ["#069469","#047e99","#7f5fb0"],
-	category: "life",
+	category: "scp",
 	hidden: true,
 	density: 1500,
 	state: "solid",
@@ -915,7 +1748,7 @@ elements.body_008 = {
 elements.head_008 = {
 	color: ["#75816B","#4D6B53"],
     name: "SCP-008-1",
-	category: "life",
+	category: "scp",
 	hidden: true,
 	density: 1080,
 	state: "solid",
@@ -2174,7 +3007,7 @@ elements.scp_035 = {
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     buttonColor: ["#11111f","#f7ead0","#f7ead0","#f7ead0","#f7ead0","#11111f","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#11111f","#e9e6db","#e9e6db","#e9e6db","#e9e6db","#11111f"],
 	name: "SCP-035",
-    hardness: 0.9,
+    hardness: 0.98,
     category: "scp",
     behavior: [
         "CR:black_acid%0.05|CR:black_acid%0.25|CR:black_acid%0.05",
@@ -2215,7 +3048,7 @@ elements.scp_035 = {
 
 elements.body_035 = {
 	color: ["#069469","#047e99","#7f5fb0"],
-	name: "SCP-035-1",
+	name: "SCP-035",
 	category: "life",
 	hidden: true,
 	density: 1500,
@@ -2377,7 +3210,7 @@ elements.body_035 = {
 }
 
 elements.head_035 = {
-	name: "SCP-035-1",
+	name: "SCP-035",
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
 	category: "life",
 	hidden: true,
@@ -2483,7 +3316,7 @@ elements.black_acid = {
         "DB%3 AND M2%10|DL%1|DB%3 AND M2%10",
         "DB%3 AND M2%10|DB%5.5 AND M1|DB%3 AND M2%10",
     ],
-    ignore: [/*"scp_804"*/"shy_head","shy_body","scp_055","head","body","body_008","head_008","scp_035","body_035","head_035","glass_shard","porcelain_shard","rad_shard","color_sand","sand","iron","steel","glass","rad_glass","stained_glass","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","oxygen","ozone","gold_coin","silver","nickel","calcium"],
+    ignore: [/*"scp_804"*/"head_096","body_096","scp_055","head","body","body_008","head_008","scp_035","body_035","head_035","glass_shard","porcelain_shard","rad_shard","color_sand","sand","iron","steel","glass","rad_glass","stained_glass","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","oxygen","ozone","gold_coin","silver","nickel","calcium"],
     reactions: {
         "caustic_potash": { elem1:null, elem2:"potassium_salt" },
         "water": { elem1:null, elem2:"dirty_water" },
@@ -3169,7 +4002,7 @@ elements.scp_063 = {
 	    "DL|XX|DL",
 	    "M2%80 AND DL|M1 AND DL|M2%80 AND DL",
     ],
-    ignore: ["scp_063","head_049","body_049","shy_head","shy_body","head_049_1","body_049_1","head_008_1","body_008_1","head_012_1","body_012_1","scp_999","scp_682","head","body","plant","grass","algae","cell","cancer","worm","flea","termite","ant","spider","fly","firefly","bee","stink_bug","human","bird","rat","frog","tadpole","fish","slug","snail","sapling","evergreen","cactus","kelp","coral","pistil","tree_branch","vine","bamboo_plant","mushroom_stalk","mushroom_gill","mushroom_cap","lichen","homunculus","root","hyphae","skin","porcelain"],
+    ignore: ["scp_063","head_049","body_049","head_096","body_096","head_049_1","body_049_1","head_008","body_008","head_012_1","body_012_1","scp_999","scp_682","head","body","plant","grass","algae","cell","cancer","worm","flea","termite","ant","spider","fly","firefly","bee","stink_bug","human","bird","rat","frog","tadpole","fish","slug","snail","sapling","evergreen","cactus","kelp","coral","pistil","tree_branch","vine","bamboo_plant","mushroom_stalk","mushroom_gill","mushroom_cap","lichen","homunculus","root","hyphae","skin","porcelain"],
 	category: "scp",
 	tempHigh: 190,
 	stateHigh: ["molten_plastic","molten_plastic","fire","dioxin"],
@@ -3194,24 +4027,24 @@ elements.scp_096 = {
     },
     onPlace: function(pixel) {
         if (isEmpty(pixel.x, pixel.y+1)) {
-            createPixel("shy_body", pixel.x, pixel.y+1);
-            pixel.element = "shy_head";
+            createPixel("body_096", pixel.x, pixel.y+1);
+            pixel.element = "head_096";
         }
         else if (isEmpty(pixel.x, pixel.y-1)) {
-            createPixel("shy_head", pixel.x, pixel.y-1);
+            createPixel("head_096", pixel.x, pixel.y-1);
             pixelMap[pixel.x][pixel.y-1].color = pixel.color;
-            pixel.element = "shy_body";
+            pixel.element = "body_096";
             pixel.color = pixelColorPick(pixel)
         }   
         else {
             deletePixel(pixel.x, pixel.y);
         }
     },
-    related: ["shy_body","shy_head"],
+    related: ["body_096","head_096"],
     cooldown: defaultCooldown
 }
 
-elements.shy_head = {
+elements.head_096 = {
     hidden: true,
 	name: "SCP-096",
 	color: ["#ddd2d6","#C9BCC2","#b6adb2"],
@@ -3234,7 +4067,7 @@ elements.shy_head = {
         }
 
         // Find the body
-        if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "shy_body") {
+        if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body_096") {
             var body = pixelMap[pixel.x][pixel.y+1];
             if (body.dead) { // If body is dead, kill head
                 pixel.dead = body.dead;
@@ -3294,7 +4127,7 @@ elements.shy_head = {
     },
 },
 
-elements.shy_body = {
+elements.body_096 = {
 	name: "SCP-096",
     hidden: true,
 	color: ["#ddd2d6","#C9BCC2","#b6adb2"],
@@ -3311,7 +4144,7 @@ elements.shy_body = {
         if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
             if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
                 var headpixel = pixelMap[pixel.x][pixel.y-2];
-                if (headpixel.element == "shy_head") {
+                if (headpixel.element == "head_096") {
                     if (isEmpty(pixel.x, pixel.y-1)) {
                         movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
                     }
@@ -3326,7 +4159,7 @@ elements.shy_body = {
         doElectricity(pixel);
 
         // Find the head
-        if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "shy_head") {
+        if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head_096") {
             var head = pixelMap[pixel.x][pixel.y-1];
         }
         else { var head = null }
@@ -3417,7 +4250,7 @@ elements.shy_body = {
                             if (seenPixel.y < pixel.y) {
                                 if (!isEmpty(pixel.x, pixel.y-1, true)) {
                                     var headpixel = pixelMap[pixel.x][pixel.y-1];
-                                    if (headpixel.element == "shy_head") {
+                                    if (headpixel.element == "head_096") {
                                         if (isEmpty(pixel.x, pixel.y-3)) {
                                             tryMove(headpixel, pixel.x, pixel.y-3);
                                             if (isEmpty(pixel.x, pixel.y-2)) {
@@ -3455,7 +4288,7 @@ elements.shy_body = {
                             if (seenPixel.y > pixel.y) {
                                 if (!isEmpty(pixel.x, pixel.y-1, true)) {
                                     var headpixel = pixelMap[pixel.x][pixel.y-1];
-                                    if (headpixel.element == "shy_head") {
+                                    if (headpixel.element == "head_096") {
                                         if (isEmpty(pixel.x, pixel.y+1)) {
                                             tryMove(headpixel, pixel.x, pixel.y+1);
                                             if (isEmpty(pixel.x, pixel.y+2)) {
@@ -3482,16 +4315,16 @@ elements.shy_body = {
 		    		}
 		    	}
 		    }
-            if (isEmpty(pixel.x, pixel.y-1) || !isEmpty(pixel.x,pixel.y-1) && pixelMap[pixel.x][pixel.y-1].element != "shy_head") {
+            if (isEmpty(pixel.x, pixel.y-1) || !isEmpty(pixel.x,pixel.y-1) && pixelMap[pixel.x][pixel.y-1].element != "head_096") {
                 // create blood if decapitated 5% chance
                 if (Math.random() < 0.05 && !pixel.charge) {
                     createPixel("blood", pixel.x, pixel.y-1);
                 }
                 if (Math.random() < 0.9 && isEmpty(pixel.x,pixel.y-1)) {
-                    createPixel("shy_head",pixel.x,pixel.y-1)
+                    createPixel("head_096",pixel.x,pixel.y-1)
                 }
                 else if (Math.random() < 0.025 && !isEmpty(pixel.x,pixel.y-1,true) && !outOfBounds(pixel.x,pixel.y-1) ) {
-                    changePixel(pixelMap[pixel.x][pixel.y-1],"shy_head")
+                    changePixel(pixelMap[pixel.x][pixel.y-1],"head_096")
                 }
             }
             else if (head == null) { return }
@@ -3577,7 +4410,7 @@ elements.shy_body = {
 		            	}
 		            	// if (Math.random() > ((1-(elements[pixel.element].hardness || 1)) * (shiftDown ? 0.5 : 1))) {
 		            }
-                    else if (old === pixel2.element && elements[pixel2.element].movable && !isEmpty(pixel2.x,pixel2.y+1) && !paused && pixel2.element != "shy_head" && pixel2.element != "shy_body") {
+                    else if (old === pixel2.element && elements[pixel2.element].movable && !isEmpty(pixel2.x,pixel2.y+1) && !paused && pixel2.element != "head_096" && pixel2.element != "body_096") {
 		            	let x = 0; let y = 0;
 		            	if (Math.random() < 0.66) x = Math.random() < 0.5 ? 1 : -1;
 		            	if (Math.random() < 0.66) y = Math.random() < 0.5 ? 1 : -1;
@@ -3587,16 +4420,16 @@ elements.shy_body = {
             }
         }
         else {
-        if (isEmpty(pixel.x, pixel.y-1) || !isEmpty(pixel.x,pixel.y-1) && pixelMap[pixel.x][pixel.y-1].element != "shy_head") {
+        if (isEmpty(pixel.x, pixel.y-1) || !isEmpty(pixel.x,pixel.y-1) && pixelMap[pixel.x][pixel.y-1].element != "head_096") {
             // create blood if decapitated 5% chance
             if (Math.random() < 0.05 && !pixel.charge) {
                 createPixel("blood", pixel.x, pixel.y-1);
             }
             if (Math.random() < 0.2 && isEmpty(pixel.x,pixel.y-1)) {
-                createPixel("shy_head",pixel.x,pixel.y-1)
+                createPixel("head_096",pixel.x,pixel.y-1)
             }
             else if (!isEmpty(pixel.x,pixel.y-1,true) && !outOfBounds(pixel.x,pixel.y-1) && (Math.random() < 0.1 || elements[pixelMap[pixel.x][pixel.y].element].state != "solid")) {
-                changePixel(pixelMap[pixel.x][pixel.y-1],"shy_head")
+                changePixel(pixelMap[pixel.x][pixel.y-1],"head_096")
             }
         }
         else if (head == null) { return }
@@ -3719,7 +4552,6 @@ elements.body_173 = {
 	hidden: true,
 	density: 2400,
 	state: "solid",
-	conduct: .025,
 	tempHigh: 15050,
 	hardness: 1,
 	stateHigh: ["magma","magma","magma","magma","rust","rust","rust","magma","magma","magma","magma","rust","rust","rust","spray_paint"],
@@ -3999,7 +4831,6 @@ elements.head_173 = {
 	hidden: true,
 	density: 2400,
 	state: "solid",
-	conduct: .025,
 	tempHigh: 15050,
 	hardness: 1,
 	stateHigh: ["magma","magma","magma","magma","rust","rust","rust","magma","magma","magma","magma","rust","rust","rust","spray_paint"],
@@ -4163,7 +4994,7 @@ elements.scp_229 = {
 			for (var i = 0; i < coords.length; i++) {
 				if (!isEmpty(coords[i].x,coords[i].y) && !outOfBounds(coords[i].x,coords[i].y)) {
 					var electric = pixelMap[coords[i].x][coords[i].y]
-                    if (elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.element == "thunder_cloud" || electric.charge || electric.element == "access_door" && Math.random() > 0.75 || electric.element == "keycard_terminal" || electric.element == "level_5" || electric.element == "scp_804" && electric.active == true || elements[electric.element].category == "logic"  || electric.element == "brain" || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_1000" || electric.element == "head_035" || electric.element == "head_008" || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
+                    if (elements[electric.element].category == "nervous system" && Math.random() > 0.5 || electric.element == "thunder_cloud" || electric.charge || electric.chargeCD || electric.element == "access_door" && Math.random() > 0.75 || electric.element == "keycard_terminal" || electric.element == "level_5" || electric.element == "scp_804" && electric.active == true || elements[electric.element].category == "logic"  || electric.element == "brain" || electric.element == "fish" || electric.element == "frog" || electric.element == "rat" || electric.element == "bird" || electric.element == "head" || electric.element == "head_1000" || electric.element == "head_035" || electric.element == "head_008" || electric.element == "battery" || electric.element == "electric" || electric.element == "lightning" || electric.element == "malware" || electric.element == "gray_goo") {
                         if (electric.y > pixel.y && electric.x > pixel.x && isEmpty(pixel.x+1,pixel.y+1)) {
                             createPixel("scp_229",pixel.x+1,pixel.y+1)
 							var electric2 = pixelMap[pixel.x+1][pixel.y+1]
@@ -4267,7 +5098,7 @@ elements.scp_229 = {
 						explodeAt(electric.x,electric.y,300,["plasma","plasma","plasma","plasma","plasma","plasma","plasma","radiation","radiation","radiation","radiation","rad_steam","electric","electric"])
 						pixel.nCD = 2
                     }
-                    else if (electric.charge) {
+                    else if (electric.charge || electric.chargeCD) {
 						deletePixel(electric.x,electric.y)
                         createPixel("scp_229",electric.x,electric.y)
 						electric = pixelMap[electric.x][electric.y]
@@ -4418,6 +5249,258 @@ elements.scp_236 = {
     state: "solid",
     density: 963.7,
     conduct: 0.2,
+}
+
+elements.scp_261 = {
+	name: "SCP-261",
+	color: ["#2E312E","#252623","#120F10"],
+	properties: {
+		db: 0,
+		strange: 0,
+	},
+	tick: function(pixel) {
+		if (typeof pixel.db == "undefined"){pixel.db = 0}
+		for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = adjacentCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x, y, true)){
+                let newPixel = pixelMap[x][y]
+                if (newPixel.charge || newPixel.chargeCD){
+                    pixel.db = 10
+                }
+            }
+        }
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x, y, true)){
+                let newPixel = pixelMap[x][y]
+                if ((newPixel.element == "gold_coin" || newPixel.element == "penny" || newPixel.element == "bronze_coin" || newPixel.element == "money") && Math.random() > 0.15) {
+                pixel.strange++
+				deletePixel(newPixel.x,newPixel.y)
+				if (pixel.strange > 25 && (Math.random() > (pixel.db*0.1))) {
+				let count = 1
+				for (var i = 0; i < squareCoords.length; i++) {
+					var coord = squareCoords[i];
+					var x = pixel.x+coord[0];
+					var y = pixel.y+coord[1];
+					if (isEmpty(x,y)) {
+						if (Math.random() < 0.3) {
+							createPixel("packet",x,y);
+							pixelMap[x][y].has = vendingWeirdF[Math.floor(Math.random() * vendingWeirdF.length)]
+						}
+						else if (Math.random() < 0.65) {
+							createPixel("can",x,y);
+							pixelMap[x][y].has = vendingWeirdD[Math.floor(Math.random() * vendingWeirdD.length)]
+						}
+						else if (Math.random() < 0.78) {
+							createPixel(vendingNormF[Math.floor(Math.random() * vendingNormF.length)],x,y);
+						}
+						else {
+							createPixel(vendingNormD[Math.floor(Math.random() * vendingNormD.length)],x,y);
+						}
+						count--;
+						if (count <= 0) {
+							return pixelMap[x][y];
+						}
+					}
+					else if (!isEmpty(x,y,true) && (elements[pixelMap[x][y].element].state === "liquid" || elements[pixelMap[x][y].element].state === "gas")) {
+						if (Math.random() < 0.3) {
+							changePixel(pixelMap[x][y],"packet");
+							pixelMap[x][y].has = vendingWeirdF[Math.floor(Math.random() * vendingWeirdF.length)]
+						}
+						else if (Math.random() < 0.65) {
+							changePixel(pixelMap[x][y],"can");
+							pixelMap[x][y].has = vendingWeirdD[Math.floor(Math.random() * vendingWeirdD.length)]
+						}
+						else if (Math.random() < 0.78) {
+							changePixel(pixelMap[x][y],vendingNormF[Math.floor(Math.random() * vendingNormF.length)]);
+						}
+						else {
+							changePixel(pixelMap[x][y],vendingNormD[Math.floor(Math.random() * vendingNormD.length)]);
+						}
+						count--;
+						if (count <= 0) {
+							return pixelMap[x][y];
+						}
+					}
+				}		
+				}
+				else {
+				let count = 1
+				for (var i = 0; i < squareCoords.length; i++) {
+					var coord = squareCoords[i];
+					var x = pixel.x+coord[0];
+					var y = pixel.y+coord[1];
+					if (isEmpty(x,y)) {
+						if (Math.random() < 0.5) {
+							createPixel("packet",x,y);
+							if (Math.random() < 0.06666) {
+								pixelMap[x][y].has = "crumb"
+							}
+							else if (Math.random() < 0.23333) {
+								pixelMap[x][y].has = "toast"
+							}
+							else if (Math.random() < 0.4) {
+								pixelMap[x][y].has = "bread"
+							}
+							else if (Math.random() < 0.56666) {
+								pixelMap[x][y].has = "cooked_meat"
+							}
+							else if (Math.random() < 0.73333) {
+								pixelMap[x][y].has = "chocolate"
+							}
+							else {
+								pixelMap[x][y].has = vendingNormF[Math.floor(Math.random() * vendingNormF.length)]
+							}
+						}
+						else if (Math.random() < 0.9) {
+							createPixel("can",x,y);
+							if (Math.random() < 0.23333) {
+								pixelMap[x][y].has = "soda"
+							}
+							else if (Math.random() < 0.4) {
+								pixelMap[x][y].has = "seltzer"
+							}
+							else if (Math.random() < 0.56666) {
+								pixelMap[x][y].has = "juice"
+							}
+							else if (Math.random() < 0.73333) {
+								pixelMap[x][y].has = "poison"
+							}
+							else {
+								pixelMap[x][y].has = vendingNormD[Math.floor(Math.random() * vendingNormD.length)]
+							}
+						}
+						else {
+							createPixel(vendingNormF[Math.floor(Math.random() * vendingNormF.length)],x,y);
+						}
+						count--;
+						if (count <= 0) {
+							return pixelMap[x][y];
+						}
+					}
+					else if (!isEmpty(x,y,true) && (elements[pixelMap[x][y].element].state === "liquid" || elements[pixelMap[x][y].element].state === "gas")) {
+						if (Math.random() < 0.5) {
+							changePixel(pixelMap[x][y],"packet");
+							if (Math.random() < 0.06666) {
+								pixelMap[x][y].has = "crumb"
+							}
+							else if (Math.random() < 0.23333) {
+								pixelMap[x][y].has = "toast"
+							}
+							else if (Math.random() < 0.4) {
+								pixelMap[x][y].has = "bread"
+							}
+							else if (Math.random() < 0.56666) {
+								pixelMap[x][y].has = "cooked_meat"
+							}
+							else if (Math.random() < 0.73333) {
+								pixelMap[x][y].has = "chocolate"
+							}
+							else {
+								pixelMap[x][y].has = vendingNormF[Math.floor(Math.random() * vendingNormF.length)]
+							}
+						}
+						else if (Math.random() < 0.9) {
+							changePixel(pixelMap[x][y],"can");
+							if (Math.random() < 0.23333) {
+								pixelMap[x][y].has = "soda"
+							}
+							else if (Math.random() < 0.4) {
+								pixelMap[x][y].has = "seltzer"
+							}
+							else if (Math.random() < 0.56666) {
+								pixelMap[x][y].has = "juice"
+							}
+							else if (Math.random() < 0.73333) {
+								pixelMap[x][y].has = "poison"
+							}
+							else {
+								pixelMap[x][y].has = vendingNormD[Math.floor(Math.random() * vendingNormD.length)]
+							}
+						}
+						else {
+							changePixel(pixelMap[x][y],vendingNormF[Math.floor(Math.random() * vendingNormF.length)]);
+						}
+						count--;
+						if (count <= 0) {
+							return pixelMap[x][y];
+						}
+					}
+				}		
+				}
+                }
+            }
+        }
+		if (pixel.db > 0) {
+        	pixel.db--
+		}
+		if (Math.random() > 0.95 && pixel.strange > 0) {
+			pixel.strange--
+		}
+		tryMove(pixel, pixel.x, pixel.y+1);
+		doDefaults(pixel);
+	},
+	grain: 0.5,
+	behavior: behaviors.WALL,
+	tempHigh: 1200,
+	stateHigh: ["molten_galvanized_steel","molten_galvanized_steel","molten_galvanized_steel","molten_galvanized_steel","armageddon"],
+	stateHighColorMultiplier: 0.86,
+	hardness: 0.99,
+	breakInto: ["galvanized_steel","galvanized_steel","galvanized_steel","galvanized_steel","armageddon"],
+	breakIntoColorMultiplier: [1.1,1,0.86],
+	category: "scp",
+	state: "solid",
+	density: 7850,
+}
+
+elements.packet = {
+    behavior: behaviors.POWDER,
+    category: "powders",
+    hidden: true,
+    state: "solid",
+    color: ["#dc2c37","#edce66","#0dbf62","#0679ea","#7144b2","#d92097","#dc2c37","#edce66","#0dbf62","#0679ea","#7144b2","#d92097","#c5dede","#c5dede","#c5dede","#c5dede","#c5dede","#c5dede","#c5dede","#c5dede","#c5dede","#dbbfe3", "#cc95db","#c477d9","#b85cd1", "#8d5cd1","#9e77d9","#cc95db", "#95a4db","#7789d9","#5c68d1", "#c1bfe3"],
+    tempHigh: 250,
+    stateHigh: ["metal_scrap","metal_scrap","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","sawdust","dust","glass_shard","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","sawdust","dust","glass_shard"],
+    burn: 10,
+    burnTime: 200,
+    burnInto: ["metal_scrap","metal_scrap","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","sawdust","dust","glass_shard","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","sawdust","dust","glass_shard"],
+    breakInto: ["metal_scrap","metal_scrap","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","sawdust","dust","glass_shard","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","confetti","glitter","sawdust","dust","glass_shard"],
+	properties: {
+		has: "dust",
+	},
+	onChange: function(pixel) {
+		releaseElement(pixel,pixel.has,4,true)
+	},
+	onDelete: function(pixel) {
+		releaseElement(pixel,pixel.has,4,true)
+	},
+    breakIntoColorMultiplier: [1.1,1,0.86],
+}
+
+elements.can = {
+    behavior: behaviors.POWDER,
+    category: "powders",
+    hidden: true,
+    state: "solid",
+    color: ["#ff5e5e","#ffcc5e","#76ff5e","#5ed4ff","#5e61ff","#cf5eff","#d1c6be","#b5c0ad","#b9b8bc","#d1c6be","#b5c0ad","#b9b8bc","#ff5e5e","#ffcc5e","#76ff5e","#5ed4ff","#5e61ff","#cf5eff","#5e807d","#5e807d","#679e99","#5e807d","#5e807d"],
+    tempHigh: 250,
+    stateHigh: ["metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","rust","metal_scrap","rust","oxidized_copper","bead","glass_shard","glitter","glass_shard"],
+    breakInto: ["metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","rust","metal_scrap","rust","oxidized_copper","bead","glass_shard","glitter","glass_shard"],
+	hardness: 0.266,
+	properties: {
+		has: "foam",
+	},
+	onChange: function(pixel) {
+		releaseElement(pixel,pixel.has,4,true)
+	},
+	onDelete: function(pixel) {
+		releaseElement(pixel,pixel.has,4,true)
+	},
+    breakIntoColorMultiplier: [1.1,1,0.86],
 }
 
 elements.scp_391 = {
@@ -6708,7 +7791,7 @@ elements.scp_1600 = {
 			pixel.color = "rgb("+avg.join(",")+")";
 		}
 	},
-    ignore: ["scp_1600_1","gallium","brass","zinc","sulfur","body_173","head_173","shy_body","shy_head","body_049","head_049","scp_035","scp_1015","scp_999","scp_063","scp_055"],
+    ignore: ["scp_261","scp_1600_1","gallium","brass","zinc","sulfur","body_173","head_173","body_096","head_096","body_049","head_049","scp_035","scp_1015","scp_999","scp_063","scp_055"],
 	canPlace: true,
 	reactions: {
         "scp_682":{ stain2:"#CA8E2F", chance:0.05,}, 
