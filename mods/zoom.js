@@ -2,14 +2,14 @@
 (() => {
     let canvas_div = document.getElementById("canvasDiv")
 
-    keybinds["9"] = () => handle_zoom("in")
-    keybinds["0"] = () => handle_zoom("out")
+    keybinds["0"] = () => handle_zoom("in")
+    keybinds["9"] = () => handle_zoom("out")
 
     const controls_table = document.getElementById("controlsTable").lastElementChild
     controls_table.insertAdjacentHTML("beforeBegin",`
     <tr>
         <td>Zoom in/out</td>
-        <td><kbd>9</kbd>/<kbd>0</kbd>
+        <td><kbd>0</kbd>/<kbd>9</kbd>
     </tr>
     `)
 
