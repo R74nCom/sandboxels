@@ -1,58 +1,5 @@
 // IIFE because paranoid
 (() => {
-    let canvas_div = document.getElementById("canvasDiv")
-
-    // Be more granular at higher zoom levels
-    const speed_a = () => zoom_level > 3 ? 5  : 10
-    const speed_b = () => zoom_level > 3 ? 10 : 20
-
-    keybinds["9"] = () => handle_zoom("in")
-    keybinds["0"] = () => handle_zoom("out")
-
-    keybinds["w"] = () => handle_pan("up",    speed_a())
-    keybinds["a"] = () => handle_pan("left",  speed_a())
-    keybinds["s"] = () => handle_pan("down",  speed_a())
-    keybinds["d"] = () => handle_pan("right", speed_a())
-
-    keybinds["W"] = () => handle_pan("up",    speed_b())
-    keybinds["A"] = () => handle_pan("left",  speed_b())
-    keybinds["S"] = () => handle_pan("down",  speed_b())
-    keybinds["D"] = () => handle_pan("right", speed_b())
-
-    const controls_table = document.getElementById("controlsTable").lastElementChild
-
-    controls_table.insertAdjacentHTML("beforeBegin",`
-        <tr>
-            <td>Zoom in/out</td>
-            <td>
-                <kbd>9</kbd>/
-                <kbd>0</kbd>
-            </td>
-        </tr>
-        <tr>
-            <td>Pan</td>
-            <td>
-                <kbd>W</kbd>
-                <kbd>A</kbd>
-                <kbd>S</kbd>
-                <kbd>D</kbd>
-            </td>
-        </tr>
-        <tr>
-            <td>Pan (fast)</td>
-            <td>
-                <kbd>Shift</kbd> + 
-                <kbd>W</kbd>
-                <kbd>A</kbd>
-                <kbd>S</kbd>
-                <kbd>D</kbd>
-            </td>
-        </tr>
-    `)
-    
-    const zoom_data_div = document.createElement("div")
-    document.getElementById("logDiv").appendChild(zoom_data_div)
-
     const zoom_levels = [
         0.5,
         1,
@@ -117,6 +64,60 @@
         zoom_data_div.innerText += `Pan  : ${x_pan}, ${y_pan}`
     }
 
+    function patch_keybinds(){
+        // Be more granular at higher zoom levels
+        const speed_a = () => zoom_level > 3 ? 5  : 10
+        const speed_b = () => zoom_level > 3 ? 10 : 20
+    
+        keybinds["9"] = () => handle_zoom("in")
+        keybinds["0"] = () => handle_zoom("out")
+    
+        keybinds["w"] = () => handle_pan("up",    speed_a())
+        keybinds["a"] = () => handle_pan("left",  speed_a())
+        keybinds["s"] = () => handle_pan("down",  speed_a())
+        keybinds["d"] = () => handle_pan("right", speed_a())
+    
+        keybinds["W"] = () => handle_pan("up",    speed_b())
+        keybinds["A"] = () => handle_pan("left",  speed_b())
+        keybinds["S"] = () => handle_pan("down",  speed_b())
+        keybinds["D"] = () => handle_pan("right", speed_b())
+    }
+
+    function patch_ui(){
+        const zoom_data_div = document.createElement("div")
+        document.getElementById("logDiv").appendChild(zoom_data_div)
+        
+        const controls_table = document.getElementById("controlsTable").lastElementChild
+        controls_table.insertAdjacentHTML("beforeBegin",`
+            <tr>
+                <td>Zoom in/out</td>
+                <td>
+                    <kbd>9</kbd>/
+                    <kbd>0</kbd>
+                </td>
+            </tr>
+            <tr>
+                <td>Pan</td>
+                <td>
+                    <kbd>W</kbd>
+                    <kbd>A</kbd>
+                    <kbd>S</kbd>
+                    <kbd>D</kbd>
+                </td>
+            </tr>
+            <tr>
+                <td>Pan (fast)</td>
+                <td>
+                    <kbd>Shift</kxbd> + 
+                    <kbd>W</kbd>
+                    <kbd>A</kbd>
+                    <kbd>S</kbd>
+                    <kbd>D</kbd>
+                </td>
+            </tr>
+        `)
+    }
+
     // Redefine to give correct numbers when zoomed
     window.getMousePos = (canvas, evt) => {
         if (evt.touches) {
@@ -138,5 +139,10 @@
     runAfterReset(() => {
         window.zoom_level = 1
         rescale()
+    })
+
+    runAfterLoad(() => {
+        patch_keybinds()
+        patch_ui()
     })
 })()
