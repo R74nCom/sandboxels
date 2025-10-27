@@ -54,7 +54,7 @@ dependOn("orchidslibrary.js", ()=>{
                 }
                 if(r.tempMax && !((p1.temp <= r.tempMax) && (p2.temp <= r.tempMax))){
                     return false;
-          <<<<<<<<<      }
+			    }
                 if(r.charged && !(p1.charge || p2.charge)){
                     return false;
                 }
