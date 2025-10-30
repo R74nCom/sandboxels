@@ -118,9 +118,9 @@ class biome {
 }
 let biomes = {
     plains: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "dirt", "dirt", "mud", "gravel"], ["grass","flower_seed","grass","grass","grass","grass","sapling","grass","grass","grass","grass","grass","grass","grass","grass"]], [25, 38, 40]),
-    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42]),
-    savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"]}),
-    tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15}),
+    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}),
+    savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"], vMulti: 1.5}),
+    tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15, vMulti: 2}),
 }
 let seed = Math.random()*(2**32);
 enabledMods.forEach((item)=>{
@@ -141,7 +141,8 @@ elements.PRNGgenerate = {
     onSelect: function(){
         let arr = [];
         let txt = shiftDown;
-        Object.keys(biomes).forEach(function(b){arr.push(b);})
+        Object.keys(biomes).forEach(function(b){arr.push(b);});
+		txt = (arr.length >= 7) ? true : txt;
         promptInput("Leave blank to generate new seed. Your current seed is: " + seed, function(i){
             seed = (i != null && i.toLowerCase() == "c") ? seed : parseFloat(i) || Math.random()*(2**32);
             seed = seed % (2**32);
