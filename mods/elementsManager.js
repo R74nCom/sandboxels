@@ -1,4 +1,4 @@
-if (enabledMods.includes("mods/betterMenuScreens.js")) {
+dependOn("betterMenuScreens.js", () => {
     const properties = {
         meta: [
             {name: "name", type: "string", viewOnly: true, required: true},
@@ -1209,8 +1209,4 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
     }
 
     runAfterLoadList.push(cssInject, loadChanges);
-} else {
-    enabledMods.unshift("mods/betterMenuScreens.js");
-    localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-    window.location.reload();
-}
+}, true);
