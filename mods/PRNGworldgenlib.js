@@ -1,11 +1,7 @@
-/*Version 1.0.0 Pseudorandom world generator*/
-function pseudorandom(key, max = 10){
-    let num = max;
-    for(let i = 0; i < key; i++){
-        num = ((num+(max*0.6))**1.8312312-2) % (max+1);
-    }
-    return num;
-}
+/*Version 1.1.0 Pseudorandom world generator*/
+function pseudorandom(key, num, max = 1){
+    return (Math.log(key)*(num*Math.log(1625.4986772154357))) % max;
+};
 eLists.STONEELEMS = ["rock", "gravel", "tuff", "basalt", "rock_wall"];
 let oreChances = {
     diamond: 0.045,
@@ -31,13 +27,17 @@ class biome {
             if(!paused){togglePause();}
             let fraction = seed/(2**32);
             for(let level of this.yLevels){
-                for(let x = 0; x <= width; x++){
-                    let heightIncrease = (fraction < 0.5) ? -3*(pseudorandom(((1-fraction)*x)*100)/11) : 3*(pseudorandom((fraction*x)*100)/11);
+                for(let x = 0; x <= width+2; x++){
+                    //console.log(x);
+                    let heightIncrease = (fraction < 0.5) ? -3*pseudorandom(((1-fraction)*(x+1))*(100*pseudorandom(x, 1241, 500)), 1) : 3*pseudorandom(((fraction)*(x+1))*(100*pseudorandom(x, 1241, 500)), 1);
                     let h = level + heightIncrease;
                     for(let y = 0; y <= h; y++){
+                        //console.log(x,y);
                         let elementsArr = this.layers[this.yLevels.indexOf(level)];
-                        let elem = elementsArr[Math.floor(((fraction < 0.5) ? elementsArr.length*pseudorandom(((1-fraction)*((x*y)*13))/11) : elementsArr.length*(pseudorandom((fraction*(x*y*17)))/11))%elementsArr.length)];
-                        let placed = tryCreate(elem, x, height-y);
+                        let elem = elementsArr[Math.floor(elementsArr.length*pseudorandom((1-fraction)*pseudorandom((x+15)*(y+5), 65343, 500), 2) % elementsArr.length)] || elementsArr[0];
+                        //if(x == 0 || x == 1){console.log(elem);};
+                        let placed = tryCreate(elem, x-2, height-y);
+                        
                         if(placed != null && this.temp != null){
                             placed.temp = this.temp;
                         }
@@ -75,9 +75,9 @@ class biome {
     generateOreVeins(seed, multi = 1){
         for(let x = 0; x <= width; x++){
             for(let y = 0; y <= height; y++){
-                let c = pseudorandom((seed/2**32)*x*y)/11;
+                let c = pseudorandom((seed/2**32)*pseudorandom(x*y, 657345, 600), 3);
                 if(c <= 0.3){
-                    let c2 = pseudorandom((seed/2**32)*(x*y)*3)/11;
+                    let c2 = pseudorandom((seed/2**32)*pseudorandom(x*y, 98755, 750), 4);
                     let ore;
                     for(let e in oreChances){
                         if(c2 <= oreChances[e]){
@@ -96,11 +96,11 @@ class biome {
                                 x2 += coords[0];
                                 y2 += coords[1];
                                 let p2 = getPixel(x2,y2);
-                                if(p2 != null && eLists.STONEELEMS.includes(p2.element) && (pseudorandom((seed/2**32)*x2*y2)/11) < (0.35*multi)){
+                                if(p2 != null && eLists.STONEELEMS.includes(p2.element) && (pseudorandom((seed/2**32)*pseudorandom(x2,y2, 350), x2*y2) < (0.35*multi))){
                                     hasStone = true;
                                     tryCreate(ore, x2, y2, true);
                                 }
-                                if((pseudorandom((seed/2**32)*(x2*y2)*8)/11) < 0.15){
+                                if(pseudorandom((seed/2**32)*x2*y2, 6) < 0.15){
                                     a = false;
                                     break;
                                 }
@@ -118,9 +118,9 @@ class biome {
 }
 let biomes = {
     plains: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "dirt", "dirt", "mud", "gravel"], ["grass","flower_seed","grass","grass","grass","grass","sapling","grass","grass","grass","grass","grass","grass","grass","grass"]], [25, 38, 40]),
-    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42]),
-    savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"]}),
-    tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15}),
+    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}),
+    savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"], vMulti: 1.5}),
+    tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15, vMulti: 2}),
 }
 let seed = Math.random()*(2**32);
 enabledMods.forEach((item)=>{
@@ -128,7 +128,7 @@ enabledMods.forEach((item)=>{
         biomes.orchard = new biome([["rock","rock","rock","gravel"], ["dirt", "dirt", "dirt", "rock", "gravel"], ["dirt", "dirt", "dirt", "dirt", "mud", "clay_soil", "gravel"]], [25, 30, 38], {afterFunc: (seed)=>{
             for(let i = 0; i < width; i++){
                 console.log(i, width);
-                let elem = ((pseudorandom((seed/2**32)*i)/11) < 0.15) ? plants.tree[(Math.round(Math.random()*plants.tree.length)) % plants.tree.length] : "grass";
+                let elem = (pseudorandom((seed/2**32)*pseudorandom(i, 6544, 500), 7) < 0.15) ? plants.tree[(Math.round(Math.random()*plants.tree.length)) % plants.tree.length] : "grass";
                 if(elem != undefined && elem != "grass"){elem += "_seed"};
                 elem = (elem == undefined) ? "apple_seed" : elem;
                 tryCreate(elem, i, 42);
@@ -140,15 +140,34 @@ elements.PRNGgenerate = {
     category: "tools", 
     onSelect: function(){
         let arr = [];
-        Object.keys(biomes).forEach(function(b){arr.push(b);})
+        let txt = shiftDown;
+        Object.keys(biomes).forEach(function(b){arr.push(b);});
+		txt = (arr.length >= 7) ? true : txt;
         promptInput("Leave blank to generate new seed. Your current seed is: " + seed, function(i){
-            seed = parseInt(i) || Math.random()*(2**32);
+            seed = (i != null && i.toLowerCase() == "c") ? seed : parseFloat(i) || Math.random()*(2**32);
             seed = seed % (2**32);
-            promptChoose("", arr, (choice)=>{
-                biomes[choice].generate(seed);
-                promptText("World generation complete.");
-                selectElement('dirt');
-            }, "Select a biome to generate: ");
+            if(!txt){
+                promptChoose("", arr, (choice)=>{
+                    biomes[choice].generate(seed);
+                    promptText("World generation complete.");
+                    selectElement('dirt');
+                }, "Select a biome to generate: ");
+            } else {
+                let str = "";
+                for(let key in biomes){
+                    str += `${key},`;
+                }
+                str = str.replace(/^,|,$/g, '');
+                promptInput("Enter the name of a biome (caps-insensetive) \nBiomes Available: " + str, function(inp){
+                    if(!arr.includes(inp.toLowerCase())){
+                        promptText("Invalid selection.");
+                    }else {
+                        biomes[inp.toLowerCase()].generate(seed);
+                        promptText("World generation complete.");
+                        selectElement('dirt');
+                    }
+                }, "Enter Biome")
+            }
         }, "Enter seed:");
     }
 }

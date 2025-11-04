@@ -1,5 +1,5 @@
 /*
-* Version 1.0.0
+* Version 1.1.0
 */
 
 dependOn("orchidslibrary.js", ()=>{
@@ -46,15 +46,15 @@ dependOn("orchidslibrary.js", ()=>{
     }
     function aqueousReaction(p1, p2){
         for(let elem in p1.elemsDissolved){
-            if(elements[elem].reactions != null && p2.element != "water" && elements[elem].reactions[p2.element] != undefined){
+            if(elements[elem].reactions != null && p2.element != "water" && (elements[elem].reactions[p2.element] != undefined || (elements[p2.element].reactions != null && elements[p2.element].reactions[elem] != undefined))){
                 
-                let r = elements[elem].reactions[p2.element];
+                let r = elements[elem].reactions[p2.element] || elements[p2.element].reactions[elem];
                 if(r.tempMin && !((p1.temp >= r.tempMin) && (p2.temp >= r.tempMin))){
                     return false;
                 }
                 if(r.tempMax && !((p1.temp <= r.tempMax) && (p2.temp <= r.tempMax))){
                     return false;
-                }
+			    }
                 if(r.charged && !(p1.charge || p2.charge)){
                     return false;
                 }
@@ -253,13 +253,13 @@ dependOn("orchidslibrary.js", ()=>{
             let num = Math.random();
             if(elem === null){
                 for(let e in pixel.elemsDissolved){
-                    if(num <= ((pixel.elemsDissolved[e]/100)/elements[e].solubility.water)){
+                    if(num <= ((pixel.elemsDissolved[e]/100)/elements[e].solubility.water)/4){
                         elem = e;
                     }
                 }
             }
             elem = (elem == null) ? "steam" : elem;
-            changePixel(pixel, elem);
+            changePixel(pixel, elem, 110);
             pixel.dissolvedElems = {};
         }
     }
@@ -282,5 +282,6 @@ dependOn("orchidslibrary.js", ()=>{
     elements.water.tick = solventTick;
     elements.water.behavior = behaviors.SOLVENT;
     elements.water.tempHigh = undefined;
-    elements.water.solventTempHigh = 100;
+    elements.water.solventTempHigh = 101;
+	elements.steam.tempLow = 99
 }, true);
