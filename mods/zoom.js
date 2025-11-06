@@ -8,6 +8,7 @@
         6,
         12
     ]
+    window.zoom_data_div = null
 
     window.zoom_level = 1
     window.zoom_panning = [0,0]
@@ -59,6 +60,8 @@
         const x_pan = (-zoom_panning[0]).toString().padEnd(4)
         const y_pan = (-zoom_panning[1]).toString().padEnd(4)
 
+        if (zoom_data_div === null){ return; }
+
         zoom_data_div.innerText = ""
         zoom_data_div.innerText += `Scale: ${zoom_levels[zoom_level]}x\n`
         zoom_data_div.innerText += `Pan  : ${x_pan}, ${y_pan}`
@@ -84,7 +87,7 @@
     }
 
     function patch_ui(){
-        const zoom_data_div = document.createElement("div")
+        zoom_data_div = document.createElement("div")
         document.getElementById("logDiv").appendChild(zoom_data_div)
         
         const controls_table = document.getElementById("controlsTable").lastElementChild
@@ -108,7 +111,7 @@
             <tr>
                 <td>Pan (fast)</td>
                 <td>
-                    <kbd>Shift</kxbd> + 
+                    <kbd>Shift</kbd> + 
                     <kbd>W</kbd>
                     <kbd>A</kbd>
                     <kbd>S</kbd>
