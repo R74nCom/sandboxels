@@ -146,10 +146,54 @@ elements.NaK = {
 	category: "liquids",
 	state: "liquid",
 	density: 866,
+	tempLow: -12.6,
+	stateHigh: "frozen_NaK",
+	tempHigh: 785, 
+	stateHigh: "NaK_gas", 
 	reactions: {
-		"water": {elem1:["caustic_potash","hydrogen"],elem2:"fire"}
+		"water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"dirty_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"seltzer": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"sugar_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"salt_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"pool_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]}
 	}
 };
+elements.frozen_NaK = {
+	color: "#777070",
+	behavior: behaviors.WALL, 
+	category: "states",
+	state: "solid",
+	density: 8600,
+	tempHigh: -12.6, 
+	stateHigh: "NaK", 
+	reactions: {
+		"water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"dirty_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"seltzer": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"sugar_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"salt_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"pool_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]}
+	}
+};
+elements.NaK_gas = {
+	color: "#372030",
+	behavior: behaviors.GAS, 
+	category: "states",
+	state: "gas",
+	density: 3.104,
+	tempLow: -785,
+	stateLow: "NaK",
+		reactions: {
+		"water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"dirty_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"seltzer": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"sugar_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"salt_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]},
+		"pool_water": {elem1:["caustic_potash","lye"],elem2:["fire","hydrogen"]}
+	}
+};
+
 elements.obsidian = {
 	color: ["#020202","#3d2856","#281f3f","#110d1d","#06030c"],
 	behavior: behaviors.WALL,
@@ -204,10 +248,20 @@ elements.pink_polonium_solution={
 	behavior: [
 		"CH:light%1|CH:light%2|CH:light%1",
 		"XX|CH:yellow_polonium_solution%3.5|XX",
-		"XX|XX|XX",
+		"M2|M1|M2",
 	],
 	glow: false
 };
+elements.stable_pink_polonium_solution={
+	color: "#f49ce3",
+	category:"liquids",
+	customColor: false,
+	hidden:false,
+	state: "liquid",
+	canPlace: true,
+	behavior:behaviors.LIQUID,
+	glow: false
+}
 elements.yellow_polonium_solution={
 	color: "#f2f538",
 	category:"liquids",
@@ -215,8 +269,75 @@ elements.yellow_polonium_solution={
 	hidden:false,
 	state: "liquid",
 	canPlace: true,
-	glow: false
+	glow: false,
+	behavior:behaviors.LIQUID
 }
+elements.those_little_heart_particles_you_get_from_feeding_animals_in_minecraft_you_know_dont_you={
+	color:"#e61017",
+	category:"special",
+	behavior:behaviors.DGAS
+}
+elements.higgs_field_collapse={
+	behavior: [
+		"DL%38 AND CH:"void"%30|DL%38 AND CL%30|DL%38 AND CL%30",
+		"DL%38 AND CL%30|DL%60|DL%30 AND CL%30",
+		"DL%38 AND CL%30|DL%38 AND CL%30|DL%38 AND CL%30",
+	],
+	color:"#edf0f5",
+	category:"weapons",
+	maxSize:1,
+	hidden:true,
+	nocheer:true
+}
+elements.ferz={
+	alias:"fers",
+	color:"#6e6b6a",
+	category:"special",
+	behavior: [
+		"M1%8|XX|M1%8",
+		"XX|XX|XX",
+		"M1%8|XX|M1%8",
+	],
+	hidden:false
+	//slower than wazir because it looks too fast
+}
+elements.wazir={
+	alias:"vasir",
+	color:"#ada7a6",
+	category:"special", 
+	behavior: [
+		"XX|M1%10|XX",  
+		"M1%10|XX|M1%10",
+		"XX|M1%10|XX",
+	],
+	hidden:false
+}
+elements.stable_sodium={
+	color: ["#484849","#5d5e5f","#6b6968","#747775"],
+	reactions: {
+		"chlorine": { elem1:"salt", elem2:"pop" },
+		"vinegar": { elem1:"sodium_acetate", elem2:[null,null,null,"hydrogen"], attr1:{"foam":15} },
+		"water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"salt_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"sugar_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"dirty_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"seltzer": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"pool_water": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"primordial_soup": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"nut_milk": { elem1:["pop","pop","pop","hydrogen"], chance:0.01, temp2:250 },
+		"acid": { elem1:"explosion" }
+	},
+	tempHigh: 97.794,
+	category: "powders",
+	state: "solid",
+	density: 968,
+	conduct: 0.85,
+	hardness: 0.05
+},
+
+elements.acid.ignore.push("yellow_polonium_solution")
+elements.acid.ignore.push("pink_polonium_solution")
 elements.water.reactions.pickle = {elem1:"pickle_juice", elem2:"pickle"}
 elements.salt_water.reactions.pickle = {elem1:"pickle_juice", elem2:"pickle"}
 elements.sodium.reactions.potassium = {elem1:"NaK",elem2:null}
+//gallium is overrated
