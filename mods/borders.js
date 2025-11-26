@@ -1,10 +1,12 @@
+let isMachine = {"machines":true}
+
 window.addEventListener("load", () => {
 	let oldPreRenderer = viewInfo[1].pre;
 	let oldPixelRenderer = viewInfo[1].pixel;
 	viewInfo[1].pre = function(ctx) {
 		if (oldPreRenderer) oldPreRenderer(ctx);
 		currentPixels.forEach(pixel => {
-			if (elements[pixel.element].movable !== true || elements[pixel.element].isGas === true) return;
+			if ((elements[pixel.element].movable !== true && isMachine[elements[pixel.element].category] === undefined) || elements[pixel.element].isGas === true) return;
 			let edge = false;
 			for (var i = 0; i < adjacentCoords.length; i++) {
 				var coords = adjacentCoords[i];
@@ -21,7 +23,7 @@ window.addEventListener("load", () => {
 	}
 	
 	viewInfo[1].pixel = function(pixel, ctx) {
-		if (elements[pixel.element].movable) return oldPixelRenderer(pixel, ctx);
+		if (elements[pixel.element].movable || isMachine[elements[pixel.element].category] === true) return oldPixelRenderer(pixel, ctx);
 		let edge = false;
 		for (var i = 0; i < adjacentCoords.length; i++) {
 			var coords = adjacentCoords[i];
