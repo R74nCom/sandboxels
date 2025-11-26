@@ -1,6 +1,6 @@
 viewInfo[1].pre = function(ctx) {
 	currentPixels.forEach(pixel => {
-		if (!elements[pixel.element].movable) return;
+		if (elements[pixel.element].movable !== true || elements[pixel.element].isGas === true) return;
 		let edge = false;
 		for (var i = 0; i < adjacentCoords.length; i++) {
 			var coords = adjacentCoords[i];
