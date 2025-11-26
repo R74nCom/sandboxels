@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
 					break;
 				}
 			}
-			if (edge) drawSquare(ctx,"rgb(0,0,0)",pixel.x-0.5,pixel.y-0.5,2);
+			if (edge) drawSquare(ctx,"rgb(0,0,0)",pixel.x-1,pixel.y-1,3);
 		})
 	}
 	
