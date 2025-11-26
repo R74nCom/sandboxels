@@ -1,0 +1,56 @@
+viewInfo[1].pre = function(ctx) {
+	currentPixels.forEach(pixel => {
+		if (!elements[pixel.element].movable) return;
+		let edge = false;
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (isEmpty(x,y)) {
+				// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
+				edge = true;
+				break;
+			}
+		}
+		if (edge) drawSquare(ctx,"rgb(0,0,0)",pixel.x-0.5,pixel.y-0.5,2);
+	})
+}
+
+let oldPixelRenderer = viewInfo[1].pixel;
+
+viewInfo[1].pixel = function(pixel, ctx) {
+	if (elements[pixel.element].movable) return oldPixelRenderer(pixel, ctx);
+	let edge = false;
+	for (var i = 0; i < adjacentCoords.length; i++) {
+		var coords = adjacentCoords[i];
+		var x = pixel.x + coords[0];
+		var y = pixel.y + coords[1];
+		if (isEmpty(x,y) || (!outOfBounds(x,y) &&
+			elements[pixelMap[x][y].element].movable
+		)) {
+			// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
+			edge = true;
+			break;
+		}
+	}
+	if (edge) drawSquare(ctx,"rgb(0,0,0)",pixel.x,pixel.y);
+	else oldPixelRenderer(pixel, ctx);
+}
+
+// viewInfo[1].post = function(ctx) {
+// 	currentPixels.forEach(pixel => {
+// 		let edge = false;
+// 		for (var i = 0; i < adjacentCoords.length; i++) {
+// 			var coords = adjacentCoords[i];
+// 			var x = pixel.x + coords[0];
+// 			var y = pixel.y + coords[1];
+// 			if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable !== elements[pixel.element].movable) {
+// 				// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
+// 				edge = true;
+// 				break;
+// 			}
+// 		}
+// 		if (edge) drawSquare(ctx,"rgb(0,0,0)",pixel.x-0.5,pixel.y-0.5,2);
+// 	})
+// }
+
