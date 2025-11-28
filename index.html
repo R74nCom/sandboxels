@@ -20066,10 +20066,11 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
     document.cookie = "R74nRef="+refdomain+";max-age=86400;path=/;domain=r74n.com";
 }
 			
-				function loadPlaylight() {
-					if (!isOnSite) { location.href = "https://r74n.com"; return }
+				function loadPlaylight(skipDialog=false) {
+					if (!isOnSite && !skipDialog) { location.href = "https://r74n.com"; return }
 					if (typeof playlightSDK === "undefined") {
-						document.getElementById("playlightButton").value = "Loading...";
+						let button = document.getElementById("playlightButton");
+						if (button) button.value = "Loading...";
 						document.head.insertAdjacentHTML("beforeend",`<link rel="stylesheet" href="https://sdk.playlight.dev/playlight-sdk.css">`);
 						let script = document.createElement("script");
 						script.setAttribute("type","module");
@@ -20084,18 +20085,21 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			enabled: false
 		}
 	});
-	playlightSDK.setDiscovery(true);
-	document.getElementById("playlightButton").value = "More Games";
+	${!skipDialog ? "playlightSDK.setDiscovery(true);" : ""}
+	${!skipDialog ? "document.getElementById('playlightButton').value = 'More Games';" : "" }
   } catch (error) {
     console.error("Error loading the Playlight SDK:", error);
-	document.getElementById("playlightButton").value = "Error...";
+	${!skipDialog ? "document.getElementById('playlightButton').value = 'Error...';" : "" }
   }`;
 						document.head.appendChild(script);
 					}
-					else {
+					else if (!skipDialog) {
 						playlightSDK.setDiscovery(true);
 					}
 				}
+			}
+			if (urlParams.get("utm_source") === "playlight") {
+				addEventListener("load", function(){ loadPlaylight(true); });
 			}
 		</script>
 		<div id="bottomTopBoxColumns">
