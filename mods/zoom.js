@@ -45,6 +45,140 @@
         rescale()        
     }
 
+    function gen_button(row, col, html, click, nopos, id){
+        const elem = document.createElement("button")
+
+    
+        if (!nopos){
+            elem.style.gridColumn = row
+            elem.style.gridRow    = col
+        }
+        if (id) { elem.id = id }
+
+        // Table for the data-pos to assign (row major). If null, don't add.
+        const data_pos_map = [
+            ["tl", null, "tr"],
+            [null, null, null],
+            ["bl", null, "br"]
+        ]
+
+        elem.innerHTML = html
+        elem.onclick = click
+
+        if (data_pos_map[row-1][col-1] !== null) {
+            elem.dataset.pos = data_pos_map[row-1][col-1]
+        }
+
+        return elem
+    }
+    
+    function add_css(){
+        const FLOATER_CSS = `
+        #zm_data_div {
+            margin-bottom: 10px;
+        }
+
+        #canvasDiv {
+            overflow: hidden
+        }
+
+        #zm_floater_container {
+            position: absolute;
+            display: grid;
+
+            right: 5px;
+            bottom: 5px;
+            height: 24%;
+            aspect-ratio: 1;
+
+            border: 2px solid white;
+            background-color: black;
+            font-size: 1.2em;
+
+            button { text-align: center; border: 0px solid white }
+
+            button:where([data-pos="tl"]) { border-width: 0px 2px 2px 0px };
+            button:where([data-pos="tr"]) { border-width: 2px 2px 0px 0px };
+            button:where([data-pos="bl"]) { border-width: 0px 0px 2px 2px };
+            button:where([data-pos="br"]) { border-width: 2px 0px 0px 2px };
+        }
+        #zm_floater_container:has(#zm_collapse[data-collapsed="true"]) {
+            height: calc(8% - 1px);
+
+            button:not(#zm_collapse) {
+                display: none
+            }
+        }
+        
+        .zm_corner {
+            border: 2px solid white;
+        }
+
+        #zm_collapse {
+            grid-row: 3;
+            grid-column: 3;
+        }
+        #zm_collapse[data-collapsed="true"] {
+            grid-row: 1;
+            grid-column: 1;
+            border-width: 0px;
+        }
+        `
+
+        const style_div = document.createElement("style")
+        style_div.innerHTML = FLOATER_CSS
+
+        document.head.appendChild(style_div)
+    }
+
+    function add_zoom_floaters(){
+        const container = document.createElement("div")
+        container.id = "zm_floater_container"
+
+        // Pan mode selector (C: Coarse F: Fine)
+        const pan_mode_sel = gen_button(
+            1,3, "C", 
+            (evt) => {
+                evt.target.dataset.mode = evt.target.dataset.mode == "F" ? "C" : "F"
+                evt.target.innerText = evt.target.dataset.mode
+            },
+            false,
+            "zm_panmode_sel"
+        )
+
+        const speed = () => 
+            (window.zoom_level > 3 ? 5  : 10) *          // More granular at higher zoom levels
+            (pan_mode_sel.dataset.mode == "F" ? 0.25 : 1) // Increase granularity in fine mode
+
+        container.append(
+            // Direction buttons
+            gen_button(2,1, "&uarr;", () => handle_pan("up"    ,speed())),
+            gen_button(1,2, "&larr;", () => handle_pan("left"  ,speed())),
+            gen_button(3,2, "&rarr;", () => handle_pan("right" ,speed())),
+            gen_button(2,3, "&darr;", () => handle_pan("down"  ,speed())),
+
+            // Zoom buttons
+            gen_button(1,1, "+", () => handle_zoom("in")),
+            gen_button(3,1, "-", () => handle_zoom("out")),
+
+            // Collapse button
+            gen_button(
+                3,3, "#", 
+                (evt) => {
+                    evt.target.dataset.collapsed = evt.target.dataset.collapsed == "true" 
+                        ? "false"
+                        : "true"
+                }, 
+                true,
+                "zm_collapse"
+            ),
+            pan_mode_sel
+        )
+
+        const canvas_div = document.getElementById("canvasDiv")
+        canvas_div.appendChild(container)
+    }
+
     function rescale(){
         log_info()
 
@@ -87,8 +221,12 @@
     }
 
     function patch_ui(){
+        add_css()
+        add_zoom_floaters()
+
         zoom_data_div = document.createElement("div")
-        document.getElementById("logDiv").appendChild(zoom_data_div)
+        zoom_data_div.id = "zm_data_div"
+        document.getElementById("logDiv").prepend(zoom_data_div)
         
         const controls_table = document.getElementById("controlsTable").lastElementChild
         controls_table.insertAdjacentHTML("beforeBegin",`
