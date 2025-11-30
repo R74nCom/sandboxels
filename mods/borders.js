@@ -1,5 +1,7 @@
 let isMachine = {"machines":true}
 
+elements.static.border = false;
+
 window.addEventListener("load", () => {
 	let oldPreRenderer = viewInfo[1].pre;
 	let oldPixelRenderer = viewInfo[1].pixel;
@@ -7,6 +9,7 @@ window.addEventListener("load", () => {
 		if (oldPreRenderer) oldPreRenderer(ctx);
 		currentPixels.forEach(pixel => {
 			if ((elements[pixel.element].movable !== true && isMachine[elements[pixel.element].category] === undefined) || elements[pixel.element].isGas === true) return;
+			if (elements[pixel.element].border === false) return;
 			let edge = false;
 			for (var i = 0; i < adjacentCoords.length; i++) {
 				var coords = adjacentCoords[i];
@@ -25,18 +28,20 @@ window.addEventListener("load", () => {
 	viewInfo[1].pixel = function(pixel, ctx) {
 		if (elements[pixel.element].movable || isMachine[elements[pixel.element].category] === true) return oldPixelRenderer(pixel, ctx);
 		let edge = false;
-		for (var i = 0; i < adjacentCoords.length; i++) {
-			var coords = adjacentCoords[i];
-			var x = pixel.x + coords[0];
-			var y = pixel.y + coords[1];
-			if (isEmpty(x,y) || (!outOfBounds(x,y) &&
-				elements[pixelMap[x][y].element].movable
-			)) {
-				// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
-				edge = true;
-				break;
+		if (elements[pixel.element].border !== false) {
+			for (var i = 0; i < adjacentCoords.length; i++) {
+				var coords = adjacentCoords[i];
+				var x = pixel.x + coords[0];
+				var y = pixel.y + coords[1];
+				if (isEmpty(x,y) || (!outOfBounds(x,y) &&
+					elements[pixelMap[x][y].element].movable
+				)) {
+					// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
+					edge = true;
+					break;
+				}
 			}
-		}
+		};
 		if (edge) drawSquare(ctx,"rgb(0,0,0)",pixel.x,pixel.y);
 		else oldPixelRenderer(pixel, ctx);
 	}
