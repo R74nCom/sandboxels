@@ -1,6 +1,8 @@
 let isMachine = {"machines":true}
 
 elements.static.border = false;
+elements.mixer.border = false;
+elements.grinder.border = false;
 
 window.addEventListener("load", () => {
 	let oldPreRenderer = viewInfo[1].pre;
