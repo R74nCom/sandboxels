@@ -1,4 +1,4 @@
-elements.mars_gunk = {
+ents.mars_gunk = {
     color: "#121212",
     behavior: behaviors.DGAS,
     category: "mars",
@@ -113,7 +113,7 @@ elements.mars_ironheart_ore = {
 elements.mars_ironheart = {
     color: ["#e8e8e8", "#bd1102"],
     behavior: [
-        "XX|CR:radiation%3|XX",
+        "XX|XX|XX",
         "XX|XX|XX",
         "XX|XX|XX",
     ],
@@ -160,8 +160,8 @@ elements.nosmoker = {
 elements.ironheart = {
     color: "#FF6B5A",
     behavior: [
-        "XX|CR:radiation%2|XX|",
-        "XX|CH:feynmanium%0.1|XX|",
+        "XX|CR:ironheart_gas%2|XX|",
+        "XX|XX|XX|",
         "M2|M1|M2|",
     ],
     category: "mars",
@@ -169,40 +169,8 @@ elements.ironheart = {
     state: "solid",
     stateHigh: "molten_mars",
     extraInfo: "Very Sturdy.",
-    stateLow: "depleted_ironheart",
     tempLow: -50,
     tempHigh: 1500,
-    reactions: {
-        "electric": { elem1: "smint", elem2: "null" },
-    },
-}
-elements.depleted_ironheart = {
-    color: "#e9825a",
-    behavior: [
-        "XX|XX|XX|",
-        "XX|XX|XX|",
-        "M2|M1|M2|",
-    ],
-    category: "mars",
-    density: 1200,
-    state: "solid",
-    stateHigh: "molten_mars",
-    reactions: {
-        "electric": { elem1: "smint", elem2: "null" },
-    },
-}
-elements.feynmanium = {
-    color: "#8C7656",
-    behavior: [
-        "XX|XX|XX|",
-        "XX|XX|XX|",
-        "M2|M1|M2|",
-    ],
-    category: "mars",
-    density: 1200,
-    state: "solid",
-    stateHigh: "molten_mars",
-    tempHigh: 6000,
     reactions: {
         "electric": { elem1: "smint", elem2: "null" },
     },
@@ -276,8 +244,8 @@ elements.mars_coal = {
     tempHigh: 300,
     stateHigh: "molten_mars",
     temp: 10,
-        reactions: {
-            "electric": { elem2: "smint", chance: 0.01 },
+    reactions: {
+        "electric": { elem2: "smint", chance: 0.01 },
     }
 }
 elements.mars_ice = {
@@ -391,8 +359,130 @@ elements.ironheart_core = {
     conduct: 1,
     extraInfo: "wha"
 }
-
-// 2.10.20
+elements.mars_fossil = {
+    color: ["#3d3d3d", "#707070", "#395034"],
+    behavior: behaviors.WALL,
+    category: "mars",
+    state: "solid",
+    tempHigh: 2500,
+    hardness: 0.975,
+    stateHigh: ["molten_mars", "dead_phing"],
+    tempLow: -170,
+    stateLow: "mars_rock",
+    extraInfo: "Fossils! From Mars! Simply just smash them to get some tiny creatures.",
+    hardness: 0.4,
+    breakInto: ["phing", "mars_rock"]
+}
+elements.ironheart_gas = {
+    color: ["#500000", "#a7a7a7", "#a80000"],
+    behavior: behaviors.GAS,
+    category: "mars",
+    state: "gas",
+    tempLow: -100,
+    stateLow: "liquid_ironheart_gas",
+    extraInfo: "gasses"
+}
+elements.liquid_ironheart_gas = {
+    color: ["#500000", "#a7a7af", "#a80000"],
+    behavior: behaviors.LIQUID,
+    category: "mars",
+    state: "liquid",
+    temp: -150,
+    extraInfo: "liquids"
+}
+elements.phing = {
+    color: "#00c40a",
+    behavior: [
+        "XX|CL%0.15|M1%5|",
+        "M1%15|XX|M1%15",
+        "XX|M2|XX",
+    ],
+    category: "phings",
+    state: "solid",
+    tempHigh: "800",
+    tempLow: "-200",
+    stateLow: "mars_fossil",
+    stateHigh: "dead_phing",
+    breakInto: "dead_phing",
+    extraInfo: "wha",
+    hardness: 0.99999,
+        reactions: {
+        "phing_killer": { elem1: "dead_phing", elem2: "smint" },
+    },
+}
+elements.dead_phing = {
+    color: "#947e00",
+    behavior: behaviors.POWDER,
+    category: "phings",
+    state: "solid",
+    extraInfo: "DEAD! You KILLED THEM!",
+    hidden: true
+}
+elements.ironheart_air_filter = {
+    color: "#956868",
+    behavior: [
+        "DL:ironheart_gas|DL:ironheart_gas|DL:ironheart_gas|",
+        "DL:ironheart_gas|XX|DL:ironheart_gas",
+        "DL:ironheart_gas|DL:ironheart:gas|DL:ironheart_gas",
+    ],
+    category: "mars",
+    state: "solid",
+    tempHigh: "2000",
+    stateHigh: "molten_steel",
+    breakInto: "steel",
+    extraInfo: "for removing ironheart gas."
+}
+elements.phing_destroyer_of_worlds = {
+    color: "#00c40a",
+    behavior: [
+        "DL|CL%7|M1%5, DL|",
+        "M1%15, DL|XX|M1%15, DL",
+        "DL|M2|DL",
+    ],
+    category: "phings",
+    state: "solid",
+    tempLow: "-200",
+    stateLow: "mars_fossil",
+    breakInto: "dead_phing",
+    extraInfo: "wha",
+    hardness: 0.99999,
+    hidden: true
+}
+elements.evil_mars_fossil = {
+    color: ["#3d3d3d", "#707070", "#395034"],
+    behavior: behaviors.WALL,
+    category: "phings",
+    state: "solid",
+    tempHigh: 2500,
+    hardness: 0.975,
+    stateLow: "mars_rock",
+    extraInfo: "Fossils! From Mars! Simply just smash them to get some tiny creatures.",
+    hardness: 0.4,
+    breakInto: ["phing_destroyer_of_worlds"],
+    hidden: true
+}
+elements.phing_killer = {
+    color: "#ff10ff",
+    behavior: behaviors.DGAS,
+    category: "phings",
+    state: "gas",
+    extraInfo: "A PHING to kill the PHINGS..."
+}
+elements.phing_spray = {
+    color: "#E8AAF9",
+    behavior: [
+        "CR:phing_killer%5|XX|CR:phing_killer%5|",
+        "CR:phing_killer%5|XX|CR:phing_killer%5",
+        "CR:phing_killer%5|XX|CR:phing_killer%5",
+    ],
+    category: "phings",
+    state: "solid",
+    tempHigh: "2000",
+    stateHigh: "molten_steel",
+    breakInto: "steel",
+    extraInfo: "kill them. automatically."
+}
+// 2.11.22
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -427,6 +517,12 @@ elements.ironheart_core = {
 // Red Gold is Solid
 // Feynmanium
 // make things have recaitons
+// its here!
+// remove feynmanium
+// ironheart is no longer radioactive
+// fossils!
+// phing killer
 
 // Creditssss
 // Ghanisma - idea for 2.9.16
+
