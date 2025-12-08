@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
 				var coords = adjacentCoords[i];
 				var x = pixel.x + coords[0];
 				var y = pixel.y + coords[1];
-				if (isEmpty(x,y)) {
+				if (isEmpty(x,y, true)) {
 					// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
 					edge = true;
 					break;

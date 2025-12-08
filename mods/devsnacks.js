@@ -5,6 +5,8 @@ smash into tea powder
 tea powder + hot water = colored tea
 */
 
+dependOn("mustard.js", ()=>{}, true);
+
 elements.herb.tempHigh = 100;
 elements.herb.stateHigh = ["steamed_herb","steamed_herb","steam",null];
 
