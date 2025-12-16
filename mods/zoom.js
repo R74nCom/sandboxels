@@ -72,8 +72,9 @@ function gen_button(row, col, html, click, nopos, id){
 
 function add_css(){
     const CSS = `
-    #zm_data_div { margin-bottom: 10px; }
-    #canvasDiv { overflow: hidden }
+    #zm_data_div { margin-bottom: 10px }
+    #canvasDiv   { overflow: hidden }
+    #game        { border: solid white }
 
     @media(pointer=coarse){
         #zm_floater_container#zm_floater_container { 
@@ -159,7 +160,7 @@ function add_zoom_floaters(){
     )
 
     const speed = () => 
-        (window.zoom_level > 3 ? 5  : 10) *          // More granular at higher zoom levels
+        (window.zoom_level > 3 ? 5  : 10) *           // More granular at higher zoom levels
         (pan_mode_sel.dataset.mode == "F" ? 0.25 : 1) // Increase granularity in fine mode
 
     container.append(
@@ -199,6 +200,16 @@ function rescale(){
     const y = zoom_panning[1] * (pixelSize * scale)
 
     gameCanvas.style.transform = `translate(${x}px,${y}px) scale(${scale})`
+    
+    const width = 2 / scale
+    gameCanvas.style.borderTopWidth = 
+        `${zoom_panning[1] > 0 ? width : 0}px`
+    gameCanvas.style.borderBottomWidth = 
+        `${zoom_panning[1] < 0 ? width : 0}px`
+    gameCanvas.style.borderLeftWidth = 
+        `${zoom_panning[0] > 0 ? width : 0}px`
+    gameCanvas.style.borderRightWidth = 
+        `${zoom_panning[0] < 0 ? width : 0}px`
 }
 
 function log_info(){
