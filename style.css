@@ -233,6 +233,13 @@ kbd:active {filter: brightness(70%);}
 .XButton:hover {
 	background-color: rgb(200, 33, 33);
 }
+#promptMenuText {
+	-webkit-user-select: text; /* Safari */
+	-khtml-user-select: unset; /* Konqueror HTML */
+	-moz-user-select: unset; /* Old versions of Firefox */
+	-ms-user-select: unset; /* Internet Explorer/Edge */
+	user-select: text;
+}
 /*#modManagerAdd {
 	position: absolute;
 	bottom: 25%;
@@ -411,7 +418,7 @@ button, input[type="submit"], input[type="reset"] {
 	text-shadow: 0.5px 1px 4px #000000;
 	color: rgba(255, 255, 255, 0.85);
 	border: 2px solid var(--theme-opac85);
-	margin: 0px 4px 4px 4px;
+	margin: 0px 2px 4px 2px;
 	font-variant: small-caps;
 	z-index: 15;
 }
@@ -455,8 +462,8 @@ input[type="button"]:active, input[type="button"]:active:hover {
 	color: rgba(0, 0, 0, 1);
 }
 #controls button[on="true"] {
-	border-color:lime;
-	color:lime;
+	border-color:#5ee05e;
+	color:#5ee05e;
 }
 #controls div {
 	display: -webkit-box;	  /* OLD - iOS 6-, Safari 3.1-6 */
@@ -953,4 +960,112 @@ a.texticon:hover, a.texticon:active, a.texticon:hover:active {
 	overflow-x: unset;
 	opacity: unset;
 	padding-right: 1em;
+}
+img {
+	image-rendering: pixelated;
+}
+
+
+.pixel-corners,
+.pixel-corners--wrapper {
+
+}
+.pixel-corners {
+}
+.pixel-corners--wrapper {
+}
+.pixel-corners--wrapper .pixel-corners {
+}
+.pixel-corners::after,
+.pixel-corners--wrapper::after {
+}
+.pixel-corners::after {
+}
+
+.controlButton, .elementButton, .pixel-corners {
+  clip-path: polygon(0px calc(100% - 4px),
+    2px calc(100% - 4px),
+    2px calc(100% - 2px),
+    4px calc(100% - 2px),
+    4px 100%,
+    calc(100% - 4px) 100%,
+    calc(100% - 4px) calc(100% - 2px),
+    calc(100% - 2px) calc(100% - 2px),
+    calc(100% - 2px) calc(100% - 4px),
+    100% calc(100% - 4px),
+    100% 4px,
+    calc(100% - 2px) 4px,
+    calc(100% - 2px) 2px,
+    calc(100% - 4px) 2px,
+    calc(100% - 4px) 0px,
+    4px 0px,
+    4px 2px,
+    2px 2px,
+    2px 4px,
+    0px 4px);
+  position: relative;
+  border: 2.5px solid transparent!important;
+}
+.controlButton::after, .elementButton::after, .pixel-corners::after {
+  content: "";
+  position: absolute;
+  clip-path: polygon(0px calc(100% - 4px),
+    2px calc(100% - 4px),
+    2px calc(100% - 2px),
+    4px calc(100% - 2px),
+    4px 100%,
+    calc(100% - 4px) 100%,
+    calc(100% - 4px) calc(100% - 2px),
+    calc(100% - 2px) calc(100% - 2px),
+    calc(100% - 2px) calc(100% - 4px),
+    100% calc(100% - 4px),
+    100% 4px,
+    calc(100% - 2px) 4px,
+    calc(100% - 2px) 2px,
+    calc(100% - 4px) 2px,
+    calc(100% - 4px) 0px,
+    4px 0px,
+    4px 2px,
+    2px 2px,
+    2px 4px,
+    0px 4px,
+    0px 50%,
+    4px 50%,
+    4px 6px,
+    6px 6px,
+    6px 4px,
+    calc(100% - 6px) 4px,
+    calc(100% - 6px) 6px,
+    calc(100% - 4px) 6px,
+    calc(100% - 4px) calc(100% - 6px),
+    calc(100% - 6px) calc(100% - 6px),
+    calc(100% - 6px) calc(100% - 4px),
+    6px calc(100% - 4px),
+    6px calc(100% - 6px),
+    4px calc(100% - 6px),
+    4px 50%,
+    0px 50%);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  pointer-events: none;
+  margin: -4px;
+
+  background: rgba(255,255,255,0.5);
+  /* background-image: linear-gradient(to right bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.33)) */
+}
+.elementButton::after {
+	background: var(--button-border);
+}
+.elementButton.bright::after {
+	/* background: rgba(0,0,0,0.5); */
+	/* background-image: linear-gradient(to right bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.33)) */
+}
+#controls button[on="true"]::after {
+	background: #5ee05e
+}
+#controls .elementButton[current="true"]::after {
+	background: #5ee05e;
 }

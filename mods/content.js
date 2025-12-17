@@ -1,7 +1,8 @@
-dependOn("borders.js", ()=>{}, true);
+// dependOn("borders.js", ()=>{}, true);
 dependOn("glow.js", ()=>{},  true);
-dependOn("background_changer.js", ()=>{},  true);
+// dependOn("background_changer.js", ()=>{},  true);
 dependOn("cursor.js", ()=>{},  true);
+dependOn("devsnacks.js", ()=>{},  true);
 
 function minimizeElement(selector) {
     document.querySelectorAll(selector).forEach(element => {
@@ -30,10 +31,48 @@ document.head.insertAdjacentHTML("beforeend", `
 
 settings.pixelsize = "6w";
 
+let __setMouseColor = (color) => {
+    mouseColor = color;
+    settings.mouseColor = color;
+}
+
 contentModOptions = {
-    "Set Background": () => {
-        setCanvasBGPrompt();
-    },
+    // "Set Background": () => {
+    //     promptChoose("", [
+    //         "Custom", "Grassland", "Sky", "Sky Warm", "Sky Pink", "Sky Purple", "Sky Dark"
+    //     ], r => {
+    //         if (r === "Custom") setCanvasBGPrompt();
+    //         else if (r === "Grassland") {
+    //             setCanvasBG("https://i.imgur.com/Id9WZv4.png", "#2d6138");
+    //             __setMouseColor("#000000");
+    //         }
+    //         else if (r === "Sky") {
+    //             setCanvasBG("https://i.imgur.com/Er068gC.png", "#647690");
+    //             __setMouseColor("#000000");
+    //         }
+    //         else if (r === "Sky Warm") {
+    //             setCanvasBG("https://i.imgur.com/1GWI5xd.png", "#904f45");
+    //             __setMouseColor("#000000");
+    //         }
+    //         else if (r === "Sky Pink") {
+    //             setCanvasBG("https://i.imgur.com/f5gltLn.png", "#435897");
+    //             __setMouseColor("#FFFFFF");
+    //         }
+    //         else if (r === "Sky Purple") {
+    //             setCanvasBG("https://i.imgur.com/1KNCIwJ.png", "#763CB5");
+    //             __setMouseColor("#FFFFFF");
+    //         }
+    //         else if (r === "Sky Dark") {
+    //             setCanvasBG("https://i.imgur.com/wbYia5p.png", "#181628");
+    //             __setMouseColor("#FFFFFF");
+    //         }
+    //     })
+    // },
+    // "Clear Background": () => {
+    //     clearCanvasBG();
+    //     mouseColor = "rgba(255,255,255)";
+    //     delete settings.mouseColor;
+    // },
     "Set Cursor Color": () => {
         promptInput("Enter an image URL. Leave blank to clear background.", (color) => {
             if (!color) {
@@ -44,12 +83,6 @@ contentModOptions = {
             settings.mouseColor = color;
         }, "Mouse Color")
     },
-    "Clear Background": () => {
-        clearCanvasBG();
-    },
-    "Grassland": () => setCanvasBG("https://i.imgur.com/Id9WZv4.png", "#2d6138ff"),
-    "Sky": () => setCanvasBG("https://i.imgur.com/Er068gC.png", "#647690ff"),
-    "Sky Warm": () => setCanvasBG("https://i.imgur.com/aJeSRLk.png", "#904f45ff"),
     "Minimize UI": () => {
         minimizeElement("#stats");
         minimizeElement("#extraInfo");

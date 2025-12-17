@@ -96,7 +96,7 @@ viewInfo[1] = { // Blur Glow (Emissive pixels only)
 };
 
 renderEachPixel(function(pixel,ctx) {
-    if (view === 1 && settings.textures !== 0) {
+    if ((view === 1 || viewInfo[view].alias === 1) && settings.textures !== 0) {
         if (elements[pixel.element].emit || pixel.emit || (elements[pixel.element].colorOn && pixel.charge)) {
             let a = (settings.textures !== 0) ? pixel.alpha : undefined;
             let d = pixel.emit||elements[pixel.element].emit||true;

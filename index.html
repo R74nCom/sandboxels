@@ -49,8 +49,8 @@
 	<meta name="twitter:creator:id" content="1436857621827530753">
 
 	<script> // versioning info
-		currentversion = "1.12";
-		saveVersion = 5;
+		currentversion = "1.13";
+		saveVersion = 6;
 		standalone = false;
 		standaloneType = null;
 	</script>
@@ -78,7 +78,7 @@
 			"availability":"https://schema.org/InStock"
 		  },
 		  "genre": "Falling-sand game",
-		  "softwareVersion":"1.11.2",
+		  "softwareVersion":"1.13",
 		  "datePublished":"2021-12-15",
 		  "dateCreated":"2021-12-15",
 		  "gameTip":"https://sandboxels.r74n.com/controls",
@@ -167,7 +167,7 @@
 POWDER_OLD: [
 	"XX|XX|XX",
 	"XX|XX|XX",
-	"M2|M1|M2",
+	"M2|M1|M2"
 ],
 POWDER: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
@@ -189,12 +189,12 @@ POWDER: function(pixel) {
 AGPOWDER: [
 	"M2|M1|M2",
 	"XX|XX|XX",
-	"XX|XX|XX",
+	"XX|XX|XX"
 ],
 LIQUID_OLD: [
 	"XX|XX|XX",
 	"M2|XX|M2",
-	"M1|M1|M1",
+	"M1|M1|M1"
 ],
 LIQUID: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
@@ -241,7 +241,7 @@ LIQUID: function(pixel) {
 SUPERFLUID_OLD: [
 	"XX|XX|XX",
 	"XX|XX|M2 AND BO",
-	"XX|M1|M2",
+	"XX|M1|M2"
 ],
 SUPERFLUID: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
@@ -269,27 +269,27 @@ SUPERFLUID: function(pixel) {
 LIGHTWEIGHT: [
 	"XX|XX|XX",
 	"XX|FX%0.25|XX",
-	"M2%10|M1%10|M1%10",
+	"M2%10|M1%10|M1%10"
 ],
 SLIDE: [
 	"XX|XX|XX",
 	"XX|XX|M2 AND BO",
-	"XX|M1|M1",
+	"XX|M1|M1"
 ],
 AGLIQUID: [
 	"M1|M1|M1",
 	"M2|XX|M2",
-	"XX|XX|XX",
+	"XX|XX|XX"
 ],
 WALL: [
 	"XX|XX|XX",
 	"XX|XX|XX",
-	"XX|XX|XX",
+	"XX|XX|XX"
 ],
 UL_UR: [
 	"M1|M1|M1",
 	"M2|XX|M2",
-	"XX|M2|XX",
+	"XX|M2|XX"
 ],
 UL_UR_OPTIMIZED: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
@@ -323,7 +323,7 @@ UL_UR_OPTIMIZED: function(pixel) {
 GAS_OLD: [
 	"M2|M1|M2",
 	"M1|XX|M1",
-	"M2|M1|M2",
+	"M2|M1|M2"
 ],
 GAS: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
@@ -353,7 +353,7 @@ GAS: function(pixel) {
 DGAS_OLD: [
 	"M2|M1|M2",
 	"M1|DL%5|M1",
-	"M2|M1|M2",
+	"M2|M1|M2"
 ],
 DGAS: function(pixel) {
 	if (Math.random() < 0.05) {
@@ -365,28 +365,62 @@ DGAS: function(pixel) {
 SUPPORT: [
 	"XX|XX|XX",
 	"SP|XX|SP",
-	"XX|M1|XX",
+	"XX|M1|XX"
 ],
 SUPPORTPOWDER: [
 	"XX|XX|XX",
 	"SP|XX|SP",
-	"M2|M1|M2",
+	"M2|M1|M2"
 ],
 DELETE: [
 	"XX|DL|XX",
 	"DL|XX|DL",
-	"XX|DL|XX",
+	"XX|DL|XX"
 ],
 FILL: [
 	"XX|CL|XX",
 	"CL|XX|CL",
-	"XX|CL|XX",
+	"XX|CL|XX"
 ],
-CLONER: [
+CLONER_OLD: [
 	"XX|CF|XX",
 	"CF|XX|CF",
-	"XX|CF|XX",
+	"XX|CF|XX"
 ],
+CLONER: function(pixel, chance) {
+	for (var i = 0; i < adjacentCoords.length; i++) {
+		var coords = adjacentCoords[i];
+		var x = pixel.x + coords[0];
+		var y = pixel.y + coords[1];
+		if (!pixel.clone) {
+			if (!isEmpty(x,y,true)) {
+				let newPixel = pixelMap[x][y];
+				if (newPixel.clone) {
+					pixel.clone = newPixel.clone;
+					pixel.temp = newPixel.temp;
+					pixelTempCheck(pixel);
+				}
+				if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(newPixel.element) !== -1) {
+					continue;
+				}
+				if (elements[pixel.element].id === elements[newPixel.element].id) {
+					continue;
+				}
+				pixel.clone = elements[newPixel.element].pickElement || newPixel.element;
+				pixel.temp = newPixel.temp;
+				pixelTempCheck(pixel);
+			}
+		}
+		else if (isEmpty(x,y)) {
+			if (chance && Math.random() > chance) continue;
+			createPixel(pixel.clone.match(/,/) ? choose(pixel.clone.split(",")) : pixel.clone, x, y);
+			if (pixelMap[x][y]) {
+				pixelMap[x][y].temp = pixel.temp;
+				pixelTempCheck(pixelMap[x][y]);
+			}
+		}
+	}
+},
 CLONE_ON_CLICK: function(pixel,element) {
 	if (pixel.clone) return;
 	if (elements[pixel.element].ignore.indexOf(element) !== -1) return;
@@ -394,6 +428,14 @@ CLONE_ON_CLICK: function(pixel,element) {
 	if (elements[element].canPlace === false) return;
 	pixel.clone = element;
 	if (elements[element].temp !== undefined) pixel.temp = elements[element].temp;
+},
+CLONER_SHIFT_SELECT: function(element) {
+	promptInput("Enter an element to clone. Enter multiple separated by commas.", function(r) {
+		r = validateElementList(r);
+		if (!r) return;
+		currentElementProp = { clone:r }
+		if (elements[r] && elements[r].temp !== undefined) currentElementProp.temp = elements[r].temp;
+	}, elemTitleCase(elements[element].name || element));
 },
 STAIN_ON_MIX: function(pixel1,pixel2) {
 	if (elements[pixel1.element].id === elements[pixel2.element].id) return;
@@ -406,7 +448,7 @@ STAIN_ON_MIX: function(pixel1,pixel2) {
 STURDYPOWDER_OLD: [
 	"XX|XX|XX",
 	"XX|XX|XX",
-	"XX|M1|XX",
+	"XX|M1|XX"
 ],
 STURDYPOWDER: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
@@ -420,22 +462,22 @@ STURDYPOWDER: function(pixel) {
 SELFDELETE: [
 	"XX|XX|XX",
 	"XX|DL|XX",
-	"XX|XX|XX",
+	"XX|XX|XX"
 ],
 FOAM: [
 	"XX|XX|XX",
 	"XX|DL%5|XX",
-	"M2%25|M1%25|M2%25",
+	"M2%25|M1%25|M2%25"
 ],
 BUBBLE: [
 	"XX|XX|XX",
 	"XX|DL%0.25 AND FX%1|M1%5",
-	"XX|M1%1|M1%2",
+	"XX|M1%1|M1%2"
 ],
 STICKY: [
 	"XX|ST|XX",
 	"ST|XX|ST",
-	"XX|ST AND M1|XX",
+	"XX|ST AND M1|XX"
 ],
 MOLTEN: function(pixel) {
 	if (Math.random() < 0.025 && isEmpty(pixel.x,pixel.y-1)) {
@@ -450,22 +492,22 @@ MOLTEN: function(pixel) {
 MOLTEN_OLD: [
 	"XX|CR:fire%2.5|XX",
 	"M2|XX|M2",
-	"M1|M1|M1",
+	"M1|M1|M1"
 ],
 RADPOWDER: [
 	"XX|XX|XX",
 	"XX|RL:radiation%1|XX",
-	"M2|M1|M2",
+	"M2|M1|M2"
 ],
 RADMOLTEN: [
 	"XX|CR:fire,fire,fire,radiation%4.5|XX",
 	"M2 AND CR:radiation%1|XX|M2 AND CR:radiation%1",
-	"M1|M1|M1",
+	"M1|M1|M1"
 ],
 RADLIQUID: [
 	"XX|XX|XX",
 	"M2|RL:radiation%2|M2",
-	"M1|M1|M1",
+	"M1|M1|M1"
 ],
 BOUNCY: function(pixel) {
 	if (pixel.bx===undefined) {
@@ -833,7 +875,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"HT:2|HT:2|HT:2",
 		"HT:2|HT:2|HT:2",
-		"HT:2|HT:2|HT:2",
+		"HT:2|HT:2|HT:2"
 	],
 	tool: function(pixel) {
 		if (shiftDown) {pixel.temp += elements.heat.temp+(Math.random()*elements.heat.temp*1.5)*20;}
@@ -851,7 +893,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"CO:2|CO:2|CO:2",
 		"CO:2|CO:2|CO:2",
-		"CO:2|CO:2|CO:2",
+		"CO:2|CO:2|CO:2"
 	],
 	tool: function(pixel) {
 		if (shiftDown) {pixel.temp += elements.cool.temp+(Math.random()*elements.cool.temp*1.5)*20;}
@@ -866,12 +908,23 @@ SEEDRISE: function(pixel) {
 },
 "erase": {
 	color: "#fdb5ff",
+	onShiftSelect: function(element) {
+		promptInput("Enter an element to delete. Enter multiple separated by commas.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { filter:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	behavior: [
 		"DL|DL|DL",
 		"DL|DL|DL",
-		"DL|DL|DL",
+		"DL|DL|DL"
 	],
 	tool: function(pixel) {
+		if (currentElementProp && currentElementProp.filter &&
+			currentElementProp.filter !== pixel.element &&
+			!currentElementProp.filter.split(",").includes(pixel.element)
+		) return;
 		deletePixel(pixel.x,pixel.y);
 	},
 	category: "tools",
@@ -883,7 +936,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|SW",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	tool: function(pixel) {
 		if (dragStart === null) {
@@ -908,27 +961,34 @@ SEEDRISE: function(pixel) {
 	},
 	perTick: function() {
 		if (!draggingPixels) { return; }
+		shuffleArray(draggingPixels);
+		draggingPixels.sort((pixel1, pixel2) => {
+			return pixelDistance(pixel1.x, pixel1.y, mousePos.x, mousePos.y) - pixelDistance(pixel2.x, pixel2.y, mousePos.x, mousePos.y);
+		})
 		for (var j = 0; j < (shiftDown ? 3 : 1); j++) {
 		for (var i = 0; i < draggingPixels.length; i++) {
 			var pixel = draggingPixels[i];
-			if (pixel.del) { continue }
-			const x = pixel.x;
-			const y = pixel.y;
-			const [mX, mY] = [mousePos.x, mousePos.y];
-			const empty = checkForEmptyPixels(x, y);
-			let bestVal = Math.sqrt(Math.pow(mX - x, 2) + Math.pow(mY - y, 2));
-			let best = null;
-			for (const pixelPair of empty) {
-				const x_ = x + pixelPair[0];
-				const y_ = y + pixelPair[1];
-				const c = Math.sqrt(Math.pow(mX - x_, 2) + Math.pow(mY - y_, 2));
-				if (c < bestVal) {
-					bestVal = c;
-					best = pixelPair;
+			let moves = Math.max(1, Math.round(pixelDistance(pixel.x, pixel.y, mousePos.x, mousePos.y) / 10));
+			for (let m = 0; m < moves; m++) {
+				if (pixel.del) { break }
+				const x = pixel.x;
+				const y = pixel.y;
+				const [mX, mY] = [mousePos.x, mousePos.y];
+				const empty = checkForEmptyPixels(x, y);
+				let bestVal = Math.sqrt(Math.pow(mX - x, 2) + Math.pow(mY - y, 2));
+				let best = null;
+				for (const pixelPair of empty) {
+					const x_ = x + pixelPair[0];
+					const y_ = y + pixelPair[1];
+					const c = Math.sqrt(Math.pow(mX - x_, 2) + Math.pow(mY - y_, 2));
+					if (c < bestVal) {
+						bestVal = c;
+						best = pixelPair;
+					}
 				}
-			}
-			if (best) {
-				tryMove(pixel, x + best[0], y + best[1], undefined, true);
+				if (best) {
+					tryMove(pixel, x + best[0], y + best[1], undefined, true);
+				}
 			}
 		}
 		}
@@ -959,10 +1019,10 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"CF|CF|CF",
 		"CF|DL%5|CF",
-		"CF|CF|CF",
+		"CF|CF|CF"
 	],
 	category: "tools",
-	maxSize: 0,
+	maxSize: 1,
 	darkText: true,
 	canPlace: false,
 	desc: "Use on a pixel to select its element."
@@ -972,7 +1032,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"SW|SW|SW",
 		"SW|DL%5|SW",
-		"SW|SW|SW",
+		"SW|SW|SW"
 	],
 	tool: function(pixel){},
 	category: "tools",
@@ -1006,7 +1066,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"SH|SH|SH",
 		"SH|DL%5|SH",
-		"SH|SH|SH",
+		"SH|SH|SH"
 	],
 	tool: function(pixel) {
 		// One loop that repeats 5 times if shiftDown else 1 time
@@ -1274,7 +1334,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:foam%3|XX",
 		"M2|XX|M2",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	onMix: function(pixel) {
 		releaseElement(pixel, "foam", shiftDown)
@@ -1531,6 +1591,9 @@ SEEDRISE: function(pixel) {
 				pixel.color = pixelColorPick(pixel,"#301B16")
 			}
 		}
+		else if (pixel.element === "light") {
+			deletePixel(pixel.x, pixel.y);
+		}
 	},
 	canPlace: true,
 	tempHigh: 950,
@@ -1595,7 +1658,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	category:"life",
 	tempHigh: 300,
@@ -1673,7 +1736,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"SW:water,salt_water,dirty_water,sugar_water%1|XX|SW:water,salt_water,dirty_water,sugar_water%1",
-		"M2%10|M1|M2%10",
+		"M2%10|M1|M2%10"
 	],
 	tick: function(pixel) {
 		if (Math.random() < 0.01 && !isEmpty(pixel.x+1,pixel.y+1,true) && isEmpty(pixel.x+1,pixel.y)) {
@@ -1810,7 +1873,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|EX:10|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:10|M2",
+		"M2|M1 AND EX:10|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -1877,7 +1940,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|CH:rain_cloud|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	temp: -5,
 	tempHigh: 20,
@@ -2005,7 +2068,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"M2|M1|M2",
 		"CL%5 AND M1|XX|CL%5 AND M1",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	tool: function(pixel) {
 		if (pixel.temp >= elements.plasma.temp || elements[pixel.element].insulate) {return;}
@@ -2110,7 +2173,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:radiation%0.075|XX",
 		"CR:radiation%0.075|XX|CR:radiation%0.075",
-		"XX|CR:radiation%0.075|XX",
+		"XX|CR:radiation%0.075|XX"
 	],
 	tempHigh: 1500,
 	category: "solids",
@@ -2126,7 +2189,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"SP|XX|SP",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"dirty_water": { elem1:"rotten_meat", chance:0.1 },
@@ -2180,7 +2243,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:plague,stench,stench,stench,fly%0.25 AND CH:meat>rotten_meat%1|XX",
 		"SP%99 AND CH:meat>rotten_meat%1|XX|SP%99 AND CH:meat>rotten_meat%1",
-		"XX|M1 AND CH:meat>rotten_meat%1|XX",
+		"XX|M1 AND CH:meat>rotten_meat%1|XX"
 	],
 	reactions: {
 		"water": { elem2:"broth", tempMin:70, color2:"#d7db69" },
@@ -2206,7 +2269,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"SP|XX|SP",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"water": { elem2:"broth", tempMin:70 },
@@ -2232,6 +2295,11 @@ SEEDRISE: function(pixel) {
 	tick: function(pixel) {
 		if (pixel.temp > 150 && Math.random() < 0.0025 && isEmpty(pixel.x,pixel.y-1)) {
 			changePixel(pixel,"grease")
+		}
+	},
+	onBreak: function(pixel) {
+		if (Math.random() <= (shiftDown ? 0.33 : 0.1) && pixel.temp > 125) {
+			releaseElement(pixel, "grease")
 		}
 	},
 	reactions: {
@@ -2272,14 +2340,26 @@ SEEDRISE: function(pixel) {
 		"rime": { elem1:null, elem2:"salt_water", chance:0.075 },
 		"snow": { elem1:null, elem2:"salt_water", chance:0.25 },
 		"packed_snow": { elem1:null, elem2:"salt_water", chance:0.05 },
-		"packed_ice": { elem1:null, elem2:"salt_water", chance:0.01 }
+		"packed_ice": { elem1:null, elem2:"salt_water", chance:0.01 },
+		// electrolysis:
+		"aluminum": { elem1:["sodium","chlorine"], charged:true, chance:0.0025 },
+		"zinc": { elem1:["sodium","chlorine"], charged:true, chance:0.015 },
+		"steel": { elem1:["sodium","chlorine"], charged:true, chance:0.0125 },
+		"iron": { elem1:["sodium","chlorine"], charged:true, chance:0.0125 },
+		"tin": { elem1:["sodium","chlorine"], charged:true, chance:0.01 },
+		"brass": { elem1:["sodium","chlorine"], charged:true, chance:0.001 },
+		"bronze": { elem1:["sodium","chlorine"], charged:true, chance:0.001 },
+		"copper": { elem1:["sodium","chlorine"], charged:true, chance:0.0075 },
+		"silver": { elem1:["sodium","chlorine"], charged:true, chance:0.0075 },
+		"gold": { elem1:["sodium","chlorine"], charged:true, chance:0.0075 }
 	},
 	category: "food",
 	tempHigh: 801,
 	state: "solid",
 	density: 2160,
 	fireColor: "#F1E906",
-	alias: "sodium chloride"
+	alias: "sodium chloride",
+	isFood: true
 },
 "molten_salt": {
 	conduct: 0.1,
@@ -2343,14 +2423,14 @@ SEEDRISE: function(pixel) {
 	insulate: true,
 	conduct: 1,
 	noMix: true,
-	// ignoreConduct:["ecloner"],
+	// ignoreConduct:["ecloner"]
 },
 "battery": {
 	color: "#9c6c25",
 	behavior: [
 		"XX|SH|XX", // shocks (adds charge)
 		"SH|XX|SH",
-		"XX|SH|XX",
+		"XX|SH|XX"
 	],
 	category: "machines",
 	tempHigh: 1455.5,
@@ -2362,14 +2442,22 @@ SEEDRISE: function(pixel) {
 	color: "#dddd00",
 	behavior: behaviors.CLONER,
 	onClicked: behaviors.CLONE_ON_CLICK,
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	ignore: ["ecloner","slow_cloner","clone_powder","floating_cloner","wall","ewall"],
 	category:"machines",
 	insulate:true,
 	hardness: 1,
-	darkText: true,
+	darkText: true
 },
 "sensor": {
 	color: "#bebfa3",
+	onShiftSelect: function(element) {
+		promptInput("Enter an element to detect. Enter multiple separated by commas.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { sense:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tick: function(pixel) {
 		for (var i = 0; i < adjacentCoords.length; i++) {
 			var coords = adjacentCoords[i];
@@ -2391,36 +2479,67 @@ SEEDRISE: function(pixel) {
 	conduct: 1,
 	movable: false,
 	category:"machines",
-	darkText: true,
+	darkText: true
 },
 "heater": {
 	color: "#881111",
-	behavior: [
-		"XX|HT:2|XX",
-		"HT:2|XX|HT:2",
-		"XX|HT:2|XX",
-	],
+	tick: function(pixel) {
+		let temp = pixel.temp - airTemp;
+		temp = Math.max(temp, 2);
+		temp = Math.min(temp, 10);
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (isEmpty(x,y,true)) continue;
+			
+			if (elements[pixelMap[x][y].element].insulate) continue;
+			pixelMap[x][y].temp += temp;
+			pixelTempCheck(pixelMap[x][y]);
+		}
+	},
+	temp: 22,
 	category:"machines",
 	insulate:true
 },
 "cooler": {
 	color: "#111188",
-	behavior: [
-		"XX|CO:2|XX",
-		"CO:2|XX|CO:2",
-		"XX|CO:2|XX",
-	],
+	tick: function(pixel) {
+		let temp = pixel.temp - airTemp;
+		temp = Math.min(temp, -2);
+		temp = Math.max(temp, -10);
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (isEmpty(x,y,true)) continue;
+			
+			if (elements[pixelMap[x][y].element].insulate) continue;
+			pixelMap[x][y].temp += temp;
+			pixelTempCheck(pixelMap[x][y]);
+		}
+	},
+	temp: 18,
 	category:"machines",
 	insulate:true
 },
 "random": {
-	color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
+	color: ["#28BCD1","#9335E6","#E13294"],
 	behavior: behaviors.WALL,
+	onShiftSelect: function(element) {
+		promptInput("Enter multiple elements separated by commas.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { randomChoices:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tick: function(pixel) {
-		changePixel(pixel,randomChoices[Math.floor(Math.random() * randomChoices.length)]);
+		let choice = choose( (currentElementProp && currentElementProp.randomChoices) ? currentElementProp.randomChoices.split(",") : randomChoices );
+		if (choice === "unknown") deletePixel(pixel.x, pixel.y);
+		else if (choice) changePixel(pixel,choice);
 	},
 	onPlace: function(pixel) {
-		changePixel(pixel,randomChoices[Math.floor(Math.random() * randomChoices.length)]);
+		elements.random.tick(pixel);
 	},
 	category: "special",
 	excludeRandom: true
@@ -2455,7 +2574,110 @@ SEEDRISE: function(pixel) {
 		placingImage = null;
 	},
 	tool: function() {},
+	category: "special"
+},
+"ruler": {
+	color: ["#C99255","#B6894C"],
+	onSelect: function() {
+		currentElementProp = {};
+		// console.log(currentElementProp);
+	},
+	onMouseDown: function() {
+		currentElementProp.startX = mousePos.x;
+		currentElementProp.startY = mousePos.y;
+		// console.log(currentElementProp);
+	},
+	onMouseUp: function() {
+		currentElementProp = {};
+		// console.log(currentElementProp);
+	},
+	renderTool: function(ctx) {
+		if (currentElementProp.startX === undefined) return;
+
+		let startX = currentElementProp.startX;
+		let startY = currentElementProp.startY;
+		let newX = mousePos.x;
+		let newY = mousePos.y;
+		let diffY = Math.abs(startY - newY) + 1;
+		let diffX = Math.abs(startX - newX) + 1;
+		if (shiftDown) {
+			if (diffX > diffY) newY = startY;
+			else newX = startX;
+		}
+		let triWidth = Math.abs(newX - startX) + 1;
+		let triHeight = Math.abs(newY - startY) + 1;
+		let hypot = Math.hypot(triWidth, triHeight);
+		let dirX = Math.sign(newX - startX || -1) * 3;
+		let dirY = Math.sign(newY - startY || 1) * 3;
+		let done = {};
+		let coords = [];
+
+		coords = coords.concat(
+			lineCoords(startX, startY, newX, startY, 1)
+		);
+		coords = coords.concat(
+			lineCoords(startX, startY, newX, newY, 1)
+		);
+		coords = coords.concat(
+			lineCoords(newX, startY, newX, newY, 1)
+		);
+
+		let nums = [ /* [value, x position, y position] */ ]
+
+		if (triWidth >= 3 || triWidth >= triHeight) { /* midWidth */
+			nums.push( [Math.abs(newX - startX) + 1, (newX + startX) / 2, startY - dirY] );
+		}
+		if (triHeight >= 3 || triHeight > triWidth) { /* midHeight */
+			nums.push( [Math.abs(newY - startY) + 1, newX + dirX, (newY + startY) / 2] );
+		}
+		if (triWidth > 5 && triHeight >= 5) { /* hypot */
+			nums.push( [hypot, (newX + startX) / 2 - dirX, (newY + startY) / 2 + dirY] );
+		}
+		if (triWidth > 10 && triHeight >= 10) {
+			let area = (triWidth * triHeight) / 2;
+			let angle = Math.asin((2 * area) / (hypot * triWidth));
+			angle = Math.round(angle * 180/Math.PI);
+			nums.push( [angle+"°", startX + (triWidth * Math.sign(dirX) * 0.25), startY + (triHeight * Math.sign(dirY) * 0.1)] );
+		}
+
+		for (let i = 0; i < coords.length; i++) {
+			const coord = coords[i];
+			if (done[coord[0] + "," + coord[1]]) continue;
+			done[coord[0] + "," + coord[1]] = true;
+			
+			let color = i % 2 ? "#808080" : "#ffff00";
+			drawSquare(ctx, color, coord[0], coord[1], undefined, 0.75);
+		}
+		ctx.font = (pixelSize*4)+"px 'VT323'";
+		ctx.fillStyle = "#ffff00";
+		ctx.strokeStyle = "#000000";
+		ctx.lineWidth = pixelSize;
+		for (let i = 0; i < nums.length; i++) {
+			const num = nums[i];
+			let value = typeof num[0] === "number" ? Math.round(num[0]) : num[0];
+			let x = num[1];
+			let y = num[2];
+
+			x -= value.toString().length / 2;
+			y += 1.5;
+
+			x = Math.max(x, 5);
+			x = Math.min(x, width-5);
+			y = Math.max(y, 5);
+			y = Math.min(y, height-5);
+
+			x = Math.round(x);
+			y = Math.round(y);
+
+			ctx.strokeText(value, x * pixelSize, y * pixelSize);
+			ctx.fillText(value, x * pixelSize, y * pixelSize);
+		}
+	},
+	tool: function() {},
 	category: "special",
+	maxSize: 1,
+	desc: "Use to measure lengths and angles on the canvas.",
+	excludeRandom: true
 },
 "unpaint": {
 	color: ["#ffffff","#000000"],
@@ -2579,7 +2801,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"CL|XX|CL",
 		"XX|XX|XX",
-		"CL|XX|CL",
+		"CL|XX|CL"
 	],
 	tick: function(pixel) {
 		for (var i = 0; i < adjacentCoords.length; i++) {
@@ -2675,18 +2897,27 @@ SEEDRISE: function(pixel) {
 },
 "void": {
 	color: "#262626",
+	onShiftSelect: function(element) {
+		promptInput("Enter an element to allow. Enter multiple separated by commas.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { filter:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tick: function(pixel) {
 		for (var i = 0; i < adjacentCoords.length; i++) {
 			var x = pixel.x+adjacentCoords[i][0];
 			var y = pixel.y+adjacentCoords[i][1];
 			if (!isEmpty(x,y,true)) {
 				var newPixel = pixelMap[x][y];
+				if (pixel.filter && !(pixel.filter === newPixel.element || pixel.filter.split(",").includes(newPixel.element))) continue;
 				if (elements[newPixel.element].hardness === 1) { continue; }
 				deletePixel(x,y);
 			}
 		}
 		doDefaults(pixel);
 	},
+	hoverStat: function(pixel) { return pixel.filter || "" },
 	category:"special",
 	hardness: 1,
 	excludeRandom: true,
@@ -2753,7 +2984,7 @@ SEEDRISE: function(pixel) {
 	movable: false
 },
 "cell": {
-	color: ["#00ee00","#83ee00","#d6ee00"],
+	color: ["#d6ee00","#83ee00","#00ee00"],
 	tick: function(pixel){
 		if (Math.random() < 0.005 && isEmpty(pixel.x,pixel.y-1)) clonePixel(pixel,pixel.x,pixel.y-1);
 		if (Math.random() < 0.005 && isEmpty(pixel.x-1,pixel.y)) clonePixel(pixel,pixel.x-1,pixel.y);
@@ -2796,7 +3027,7 @@ SEEDRISE: function(pixel) {
 	breakInto: ["water","dna","dna","dna"]
 },
 "cancer": {
-	color: ["#300b29","#5c114e","#870c71"],
+	color: ["#870c71","#5c114e","#300b29"],
 	tick: function(pixel){
 		if (Math.random() < 0.01 && isEmpty(pixel.x,pixel.y-1)) clonePixel(pixel,pixel.x,pixel.y-1);
 		if (Math.random() < 0.01 && isEmpty(pixel.x-1,pixel.y)) clonePixel(pixel,pixel.x-1,pixel.y);
@@ -2838,28 +3069,12 @@ SEEDRISE: function(pixel) {
 	nocheer: true,
 	hidden: true
 },
-"dna": {
-	color: ["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"],
-	behavior: behaviors.POWDER,
-	reactions: {
-		"fire": { elem2:null },
-		"radiation": { "color1":["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"] },
-		"neutron": { "color1":["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"] }
-	},
-	tempHigh: 190,
-	stateHigh: "smoke",
-	state: "solid",
-	density: 1700,
-	category: "life",
-	hidden: true,
-	alias: "deoxyribonucleic acid"
-},
 "plague": {
 	color: "#36005c",
 	behavior: [
 		"M2|M1|M2",
 		"M1|DL%1|M1",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"frog": { elem2:"plague", chance:0.05 },
@@ -2878,12 +3093,28 @@ SEEDRISE: function(pixel) {
 	state: "gas",
 	density: 600
 },
+"dna": {
+	color: ["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"],
+	behavior: behaviors.POWDER,
+	reactions: {
+		"fire": { elem2:null },
+		"radiation": { "color1":["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"] },
+		"neutron": { "color1":["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"] }
+	},
+	tempHigh: 190,
+	stateHigh: "smoke",
+	state: "solid",
+	density: 1700,
+	category: "life",
+	hidden: true,
+	alias: "deoxyribonucleic acid"
+},
 "worm": {
 	color: "#d34c37",
 	behavior: [
 		"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3",
 		"M2%10|XX|M2%10",
-		"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3",
+		"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3"
 	],
 	reactions: {
 		"ash": { elem2:[null,null,null,null,null,null,null,null,null,null,"dirt"], chance:0.1, func:behaviors.FEEDPIXEL },
@@ -2910,6 +3141,12 @@ SEEDRISE: function(pixel) {
 		"yolk": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
 		"charcoal": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL },
 		"straw": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL },
+		"lettuce": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"tomato": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"corn": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"pickle": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"bread": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"toast": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
 		"mudstone": { elem2:"dirt", chance:0.1 },
 		"permafrost": { elem2:"dirt", chance:0.1 },
 		"packed_sand": { elem2:"sand", chance:0.1 },
@@ -2949,7 +3186,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M2|XX|M2",
 		"XX|XX|XX",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"blood": { elem2:null, chance:0.1875, func:behaviors.FEEDPIXEL },
@@ -2982,7 +3219,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|SW:wood,tree_branch,dirt,sand,gravel,clay_soil%5",
 		"XX|FX%3|M2%15 AND BO",
-		"XX|M1|SW:wood,tree_branch,dirt,sand,gravel,clay_soil%5",
+		"XX|M1|SW:wood,tree_branch,dirt,sand,gravel,clay_soil%5"
 	],
 	reactions: {
 		"wood": { elem2:null, chance:0.04, func:behaviors.FEEDPIXEL },
@@ -3185,7 +3422,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|CR:flash|XX",
 		"CR:flash|CH:ash|CR:flash",
-		"XX|CR:flash|XX",
+		"XX|CR:flash|XX"
 	],
 	reactions: {
 		"dead_plant": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
@@ -3245,6 +3482,9 @@ SEEDRISE: function(pixel) {
 		behaviors.FLY(pixel,function(firefly,newfly){
 			if (newfly) {
 				newfly.fff = firefly.fff;
+				newfly.color = newfly.ffc||pixelColorPick(newfly,"#684841");
+				newfly.glow = false;
+				newfly.emit = false;
 			}
 		})
 	},
@@ -3266,7 +3506,8 @@ SEEDRISE: function(pixel) {
 	burnTime:25,
 	state: "solid",
 	density: 600,
-	conduct: 0.15
+	conduct: 0.15,
+	alias: "lightning bug"
 },
 "bee": {
 	color: "#c4b100",
@@ -3516,6 +3757,13 @@ SEEDRISE: function(pixel) {
 		panic: 0
 	},
 	onPlace: function(pixel) {
+		if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element === "head") {
+			deletePixel(pixel.x, pixel.y-1);
+		}
+		else if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element === "body") {
+			deletePixel(pixel.x, pixel.y+1);
+		}
+
 		if (isEmpty(pixel.x, pixel.y+1)) {
 			createPixel("body", pixel.x, pixel.y+1);
 			var color = pixel.color;
@@ -3552,7 +3800,7 @@ SEEDRISE: function(pixel) {
 	},
 	related: ["body","head"],
 	cooldown: defaultCooldown,
-	forceSaveColor: true,
+	forceSaveColor: true
 },
 "body": {
 	color: ["#069469","#047e99","#7f5fb0"],
@@ -3944,7 +4192,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%1.5|M2%5",
 		"XX|FX%2 AND RL:plague%0.05|M2 AND BO",
-		"XX|M1|M2",
+		"XX|M1|M2"
 	],
 	reactions: {
 		"oxygen": { elem2:"carbon_dioxide", chance:0.5 },
@@ -4013,6 +4261,7 @@ SEEDRISE: function(pixel) {
 		"jelly": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
 		"worm": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
 		"ant": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+		"spider": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
 		"frog": { elem2:null, chance:0.005, func:behaviors.FEEDPIXEL },
 		"snail": { elem2:"limestone", chance:0.1, func:behaviors.FEEDPIXEL },
 		"slug": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL }
@@ -4036,7 +4285,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|M2%3 AND SW:water,salt_water,sugar_water,dirty_water,seltzer%7",
 		"XX|FX%0.5|CR:slime%0.01 AND BO",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"fly": { elem2:null, chance:0.5, func:behaviors.FEEDPIXEL },
@@ -4098,7 +4347,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|M2%25 AND SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water%14",
 		"XX|FX%0.5|SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water%14",
-		"XX|M1|SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water%14",
+		"XX|M1|SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water%14"
 	],
 	tick: function(pixel) {
 		if (pixelTicks-pixel.start > 500) {
@@ -4125,7 +4374,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%5|SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%14",
 		"XX|FX%0.5|BO",
-		"M2|M1|M2 AND SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%5",
+		"M2|M1|M2 AND SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%5"
 	],
 	reactions: {
 		"algae": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
@@ -4192,7 +4441,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|FX%0.25|M2%0.5 AND BO",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"salt": { elem1: "slime", elem2: null },
@@ -4239,7 +4488,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|FX%0.25|M2%0.5 AND BO",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"salt": { elem1: "limestone", elem2: null },
@@ -4295,30 +4544,10 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"CR:propane|CR:propane|CR:propane",
 		"XX|XX|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	category: "machines",
 	conduct: 0.73
-},
-"superheater": {
-	color: "#dd1111",
-	behavior: [
-		"XX|HT:10|XX",
-		"HT:10|XX|HT:10",
-		"XX|HT:10|XX",
-	],
-	category:"machines",
-	insulate:true
-},
-"freezer": {
-	color: "#1111dd",
-	behavior: [
-		"XX|CO:10|XX",
-		"CO:10|XX|CO:10",
-		"XX|CO:10|XX",
-	],
-	category:"machines",
-	insulate:true
 },
 "pipe": {
 	color: "#414c4f",
@@ -4338,6 +4567,7 @@ SEEDRISE: function(pixel) {
 					createPixel("pipe_wall",x,y);
 				}
 			}
+			pixel.color = pixelColorPick(pixel,"#293132");
 			pixel.stage = 1;
 		}
 		else if (pixel.stage === 1 && pixelTicks-pixel.start > 70) { //uninitialized
@@ -4347,7 +4577,7 @@ SEEDRISE: function(pixel) {
 				var y = pixel.y+coord[1];
 				if (isEmpty(x,y)) {
 					pixel.stage = 2; //blue
-					pixel.color = pixelColorPick(pixel,"#000036");
+					pixel.color = pixelColorPick(pixel,"#000056");
 					break;
 				}
 			}
@@ -4364,7 +4594,7 @@ SEEDRISE: function(pixel) {
 						switch (pixel.stage) {
 							case 2: newPixel.stage = 3; newColor = "#003600"; break; //green
 							case 3: newPixel.stage = 4; newColor = "#360000"; break; //red
-							case 4: newPixel.stage = 2; newColor = "#000036"; break; //blue
+							case 4: newPixel.stage = 2; newColor = "#000056"; break; //blue
 						}
 						newPixel.color = pixelColorPick(newPixel,newColor);
 					}
@@ -4419,9 +4649,12 @@ SEEDRISE: function(pixel) {
 						pixel.con = null;
 						break;
 					}
-					if (!isEmpty(x,y,true) && pixelMap[x][y].element === "pipe") {
+					if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].canContain) {
 						var newPixel = pixelMap[x][y];
-						if (pixel.con && !newPixel.con && newPixel.stage === pixel.stage) {
+						if (newPixel.filter) {
+							if (newPixel.filter !== pixel.con.element && !newPixel.filter.split(",").includes(pixel.con.element)) continue
+						}
+						if (pixel.con && !newPixel.con && (pixelMap[x][y].element !== "pipe" || newPixel.stage === pixel.stage)) {
 							newPixel.con = pixel.con;
 							newPixel.con.x = newPixel.x;
 							newPixel.con.y = newPixel.y;
@@ -4438,36 +4671,241 @@ SEEDRISE: function(pixel) {
 	movable: false,
 	canContain: true,
 	forceSaveColor: true,
-	hardness: 0.75
+	hardness: 0.75,
+	insulate: true
 },
 "pipe_wall": {
 	color: "#586879",
 	behavior: behaviors.WALL,
 	category: "machines",
 	noMix: true,
-	hidden: true
+	hidden: true,
+	insulate: true
+},
+"filter": {
+	color: ["#885a3a","#64432b"],
+	colorKey: {
+		"L":"#885a3a",
+		"D":"#64432b"
+	},
+	colorPattern: [
+		"DL",
+		"LD"
+	],
+	onShiftSelect: function(element) {
+		promptInput("Enter an element to allow. Enter multiple separated by commas.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { filter:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
+	onClicked: function(pixel,element) {
+		if (pixel.filter) return;
+		if (elements[element].tool && elements[element].canPlace !== true) return;
+		if (elements[element].canPlace === false) return;
+		if (elements[element].movable) pixel.filter = element;
+	},
+	tick: function(pixel) {
+		doDefaults(pixel);
+		if (!pixel.con) { //collect pixel
+			if (Math.random() > 0.2) return;
+			for (var i = 0; i < squareCoords.length; i++) {
+				var coord = squareCoords[i];
+				var x = pixel.x+coord[0];
+				var y = pixel.y+coord[1];
+				let newPixel = getPixel(x, y);
+				if (!newPixel) continue;
+				if (newPixel.element === "filter") {
+					if (!newPixel.filter && pixel.filter) newPixel.filter = pixel.filter;
+					if (!pixel.filter && newPixel.filter) pixel.filter = newPixel.filter;
+				}
+				if (!elements[newPixel.element].movable) continue;
+				if (!pixel.filter) {
+					pixel.filter = newPixel.element;
+				}
+				if (elements[newPixel.element].movable && (
+					pixel.filter === newPixel.element ||
+					pixel.filter === elements[newPixel.element].state ||
+					(pixel.filter.match(/,/) && pixel.filter.split(",").includes(newPixel.element))
+				)) {
+					if (!elements[newPixel.element].isGas && coord[1] > 0) continue;
+					pixel.con = newPixel;
+					deletePixel(newPixel.x,newPixel.y);
+					pixel.con.x = pixel.x;
+					pixel.con.y = pixel.y;
+					pixel.con.del;
+					pixel.filterTick = pixelTicks;
+					break;
+				}
+			}
+			return;
+		}
+
+		//move pixel
+		let targets;
+		let element = pixel.con.element;
+		if (elements[element].isGas) { //random direction
+			shuffleArray(squareCoordsShuffle);
+			targets = squareCoordsShuffle;
+		}
+		else { //downward, and then randomly diagonally
+			if (Math.random() < 0.5) return;
+			targets = [[0,1], ...(Math.random() < 0.5 ? [[1,1],[-1,1]] : [[-1,1],[1,1]])];
+		}
+
+		for (var i = 0; i < targets.length; i++) {
+			var coord = targets[i];
+			var x = pixel.x+coord[0];
+			var y = pixel.y+coord[1];
+			if (isEmpty(x,y)) { //release pixel
+				delete pixel.con.del;
+				pixel.con.x = x;
+				pixel.con.y = y;
+				pixelMap[x][y] = pixel.con;
+				currentPixels.push(pixel.con);
+				pixel.con = null;
+				break;
+			}
+			let newPixel = getPixel(x, y);
+			if (!newPixel) continue;
+			if (elements[newPixel.element].canContain && !newPixel.con && newPixel.filterTick !== pixelTicks) {
+				if (newPixel.filter !== pixel.filter) {
+					if (newPixel.filter !== pixel.con.element && !newPixel.filter.split(",").includes(pixel.con.element)) continue
+				}
+				newPixel.con = pixel.con;
+				newPixel.con.x = newPixel.x;
+				newPixel.con.y = newPixel.y;
+				newPixel.con.del; //???
+				newPixel.filterTick = pixelTicks;
+				delete newPixel.con.del;
+				pixel.con = null;
+				break;
+			}
+		}
+
+	},
+	hoverStat: function(pixel) { return pixel.filter ? pixel.filter.toUpperCase() : "NONE" },
+	category: "machines",
+	movable: false,
+	canContain: true,
+	forceSaveColor: true,
+	hardness: 0.75
+},
+"gate": {
+	color: ["#883a88","#642b64"],
+	colorKey: {
+		"L":"#883a88",
+		"D":"#642b64"
+	},
+	colorPattern: [
+		"DD",
+		"LL"
+	],
+	tick: function(pixel) {
+		doDefaults(pixel);
+		if (!pixel.charge) {
+			if (pixel.alpha < 1) pixel.alpha = 1;
+			return;
+		}
+		else {
+			if (pixel.alpha !== 0.25) pixel.alpha = 0.25;
+		}
+		if (!pixel.con) { //collect pixel
+			for (var i = 0; i < squareCoords.length; i++) {
+				var coord = squareCoords[i];
+				var x = pixel.x+coord[0];
+				var y = pixel.y+coord[1];
+				let newPixel = getPixel(x, y);
+				if (!newPixel) continue;
+				if (!elements[newPixel.element].movable) continue;
+				if (elements[newPixel.element].movable) {
+					if (!elements[newPixel.element].isGas && coord[1] > 0) continue;
+					pixel.con = newPixel;
+					deletePixel(newPixel.x,newPixel.y);
+					pixel.con.x = pixel.x;
+					pixel.con.y = pixel.y;
+					pixel.con.del;
+					pixel.filterTick = pixelTicks;
+					break;
+				}
+			}
+			return;
+		}
+
+		//move pixel
+		let targets;
+		let element = pixel.con.element;
+		if (elements[element].isGas) { //random direction
+			shuffleArray(squareCoordsShuffle);
+			targets = squareCoordsShuffle;
+		}
+		else { //downward, and then randomly diagonally
+			targets = [[0,1], ...(Math.random() < 0.5 ? [[1,1],[-1,1]] : [[-1,1],[1,1]])];
+		}
+
+		for (var i = 0; i < targets.length; i++) {
+			var coord = targets[i];
+			var x = pixel.x+coord[0];
+			var y = pixel.y+coord[1];
+			if (isEmpty(x,y)) { //release pixel
+				delete pixel.con.del;
+				pixel.con.x = x;
+				pixel.con.y = y;
+				pixelMap[x][y] = pixel.con;
+				currentPixels.push(pixel.con);
+				pixel.con = null;
+				break;
+			}
+			let newPixel = getPixel(x, y);
+			if (!newPixel) continue;
+			if (elements[newPixel.element].canContain && !newPixel.con && newPixel.filterTick !== pixelTicks) {
+				if (newPixel.filter) {
+					if (newPixel.filter !== pixel.con.element && !newPixel.filter.split(",").includes(pixel.con.element)) continue
+				}
+				newPixel.con = pixel.con;
+				newPixel.con.x = newPixel.x;
+				newPixel.con.y = newPixel.y;
+				newPixel.con.del; //???
+				newPixel.filterTick = pixelTicks;
+				delete newPixel.con.del;
+				pixel.con = null;
+				break;
+			}
+		}
+
+	},
+	category: "machines",
+	movable: false,
+	canContain: true,
+	forceSaveColor: true,
+	conduct: 1,
+	onlyConduct: ["gate","wire"],
+	hardness: 0.75,
+	insulate: true
 },
 "mixer": {
 	color: ["#9f936f","#b4a98e","#c8beac"],
 	behavior: [
 		"MX|MX|MX",
 		"MX|CC:#9f936f,#b4a98e,#c8beac|MX",
-		"MX|MX|MX",
+		"MX|MX|MX"
 	],
 	category: "machines",
 	noMix: true,
-	darkText: true
+	darkText: true,
+	outline: false
 },
 "grinder": {
 	color: ["#8a8986","#a3a29f","#bcbbb9"],
 	behavior: [
 		"MX|SM%8 AND MX|MX",
 		"SM%8 AND MX|CC:#8a8986,#a3a29f,#bcbbb9|SM%8 AND MX",
-		"MX|SM%8 AND MX|MX",
+		"MX|SM%8 AND MX|MX"
 	],
 	category: "machines",
 	noMix: true,
-	darkText: true
+	darkText: true,
+	outline: false
 },
 "fuse": {
 	color: "#825d38",
@@ -4505,7 +4943,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:fire|XX",
 		"XX|XX|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"water": { elem1:"wood" },
@@ -4534,7 +4972,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:water|XX",
 		"CR:water|XX|CR:water",
-		"XX|CR:water|XX",
+		"XX|CR:water|XX"
 	],
 	category:"special",
 	tempHigh: 1455.5,
@@ -4585,14 +5023,14 @@ SEEDRISE: function(pixel) {
 	burnTime:200,
 	burnInto:"cooked_meat",
 	category:"special",
-	movable: false,
+	movable: false
 },
 "bone_marrow": {
 	color: "#c97265",
 	behavior: [
 		"XX|CR:blood,bone,bone%1|XX",
 		"CR:blood,bone,bone%1|XX|CR:blood,bone,bone%1",
-		"XX|CR:blood,bone,bone%1|XX",
+		"XX|CR:blood,bone,bone%1|XX"
 	],
 	category:"life",
 	tempHigh: 750,
@@ -4626,7 +5064,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|FY:0%5|XX",
-		"XX|M1 AND BO|XX",
+		"XX|M1 AND BO|XX"
 	],
 	tempHigh: 250,
 	stateHigh: "molten_plastic",
@@ -4639,10 +5077,11 @@ SEEDRISE: function(pixel) {
 },
 "balloon": {
 	color: ["#fe4a75","#267cb0","#1a743c","#ff6ffa","#eaede5","#1dc9f3","#ff0101","#f4cd32","#bee347","#fab937","#91c7cc"],
+	buttonColor: ["#ff8080","#ff2626"],
 	behavior: [
 		"M1%50|M1%50|M1%50",
 		"M2%5|XX|M2%5",
-		"M2%5|M2%5|M2%5",
+		"M2%5|M2%5|M2%5"
 	],
 	reactions: {
 		"cloud": {elem1:"pop"},
@@ -4679,7 +5118,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M1|M1|M1",
 		"M2|XX|M2",
-		"XX|CR:antifire%2.5|XX",
+		"XX|CR:antifire%2.5|XX"
 	],
 	temp: 1850,
 	tempLow: 1750,
@@ -4695,7 +5134,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2|XX",
 		"M2|XX|M2",
-		"M1|M1|M1",
+		"M1|M1|M1"
 	],
 	reactions: {
 		"antifluid": { elem1: "antigas" },
@@ -4715,7 +5154,7 @@ SEEDRISE: function(pixel) {
 	hidden: true,
 	state: "gas",
 	density: 0.2,
-	ignoreAir: true,
+	ignoreAir: true
 },
 "antifluid": {
 	color: "#d1dbeb",
@@ -4750,7 +5189,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M1 AND BO|XX",
 		"CR:wall|XX|CR:wall",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"electric": { elem1:"horizontal" }
@@ -4764,7 +5203,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:wall|XX",
 		"XX|XX|M1 AND BO",
-		"XX|CR:wall|XX",
+		"XX|CR:wall|XX"
 	],
 	reactions: {
 		"proton": { elem1:"vertical" },
@@ -4787,7 +5226,8 @@ SEEDRISE: function(pixel) {
 		"acid_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], "setting":"clouds" },
 		"pyrocumulus": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
 		"tornado":{elem1:"pyrocumulus", oneway:true},
-		"stench": { elem2:null, chance:0.1 }
+		"stench": { elem2:null, chance:0.1 },
+		"molten_dirt": { elem1:null, elem2:"molten_tuff" }
 	},
 	category:"powders",
 	state: "solid",
@@ -4868,7 +5308,7 @@ SEEDRISE: function(pixel) {
 		"static": { "color1":["#ffffff","#bdbdbd","#808080","#424242","#1c1c1c"] },
 		"pipe": { },
 		"pipe_wall": { },
-		"wall": { },
+		"wall": { }
 	},
 	temp: 35,
 	tempLow: -273,
@@ -4950,7 +5390,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|DL%0.25|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	tick: behaviors.BOUNCY,
 	temp: 35,
@@ -4976,6 +5416,10 @@ SEEDRISE: function(pixel) {
 			pixel.start = pixelTicks;
 		}
 	},
+	reactions: {
+		"molten_stained_glass": { elem1:"rainbow" },
+		"metal_scrap": { charged:true, elem1:"static" },
+	},
 	canPlace: true,
 	category:"special",
 	customColor: true,
@@ -4983,7 +5427,7 @@ SEEDRISE: function(pixel) {
 	movable: false,
 	state: "gas",
 	glow: false,
-	density: 1,
+	density: 1
 },
 "charcoal": {
 	color: "#2b2b2b",
@@ -5113,7 +5557,8 @@ SEEDRISE: function(pixel) {
 		"ozone": { elem1: "ozone", chance:0.01, "y":[0,12], "setting":"clouds" },
 		"light": { elem1: "ozone", elem2: null, chance:0.3, "y":[0,12], "setting":"clouds" },
 		"proton": { elem1:"flash", color1:"#e36d88", attr1:{delay:500}, elem2:"flash", color2:"#e36d88", attr2:{delay:500}, chance:0.25, "y":[0,10] },
-		"paper": { elem1:"fragrance", chance:0.005 }
+		"paper": { elem1:"fragrance", chance:0.005 },
+		"molten_lead": { elem2:"poison_gas" }
 	},
 	category: "gases",
 	// burn: 100,
@@ -5190,7 +5635,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|FX%1|M1%5",
-		"XX|M1%1|M1%2",
+		"XX|M1%1|M1%2"
 	],
 	tick: function(pixel) {
 		if (Math.random() < 0.0025 || (pixel.clone && isEmpty(pixel.x,pixel.y-1))) {
@@ -5259,7 +5704,7 @@ SEEDRISE: function(pixel) {
 },
 "liquid_ammonia": {
 	tempLow: -77.78,
-	density: 681.9,
+	density: 681.9
 },
 "oil": {
 	color: "#470e00",
@@ -5283,7 +5728,7 @@ SEEDRISE: function(pixel) {
 		"pool_water": { burning1:true, elem2:"explosion" },
 		"seltzer": { burning1:true, elem2:"explosion" },
 		"coral": { elem2:null, chance:0.01 },
-		"hydrogen": { elem1:"sulfur", elem2:"steam", burning1:false, burning2:false, tempMin:90, chance:0.1 },
+		"hydrogen": { elem1:"sulfur", elem2:"steam", burning1:false, burning2:false, tempMin:90, chance:0.1 }
 	},
 	category: "liquids",
 	tempHigh: 500,
@@ -5332,7 +5777,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|CH:fire|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	conduct: 0.01,
 	category: "gases",
@@ -5357,7 +5802,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|CH:fire|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	conduct: 0.01,
 	category: "gases",
@@ -5440,7 +5885,8 @@ SEEDRISE: function(pixel) {
 	category: "special",
 	movable: false,
 	breakInto: "static",
-	fireColor: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"]
+	fireColor: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
+	darkText: true
 },
 "static": {
 	color: ["#ffffff","#888888","#000000"],
@@ -5471,7 +5917,8 @@ SEEDRISE: function(pixel) {
 	conduct: 1,
 	movable: false,
 	breakInto: "malware",
-	fireColor: ["#ffffff","#bfbfbf","#888888","#404040","#000000"]
+	fireColor: ["#ffffff","#bfbfbf","#888888","#404040","#000000"],
+	outline: false
 },
 "border": {
 	color: ["#00ffff","#000000","#00ffff","#000000","#00ffff"],
@@ -5488,6 +5935,7 @@ SEEDRISE: function(pixel) {
 	hardness: 1,
 	insulate: true,
 	movable: false,
+	outline: false
 },
 "clay": {
 	color: "#d4c59c",
@@ -5511,7 +5959,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2%25|M1|M2%25",
+		"M2%25|M1|M2%25"
 	],
 	reactions: {
 		"water":{elem1:"clay",elem2:null},
@@ -5969,7 +6417,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%0.05|XX",
 		"XX|L2:grass|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	tick: behaviors.SEEDRISE,
 	tempHigh: 100,
@@ -5991,7 +6439,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%0.25|XX",
 		"XX|L2:wheat AND C2:wheat%30|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	tick: behaviors.SEEDRISE,
 	tempHigh: 400,
@@ -6029,7 +6477,7 @@ SEEDRISE: function(pixel) {
 	density: 2403,
 	hardness: 0.4,
 	breakInto: "porcelain_shard",
-	noMix: true,
+	noMix: true
 },
 "paper": {
 	color: "#f0f0f0",
@@ -6097,7 +6545,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%1.5|XX",
 		"XX|L2:plant AND C2:pistil%30|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	tick: behaviors.SEEDRISE,
 	tempHigh: 100,
@@ -6114,7 +6562,8 @@ SEEDRISE: function(pixel) {
 	seed: true
 },
 "pistil": {
-	color: ["#734e39","#2f0603","#d2ac3a","#8a978f","#593117"],
+	color: ["#8a978f","#d2ac3a","#734e39","#593117","#2f0603"],
+	buttonColor: ["#d2ac3a","#2f0603"],
 	tick: function(pixel) {
 		if (!pixel.fColor) {
 			// make it a hsl random hue, 100% saturation, 50% lightness
@@ -6159,7 +6608,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|ST:pistil|XX",
 		"ST:pistil|FX%0.25|ST:pistil",
-		"M2%10|ST:pistil AND M1%10|M1%10",
+		"M2%10|ST:pistil AND M1%10|M1%10"
 	],
 	reactions: {
 		"water": { elem2:"tea", tempMin:80, color2:"#9e4c00" },
@@ -6325,7 +6774,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%2|XX",
 		"XX|L2:bamboo AND C2:bamboo%10|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	tick: behaviors.SEEDRISE,
 	tempHigh: 100,
@@ -6346,7 +6795,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2%25|M1%25|M2%25",
+		"M2%25|M1%25|M2%25"
 	],
 	tick: function(pixel) {
 		if (pixel.foam && isEmpty(pixel.x,pixel.y-1)) {
@@ -6372,13 +6821,13 @@ SEEDRISE: function(pixel) {
 	extinguish: true
 },
 "acid": {
-	color: ["#b5cf91","#a1ff5e","#288f2a"],
+	color: ["#AEDF80","#A8EF6F","#a1ff5e","#79DA4D","#50B43B","#288f2a"],
 	behavior: [
 		"XX|DB%5|XX",
 		"DB%5 AND M2|XX|DB%5 AND M2",
-		"DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
+		"DB%5 AND M2|DB%10 AND M1|DB%5 AND M2"
 	],
-	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","clay","pipe","pipe_wall","lye","rose_gold","purple_gold","blue_gold","electrum"],
+	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","clay","pipe","pipe_wall","lye","rose_gold","purple_gold","blue_gold","electrum","mercury","bubble","diamond"],
 	reactions: {
 		"ash": { elem1:"neutral_acid", elem2:null },
 		"limestone": { elem1:"neutral_acid", elem2:["calcium","carbon_dioxide"] },
@@ -6408,7 +6857,8 @@ SEEDRISE: function(pixel) {
 		"gravel": { elem1:null, elem2:"sand", chance:0.1 },
 		"wet_sand": { elem1:"neutral_acid", elem2:"clay" },
 		"snail": { elem1:"neutral_acid", elem2:"slug" },
-		"silver": { stain2:"#2a2e2a" }
+		"silver": { stain2:"#2a2e2a" },
+		"acid": { elem2:"bubble", color2:"#bfcfa9", attr2:{"clone":"acid"}, chance:0.001, tempMin:80 }
 	},
 	category: "liquids",
 	tempHigh: 110,
@@ -6439,14 +6889,14 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M1|DB%5 AND M1|M1",
 		"DB%5 AND M1|XX|DB%5 AND M1",
-		"DB%5 AND M1|DB%10 AND M1|DB%5 AND M1",
+		"DB%5 AND M1|DB%10 AND M1|DB%5 AND M1"
 	],
 	tick: function(pixel) {
 		if (pixel.temp > 1000 && Math.random() < 0.01) {
 			changePixel(pixel,Math.random() < 0.66 ? "hydrogen" : "chlorine");
 		}
 	},
-	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","pipe","pipe_wall","lye"],
+	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","pipe","pipe_wall","lye","mercury","bubble","diamond"],
 	reactions: {
 		"acid_gas": { elem1: null, elem2: "acid_cloud", chance:0.3, "y":[0,12], "setting":"clouds" },
 		"rain_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
@@ -6511,7 +6961,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"M2|XX|M2",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	tick: function(pixel) {
 		if (Math.random() < 0.02 && isEmpty(pixel.x,pixel.y-1)) {
@@ -6549,12 +6999,12 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CH:gray_goo%25|XX",
 		"M2%5 AND CH:gray_goo%25|DL%5|M2%5 AND CH:gray_goo%25",
-		"XX|CH:gray_goo%25 AND M1|XX",
+		"XX|CH:gray_goo%25 AND M1|XX"
 	],
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|DL%10|XX",
-		"M1|M2|M1",
+		"M1|M2|M1"
 	],
 	reactions: {
 		"antibody": { elem1:"malware", elem2:null }
@@ -6574,7 +7024,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"CL%1|CL%1 AND SH|CL%1",
 		"CL%1 AND SH|SH%5 AND DL%10|CL%1 AND SH",
-		"M1%15 AND CL%1|M1%50 AND CL%2 AND SH|M1%15 AND CL%1",
+		"M1%15 AND CL%1|M1%50 AND CL%2 AND SH|M1%15 AND CL%1"
 	],
 	reactions: {
 		"gray_goo": { elem2:"malware" },
@@ -6595,16 +7045,16 @@ SEEDRISE: function(pixel) {
 		"lattice": { elem1:"lattice", elem2:null },
 		"light_bulb": { elem2:"explosion", chance:0.01 },
 		"battery": { elem2:"explosion", chance:0.01 },
-		"heater": { elem2:["cooler","superheater"], chance:0.01 },
-		"cooler": { elem2:["heater","freezer"], chance:0.01 },
-		"superheater": { elem2:["heater","freezer"], chance:0.01 },
-		"freezer": { elem2:["cooler","superheater"], chance:0.01 },
-		"led_r": { elem2:["led_g","led_b"], chance:0.01 },
-		"led_g": { elem2:["led_r","led_b"], chance:0.01 },
-		"led_b": { elem2:["led_r","led_g"], chance:0.01 },
+		"heater": { elem2:"cooler", chance:0.01 },
+		"cooler": { elem2:"heater", chance:0.01 },
+		"led": { elem2:"explosion", chance:0.01 },
 		"ewall": { elem2:"wall", chance:0.01 },
 		"border": { elem2:null, chance:0.01 },
-		"virus": { func: function(pixel1,pixel2){pixel2.heal=false;pixel2.origElem="malware"} }
+		"virus": { func: function(pixel1,pixel2){pixel2.heal=false;pixel2.origElem="malware"} },
+		"lead": { elem2:"pipe", chance:0.05 },
+		"tungsten": { elem2:"light_bulb", chance:0.05 },
+		"zinc": { elem2:"battery", chance:0.05 },
+		"copper": { elem2:"wire", chance:0.05 },
 	},
 	category: "special",
 	state: "solid",
@@ -6613,9 +7063,10 @@ SEEDRISE: function(pixel) {
 "ecloner": {
 	name: "e-cloner",
 	color: "#dddd00",
-	behavior: behaviors.WALL,
-	behaviorOn: behaviors.CLONER,
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	tick: function(pixel) {
+		doDefaults(pixel);
+		if (pixel.charge) behaviors.CLONER(pixel);
 		if (pixel.clone) { return }
 		for (var i = 0; i < adjacentCoords.length; i++) {
 			var coords = adjacentCoords[i];
@@ -6626,7 +7077,7 @@ SEEDRISE: function(pixel) {
 				if (pixelMap[x][y].clone) { pixel.clone = pixelMap[x][y].clone; break }
 				var element = pixelMap[x][y].element;
 				if (element === pixel.element || elements[pixel.element].ignore.indexOf(element) !== -1 && element !== "fuse") { continue }
-				pixel.clone = element;
+				pixel.clone = elements[element].pickElement || element;
 				break;
 			}
 		}
@@ -6646,9 +7097,10 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CF%10|XX",
 		"CF%10|XX|CF%10",
-		"XX|CF%10|XX",
+		"XX|CF%10|XX"
 	],
 	onClicked: behaviors.CLONE_ON_CLICK,
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	ignore: ["cloner","ecloner","clone_powder","floating_cloner","wall","ewall"],
 	category:"machines",
 	insulate:true,
@@ -6656,12 +7108,10 @@ SEEDRISE: function(pixel) {
 },
 "clone_powder": {
 	color: "#f0f000",
-	behavior: [
-		"XX|CF|XX",
-		"CF|XX|CF",
-		"M2|CF AND M1|M2",
-	],
+	behavior: behaviors.POWDER,
+	tick: behaviors.CLONER,
 	onClicked: behaviors.CLONE_ON_CLICK,
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	reactions: {
 		"malware": { elem1:"floating_cloner" }
 	},
@@ -6677,11 +7127,15 @@ SEEDRISE: function(pixel) {
 "floating_cloner": {
 	color: "#c7c787",
 	behavior: [
-		"XX|CF%3 AND M1%10|XX",
-		"CF%3 AND M1%10|XX|CF%3 AND M1%10",
-		"XX|CF%3 AND M1%10|XX",
+		"XX|M1%10|XX",
+		"M1%10|XX|M1%10",
+		"XX|M1%10|XX"
 	],
+	tick: function(pixel) {
+		behaviors.CLONER(pixel, 0.03);
+	},
 	onClicked: behaviors.CLONE_ON_CLICK,
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	reactions: {
 		"malware": { elem1:"clone_powder" }
 	},
@@ -6733,7 +7187,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:ice%0.5|XX",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"water": { elem2: "ice_nine" },
@@ -6802,7 +7256,7 @@ SEEDRISE: function(pixel) {
 	state: "liquid",
 	density: 2000,
 	excludeRandom: true,
-	ignore: ["fire","smoke","antimatter","strange_matter","wall","ewall","plasma","void","border","pointer"],
+	ignore: ["fire","smoke","antimatter","strange_matter","wall","ewall","plasma","void","border","pointer"]
 },
 "permafrost": {
 	color: ["#54443a","#4f4235","#453c30","#524639"],
@@ -6837,7 +7291,7 @@ SEEDRISE: function(pixel) {
 	state: "liquid",
 	density: 911,
 	isFood: true,
-	stain: 0.05,
+	stain: 0.05
 },
 "melted_cheese": {
 	color: "#fcdb53",
@@ -6862,7 +7316,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%1.5|XX",
 		"XX|L2:mushroom_stalk AND C2:mushroom_gill%20|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	tick: behaviors.SEEDRISE,
 	reactions: {
@@ -6891,7 +7345,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"XX|CH:dirt>hyphae%1 AND M1|XX",
+		"XX|CH:dirt>hyphae%1 AND M1|XX"
 	],
 	reactions: {
 		"wood": { elem2:"dirt", chance:0.04 },
@@ -6992,11 +7446,12 @@ SEEDRISE: function(pixel) {
 	breakInto: [null,null,"mycelium"]
 },
 "hyphae": {
-	color: "#c79789",
+	color: ["#c79789","#bd937b"],
+	grain: 2,
 	behavior: [
 		"CH:dirt>hyphae,hyphae,mycelium%0.5|CR:mushroom_spore%0.5|CH:dirt>hyphae,hyphae,mycelium%0.5",
 		"CH:dirt>mycelium%0.5|XX|CH:dirt>mycelium%0.5",
-		"CH:dirt>hyphae,hyphae,mycelium%0.5|XX|CH:dirt>hyphae,hyphae,mycelium%0.5",
+		"CH:dirt>hyphae,hyphae,mycelium%0.5|XX|CH:dirt>hyphae,hyphae,mycelium%0.5"
 	],
 	reactions: {
 		"wood": { elem2:"dirt", chance:0.04 },
@@ -7026,6 +7481,7 @@ SEEDRISE: function(pixel) {
 },
 "mycelium": {
 	color: ["#734d5e","#734d5e","#734d5e","#61404f","#6b4b5a","#755061","#866372","#987886","#ab8e9a","#bea4ad","#d0b9c1","#e3cfd5"],
+	buttonColor: ["#e3cfd5","#734d5e"],
 	behavior: behaviors.POWDER,
 	reactions: {
 		"dead_plant": { elem2:[null,null,null,"mycelium","hyphae"], chance:0.0025 },
@@ -7081,6 +7537,7 @@ SEEDRISE: function(pixel) {
 },
 "lichen": {
 	color: ["#b6d6c3","#769482"],
+	grain: 2,
 	tick: function(pixel) {
 		if (!tryMove(pixel,pixel.x,pixel.y+1)) {
 			var coords = [
@@ -7123,7 +7580,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M2|DB%50 AND M2|M2",
 		"M1|XX|M1",
-		"M1|DB%50 AND M1|M1",
+		"M1|DB%50 AND M1|M1"
 	],
 	onCollide: function(pixel1,pixel2) {
 		if (elements.antimatter.ignore.indexOf(pixel2.element) !== -1 || elements[pixel2.element].isGas) return;
@@ -7158,7 +7615,7 @@ SEEDRISE: function(pixel) {
 	behavior: behaviors.LIQUID,
 	viscosity: 20,
 	tempHigh: 600,
-	stateHigh: ["dioxin","smoke","dioxin","smoke","stench"],
+	stateHigh: ["dioxin","smoke","dioxin","smoke","stench"]
 },
 "cloth": {
 	color: ["#F7F7F7","#F1F1F1","#E8E8E8","#CDCDCD"],
@@ -7335,7 +7792,7 @@ SEEDRISE: function(pixel) {
 	stateHigh: "fire",
 	state: "solid",
 	density: 65,
-	movable: false,
+	movable: false
 },
 "bamboo": {
 	color: ["#7cc00c","#77a012"],
@@ -7495,6 +7952,7 @@ SEEDRISE: function(pixel) {
 	density: 7260,
 	conduct: 0.45,
 	hardness: 0.15,
+	fireColor: ["#DBD1E9","#D7E9F2","#9AB0D1"],
 	movable: false,
 	superconductAt: -269.45
 },
@@ -7625,12 +8083,11 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"aluminum": { elem1:["molten_gallium","molten_gallium","alga"], elem2:null, chance:0.01 },
 		"molten_aluminum": { elem1:"alga", elem2:"molten_alga", chance:0.05 },
-		"sodium": { elem1:"hydrogen", elem2:"salt", chance:0.005 },
 		"steel": { elem2:"iron", chance:0.005 },
 		"gold": { elem1:null, elem2:"blue_gold", chance:0.01 },
 		"gold_coin": { elem1:null, elem2:"blue_gold", chance:0.01 }
 	},
-	stain: 0.05,
+	stain: 0.05
 },
 "gallium_gas": {
 	density: 6.31
@@ -7648,7 +8105,7 @@ SEEDRISE: function(pixel) {
 	hidden: true
 },
 "purple_gold": {
-	color: ["#f58fda","#d06cb5","#f58fda"],
+	color: ["#ee8ef5","#c96cd0","#ee8ef5"],
 	behavior: behaviors.WALL,
 	tempHigh: 1060,
 	category: "solids",
@@ -7685,7 +8142,7 @@ SEEDRISE: function(pixel) {
 	alias: "green gold"
 },
 "pyrite": {
-	color: ["#e8e0cb","#cdcaaf","#726a53","#8f835e","#bfb9a0",],
+	color: ["#f7f6e8","#d6d285","#d1bf75","#b3974d","#a48546"],
 	behavior: behaviors.WALL,
 	tempHigh: 1182.5,
 	category: "solids",
@@ -7900,7 +8357,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:foam%1|XX",
 		"M2|XX|M2",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	onMix: function(milk1,milk2) {
 		if (Math.random() < 0.5) releaseElement(milk1, "foam");
@@ -8041,7 +8498,7 @@ SEEDRISE: function(pixel) {
 	hidden: true,
 	isFood: true,
 	state: "liquid",
-	density: 959.97,
+	density: 959.97
 },
 "nut_milk": {
 	color: "#D7D1C3",
@@ -8146,7 +8603,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"M2%0.5|XX|M2%0.5",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"milk": { elem2:null, chance:0.025 },
@@ -8222,7 +8679,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:plague,stench,stench,stench,fly%0.25 AND CH:cheese,cheese_powder>rotten_cheese%1|XX",
 		"CH:cheese,cheese_powder>rotten_cheese%1|XX|CH:cheese,cheese_powder>rotten_cheese%1",
-		"XX|M1 AND CH:cheese,cheese_powder>rotten_cheese%1|XX",
+		"XX|M1 AND CH:cheese,cheese_powder>rotten_cheese%1|XX"
 	],
 	tempHigh: 54,
 	stateHigh: ["melted_cheese","melted_cheese","melted_cheese","melted_cheese","melted_cheese","melted_cheese","melted_cheese","melted_cheese","melted_cheese","stench"],
@@ -8270,7 +8727,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|ST:vine|XX",
 		"ST:vine|XX|ST:vine",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"radiation": { elem1:"explosion", chance:0.1, color1:"#291824" },
@@ -8362,7 +8819,7 @@ SEEDRISE: function(pixel) {
 	category:"food",
 	state: "solid",
 	density: 1400,
-	isFood: true,
+	isFood: true
 },
 "lettuce": {
 	color: ["#a2c96b","#81C520","#639917"],
@@ -8397,7 +8854,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|ST:vine|XX",
 		"ST:vine|XX|ST:vine",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"rock": { elem1:"sauce", chance:0.1 },
@@ -8527,8 +8984,7 @@ SEEDRISE: function(pixel) {
 	state: "solid",
 	density: 721,
 	seed: "corn_seed",
-	isFood: true,
-	movable: false,
+	isFood: true
 },
 "popcorn": {
 	color: ["#a6a076","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#c99947"],
@@ -8545,11 +9001,11 @@ SEEDRISE: function(pixel) {
 	isFood: true
 },
 "corn_seed": {
-	color: ["#f2b813","#f9e3ba"],
+	color: ["#f9e3ba","#f2b813"],
 	behavior: [
 		"XX|M2%0.25|XX",
 		"XX|L2:plant,corn AND C2:corn%30|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	tick: behaviors.SEEDRISE,
 	tempHigh: 400,
@@ -8571,7 +9027,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|SH:wire%1|XX",
 		"SH:wire%1|XX|SH:wire%1",
-		"M2|M1 AND SH:wire%1|M2",
+		"M2|M1 AND SH:wire%1|M2"
 	],
 	reactions: {
 		"zinc": { charge2:1, chance:0.01 },
@@ -8621,11 +9077,11 @@ SEEDRISE: function(pixel) {
 	hidden: true
 },
 "potato_seed": {
-	color: ["#cda57f","#aa7437","#bc9563"],
+	color: ["#cda57f","#bc9563","#aa7437"],
 	behavior: [
 		"XX|CH:dirt>fiber|XX",
 		"CH:dirt>potato%5|CH:potato%1|CH:dirt>potato%5",
-		"XX|SW:dirt%3 AND M1|XX",
+		"XX|SW:dirt%3 AND M1|XX"
 	],
 	tempHigh: 400,
 	stateHigh: "fire",
@@ -8646,7 +9102,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>root,fiber%0.5",
+		"CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>root,fiber%0.5"
 	],
 	reactions: {
 		"rock": { elem2:"sand", chance:0.0004 },
@@ -8690,7 +9146,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CL:70%10|XX",
 		"CL:70%10 AND SW:bread%30|XX|CL:70%10 AND SW:bread%30",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	reactions: {
 		"bread": { elem1:"bread" },
@@ -8844,7 +9300,8 @@ SEEDRISE: function(pixel) {
 	breakInto: "flour",
 	state: "solid",
 	density: 1182,
-	isFood: true
+	isFood: true,
+	darkText: true
 },
 "candy": {
 	color: "#e6cab1",
@@ -8856,7 +9313,8 @@ SEEDRISE: function(pixel) {
 	category: "food",
 	state: "solid",
 	density: 900,
-	isFood: true
+	isFood: true,
+	darkText: true
 },
 "coffee_bean": {
 	color: ["#994528","#772C12","#5c2513","#4a2416"],
@@ -8925,7 +9383,7 @@ SEEDRISE: function(pixel) {
 	category: "food",
 	state: "solid",
 	density: 325,
-	isFood: true,
+	isFood: true
 },
 "nut_oil": {
 	color: "#E7D784",
@@ -8945,7 +9403,8 @@ SEEDRISE: function(pixel) {
 	state: "liquid",
 	density: 910,
 	isFood: true,
-	alias: "cooking oil"
+	alias: "cooking oil",
+	darkText: true
 },
 "nut_meat": {
 	color: ["#deba8e","#d1a56f","#ba8b50"],
@@ -8974,7 +9433,7 @@ SEEDRISE: function(pixel) {
 	state: "solid",
 	density: 905,
 	isFood: true,
-	hidden: true,
+	hidden: true
 },
 "nut_butter": {
 	color: "#cd9141",
@@ -8993,7 +9452,7 @@ SEEDRISE: function(pixel) {
 	state: "liquid",
 	density: 1090.5,
 	isFood: true,
-	hidden: true,
+	hidden: true
 },
 "jelly": {
 	color: "#A35298",
@@ -9036,7 +9495,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2%5|M1|M2%5",
+		"M2%5|M1|M2%5"
 	],
 	tempHigh: 1000,
 	stateHigh: ["smoke","smoke","smoke","calcium"],
@@ -9053,7 +9512,7 @@ SEEDRISE: function(pixel) {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	isFood: true,
-	stateHighColorMultiplier: 0.955,
+	stateHighColorMultiplier: 0.955
 },
 "ice_cream": {
 	color: ["#f7f7f7","#ededed","#dedede"],
@@ -9180,10 +9639,11 @@ SEEDRISE: function(pixel) {
 	state: "solid",
 	density: 1019.5,
 	conduct: 0.05,
-	movable: false,
+	movable: false
 },
 "hair": {
 	color: ["#C6C3BF","#EEDFC0","#DAB575","#BF9F6C","#C67945","#9B6E47","#967454","#945F36","#4C3D2E","#5A3E2D","#1c1c1c","#4A2227","#6D342B","#9D4C3B","#C25E3B"],
+	buttonColor: ["#C67945","#1c1c1c"],
 	singleColor: true,
 	behavior: behaviors.WALL,
 	tick: function(pixel) {
@@ -9297,7 +9757,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:bubble%0.25|XX",
 		"M2|XX|M2",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"rust": { elem2: "iron", chance:0.01 },
@@ -9461,7 +9921,8 @@ SEEDRISE: function(pixel) {
 	state: "liquid",
 	density: 998,
 	stainSelf: true,
-	isFood: true
+	isFood: true,
+	darkText: true
 },
 "ink": {
 	color: "#171717",
@@ -9561,7 +10022,7 @@ SEEDRISE: function(pixel) {
 		"oxygen": { elem2:null, chance:0.05 },
 		"carbon_dioxide": { elem2:null, chance:0.05 },
 		"alcohol": { elem1:[null,"dna"], chance:0.02 },
-		"blood": { elem2:"bubble", color2:"#f07878", attr2:{"clone":"blood"}, chance:0.001, tempMin:85 },
+		"blood": { elem2:"bubble", color2:"#f07878", attr2:{"clone":"blood"}, chance:0.001, tempMin:85 }
 	},
 	viscosity: 10,
 	tempHigh: 124.55,
@@ -9777,7 +10238,8 @@ SEEDRISE: function(pixel) {
 		"pilk": { elem2:"foam", color1:"#9c7954", chance:0.005},
 		"cream": { elem2:null, color1:"#9c6c38", chance:0.005},
 		"ice_cream": { elem2:null, color1:"#9c6c38", chance:0.005},
-		"tea": { elem2:"bubble", color2:"#87633d", attr2:{"clone":"tea"}, chance:0.001, tempMin:80 }
+		"tea": { elem2:"bubble", color2:"#87633d", attr2:{"clone":"tea"}, chance:0.001, tempMin:80 },
+		"paper": { stain2:"#6c4317", chance:0.1 }
 	},
 	tempHigh: 125,
 	stateHigh: ["steam","fragrance",null],
@@ -9846,7 +10308,7 @@ SEEDRISE: function(pixel) {
 	isFood: true
 },
 "sap": {
-	color: ["#b67f18","#c86305","#cf7a19","#e4ae3a"],
+	color: ["#e4ae3a","#cf7a19","#c86305","#b67f18"],
 	behavior: behaviors.LIQUID,
 	reactions: {
 		"dead_bug": { elem1:"amber", elem2:null, chance:0.1 },
@@ -9879,7 +10341,8 @@ SEEDRISE: function(pixel) {
 	behavior: behaviors.LIQUID,
 	reactions: {
 		"grape": { elem1:null, elem2:"jelly", chance:0.005, tempMin:100 },
-		"salt": { elem2:null, color1:"#ffbd80", chance:0.005}
+		"salt": { elem2:null, color1:"#ffbd80", chance:0.005},
+		"herb": { tempMax:180, elem1:"sugar", color1:["#c92626","#e3e3e3","#c92626","#e3e3e3","#c92626"], elem2:null, chance:0.1 }
 	},
 	viscosity: 500,
 	tempLow: -20,
@@ -9971,7 +10434,7 @@ SEEDRISE: function(pixel) {
 	stateHigh: "grease",
 	reactions: {
 		"caustic_potash": { elem1:"soap", elem2:null }
-	},
+	}
 },
 "melted_chocolate": {
 	color: "#3b160b",
@@ -10141,7 +10604,7 @@ SEEDRISE: function(pixel) {
 	fireElement: null
 },
 "limestone": {
-	color: ["#c5b79c","#d9ccb2","#f8f1db","#fcfaeb"],
+	color: ["#fcfaeb","#f8f1db","#d9ccb2","#c5b79c"],
 	behavior: behaviors.STURDYPOWDER,
 	tempHigh: 825,
 	stateHigh: ["quicklime","quicklime","quicklime","quicklime","quicklime","quicklime","carbon_dioxide"],
@@ -10326,6 +10789,7 @@ SEEDRISE: function(pixel) {
 		"pool_water": { elem1:"bubble", chance:0.01, temp2:250 },
 		"primordial_soup": { elem1:"bubble", chance:0.01, temp2:250 },
 		"nut_milk": { elem1:"bubble", chance:0.01, temp2:250 },
+		"carbon_dioxide": { elem1:"baking_soda", elem2:null, chance:0.02 }
 	},
 	category: "powders",
 	tempHigh: 323,
@@ -10343,7 +10807,7 @@ SEEDRISE: function(pixel) {
 		"molten_lead": { elem1:"hydrogen", elem2:null, chance:0.005 },
 		"molten_tin": { elem1:"hydrogen", elem2:null, chance:0.005 },
 		"molten_zinc": { elem1:"hydrogen", elem2:null, chance:0.005 },
-		"molten_galvanized_steel": { elem1:"hydrogen", elem2:"molten_steel", chance:0.01 },
+		"molten_galvanized_steel": { elem1:"hydrogen", elem2:"molten_steel", chance:0.01 }
 	},
 	tempHigh: 1388,
 	stateHigh: "smoke"
@@ -10372,7 +10836,7 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"ice": { "elem1":"explosion" }
 	},
-	burnInto: [null,null,"molten_iron"]
+	burnInto: [null,null,null,null,"molten_iron"]
 },
 "slag": {
 	color: ["#4b3a2d","#6a5447","#6b5b53","#675851","#78756e"],
@@ -10397,7 +10861,7 @@ SEEDRISE: function(pixel) {
 	density: 13920,
 	hardness: 0.1,
 	hidden: true,
-	conduct: 0.37,
+	conduct: 0.37
 },
 "molten_aluminum": {
 	color: ["#e6e0db","#d0d7cb","#d3d2d5"],
@@ -10446,7 +10910,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2%5|XX",
 		"M1%8|XX|M1%8",
-		"XX|M2%5|XX",
+		"XX|M2%5|XX"
 	],
 	reactions: {
 		"plant": { elem1:"cloud" },
@@ -10470,7 +10934,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M2|M1|M2",
 		"M1|DL%0.5|M1",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"oxygen": { elem2:"stench", chance:0.01 },
@@ -10497,7 +10961,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M2|M1|M2",
 		"M1|DL%0.5|M1",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"stench": { elem2:null },
@@ -10520,7 +10984,9 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"liquid_stench": { elem2:null }
 	},
-	category: "liquids"
+	category: "liquids",
+	tempHigh: 40,
+	stateHigh: "fragrance"
 },
 "cyanide": {
 	color: "#b6ccb6",
@@ -10549,7 +11015,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"M1%7|XX|M1%7",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"carbon_dioxide": { elem1:null, elem2:null, chance:0.05 },
@@ -10613,7 +11079,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CO:1%5|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"rain_cloud": { elem1:"rain_cloud", temp1:-20 },
@@ -10637,7 +11103,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:water%0.05|M1%2.5 AND BO",
-		"CR:electric%0.05|CR:electric%0.05|CR:electric%0.05",
+		"CR:electric%0.05|CR:electric%0.05|CR:electric%0.05"
 	],
 	reactions: {
 		"anesthesia": { elem1:"acid_cloud", elem2:null, chance:0.05 },
@@ -10661,7 +11127,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:snow%0.05|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	category:"gases",
 	temp: -10,
@@ -10670,6 +11136,7 @@ SEEDRISE: function(pixel) {
 	tempLow: -200,
 	stateLow: "hail_cloud",
 	state: "gas",
+	breakInto: "snow",
 	density: 0.55,
 	ignoreAir: true,
 	conduct: 0.01
@@ -10679,13 +11146,14 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:hail%0.05|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	category:"gases",
 	temp: -200,
 	tempHigh: -160,
 	stateHigh: "snow_cloud",
 	state: "gas",
+	breakInto: "hail",
 	density: 0.6,
 	ignoreAir: true,
 	conduct: 0.01
@@ -10695,7 +11163,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:lightning%0.001 AND CH:water%0.05|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	tick: function(pixel) {
 		pixel.temp = 70;
@@ -10705,6 +11173,7 @@ SEEDRISE: function(pixel) {
 	tempLow: 0,
 	stateLow: "snow_cloud",
 	state: "gas",
+	breakInto: "rain_cloud",
 	density: 0.55,
 	ignoreAir: true,
 	conduct: 0.03
@@ -10714,7 +11183,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	tick: function(pixel) {
 		if (pixel.temp > elements.acid.tempLow && pixel.temp < elements.acid.tempHigh && Math.random() <= 0.0005) {
@@ -10733,6 +11202,7 @@ SEEDRISE: function(pixel) {
 	category:"gases",
 	burn: 15,
 	burnTime: 5,
+	breakInto: "acid",
 	state: "gas",
 	density: 0.7,
 	ignoreAir: true
@@ -10742,13 +11212,14 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:sand%0.075|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], "setting":"clouds" }
 	},
 	category:"gases",
 	hidden: true,
+	breakInto: "sand",
 	state: "gas",
 	density: 0.8,
 	ignoreAir: true
@@ -10758,13 +11229,14 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:ash%0.075|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"fireball": { elem1:null, elem2:"fire_cloud", chance:0.25 }
 	},
 	category:"gases",
 	hidden: true,
+	breakInto: "ash",
 	state: "gas",
 	density: 0.7,
 	ignoreAir: true
@@ -10774,7 +11246,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:fireball%0.02|M1%2.5 AND BO",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"rain_cloud": { elem1: "pyrocumulus", elem2: "pyrocumulus" },
@@ -10788,6 +11260,7 @@ SEEDRISE: function(pixel) {
 	stateLow: "pyrocumulus",
 	category:"gases",
 	state: "gas",
+	breakInto: ["ash","ash","fireball"],
 	density: 0.8,
 	ignoreAir: true,
 	excludeRandom: true
@@ -10797,7 +11270,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:fallout,radiation%0.025|M1%2.5 AND BO",
-		"CR:radiation%0.05|CR:radiation%0.05|CR:radiation%0.05",
+		"CR:radiation%0.05|CR:radiation%0.05|CR:radiation%0.05"
 	],
 	category:"gases",
 	hidden: true,
@@ -10810,7 +11283,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"M2%10|XX|M2%10",
-		"XX|M2%10|XX",
+		"XX|M2%10|XX"
 	],
 	reactions: {
 		"rad_steam": { elem1: null, elem2: "rad_cloud", chance:0.3, "y":[0,15], "setting":"clouds" },
@@ -10827,6 +11300,7 @@ SEEDRISE: function(pixel) {
 	stateLow: "fallout",
 	category: "gases",
 	hidden: true,
+	breakInto: ["fallout","radiation","radiation"],
 	state: "gas",
 	density: 0.7
 },
@@ -10847,10 +11321,22 @@ SEEDRISE: function(pixel) {
 	burnTime: 1,
 	density: 1.977,
 	customColor: true,
-	stain: 0.25
+	stain: 0.25,
+	darkText: true
 },
 "portal_in": {
 	color: "#ff9a00",
+	onShiftSelect: function(element) {
+		promptInput("Enter a number to use as the portal channel. (Default 0)", function(r) {
+			if (r === "") return;
+			r = parseInt(r);
+			if (isNaN(r)) {
+				logMessage("Invalid integer - portal channel not set.")
+				return;
+			};
+			currentElementProp = { channel:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tick: function(pixel) {
 		// if (Math.random() > 0.1) return;
 		if (!ticktemp.portal_out) ticktemp.portal_out = {};
@@ -10916,6 +11402,17 @@ SEEDRISE: function(pixel) {
 },
 "portal_out": {
 	color: "#00a2ff",
+	onShiftSelect: function(element) {
+		promptInput("Enter a number to use as the portal channel. (Default 0)", function(r) {
+			if (r === "") return;
+			r = parseInt(r);
+			if (isNaN(r)) {
+				logMessage("Invalid integer - portal channel not set.")
+				return;
+			};
+			currentElementProp = { channel:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tick: function(pixel){
 		doElectricity(pixel);
 	},
@@ -10930,41 +11427,10 @@ SEEDRISE: function(pixel) {
 	conduct:1,
 	emit:true
 },
-"led_r": {
+"led": {
 	color: "#ff0000",
-	buttonColor: "#660000",
-	behavior: behaviors.WALL,
-	renderer: renderPresets.LED,
-	reactions: {
-		"light": {charge1:1,elem2:null},
-		"liquid_light": {charge1:1,elem2:null}
-	},
-	category: "machines",
-	tempHigh: 1500,
-	stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-	conduct: 1,
-	breakInto: "glass_shard",
-	forceSaveColor: true
-},
-"led_g": {
-	color: "#00ff00",
-	buttonColor: "#006600",
-	behavior: behaviors.WALL,
-	renderer: renderPresets.LED,
-	reactions: {
-		"light": {charge1:1,elem2:null},
-		"liquid_light": {charge1:1,elem2:null}
-	},
-	category: "machines",
-	tempHigh: 1500,
-	stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-	conduct: 1,
-	breakInto: "glass_shard",
-	forceSaveColor: true
-},
-"led_b": {
-	color: "#0000ff",
-	buttonColor: "#000066",
+	buttonColor: ["#660000","#660000","#006600","#006600","#000066","#000066"],
+	customColor: true,
 	behavior: behaviors.WALL,
 	renderer: renderPresets.LED,
 	reactions: {
@@ -10986,7 +11452,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|CR:light|XX",
 		"CR:light|XX|CR:light",
-		"XX|CR:light|XX",
+		"XX|CR:light|XX"
 	],
 	category: "machines",
 	tempHigh: 1500,
@@ -11015,6 +11481,12 @@ SEEDRISE: function(pixel) {
 "molten_sulfur": {
 	color: "#831502",
 	behavior: behaviors.LIQUID,
+	tick: function(pixel) {
+		if (!pixel.burning && pixel.temp >= 232) {
+			pixel.burning = true;
+			pixel.burnStart = pixelTicks;
+		}
+	},
 	reactions: {
 		"iron": { elem1: null, elem2: "pyrite" },
 		"magnesium": { elem1:null, elem2:"epsom_salt", chance:0.01 },
@@ -11040,7 +11512,7 @@ SEEDRISE: function(pixel) {
 	color: "#b0a65d",
 	burnTime: 10,
 	density: 2.16,
-	burnInto: ["smoke","smoke","smoke","smoke","stench"],
+	burnInto: ["smoke","smoke","smoke","smoke","stench"]
 },
 "copper_sulfate": {
 	color: ["#4391fd","#004cfe"],
@@ -11070,6 +11542,12 @@ SEEDRISE: function(pixel) {
 		"candy": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
 		"flour": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
 		"chocolate": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"soda": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"chocolate_powder": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"chocolate_milk": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"juice": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"fruit_milk": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
+		"ice_cream": {elem1:"oxidized_copper", elem2:null, color1:["#CB3D3D","#A6292B","#6E1B1B"]},
 	},
 	tempHigh: 110,
 	fireColor: ["#91d106","#feff97","#248e01"],
@@ -11083,7 +11561,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|LB:plant AND RT%5|M1 AND BO:1,2,3",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"rat": {elem2:null},
@@ -11099,7 +11577,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M2|M1",
 		"XX|RT%20|M2",
-		"CF|XX|XX",
+		"CF|XX|XX"
 	],
 	onClicked: behaviors.CLONE_ON_CLICK,
 	ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","ecloner"],
@@ -11113,7 +11591,7 @@ SEEDRISE: function(pixel) {
 		"M1 AND SW%33|XX|M1 AND SW%33",
 		"XX|M1 AND SW%33|XX"
 	],
-	category:"special",
+	category:"special"
 },
 "midas_touch": {
 	color: ["#ffdf5e","#ffe682"],
@@ -11161,14 +11639,14 @@ SEEDRISE: function(pixel) {
 	},
 	density: 193,
 	state: "liquid",
-	category:"special",
+	category:"special"
 },
 "radiation": {
 	color: ["#00ff00","#6fff00"],
 	behavior: [
 		"XX|M1%0.5 AND HT|XX",
 		"M1%7 AND HT|DL%3|M1%7 AND HT",
-		"XX|M1%1 AND HT|XX",
+		"XX|M1%1 AND HT|XX"
 	],
 	reactions: {
 		"water": { elem2:"rad_steam", chance:0.4 },
@@ -11281,7 +11759,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:radiation%2|XX",
 		"CR:radiation%2|CH:radiation%0.5|CR:radiation%2",
-		"M2|M1 AND CR:radiation%2|M2",
+		"M2|M1 AND CR:radiation%2|M2"
 	],
 	category:"energy",
 	hidden: true,
@@ -11293,7 +11771,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|CH:proton%0.25 AND DL%0.25|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	tick: behaviors.BOUNCY,
 	reactions: {
@@ -11319,12 +11797,12 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|DL%0.5|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|CH:hydrogen|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	tick: behaviors.BOUNCY,
 	reactions: {
@@ -11345,7 +11823,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"CL%5|CL%5 AND SH|CL%5",
 		"CL%5 AND SH|SH%5 AND DL%50|CL%5 AND SH",
-		"M1%15 AND CL%6|M1%50 AND CL%13 AND SH|M1%15 AND CL%6",
+		"M1%15 AND CL%6|M1%50 AND CL%13 AND SH|M1%15 AND CL%6"
 	],
 	charge: 3,
 	category: "energy",
@@ -11353,8 +11831,6 @@ SEEDRISE: function(pixel) {
 	density: 2.1,
 	insulate: true,
 	ignoreAir: true,
-	ignore: ["shocker"],
-	ignoreConduct: ["shocker"],
 	alias: "electron"
 },
 "uranium": {
@@ -11362,7 +11838,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|RL:radiation%1 AND CH:lead%0.001|XX",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"neutron": { elem1:"n_explosion", tempMin:500, chance:0.1 }
@@ -11452,7 +11928,6 @@ SEEDRISE: function(pixel) {
 	density: 3905,
 	conduct: 0.39,
 	hardness: 0.1,
-	alias: "gallanylidynealumane",
 	hidden: true
 },
 "metal_scrap": {
@@ -11532,7 +12007,8 @@ SEEDRISE: function(pixel) {
 	state: "solid",
 	density: 2000,
 	hardness: 0.325,
-	hidden: true
+	hidden: true,
+	darkText: true
 },
 "feather": {
 	color: ["#ffffff","#e3e3e3","#d1d1d1"],
@@ -11548,10 +12024,11 @@ SEEDRISE: function(pixel) {
 },
 "confetti": {
 	color: ["#dc2c37","#edce66","#0dbf62","#0679ea","#7144b2","#d92097"],
+	buttonColor: ["#ffe629","#ff29c2"],
 	behavior: [
 		"XX|XX|XX",
 		"XX|FX%0.25|XX",
-		"M2%25|M1%25|M1%25",
+		"M2%25|M1%25|M1%25"
 	],
 	reactions: {
 		"water": { elem1:[null,"cellulose"], chance:0.001 },
@@ -11571,7 +12048,7 @@ SEEDRISE: function(pixel) {
 	density: 1201
 },
 "glitter": {
-	color: ["#dbbfe3", "#cc95db","#c477d9","#b85cd1", "#8d5cd1","#9e77d9","#cc95db", "#95a4db","#7789d9","#5c68d1", "#c1bfe3"],
+	color: ["#c1bfe3", "#dbbfe3", "#cc95db","#c477d9","#b85cd1", "#8d5cd1","#9e77d9","#cc95db", "#95a4db","#7789d9","#5c68d1"],
 	behavior: behaviors.POWDER,
 	category: "powders",
 	tempHigh: 100,
@@ -11646,7 +12123,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	tick: function(pixel) {
 		if ((pixel.foam || Math.random() < 0.25) && isEmpty(pixel.x,pixel.y-1)) {
@@ -11826,7 +12303,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M2|M1|M2",
 		"M1|DL%25|M1",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	reactions: {
 		"cancer": { elem2:null },
@@ -11907,7 +12384,7 @@ SEEDRISE: function(pixel) {
 		"mercury_gas": { elem2: null },
 		"solid_mercury": { elem2: null },
 		"ice_nine": { elem2: "ice" },
-		"strange_matter": { elem2: "neutron" },
+		"strange_matter": { elem2: null },
 		"frozen_frog": { elem2: "frog" },
 		"frozen_worm": { elem2: "worm" },
 		"molten_thermite": { elem2: "rock" },
@@ -12082,7 +12559,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|EX:3|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	category: "energy",
 	state: "gas",
@@ -12093,11 +12570,20 @@ SEEDRISE: function(pixel) {
 },
 "explosion": {
 	color: ["#ffb48f","#ffd991","#ffad91"],
-	behavior: [
-		"XX|XX|XX",
-		"XX|EX:10|XX",
-		"XX|XX|XX",
-	],
+	behavior: behaviors.WALL,
+	onShiftSelect: function(element) {
+		promptInput("Enter a radius from 1 to 100. (Default 10)", function(r) {
+			if (!r) return;
+			r = parseInt(r);
+			if (isNaN(r)) return;
+			r = Math.min(100, r);
+			r = Math.max(1, r);
+			currentElementProp = { radius:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
+	tick: function(pixel) {
+		explodeAt(pixel.x, pixel.y, pixel.radius || 10, "fire")
+	},
 	temp: 300,
 	category: "energy",
 	state: "gas",
@@ -12110,7 +12596,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|EX:40>plasma,plasma,plasma,plasma,radiation,rad_steam|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	temp: 100000000,
 	category: "energy",
@@ -12126,7 +12612,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,molten_potassium,mercury,molten_aluminum AND CH:void|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	temp: 99999999700,
 	category: "energy",
@@ -12181,7 +12667,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"M1%15 AND CL%6|M1%50 AND CL%13|M1%15 AND CL%6",
 		"CL%5|DL%50|CL%5",
-		"CL%5|CL%5|CL%5",
+		"CL%5|CL%5|CL%5"
 	],
 	reactions: {
 		"electric": { elem1:"light", elem2:"explosion" },
@@ -12200,7 +12686,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|EX:10|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	conduct: 1,
 	category: "weapons",
@@ -12221,7 +12707,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|EX:10|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	conduct: 1,
 	category: "weapons",
@@ -12238,12 +12724,12 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|EX:6>metal_scrap,fire,fire,fire%1|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:6>metal_scrap,fire,fire,fire%1|M2",
+		"M2|M1 AND EX:6>metal_scrap,fire,fire,fire%1|M2"
 	],
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|EX:6>metal_scrap,fire,fire,fire%1|XX",
-		"M2|M1 AND EX:6>metal_scrap,fire,fire,fire%1|M2",
+		"M2|M1 AND EX:6>metal_scrap,fire,fire,fire%1|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12261,7 +12747,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|EX:15|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	conduct: 1,
 	category: "weapons",
@@ -12278,7 +12764,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|EX:10|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	conduct: 1,
 	category: "weapons",
@@ -12297,7 +12783,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|M1|M1",
 		"XX|XX|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	onCollide: function(pixel1,pixel2) {
 		if (elements[pixel2.element].fireColor) {
@@ -12369,7 +12855,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|DL%25|M2",
-		"XX|M2|M1",
+		"XX|M2|M1"
 	],
 	burning: true,
 	burnInto: "ash",
@@ -12382,14 +12868,15 @@ SEEDRISE: function(pixel) {
 	hidden: true,
 	state: "gas",
 	density: 700,
-	alias: "firework ember"
+	alias: "firework ember",
+	darkText: true
 },
 "nuke": {
 	color: "#534636",
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:60>plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
+		"M2|M1 AND EX:60>plasma,plasma,plasma,plasma,radiation,rad_steam|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12402,7 +12889,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:90>plasma,plasma,plasma,plasma,fire|M2",
+		"M2|M1 AND EX:90>plasma,plasma,plasma,plasma,fire|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12416,7 +12903,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:40>radiation,radiation,radiation,rad_steam|M2",
+		"M2|M1 AND EX:40>radiation,radiation,radiation,rad_steam|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12458,7 +12945,7 @@ SEEDRISE: function(pixel) {
 	behaviorOn: [
 		"XX|XX|XX",
 		"XX|EX:10|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	reactions: {
 		"clay": { elem1:"dynamite", elem2:"dynamite" },
@@ -12517,7 +13004,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:fire%25|XX",
 		"XX|CC:782828,783b28,784b28%25|XX",
-		"M2|M1 AND EX:8|M2",
+		"M2|M1 AND EX:8|M2"
 	],
 	reactions: {
 		"water": { elem1:"rock", elem2:"steam" }
@@ -12573,6 +13060,7 @@ SEEDRISE: function(pixel) {
 },
 "antibomb": {
 	color: "#adb3be",
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	tick: function(pixel) {
 		doDefaults(pixel)
 		if (!tryMove(pixel,pixel.x,pixel.y+1)) {
@@ -12584,7 +13072,7 @@ SEEDRISE: function(pixel) {
 				var elem = "smoke";
 			}
 			if (elem !== "antibomb") {
-				explodeAt(pixel.x,pixel.y,8,elem)
+				explodeAt(pixel.x,pixel.y,8,pixel.clone || elem);
 			}
 		}
 	},
@@ -12599,7 +13087,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|EX:10>cold_fire|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:10>cold_fire|M2",
+		"M2|M1 AND EX:10>cold_fire|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12614,7 +13102,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|HT:20000 AND EX:15>plasma|XX",
 		"XX|XX|XX",
-		"M2|M1 AND HT:20000 AND EX:15>plasma|M2",
+		"M2|M1 AND HT:20000 AND EX:15>plasma|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12627,7 +13115,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|EX:20>antimatter|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:20>antimatter|M2",
+		"M2|M1 AND EX:20>antimatter|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12643,7 +13131,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|EX:15>confetti,flash,flash,smoke|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:15>confetti,flash,flash,smoke|M2",
+		"M2|M1 AND EX:15>confetti,flash,flash,smoke|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12656,7 +13144,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|EX:20>flash%1|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:20>flash%1|M2",
+		"M2|M1 AND EX:20>flash%1|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12687,7 +13175,6 @@ SEEDRISE: function(pixel) {
 	},
 	reactions: {
 		"blood": { elem1:"pointer" },
-		"molten_stained_glass": { elem1:"rainbow" },
 		"electric": { elem1:"pointer" }
 	},
 	category: "energy",
@@ -12704,7 +13191,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:smoke|XX",
 		"XX|EX:4>smoke%1|XX",
-		"M2|M1|M2",
+		"M2|M1|M2"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12721,7 +13208,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|EX:20|XX",
 		"XX|XX|XX",
-		"XX|M1|XX",
+		"XX|M1|XX"
 	],
 	category: "weapons",
 	state: "solid",
@@ -12907,7 +13394,7 @@ SEEDRISE: function(pixel) {
 	density: 100000000,
 	maxSize: 1,
 	cooldown: defaultCooldown,
-	excludeRandom: true,
+	excludeRandom: true
 },
 "tsunami": {
 	color: ["#91b9bd","#566f99","#192f61"],
@@ -12965,7 +13452,7 @@ SEEDRISE: function(pixel) {
 	maxSize: 1,
 	density: 997,
 	cooldown: defaultCooldown,
-	excludeRandom: true,
+	excludeRandom: true
 },
 "blaster": {
 	color: ["#ff0000","#ff4d00","#ff7700"],
@@ -13010,7 +13497,7 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|XX|XX",
 		"XX|EX:10>armageddon,fire,fire,fire,fire,fire,fire,fire,fire,fire,fire,fire,fire%25 AND DL%10|XX",
-		"XX|XX|XX",
+		"XX|XX|XX"
 	],
 	category: "weapons",
 	state: "solid",
@@ -13019,34 +13506,6 @@ SEEDRISE: function(pixel) {
 	excludeRandom: true,
 	maxSize: 1,
 	cooldown: defaultCooldown
-},
-"tesla_coil": {
-	color: "#725c38",
-	behavior: behaviors.WALL,
-	behaviorOn: [
-		"XX|CR:plasma|XX",
-		"CR:plasma|XX|CR:plasma",
-		"XX|CR:plasma|XX",
-	],
-	category: "machines",
-	conduct: 1,
-	insulate: true,
-	ignoreConduct: ["plasma"],
-	temp: 7065
-},
-"shocker": {
-	color: "#78784c",
-	behavior: behaviors.WALL,
-	behaviorOn: [
-		"XX|CR:electric AND SH|XX",
-		"CR:electric AND SH|XX|CR:electric AND SH",
-		"XX|CR:electric AND SH|XX",
-	],
-	colorOn: "#ffff59",
-	category: "machines",
-	conduct: 1,
-	ignore: ["shocker"],
-	ignoreConduct: ["electric"]
 },
 "pressure_plate": {
 	color: "#8a8a84",
@@ -13087,12 +13546,12 @@ SEEDRISE: function(pixel) {
 	behavior: [
 		"XX|CR:foam%2|XX",
 		"M2|CH:algae,cell,mushroom_spore,lichen,yeast,antibody,cellulose,seltzer,oxygen%0.005|M2",
-		"M1|M1|M1",
+		"M1|M1|M1"
 	],
 	behaviorOn: [
 		"XX|CR:foam%25|XX",
 		"M2|CH:algae,cell,mushroom_spore,lichen,yeast,antibody,cellulose,seltzer,oxygen%5|M2",
-		"M1|M1|M1",
+		"M1|M1|M1"
 	],
 	reactions: {
 		"cancer": { elem1:"dirty_water" },
@@ -13233,7 +13692,7 @@ SEEDRISE: function(pixel) {
 		pixel[currentProp] = currentPropValue;
 		if (currentProp === "temp") pixelTempCheck(pixel);
 	},
-	category: "special",
+	category: "special"
 },
 //ice color: "#c5e9f0"
 "salt_ice": { color: "#b6ced4" },
@@ -13297,7 +13756,7 @@ else if (currentMonth == 9) { // October
 	elements.candy.colorPattern = [
 		"W","W","W","W","W",
 		"O","O","O","O","O",
-		"Y","Y","Y","Y","Y",
+		"Y","Y","Y","Y","Y"
 	]
 	elements.candy.colorKey = {"W":"#ffffff", "Y":"#ffcd55", "O":"#ff9933"}
 	elements.candy.color = ["#ffffff","#ffffff","#ff9933","#ff9933","#ffcd55","#ffcd55"]
@@ -13314,7 +13773,7 @@ else if (currentMonth == 11) { // December
 		"RRWWRRRWWR",
 		"RWWWRRWWWR",
 		"RWWRRRWWRR",
-		"WWWRRWWWRR",
+		"WWWRRWWWRR"
 	]
 	elements.candy.colorKey = {"R":"#c92626", "W":"#e3e3e3"}
 	elements.candy.color = ["#c92626","#e3e3e3","#c92626","#e3e3e3","#c92626"]
@@ -13382,7 +13841,7 @@ keybinds = {};
 keybinds["Minus"] = ()=>{ // Decrease the mouse size by 2
 	if (shiftDown) {mouseSize = 1}
 	else {
-		mouseSize -= 2;
+		mouseSize -= 1;
 		if (mouseSize < 1) { mouseSize = 1; }
 	}
 	checkMouseSize(true);
@@ -13390,7 +13849,7 @@ keybinds["Minus"] = ()=>{ // Decrease the mouse size by 2
 keybinds["BracketLeft"] = keybinds["Minus"];
 keybinds["Equal"] = ()=>{ // Increase the mouse size by 2
 	if (shiftDown) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15)}
-	else {mouseSize += 2;}
+	else {mouseSize += 1;}
 	checkMouseSize(true);
 }
 keybinds["BracketRight"] = keybinds["Equal"];
@@ -13613,6 +14072,16 @@ else if (settings.lang && settings.lang !== "en") {
 }
 else if (window.initialData && window.initialData.langCode && window.initialData.langCode !== "en") {
 	langCode = window.initialData.langCode;
+}
+else if (!standalone) {
+	try {
+		// try auto-setting language
+		let code = navigator.languages ? navigator.languages[0] : navigator.language;
+		if (code && !code.match(/^en-?/)) {
+			langCode = code.toLowerCase().split("-")[0];
+		}
+	}
+	catch (e) {}
 }
 // langCode = "test";
 if (langCode) {
@@ -14095,6 +14564,11 @@ function langKey(key,fallback,template) {
 			}
 			return null;
 		}
+		function pixelDistance(x1, y1, x2, y2) {
+			let a = x1 - x2;
+			let b = y1 - y2;
+			return Math.sqrt( a*a + b*b );
+		}
 
 		validDensitySwaps = {
 			"solid": {
@@ -14148,7 +14622,7 @@ function langKey(key,fallback,template) {
 					// Density
 					if (info.density !== undefined && elements[newPixel.element].density !== undefined) {
 						// if the pixel's state + ">" + newPixel's state is in validDensitySwaps, and the pixel's density is larger than the newPixel's density, swap the pixels
-						if (validDensitySwaps[info.state][elements[newPixel.element].state] !== undefined && info.density >= elements[newPixel.element].density) {
+						if (validDensitySwaps[info.state][elements[newPixel.element].state] !== undefined && info.density >= elements[newPixel.element].density && newPixel.skip !== true) {
 							// chance depending on the difference in density
 							if (Math.random() < (info.density - elements[newPixel.element].density)/(info.density + elements[newPixel.element].density)) {
 								swapPixels(pixel,newPixel);
@@ -14445,7 +14919,7 @@ behaviorRules = {
 					return;
 				}
 				if (newPixel.element !== btemp.pixel.element) {
-					btemp.pixel.clone = newPixel.element;
+					btemp.pixel.clone = elements[newPixel.element].pickElement || newPixel.element;
 					btemp.pixel.temp = newPixel.temp;
 				}
 				else if (newPixel.clone) {
@@ -14674,7 +15148,7 @@ behaviorRules = {
 		}
 		releaseElement(btemp.pixel, btemp.arg);
 	},
-	"XX": function() {},
+	"XX": function() {}
 }
 	function pixelTick(pixel,custom=null) {
 		if (pixel.start === pixelTicks) {return}
@@ -15007,7 +15481,10 @@ behaviorRules = {
 						var con = elements[newPixel.element].conduct;
 						if (con === undefined) {continue}
 						if (elements[newPixel.element].ignoreConduct !== undefined && elements[newPixel.element].ignoreConduct.indexOf(pixel.element) !== -1) {
-							continue
+							continue;
+						}
+						if (elements[pixel.element].onlyConduct !== undefined && elements[pixel.element].onlyConduct.indexOf(newPixel.element) === -1) {
+							continue;
 						}
 						if (newPixel.temp <= elements[newPixel.element].superconductAt) {
 							con = 1;
@@ -15545,6 +16022,48 @@ behaviorRules = {
 				"pixelMap":compressedMap
 			}
 		}
+		saveElementMigrations = {
+			"sticky_bomb": function(pixel) {
+				pixel.element = "bomb";
+			},
+			"cluster_bomb": function(pixel) {
+				pixel.element = "antibomb";
+				pixel.clone = "grenade";
+			},
+			"electro_bomb": function(pixel) {
+				pixel.element = "antibomb";
+				pixel.clone = "electric";
+			},
+			"water_bomb": function(pixel) {
+				pixel.element = "antibomb";
+				pixel.clone = "water";
+			},
+			"tesla_coil": function(pixel) {
+				pixel.element = "ecloner";
+				pixel.clone = "plasma";
+			},
+			"shocker": function(pixel) {
+				pixel.element = "ecloner";
+				pixel.clone = "electric";
+			},
+			"led_r": function(pixel) {
+				pixel.element = "led";
+			},
+			"led_g": function(pixel) {
+				pixel.element = "led";
+			},
+			"led_b": function(pixel) {
+				pixel.element = "led";
+			},
+			"superheater": function(pixel) {
+				pixel.element = "heater";
+				pixel.temp = 30;
+			},
+			"freezer": function(pixel) {
+				pixel.element = "cooler";
+				pixel.temp = 10;
+			},
+		}
 		function loadSave(saveJSON, confirmed=0, skip=0) {
 			if (!saveJSON.pixelMap) { return }
 			var compressedMap = saveJSON.pixelMap;
@@ -15624,16 +16143,18 @@ behaviorRules = {
 				for (var y = 0; y < pixelarray[x].length; y++) {
 					var pixel = pixelarray[x][y];
 					if (pixel) {
+						let element;
 						for (var prop in pixel) {
 							if (saveJSON.codes[prop]) {
 								pixel[saveJSON.codes[prop]] = pixel[prop];
 								delete pixel[prop];
 							}
-							if (pixel.element) {
-								pixel.element = saveJSON.codes[pixel.element]||pixel.element;
-								if (!elements[pixel.element]) {
-									pixel.element = "unknown";
-								}
+						}
+						if (pixel.element) {
+							pixel.element = saveJSON.codes[pixel.element]||pixel.element;
+							if (element === undefined) element = pixel.element;
+							if (!elements[pixel.element]) {
+								pixel.element = "unknown";
 							}
 						}
 						createPixel(pixel.element,x,y);
@@ -15641,6 +16162,12 @@ behaviorRules = {
 						for (var prop in pixel) {
 							// if (!pixelMap[x][y]) continue;
 							pixelMap[x][y][prop] = pixel[prop];
+						}
+						if (saveElementMigrations[element]) {
+							saveElementMigrations[element](pixelMap[x][y], version);
+							if (pixel.color === undefined && pixel.element === "unknown") {
+								pixelMap[x][y].color = pixelColorPick(pixelMap[x][y]);
+							}
 						}
 					}
 					else {
@@ -15880,7 +16407,7 @@ behaviorRules = {
 			if (ctx === null) return
 			clearLayers();
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			if (settings.bg) { // Set background color
+			if (settings.bg && !settings.bgimg) { // Set background color
 				if (canvas.style.backgroundColor !== settings.bg) {
 					canvas.style.backgroundColor = settings.bg;
 					// document.getElementById("stats").style.backgroundColor = settings.bg;
@@ -15909,13 +16436,18 @@ behaviorRules = {
 		}
 		function drawCursor() {
 			var layerCtx = canvasLayers.gui.getContext('2d');
-			var mouseOffset = Math.trunc(mouseSize/2);
-			var topLeft = [mousePos.x-mouseOffset,mousePos.y-mouseOffset];
-			var bottomRight = [mousePos.x+mouseOffset,mousePos.y+mouseOffset];
+			let mouseOffset = mouseSize/2;
+			let mouseMin = Math.trunc(mouseOffset);
+			let mouseMax = mouseMin;
+			if (mouseOffset % 1 === 0) {
+				mouseMax --;
+			}
+			var topLeft = [mousePos.x-mouseMin,mousePos.y-mouseMin];
+			var bottomRight = [mousePos.x+mouseMax,mousePos.y+mouseMax];
 			// Draw a square around the mouse
 			layerCtx.globalAlpha = mouseAlpha;
 			layerCtx.lineWidth = 2;
-			layerCtx.strokeStyle = settings.mouseColor||mouseColor||"white";
+			layerCtx.strokeStyle = mouseColor||settings.mouseColor||"white";
 			layerCtx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
 			// draw one transparent pixel in the center
 			if (settings.precision) {
@@ -15927,7 +16459,7 @@ behaviorRules = {
 					let coords = lineCoords(shapeStart.x,shapeStart.y,mousePos.x,mousePos.y);
 					coords.forEach((coord) => {
 						if (outOfBounds(coord[0],coord[1])) return;
-						drawSquare(layerCtx,mouseColor,coord[0],coord[1],undefined,mouseAlpha)
+						drawSquare(layerCtx,mouseColor,coord[0],coord[1],undefined,0.5)
 					})
 				}
 			}
@@ -15937,6 +16469,11 @@ behaviorRules = {
 
 			var newCurrentPixels = currentPixels.slice();
 			shuffleArray(newCurrentPixels);
+			if (hasUpdateOrder) {
+				newCurrentPixels.sort((a, b) => {
+					return (elements[a.element].updateOrder || 0) - (elements[b.element].updateOrder || 0)
+				})
+			}
 
 			for (var i = 0; i < newCurrentPixels.length; i++) {
 				var pixel = newCurrentPixels[i];
@@ -15979,6 +16516,7 @@ behaviorRules = {
 		viewKey = {/*DEPRECATED*/}
 		thermalMax = 100;
 		thermalMin = 0;
+		isMachine = {"machines":true}
 		viewInfo = {
 			1: { // Normal View (Default)
 				name: "",
@@ -16047,6 +16585,63 @@ behaviorRules = {
 				pixel: function(pixel,ctx) {
 					viewInfo[1].pixel(pixel,ctx);
 				}
+			},
+			5: { // Outline View
+				name: "Outline",
+				effects: true,
+				colorEffects: true,
+				alias: 1,
+				onUnselect: function(ctx) {
+					if (viewInfo[1].onUnselect) viewInfo[1].onUnselect(ctx);
+				},
+				pre: function(ctx) {
+					if (!settings.bg || settings.bg === '#000000') {
+						ticktemp.outline = '#ffffff';
+					}
+					else ticktemp.outline = '#000000';
+					if (viewInfo[1].pre) viewInfo[1].pre(ctx);
+					currentPixels.forEach(pixel => {
+						if ((elements[pixel.element].movable !== true && isMachine[elements[pixel.element].category] === undefined) || elements[pixel.element].isGas === true) return;
+						if (elements[pixel.element].outline === false) return;
+						if (pixel.alpha === 0) return;
+						let edge = false;
+						for (var i = 0; i < adjacentCoords.length; i++) {
+							var coords = adjacentCoords[i];
+							var x = pixel.x + coords[0];
+							var y = pixel.y + coords[1];
+							if (isEmpty(x,y, true)) {
+								// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
+								edge = true;
+								break;
+							}
+						}
+						if (edge) drawSquare(ctx,ticktemp.outline,pixel.x-1,pixel.y-1,3);
+					})
+				},
+				pixel: function(pixel, ctx) {
+					if (elements[pixel.element].movable || isMachine[elements[pixel.element].category] === true) return viewInfo[1].pixel(pixel, ctx);
+					if (pixel.alpha === 0) return;
+					let edge = false;
+					if (elements[pixel.element].outline !== false) {
+						for (var i = 0; i < adjacentCoords.length; i++) {
+							var coords = adjacentCoords[i];
+							var x = pixel.x + coords[0];
+							var y = pixel.y + coords[1];
+							if (isEmpty(x,y) || (!outOfBounds(x,y) &&
+								elements[pixelMap[x][y].element].movable
+							)) {
+								// if (elements[pixelMap[x][y].element].id !== elements[pixel.element].id || elements[pixelMap[x][y].element].state !== elements[pixel.element].id) continue
+								edge = true;
+								break;
+							}
+						}
+					};
+					if (edge) drawSquare(ctx,ticktemp.outline,pixel.x,pixel.y);
+					else viewInfo[1].pixel(pixel, ctx);
+				},
+				post: function(ctx) {
+					if (viewInfo[1].post) viewInfo[1].post(ctx);
+				}
 			}
 		}
 		function canvasCoord(n) {
@@ -16085,7 +16680,10 @@ behaviorRules = {
 					i--;
 					continue;
 				}
-				if (pixel.con) { pixel = pixel.con }
+				if (pixel.con) {
+					if (!elements[pixel.con.element]) delete pixel.con;
+					else pixel = pixel.con;
+				}
 				if (elements[pixel.element].isGas || elements[pixel.element].glow) {
 					pixelsLast.push(pixel);
 				}
@@ -16129,6 +16727,9 @@ behaviorRules = {
 					for (let i = 0; i < renderPostPixelList.length; i++) {
 						renderPostPixelList[i](ctx);
 					}
+				}
+				if (elements[currentElement].renderTool !== undefined) {
+					elements[currentElement].renderTool(ctx);
 				}
 				if (viewInfo[view].post) {
 					viewInfo[view].post(ctx);
@@ -16194,6 +16795,7 @@ behaviorRules = {
 		promptState = null;
 		mouseIsDown = false;
 		isMobile = false;
+		hasUpdateOrder = false;
 		genericMenuHandler = null;
 		changedMods = false;
 		forceReload = false;
@@ -16365,14 +16967,16 @@ behaviorRules = {
 		lastPos = mousePos;
 		lastPlace = -100;
 		if (typeof settings.mouseColor !== "string") { delete settings.mouseColor }
-		mouseColor = settings.mouseColor||"rgba(255,255,255)";
+		mouseColor = settings.mouseColor||"rgb(255,255,255)";
 		mouseAlpha = 0.5;
 		function mouseRange(mouseX,mouseY,size) {
 			var coords = [];
 			size = size || mouseSize;
-			var mouseOffset = Math.trunc(size/2);
-			var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
-			var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
+			let mouseOffset = size/2;
+			let mouseMin = Math.trunc(mouseOffset);
+			let mouseMax = mouseMin - (mouseOffset % 1 ? 0 : 1);
+			var topLeft = [mouseX-mouseMin,mouseY-mouseMin];
+			var bottomRight = [mouseX+mouseMax,mouseY+mouseMax];
 			// Starting at the top left, go through each pixel
 			for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
 				for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
@@ -16441,7 +17045,7 @@ behaviorRules = {
 					}
 				}
 				else if (existingPixel !== null && elements[existingPixel.element].onClicked && currentElement !== existingPixel.element) {
-					elements[existingPixel.element].onClicked(existingPixel,currentElement);
+					elements[existingPixel.element].onClicked(existingPixel,currentElement === "unknown" ? null : currentElement);
 				}
 
 				if (currentElement === "mix") {
@@ -16469,12 +17073,14 @@ behaviorRules = {
 				if (isEmpty(x, y)) {
 					if (currentPixels.length < maxPixelCount) {
 						createPixel(currentElement,x,y);
-						if (pixelMap[x][y] && currentElement === pixelMap[x][y].element && (elements[currentElement].customColor || elements[currentElement].singleColor)) {
-							pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],currentColorMap[currentElement]);
-						}
-						if (currentElementProp) {
-							for (var key in currentElementProp) {
-								pixelMap[x][y][key] = currentElementProp[key]
+						if (pixelMap[x][y]) {
+							if (currentElement === pixelMap[x][y].element && (elements[currentElement].customColor || elements[currentElement].singleColor)) {
+								pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],currentColorMap[currentElement]);
+							}
+							if (currentElementProp) {
+								for (var key in currentElementProp) {
+									pixelMap[x][y][key] = currentElementProp[key]
+								}
 							}
 						}
 					}
@@ -16591,6 +17197,9 @@ behaviorRules = {
 					if (es !== null) {
 						selectElement(es);
 						selectCategory(elements[es].category);
+						if (shiftDown && elements[currentElement].onShiftSelect) {
+							elements[currentElement].onShiftSelect(currentElement);
+						}
 					}
 					else {
 						logMessage("Element \"" + e + "\" not found");
@@ -16734,6 +17343,7 @@ behaviorRules = {
 		function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) !== s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
 		function similarity(s1, s2) {var longer = s1;var shorter = s2;if (s1.length < s2.length) {longer = s2;shorter = s1;}var longerLength = longer.length;if (longerLength == 0) {return 1.0;}return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);}
 		function mostSimilarElement(s) {
+			if (elements[s]) return s;
 			var max = 0;
 			var maxElement = "";
 			for (var e in elements) {
@@ -16808,11 +17418,41 @@ behaviorRules = {
 			}
 			else {
 				selectElement(this.getAttribute("element"));
+				if (shiftDown && elements[currentElement].onShiftSelect) {
+					elements[currentElement].onShiftSelect(currentElement);
+				}
 			}
 		}
 		function elemTitleCase(string) {
 			string = string.replace(/_./g, function (match) {return match.toUpperCase();}).replace(/_/g, '');
 			return string.charAt(0).toUpperCase() + string.slice(1);
+		}
+		function validateElementList(string) {
+			if (!string) return "";
+			if (string.toString) string = string.toString();
+			if (string.match(/,/)) {
+				let newList = [];
+				let list = string.split(",");
+				list.forEach(element => {
+					element = element.trim().replace(/ /g, "_");
+					if (validDensitySwaps[element]) {
+						newList.push(element);
+						return;
+					}
+					if (element === "null" || element === "air") {
+						newList.push("unknown");
+						return;
+					}
+					element = mostSimilarElement(element);
+					newList.push(elements[element] ? element : "unknown");
+				})
+				return newList.join(",");
+			}
+			string = string.trim().replace(/ /g, "_");
+			if (validDensitySwaps[string]) return string;
+			string = mostSimilarElement(string);
+			if (string === "null" || string === "air") return "unknown";
+			return elements[string] ? string : "unknown";
 		}
 		function createElementButton(element) {
 			var button = document.createElement("button");
@@ -16843,19 +17483,26 @@ behaviorRules = {
 				else colorObjects = [hexToRGB(buttonColor)];
 			}
 
+			let average = averageRGB(colorObjects).match(/\d+/g);
+			let hsl = RGBToHSL(average);
+			let bright = hsl[2] > 0.7;
+			if (elements[element].darkText || (bright && elements[element].darkText !== false)) {
+				button.classList.add("bright");
+				hsl[1] = Math.min(hsl[1], 0.3)
+			}
+			else {
+				hsl[1] = Math.min(hsl[1], 0.5)
+			}
+			hsl[2] = 0.35;
+			button.setAttribute("style", "--button-border:hsl("+Math.round(hsl[0]*360)+"deg "+Math.round(hsl[1]*100)+"% "+Math.round(hsl[2]*100)+"%)")
+
 			if (colorObjects.length === 1) {
 				button.style.background = buttonColor;
 				var colorObject = elements[element].colorObject;
-				if (elements[element].darkText !== false && (elements[element].darkText || (colorObject.r+colorObject.g+colorObject.b)/3 > 200)) {
-					button.className += " bright"
-				}
 			}
 			else {
 				button.style.backgroundImage = "linear-gradient(to bottom right, "+buttonColor.join(", ")+")";
 				var colorObject = colorObjects[Math.floor(colorObjects.length/2)];
-				if (elements[element].darkText !== false && (elements[element].darkText || (colorObject.r+colorObject.g+colorObject.b)/3 > 200)) {
-					button.className += " bright"
-				}
 			}
 
 			if (elements[element].buttonGlow) {
@@ -16901,7 +17548,7 @@ behaviorRules = {
 			if (elements[element] && elements[element].hidden && !settings.unlocked[element]) {
 				settings.unlocked[element] = true;
 				if (settings.unhide === 2) {
-					createElementButton(element)
+					createElementButton(element);
 					var categoryButton = document.querySelector(".categoryButton[current='true']");
 					var currentCategory = categoryButton.getAttribute("category");
 					if (currentCategory !== elements[element].category) {
@@ -16930,6 +17577,7 @@ behaviorRules = {
 				if (styleTag) styleTag.remove();
 				mouseColor = settings.mouseColor||"rgba(255,255,255)";
 				mouseAlpha = 0.5;
+				if (settings.bgimg) setCanvasBackground(settings.bgimg);
 				return;
 			}
 			let rgb;
@@ -18291,7 +18939,6 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		}
 		function confirmSave(confirmed=0) {
 			if (!savingState) { return }
-			console.log(confirmed);
 			if (confirmed < 1 && savingState.slot && settings.resetwarning!==0 && localStorage["SandboxelsSaves/"+savingState.slot]) {
 				let tempState = savingState;
 				promptConfirm("Are you sure you want to overwrite the current save in slot "+savingState.slot+"? This cannot be undone.",
@@ -18353,6 +19000,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				}, 0);
 				closeMenu();
 			}
+
+			if (currentSaveData) {
+				if (savingState && !isNaN(savingState.slot)) currentSaveData.slot = savingState.slot;
+				currentSaveData.name = saveName;
+				currentSaveData.author = saveAuthor;
+				currentSaveData.desc = saveDesc;
+			}
 		}
 		function saveToFile() {
 			savingState = {slot:null};
@@ -18364,7 +19018,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		function loadFromFile() {
 			var input = document.createElement("input");
 			input.type = "file";
-			// input.accept = ".sbxls,.json,.txt,text/*,application/json";
+			if (!isMobile) input.accept = ".sbxls,.json,.txt,text/*,application/json,application/vnd.R74n.sandboxels+json";
 			input.addEventListener("change", function(e) {
 				var file = e.target.files[0];
 				var reader = new FileReader();
@@ -18515,10 +19169,79 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				if (setting) { setSetting(setting,0); }
 			}
 		}
+		canvasBackgrounds = {
+			"day": ["backgrounds/sky.png", "#9EC2F6", true],
+			"grass": ["backgrounds/sky_grass.png", "#4FA760", true],
+			"dawn": ["backgrounds/sky_pink.png", "#DB79B2", false],
+			"sunset": ["backgrounds/sky_warm.png", "#EC8575", true],
+			"dusk": ["backgrounds/sky_purple.png", "#763CB5", true],
+			"night": ["backgrounds/sky_dark.png", "#181628", false],
+		};
+		function setCanvasBackground(key) {
+			if (key === "color") {
+				if (settings.bgimg) clearCanvasBackground();
+				return;
+			};
+			if (key === "custom") return;
+			let url;
+			let color;
+			let mousecolor;
+			if (key === "url") {
+				promptInput("Enter a URL for a background image.", (url) => {
+					if (!url) return;
+					if (!url.startsWith("http")) url = "https://"+url;
+					setCanvasBackground(url);
+				});
+				return;
+			};
+			if (key.startsWith("http")) url = key;
+			else if (canvasBackgrounds[key]) {
+				url = canvasBackgrounds[key][0];
+				color = canvasBackgrounds[key][1];
+				mousecolor = canvasBackgrounds[key][2] ? "rgb(0,0,0)" : "rgb(255,255,255)";
+			}
+
+			if (settings.bgimg !== key) {
+				if (color) {
+					settings.bg = color;
+					document.querySelector('.multisetting[setting="bg"] input').value = color;
+				}
+				settings.bgimg = key;
+				saveSettings();
+			}
+			if (color && !settings.theme) setTheme(color);
+			if (mousecolor) {
+				mouseColor = mousecolor;
+				mouseAlpha = 0.5;
+			}
+
+			gameCanvas.style.backgroundColor = "";
+			setTimeout(function() {
+				gameCanvas.style.backgroundImage = `url(${url})`;
+				gameCanvas.style.backgroundRepeat = "no-repeat";
+				gameCanvas.style.backgroundSize = "cover";
+				gameCanvas.style.backgroundPosition = "bottom";
+			},100);
+		}
+		function clearCanvasBackground() {
+			if (!settings.bgimg) return;
+			delete settings.bgimg;
+			gameCanvas.style.backgroundImage = "";
+			gameCanvas.style.backgroundRepeat = "";
+			gameCanvas.style.backgroundSize = "";
+			gameCanvas.style.backgroundPosition = "";
+			if (settings.theme) setThemeElement(settings.theme);
+			else setTheme();
+			saveSettings();
+		}
 		function checkMouseSize(changed) {
+			let diff = Math.sign(mouseSize - lastMouseSize);
 			if (changed) { lastMouseSize = mouseSize }
 			else if (lastMouseSize) { mouseSize = lastMouseSize }
 			if (mouseSize < 1) { mouseSize = 1; }
+			if (mouseSize % 2 === 0 && mouseSize !== 2 && lastMouseSize !== 4) {
+				mouseSize += diff || -1;
+			}
 			if (settings.limitless && !elements[currentElement].tool) { return }
 			if (mouseSize > elements[currentElement].maxSize) { mouseSize = elements[currentElement].maxSize; }
 			if (mouseSize > (height > width ? (height + height % 2) : (width + width % 2))) { mouseSize = (height > width ? (height + height % 2) : (width + width % 2)); }
@@ -18789,7 +19512,6 @@ function autoGen(newname,element,autoType) {
 			elements[newname].reactions.smog = { elem1:null, elem2:"molten_slag" }
 			elements[newname].reactions.pyrocumulus = { elem1:null, elem2:"molten_slag" }
 			elements[newname].reactions.dioxin = { elem1:null, elem2:"molten_slag" }
-			elements[newname].reactions.poison_gas = { elem1:null, elem2:"molten_slag" }
 			elements[newname].reactions.dirt = { elem1:null, elem2:"molten_slag" }
 			elements[newname].reactions.molten_dirt = { elem1:null, elem2:"molten_slag" }
 		};
@@ -19101,6 +19823,10 @@ window.onload = function() {
 		finalizeColor(elements[key])
 
 		checkAutoGen(key,elements[key])
+
+		if (elements[key].updateOrder !== undefined) {
+			hasUpdateOrder = true;
+		}
 	}
 
 	// Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
@@ -19172,9 +19898,9 @@ window.onload = function() {
 				}
 			}
 			else {
-				var settingElements = settingSpans[i].getElementsByTagName("select")
+				var settingElements = settingSpans[i].getElementsByTagName("input")
 				if (settingElements.length === 0) {
-					settingElements = settingSpans[i].getElementsByTagName("input");
+					settingElements = settingSpans[i].getElementsByTagName("select");
 				}
 				if (settingElements.length > 0) {
 					settingElements[0].value = settingValue;
@@ -19201,9 +19927,9 @@ window.onload = function() {
 	if (newWidth > 1000) { newWidth = 1000; }
 	// If we are on a desktop and the new height is greater than 500, set it to 500
 	if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
-	canvas.style.backgroundColor = settings.bg||"#000000";
+	if (!settings.bgimg) canvas.style.backgroundColor = settings.bg||"#000000";
 
-	autoResizeCanvas = function(clear) {
+	autoResizeCanvas = function(clear, ratio) {
 		pixelSize = parseInt(settings.pixelsize) || 6;
 		if (window.innerWidth < 700) {
 			pixelSize--;
@@ -19221,8 +19947,8 @@ window.onload = function() {
 		// If we are on a desktop and the new height is greater than 500, set it to 500
 		if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
 
-		newHeight -= newHeight % pixelSize;
-		newWidth -= newWidth % pixelSize;
+		// newHeight -= newHeight % pixelSize;
+		// newWidth -= newWidth % pixelSize;
 
 		document.getElementById("gameDiv").classList.remove("gameDiv-wide");
 		if (settings.pixelsize && settings.pixelsize.toString().slice(-1) === "w") {
@@ -19231,11 +19957,26 @@ window.onload = function() {
 			newWidth = window.innerWidth-10;
 			document.getElementById("gameDiv").classList.add("gameDiv-wide");
 		}
+
+		if (ratio) {
+			if (newHeight < newWidth) {
+				newWidth = ratio * newHeight;
+			}
+			else {
+				newHeight = ratio * newWidth;
+			}
+		}
+
 		resizeCanvas(newHeight,newWidth,pixelSize,clear);
+	}
+	autoResizeRatio = function(height, width) {
+		autoResizeCanvas(undefined, width/height)
 	}
 	resizeCanvas = function(newHeight,newWidth,newPixelSize,clear) {
 		var gameCanvas = document.getElementById("game");
 		var ctx = gameCanvas.getContext("2d");
+		newHeight -= newHeight % pixelSize;
+		newWidth -= newWidth % pixelSize;
 		ctx.canvas.width = newWidth;
 		ctx.canvas.height = newHeight;
 		document.getElementById("gameDiv").style.width = newWidth + "px";
@@ -19262,6 +20003,25 @@ window.onload = function() {
 	}
 	autoResizeCanvas(false);
 
+	let bgSelect = document.querySelector('.multisetting[setting="bg"] select');
+	for (let key in canvasBackgrounds) {
+		let option = document.createElement("option");
+		option.value = key;
+		option.id = "setting-bg-"+key;
+		option.innerText = elemTitleCase(key);
+		bgSelect.appendChild(option);
+	}
+	if (settings.bgimg) {
+		if (bgSelect.querySelector(`option[value="${settings.bgimg}"]`)) {
+			bgSelect.value = settings.bgimg;
+		}
+		else {
+			bgSelect.value = "custom";
+		}
+		setCanvasBackground(settings.bgimg);
+	}
+	bgSelect.appendChild(document.getElementById("setting-bg-url"));
+
 	document.getElementById("loadingP").style.display = "none";
 	document.getElementById("canvasDiv").style.display = "block";
 
@@ -19270,20 +20030,31 @@ window.onload = function() {
 	randomChoices = Object.keys(elements).filter(function(e) {
 		return elements[e].excludeRandom != true && elements[e].category !== "tools" && !elements[e].tool;
 	});
-	gameCanvas.addEventListener("mousedown", mouseClick);
 	gameCanvas.addEventListener("mousedown", function(e){
-		if (elements[currentElement] && elements[currentElement].onMouseDown) {
+		if (!showingMenu && elements[currentElement] && elements[currentElement].onMouseDown) {
 			elements[currentElement].onMouseDown(e);
 		}
 	});
+	gameCanvas.addEventListener("mousedown", mouseClick);
 	gameCanvas.addEventListener("touchstart", function(e) {
-		if (e.touches) e = e.touches[0];
 		mousePos = getMousePos(canvas, e);
+		if (e.touches) e = e.touches[0];
+		if (!showingMenu && elements[currentElement] && elements[currentElement].onMouseDown) {
+			elements[currentElement].onMouseDown(e);
+		}
 		return false;
 	});
 	gameCanvas.addEventListener("touchstart", mouseClick, { passive: false });
 	window.addEventListener("mouseup", mouseUp);
 	window.addEventListener("touchend", mouseUp, { passive: false });
+	gameCanvas.addEventListener("touchend", function(e) {
+		// mousePos = getMousePos(canvas, e);
+		if (e.touches) e = e.touches[0];
+		if (!showingMenu && elements[currentElement] && elements[currentElement].onMouseUp) {
+			elements[currentElement].onMouseUp(e);
+		}
+		return false;
+	});
 	window.addEventListener("mousemove", mouseMove);
 	gameCanvas.addEventListener("touchmove", mouseMove, { passive: false });
 	gameCanvas.addEventListener("wheel", wheelHandle);
@@ -19379,6 +20150,20 @@ window.onload = function() {
 	document.getElementById("game").oncontextmenu = function(e) { e.preventDefault(); return false; }
 	document.addEventListener("keydown", function(e) {
 		var keyName = e.code;
+		if (e.keyCode == 16) { // shift
+			if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
+				shiftDown = 1;
+			} else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
+				shiftDown = 3;
+			}
+		}
+		else if (e.keyCode == 18) { // alt
+			if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
+				shiftDown = 2;
+			} else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
+				shiftDown = 4;
+			}
+		}
 		if (e.ctrlKey || e.metaKey) {
 			if (e.keyCode == 83) { // Ctrl+S = Save
 				e.preventDefault();
@@ -19450,24 +20235,10 @@ window.onload = function() {
 				}
 			}
 		}
+
 		// if the user is in an input, return
 		if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
 			return;
-		}
-
-		if (e.keyCode == 16) { // shift
-			if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
-				shiftDown = 1;
-			} else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
-				shiftDown = 3;
-			}
-		}
-		else if (e.keyCode == 18) { // alt
-			if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
-				shiftDown = 2;
-			} else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
-				shiftDown = 4;
-			}
 		}
 
 		if (keybinds[e.key]) {
@@ -19645,7 +20416,7 @@ window.onload = function() {
 			<div id="stats"></div>
 			<div id="controls">
 				<div id="toolControls">
-					<button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:2;checkMouseSize(true);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:2;checkMouseSize(true);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='tpsPrompt()'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
+					<button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:1;checkMouseSize(true);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:1;checkMouseSize(true);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='tpsPrompt()'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
 				</div>
 				<script>
 					// if it is the 1st of April, add a rainbow-colored button
@@ -19870,8 +20641,28 @@ window.onload = function() {
 						</select>
 						&nbsp;
 					</span>
+					<span setting="unhide" class="setting-span multisetting" title="Default: Hide Some Elements">
+						<span id="settingLabel-unhide">Hiding</span> <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText=langKey('gui.settingsRefresh','Refresh Page')">
+							<option value="0" id="setting-unhide-0" selected>Hide Some</option>
+							<option value="1" id="setting-unhide-1">Unhide All</option>
+							<option value="2" id="setting-unhide-2">Discovery</option>
+						</select>
+						<a onclick="window.location.reload();" href="#" class="settingsRefresh"></a>
+						&nbsp;
+					</span>
+					<span setting="view" class="setting-span multisetting" title="Default: Unset">
+						<span id="settingLabel-view">Default View</span> <select id="viewSelect" onchange="setSetting('view',parseInt(this.value));setView(parseInt(this.value))">
+							<option value="0" id="setting-view-0" selected>Unset</option>
+						</select>
+					</span>
+					<br>
 					<span setting="bg" class="setting-span multisetting" title="Default: Black (#000000)">
-						<span id="settingLabel-bg">Background</span> <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
+						<span id="settingLabel-bg">Background</span> <input onchange="setSetting('bg',this.value); this.nextElementSibling.value = 'color';" oninput="setSetting('bg',this.value); clearCanvasBackground();" type="color" value="#000000">
+						<select onchange="if (this.value !== 'custom') setCanvasBackground(this.value)">
+							<option value="custom" id="setting-bg-custom" disabled>Custom</option>
+							<option value="color" id="setting-bg-color" selected>Color</option>
+							<option value="url" id="setting-bg-url">URL...</option>
+						</select>
 						&nbsp;
 					</span>
 					<span setting="theme" class="setting-span multisetting" title="Default: Dark">
@@ -19889,20 +20680,6 @@ window.onload = function() {
 						&nbsp;
 					</span>
 					<br>
-					<span setting="unhide" class="setting-span multisetting" title="Default: Hide Some Elements">
-						<span id="settingLabel-unhide">Hiding</span> <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText=langKey('gui.settingsRefresh','Refresh Page')">
-							<option value="0" id="setting-unhide-0" selected>Hide Some Elements</option>
-							<option value="1" id="setting-unhide-1">Unhide All Elements</option>
-							<option value="2" id="setting-unhide-2">Unlock as Discovered</option>
-						</select>
-						<a onclick="window.location.reload();" href="#" class="settingsRefresh"></a>
-						&nbsp;
-					</span>
-					<span setting="view" class="setting-span multisetting" title="Default: Unset">
-						<span id="settingLabel-view">Default View</span> <select id="viewSelect" onchange="setSetting('view',parseInt(this.value));setView(parseInt(this.value))">
-							<option value="0" id="setting-view-0" selected>Unset</option>
-						</select>
-					</span><br>
 					<span setting="pixelsize" class="setting-span multisetting" title="Default: Medium">
 						<span id="settingLabel-pixelsize">Canvas Size</span> <select onchange="setSetting('pixelsize',this.value); if(!currentPixels.length){autoResizeCanvas()} else {this.nextElementSibling.innerText=langKey('gui.settingsReset','Reset Scene')}">
 							<option value="12" id="setting-pixelsize-12">Tiny</option>
@@ -20038,12 +20815,18 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 			<option value="qha">Halacae</option>
 			<option value="ru">Русский Язык</option>
 			<option value="sr">Српски</option>
+			<option value="sv">svenska</option>
 			<option value="tr">Türkçe</option>
 			<option value="vi">Tiếng Việt</option>
 			<option value="zh_cn">简体中文</option>
 			<option value="zh_hant">繁體中文</option>
 			<optgroup label="Incomplete">
+				<option value="ar">اَلْعَرَبِيَّةُ</option>
+				<option value="he">עִברִית</option>
+				<option value="ja">日本語</option>
 				<option value="nl">Nederlands</option>
+				<option value="qvp">Viossa</option>
+				<option value="th">ภาษาไทย</option>
 				<option value="tok">Toki Pona</option>
 				<option value="uk">Українська Мова</option>
 				<option value="xem">😂🗣</option>

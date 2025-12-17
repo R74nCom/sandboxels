@@ -160,3 +160,34 @@ elements.mayochup = {
 	isFood: true,
 	hidden: true
 };
+
+elements.spice = {
+	color: ["#DD4F40","#A14130"],
+	grain: 2,
+	behavior: behaviors.POWDER,
+	reactions: {
+		"water": { elem1:null, elem2:"spicy_water", chance:0.2 },
+		"salt_water": { elem1:null, elem2:"spicy_water", chance:0.2 },
+		"sugar_water": { elem1:null, elem2:"spicy_water", chance:0.2 },
+	},
+	tempHigh: 350,
+	stateHigh: "smoke",
+	category:"food",
+	state: "solid",
+	density: 2160,
+	isFood: true
+};
+elements.spicy_water = {
+	color: "#eeac9e",
+	behavior: behaviors.LIQUID,
+
+	tempHigh: 100,
+	stateHigh: ["steam","spice"],
+	category:"food",
+	state: "liquid",
+	density: 997,
+	isFood: true
+};
+elements.broth.reactions.spice = { color1:"#ef713f", tempMin:70, chance:0.05 };
+elements.broth.reactions.spicy_water = { color1:"#ef713f", tempMin:70, chance:0.05 };
+elements.meat.reactions.spicy_water = { elem2:"broth", color2:"#ef713f", tempMin:70 };

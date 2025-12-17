@@ -184,3 +184,11 @@ if (elements.bronze) {elements.bronze.color = "#cd7f32";}
 if (elements.sterling) {elements.sterling.color = ["#858478","#eae8e2","#bfbcb7"];}
 if (elements.solder) {elements.solder.color = "#a1a19d";}
 if (elements.sulfur) {elements.sulfur.color = ["#e9d74c","#89761b","#ddc56b"];}
+if (elements.random) {elements.random.color = ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"];}
+if (elements.pyrite) {elements.pyrite.color = ["#e8e0cb","#cdcaaf","#726a53","#8f835e","#bfb9a0"];}
+if (elements.purple_gold) {elements.purple_gold.color = ["#f58fda","#d06cb5","#f58fda"];}
+if (elements.acid) {elements.acid.color = ["#b5cf91","#a1ff5e","#288f2a"];}
+
+for (let element in elements) {
+    if (elements[element].buttonColor !== undefined) delete elements[element].buttonColor;
+}
