@@ -1,3 +1,7 @@
+// This mod has been deprecated in favor of the base game's Background setting.
+
+/*
+
 function setCanvasBG(url, color) {
     delete settings.bg;
 
@@ -51,3 +55,5 @@ runAfterReset(() => {
         setCanvasBG(settings.bgimg, settings.bgimgcolor)
     }
 })
+
+*/

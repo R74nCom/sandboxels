@@ -1,3 +1,7 @@
+// This mod has been deprecated in favor of the base game's Outline View.
+
+/*
+
 let isMachine = {"machines":true}
 
 elements.static.border = false;
@@ -69,3 +73,4 @@ window.addEventListener("load", () => {
 
 })	
 
+*/
