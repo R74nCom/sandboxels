@@ -14073,7 +14073,7 @@ else if (settings.lang && settings.lang !== "en") {
 else if (window.initialData && window.initialData.langCode && window.initialData.langCode !== "en") {
 	langCode = window.initialData.langCode;
 }
-else if (!standalone) {
+else if (!standalone && settings.lang !== null) {
 	try {
 		// try auto-setting language
 		let code = navigator.languages ? navigator.languages[0] : navigator.language;
