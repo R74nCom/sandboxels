@@ -14432,7 +14432,8 @@ function langKey(key,fallback,template) {
 			pixel.start = pixelTicks;
 			var elementInfo = elements[element];
 			if (elementInfo.burning == true) {
-				burnPixel(pixel);
+				pixel.burning = true;
+				pixel.burnStart = pixelTicks;
 			}
 			else if (pixel.burning && !elementInfo.burn) {
 				delete pixel.burning;
