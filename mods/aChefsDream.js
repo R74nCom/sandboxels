@@ -3135,6 +3135,10 @@ elements.cut_ginger = {
         "XX|XX|XX",
         "M2|M1|M2",
     ],
+    reactions: {
+        "flour": { elem1:"gingerbread", elem2:null },
+        "bread": { elem1:"gingerbread", elem2:null },
+    },
     category:"food",
     tempHigh: 100,
     stateHigh: "steam",
@@ -6770,6 +6774,7 @@ elements.whisked_egg_white ={
     reactions: {
         "corn_syrup": { elem1: "marshmallow", elem2: null, chance: 2 },
         "sugar": { elem1: "marshmallow", elem2: null, chance: 2 },
+        "icing_sugar": { elem1: "meringue", elem2: null, chance: 0.1 },
     },
     viscosity: 1.5,
     tempHigh: 1000,
