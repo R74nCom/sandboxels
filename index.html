@@ -49,7 +49,7 @@
 	<meta name="twitter:creator:id" content="1436857621827530753">
 
 	<script> // versioning info
-		currentversion = "1.13";
+		currentversion = "1.13.1";
 		saveVersion = 6;
 		standalone = false;
 		standaloneType = null;
@@ -877,10 +877,21 @@ SEEDRISE: function(pixel) {
 		"HT:2|HT:2|HT:2",
 		"HT:2|HT:2|HT:2"
 	],
+	onShiftSelect: function(element) {
+		promptInput("Enter a maximum temperature (Celsius).", function(r) {
+			r = parseFloat(r);
+			if (isNaN(r)) return;
+			currentElementProp = { max:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tool: function(pixel) {
+		if (currentElementProp && pixel.temp >= currentElementProp.max) return;
+
 		if (shiftDown) {pixel.temp += elements.heat.temp+(Math.random()*elements.heat.temp*1.5)*20;}
 		else {pixel.temp += elements.heat.temp+(Math.random()*elements.heat.temp*1.5);}
 		pixelTempCheck(pixel);
+
+		if (currentElementProp && pixel.temp > currentElementProp.max) pixel.temp = currentElementProp.max
 	},
 	temp: 2,
 	category: "tools",
@@ -895,10 +906,21 @@ SEEDRISE: function(pixel) {
 		"CO:2|CO:2|CO:2",
 		"CO:2|CO:2|CO:2"
 	],
+	onShiftSelect: function(element) {
+		promptInput("Enter a minimum temperature (Celsius).", function(r) {
+			r = parseFloat(r);
+			if (isNaN(r)) return;
+			currentElementProp = { min:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tool: function(pixel) {
+		if (currentElementProp && pixel.temp <= currentElementProp.min) return;
+
 		if (shiftDown) {pixel.temp += elements.cool.temp+(Math.random()*elements.cool.temp*1.5)*20;}
 		else {pixel.temp += elements.cool.temp+(Math.random()*elements.cool.temp*1.5);}
 		pixelTempCheck(pixel);
+
+		if (currentElementProp && pixel.temp < currentElementProp.min) pixel.temp = currentElementProp.min;
 	},
 	temp: -2,
 	category: "tools",
@@ -1078,11 +1100,7 @@ SEEDRISE: function(pixel) {
 		for (var j = 0; j < (shiftDown ? 5 : 1); j++) {
 			if (Math.random() < con) { // If random number is less than conductivity
 				if (!pixel.charge && !pixel.chargeCD) {
-					pixel.charge = 1;
-					pixel.chargeStart = pixelTicks;
-					if (elements[pixel.element].colorOn) {
-						pixel.color = pixelColorPick(pixel);
-					}
+					chargePixel(pixel);
 				}
 			}
 			else if (elements[pixel.element].insulate !== true) { // Otherwise heat the pixel (Resistance simulation)
@@ -1098,7 +1116,17 @@ SEEDRISE: function(pixel) {
 },
 "paint": {
 	color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
+	onShiftSelect: function(element) {
+		promptInput("Enter an element to only paint. Enter multiple elements separated by commas.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { filter:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tool: function(pixel) {
+		if (currentElementProp && currentElementProp.filter && !currentElementProp.filter.split(",").includes(pixel.element)) {
+			return;
+		}
 		if (!shiftDown) {
 			pixel.color = pixelColorPick(pixel,currentColorMap.paint)
 		}
@@ -2432,11 +2460,24 @@ SEEDRISE: function(pixel) {
 		"SH|XX|SH",
 		"XX|SH|XX"
 	],
+	// tick: function(pixel) {
+	// 	doDefaults(pixel);
+	// 	for (var i = 0; i < adjacentCoords.length; i++) {
+	// 		var coords = adjacentCoords[i];
+	// 		var x = pixel.x + coords[0];
+	// 		var y = pixel.y + coords[1];
+	// 		if (!isEmpty(x,y,true)) {
+	// 			var newPixel = pixelMap[x][y];
+				
+	// 		}
+	// 	}
+	// },
 	category: "machines",
 	tempHigh: 1455.5,
 	stateHigh: ["molten_steel","explosion","acid_gas"],
 	hardness: 0.8,
-	breakInto: ["metal_scrap","acid"]
+	breakInto: ["metal_scrap","acid"],
+	movable: false
 },
 "cloner": {
 	color: "#dddd00",
@@ -2447,7 +2488,8 @@ SEEDRISE: function(pixel) {
 	category:"machines",
 	insulate:true,
 	hardness: 1,
-	darkText: true
+	darkText: true,
+	movable: false
 },
 "sensor": {
 	color: "#bebfa3",
@@ -2500,7 +2542,8 @@ SEEDRISE: function(pixel) {
 	},
 	temp: 22,
 	category:"machines",
-	insulate:true
+	insulate:true,
+	movable: false
 },
 "cooler": {
 	color: "#111188",
@@ -2521,7 +2564,8 @@ SEEDRISE: function(pixel) {
 	},
 	temp: 18,
 	category:"machines",
-	insulate:true
+	insulate:true,
+	movable: false
 },
 "random": {
 	color: ["#28BCD1","#9335E6","#E13294"],
@@ -2784,7 +2828,23 @@ SEEDRISE: function(pixel) {
 },
 "filler": {
 	color: "#ae4cd9",
-	behavior: behaviors.FILL,
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
+	tick: function(pixel) {
+		doDefaults(pixel);
+
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (isEmpty(x,y)) {
+				createPixel(pixel.element, x, y);
+				if (pixel.clone) pixelMap[x][y].clone = pixel.clone;
+			}
+		}
+		if (pixel.clone !== undefined && pixelTicks - pixel.start >= 2) {
+			changePixel(pixel, choose(pixel.clone.split(",")));
+		}
+	},
 	category:"special",
 	excludeRandom: true,
 	reactions: {
@@ -2794,7 +2854,8 @@ SEEDRISE: function(pixel) {
 		"positron": { elem1:"vertical" },
 		"plasma": { elem1:"armageddon", tempMin:500, charged:true }
 	},
-	density: 1834
+	density: 1834,
+	movable: false
 },
 "lattice": {
 	color: "#cb4cd9",
@@ -3480,7 +3541,7 @@ SEEDRISE: function(pixel) {
 			pixel.emit = false;
 		}
 		behaviors.FLY(pixel,function(firefly,newfly){
-			if (newfly) {
+			if (newfly && newfly.element === "firefly") {
 				newfly.fff = firefly.fff;
 				newfly.color = newfly.ffc||pixelColorPick(newfly,"#684841");
 				newfly.glow = false;
@@ -4909,10 +4970,17 @@ SEEDRISE: function(pixel) {
 },
 "fuse": {
 	color: "#825d38",
+	onShiftSelect: function(element) {
+		promptInput("Enter an element to turn into once charged.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { clone:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	tick: function(pixel) {
 		doDefaults(pixel);
 		if (pixel.charge < 1) {
-			changePixel(pixel,"flash");
+			changePixel(pixel,pixel.clone ? choose(pixel.clone.split(",")) : "flash");
 			pixel.charge = 0;
 		}
 	},
@@ -4981,6 +5049,7 @@ SEEDRISE: function(pixel) {
 },
 "udder": {
 	color: "#ecb3f5",
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	tick: function(pixel) {
 		if (!isEmpty(pixel.x+1,pixel.y,true)) {
 			let pixel2 = pixelMap[pixel.x+1][pixel.y];
@@ -5747,8 +5816,7 @@ SEEDRISE: function(pixel) {
 	behavior: behaviors.LIQUID,
 	tick: function(pixel) {
 		if (pixel.temp > 500 && !pixel.burning) {
-			pixel.burning = true;
-			pixel.burnStart = pixelTicks;
+			burnPixel(pixel);
 		}
 	},
 	reactions: {
@@ -7083,7 +7151,7 @@ SEEDRISE: function(pixel) {
 		}
 	},
 	onClicked: behaviors.CLONE_ON_CLICK,
-	ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","wire","ewall","sensor","battery","fuse"],
+	ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","wire","wall","ewall","sensor","battery","fuse"],
 	ignoreConduct:["fuse"],
 	category:"machines",
 	insulate:true,
@@ -7094,17 +7162,17 @@ SEEDRISE: function(pixel) {
 },
 "slow_cloner": {
 	color: "#888800",
-	behavior: [
-		"XX|CF%10|XX",
-		"CF%10|XX|CF%10",
-		"XX|CF%10|XX"
-	],
+	tick: function(pixel) {
+		doDefaults(pixel);
+		behaviors.CLONER(pixel, 0.1);
+	},
 	onClicked: behaviors.CLONE_ON_CLICK,
 	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
 	ignore: ["cloner","ecloner","clone_powder","floating_cloner","wall","ewall"],
 	category:"machines",
 	insulate:true,
-	hardness: 1
+	hardness: 1,
+	movable: false
 },
 "clone_powder": {
 	color: "#f0f000",
@@ -7172,6 +7240,7 @@ SEEDRISE: function(pixel) {
 	reactions: {
 		"chlorine": { elem1:null },
 		"liquid_chlorine": { elem1:null },
+		"chlorine_ice": { elem1:null },
 		"light": { elem1:null, chance:0.1 },
 		"liquid_light": { elem1:null, chance:0.1 },
 		"electric": { elem2:"malware" }
@@ -10249,6 +10318,7 @@ SEEDRISE: function(pixel) {
 	state: "liquid",
 	density: 1001,
 	stain: -0.1,
+	ignore: ["paper"],
 	hidden: true,
 	isFood: true
 },
@@ -11483,8 +11553,7 @@ SEEDRISE: function(pixel) {
 	behavior: behaviors.LIQUID,
 	tick: function(pixel) {
 		if (!pixel.burning && pixel.temp >= 232) {
-			pixel.burning = true;
-			pixel.burnStart = pixelTicks;
+			burnPixel(pixel);
 		}
 	},
 	reactions: {
@@ -12645,8 +12714,7 @@ SEEDRISE: function(pixel) {
 	tool: function(pixel) {
 		pixel.temp += 10000;
 		if (!pixel.burning && elements[pixel.element].burn) {
-			pixel.burning = true;
-			pixel.burnStart = pixelTicks;
+			burnPixel(pixel)
 		}
 		pixelTempCheck(pixel);
 	},
@@ -12821,8 +12889,7 @@ SEEDRISE: function(pixel) {
 	color: "#c44f45",
 	tick: function(pixel) {
 		if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
-			pixel.burning = true;
-			pixel.burnStart = pixelTicks;
+			burnPixel(pixel);
 		}
 		if (pixel.burning) {
 			if (!tryMove(pixel, pixel.x, pixel.y-1)) {
@@ -13523,10 +13590,7 @@ SEEDRISE: function(pixel) {
 					var x = coordsToShock[i][0];
 					var y = coordsToShock[i][1];
 					if (!isEmpty(x,y,true)) {
-						var newpixel = pixelMap[x][y];
-						if (elements[newpixel.element].conduct) {
-							newpixel.charge = 1;
-						}
+						chargePixel(pixelMap[x][y]);
 					}
 				}
 			}
@@ -14077,7 +14141,11 @@ else if (!standalone && settings.lang !== null) {
 	try {
 		// try auto-setting language
 		let code = navigator.languages ? navigator.languages[0] : navigator.language;
-		if (code && !code.match(/^en-?/)) {
+		if (code.match(/^en-?/)) { /*do nothing*/ }
+		else if (code === "pt-BR") langCode = "pt_br";
+		else if (code === "zh-CN") langCode = "zh_cn";
+		else if (code === "zh-HK" || code === "zh-TW") langCode = "zh_hant";
+		else if (code) {
 			langCode = code.toLowerCase().split("-")[0];
 		}
 	}
@@ -14364,8 +14432,7 @@ function langKey(key,fallback,template) {
 			pixel.start = pixelTicks;
 			var elementInfo = elements[element];
 			if (elementInfo.burning == true) {
-				pixel.burning = true;
-				pixel.burnStart = pixelTicks;
+				burnPixel(pixel);
 			}
 			else if (pixel.burning && !elementInfo.burn) {
 				delete pixel.burning;
@@ -14563,6 +14630,27 @@ function langKey(key,fallback,template) {
 				return pixel;
 			}
 			return null;
+		}
+		function chargePixel(pixel,amount=1) {
+			var con = elements[pixel.element].conduct;
+			if (con !== undefined) {
+				if (Math.random() < con) { // If random number is less than conductivity
+					if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(pixel.element) !== -1) {
+						return;
+					}
+					if (!pixel.charge && !pixel.chargeCD) {
+						pixel.charge = amount;
+						if (elements[pixel.element].colorOn) {
+							pixel.color = pixelColorPick(pixel);
+						}
+					}
+				}
+			}
+		}
+		function burnPixel(pixel) {
+			if (!elements[pixel.element].burn || pixel.burning) return;
+			pixel.burning = true;
+			pixel.burnStart = pixelTicks;
 		}
 		function pixelDistance(x1, y1, x2, y2) {
 			let a = x1 - x2;
@@ -14762,230 +14850,82 @@ function choose(array) {
 	return array[Math.floor(Math.random()*array.length)];
 }
 behaviorRules = {
-	"M1": function() {
-		if (btemp.info.viscosity !== undefined) {
-			if (!((Math.random()*100) < 100 / Math.pow(btemp.info.viscosity, 0.25))) {
-				btemp.newCoords.x = btemp.pixel.x;
-			}
+"M1": function() {
+	if (btemp.info.viscosity !== undefined) {
+		if (!((Math.random()*100) < 100 / Math.pow(btemp.info.viscosity, 0.25))) {
+			btemp.newCoords.x = btemp.pixel.x;
 		}
-		btemp.move1Spots.push(btemp.newCoords);
-	},
-	"M2": function() {
-		if (btemp.info.viscosity !== undefined) {
-			if (!((Math.random()*100) < 100 / Math.pow(btemp.info.viscosity, 0.25))) {
-				btemp.newCoords.x = btemp.pixel.x;
-			}
+	}
+	btemp.move1Spots.push(btemp.newCoords);
+},
+"M2": function() {
+	if (btemp.info.viscosity !== undefined) {
+		if (!((Math.random()*100) < 100 / Math.pow(btemp.info.viscosity, 0.25))) {
+			btemp.newCoords.x = btemp.pixel.x;
 		}
-		btemp.move2Spots.push(btemp.newCoords);
-	},
-	"SP": function() {
-		btemp.supportSpots.push({x:btemp.newCoords.x,y:btemp.newCoords.y,arg:btemp.arg});
-	},
-	"SA": function() {
-		if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
-			btemp.move = false;
+	}
+	btemp.move2Spots.push(btemp.newCoords);
+},
+"SP": function() {
+	btemp.supportSpots.push({x:btemp.newCoords.x,y:btemp.newCoords.y,arg:btemp.arg});
+},
+"SA": function() {
+	if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
+		btemp.move = false;
+	}
+},
+"DL": function() {
+	if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
+		// if the pixel at newCoords is the same element as the pixel, ignore
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		// if info.ignore exists and newPixel.element is in it
+		if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
+			return;
 		}
-	},
-	"DL": function() {
-		if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
-			// if the pixel at newCoords is the same element as the pixel, ignore
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			// if info.ignore exists and newPixel.element is in it
-			if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
-				return;
-			}
-			if ((!(newPixel.element == btemp.pixel.element)) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
-				if (btemp.arg !== null) { var args = btemp.arg.split(","); }
-				if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
-					if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
-						deletePixel(btemp.newCoords.x,btemp.newCoords.y);
-						if (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y) {
-							btemp.deleted = true;
-						}
-						btemp.swapSpots.length = 0;
-					}
-				}
-			}
-		}
-	},
-	"DB": function() {
-		if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
-			// if the pixel at newCoords is the same element as the pixel, ignore
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			// if info.ignore exists and newPixel.element is in it
-			if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
-				return;
-			}
-			if (!(newPixel.element == btemp.pixel.element)) {
-				if (btemp.arg !== null) { var args = btemp.arg.split(","); }
-				if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
-					if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
-						deletePixel(btemp.newCoords.x,btemp.newCoords.y);
-						if (pixelMap[btemp.pixel.x][btemp.pixel.y] !== undefined) {
-							deletePixel(btemp.pixel.x,btemp.pixel.y);
-						}
-						btemp.deleted = true;
-						btemp.swapSpots = [];
-					}
-				}
-			}
-		}
-	},
-	"CH": function() {
-		if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
-				return;
-			}
-			if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
-				if (btemp.arg.indexOf(">") !== -1) {
-					var argfrom = btemp.arg.split(">")[0];
-					if (argfrom.indexOf(",") !== -1) {
-						if (argfrom.split(",").indexOf(newPixel.element) === -1) {
-							return;
-						}
-					}
-					else if (argfrom !== newPixel.element) {
-						return;
-					}
-					var argto = btemp.arg.split(">")[1];
-				}
-				else {
-					var argfrom = null;
-					var argto = btemp.arg;
-				}
-				if (argto.indexOf(",") !== -1) {
-					var argto = choose(argto.split(","));
-				}
-				if (elements[argto]) {
-					if (elements[newPixel.element].id !== elements[argto].id) {
-						changePixel(newPixel,argto);
-					}
-				}
-			}
-		}
-	},
-	"SW": function() {
-		if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if ((!(newPixel.element == btemp.pixel.element)) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
 			if (btemp.arg !== null) { var args = btemp.arg.split(","); }
 			if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
 				if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
-					btemp.swapSpots.push({x:btemp.newCoords.x,y:btemp.newCoords.y});
-				}
-			}
-		}
-	},
-	"CR": function() {
-		if (isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
-			if (btemp.arg === null) {
-				btemp.arg = btemp.pixel.element;
-			}
-			else if (btemp.arg.indexOf(",") !== -1) {
-				btemp.arg = choose(btemp.arg.split(","));
-			}
-			if (elements[btemp.arg]) {
-				createPixel(btemp.arg,btemp.newCoords.x,btemp.newCoords.y);
-				if (!pixelMap[btemp.newCoords.x][btemp.newCoords.y]) return;
-				if (btemp.info.fireColor && btemp.arg==="fire") {
-					pixelMap[btemp.newCoords.x][btemp.newCoords.y].color = pixelColorPick(pixelMap[btemp.newCoords.x][btemp.newCoords.y],btemp.info.fireColor);
-				}
-				pixelMap[btemp.newCoords.x][btemp.newCoords.y].temp = btemp.pixel.temp
-				pixelTempCheck(pixelMap[btemp.newCoords.x][btemp.newCoords.y]);
-			}
-		}
-	},
-	"CL": function() {
-		if (isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
-			if (btemp.arg === null || btemp.pixel.temp >= parseFloat(btemp.arg)) {
-				clonePixel(btemp.pixel,btemp.newCoords.x,btemp.newCoords.y);
-			}
-		}
-	},
-	"CF": function() {
-		if (btemp.pixel.clone) {
-			if (isEmpty(btemp.newCoords.x, btemp.newCoords.y)) {
-				createPixel(btemp.pixel.clone, btemp.newCoords.x, btemp.newCoords.y);
-				if (pixelMap[btemp.newCoords.x][btemp.newCoords.y]) {
-					pixelMap[btemp.newCoords.x][btemp.newCoords.y].temp = btemp.pixel.temp;
-					pixelTempCheck(pixelMap[btemp.newCoords.x][btemp.newCoords.y]);
-				}
-			}
-		}
-		else {
-			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y,true)) {
-				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-				if (!btemp.pixel.clone && btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
-					return;
-				}
-				if (newPixel.element !== btemp.pixel.element) {
-					btemp.pixel.clone = elements[newPixel.element].pickElement || newPixel.element;
-					btemp.pixel.temp = newPixel.temp;
-				}
-				else if (newPixel.clone) {
-					btemp.pixel.clone = newPixel.clone;
-					btemp.pixel.temp = newPixel.temp;
-				}
-			}
-		}
-	},
-	"SH": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			var con = elements[newPixel.element].conduct;
-			if (con !== undefined) {
-				if (Math.random() < con) { // If random number is less than conductivity
-					if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
-						return;
+					deletePixel(btemp.newCoords.x,btemp.newCoords.y);
+					if (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y) {
+						btemp.deleted = true;
 					}
-					if (!newPixel.charge && !newPixel.chargeCD && (btemp.arg === null || newPixel.element == btemp.arg)) {
-						newPixel.charge = (parseFloat(btemp.arg) || 1);
-						if (elements[newPixel.element].colorOn) {
-							newPixel.color = pixelColorPick(newPixel);
-						}
-					}
+					btemp.swapSpots.length = 0;
 				}
 			}
 		}
-	},
-	"ST": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
-				return;
+	}
+},
+"DB": function() {
+	if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
+		// if the pixel at newCoords is the same element as the pixel, ignore
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		// if info.ignore exists and newPixel.element is in it
+		if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
+			return;
+		}
+		if (!(newPixel.element == btemp.pixel.element)) {
+			if (btemp.arg !== null) { var args = btemp.arg.split(","); }
+			if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
+				if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
+					deletePixel(btemp.newCoords.x,btemp.newCoords.y);
+					if (pixelMap[btemp.pixel.x][btemp.pixel.y] !== undefined) {
+						deletePixel(btemp.pixel.x,btemp.pixel.y);
+					}
+					btemp.deleted = true;
+					btemp.swapSpots = [];
+				}
 			}
-			if (newPixel.element !== btemp.pixel.element && (btemp.arg === null || newPixel.element == btemp.arg)) {
-				btemp.sticking = true
-			}
 		}
-	},
-	"LB": function() {
-		if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
-			btemp.arg = choose(btemp.arg.split(","));
+	}
+},
+"CH": function() {
+	if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
+			return;
 		}
-		if (elements[btemp.arg]) {
-			btemp.leaveBehind = btemp.arg;
-		}
-	},
-	"L1": function() {
-		if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
-			btemp.arg = choose(btemp.arg.split(","));
-		}
-		if (elements[btemp.arg]) {
-			btemp.leaveBehind1 = btemp.arg;
-		}
-	},
-	"L2": function() {
-		if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
-			btemp.arg = choose(btemp.arg.split(","));
-		}
-		if (elements[btemp.arg]) {
-			btemp.leaveBehind2 = btemp.arg;
-		}
-	},
-	"CC": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
 			if (btemp.arg.indexOf(">") !== -1) {
 				var argfrom = btemp.arg.split(">")[0];
 				if (argfrom.indexOf(",") !== -1) {
@@ -14996,159 +14936,297 @@ behaviorRules = {
 				else if (argfrom !== newPixel.element) {
 					return;
 				}
-				btemp.arg = btemp.arg.split(">")[1];
+				var argto = btemp.arg.split(">")[1];
 			}
-			if (btemp.arg === null) {btemp.arg = newPixel.colorObject}
 			else {
-				if (btemp.arg.indexOf(",") !== -1) {
-					btemp.arg = choose(btemp.arg.split(","))
+				var argfrom = null;
+				var argto = btemp.arg;
+			}
+			if (argto.indexOf(",") !== -1) {
+				var argto = choose(argto.split(","));
+			}
+			if (elements[argto]) {
+				if (elements[newPixel.element].id !== elements[argto].id) {
+					changePixel(newPixel,argto);
 				}
-				if (!btemp.arg.startsWith("#")) {
-					btemp.arg = "#" + btemp.arg;
-				}
 			}
-			newPixel.color = btemp.arg;
 		}
-	},
-	"HT": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+	}
+},
+"SW": function() {
+	if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (btemp.arg !== null) { var args = btemp.arg.split(","); }
+		if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
+			if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
+				btemp.swapSpots.push({x:btemp.newCoords.x,y:btemp.newCoords.y});
+			}
+		}
+	}
+},
+"CR": function() {
+	if (isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
+		if (btemp.arg === null) {
+			btemp.arg = btemp.pixel.element;
+		}
+		else if (btemp.arg.indexOf(",") !== -1) {
+			btemp.arg = choose(btemp.arg.split(","));
+		}
+		if (elements[btemp.arg]) {
+			createPixel(btemp.arg,btemp.newCoords.x,btemp.newCoords.y);
+			if (!pixelMap[btemp.newCoords.x][btemp.newCoords.y]) return;
+			if (btemp.info.fireColor && btemp.arg==="fire") {
+				pixelMap[btemp.newCoords.x][btemp.newCoords.y].color = pixelColorPick(pixelMap[btemp.newCoords.x][btemp.newCoords.y],btemp.info.fireColor);
+			}
+			pixelMap[btemp.newCoords.x][btemp.newCoords.y].temp = btemp.pixel.temp
+			pixelTempCheck(pixelMap[btemp.newCoords.x][btemp.newCoords.y]);
+		}
+	}
+},
+"CL": function() {
+	if (isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
+		if (btemp.arg === null || btemp.pixel.temp >= parseFloat(btemp.arg)) {
+			clonePixel(btemp.pixel,btemp.newCoords.x,btemp.newCoords.y);
+		}
+	}
+},
+"CF": function() {
+	if (btemp.pixel.clone) {
+		if (isEmpty(btemp.newCoords.x, btemp.newCoords.y)) {
+			createPixel(btemp.pixel.clone, btemp.newCoords.x, btemp.newCoords.y);
+			if (pixelMap[btemp.newCoords.x][btemp.newCoords.y]) {
+				pixelMap[btemp.newCoords.x][btemp.newCoords.y].temp = btemp.pixel.temp;
+				pixelTempCheck(pixelMap[btemp.newCoords.x][btemp.newCoords.y]);
+			}
+		}
+	}
+	else {
+		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y,true)) {
 			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (elements[newPixel.element].insulate) { return }
-			if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
-				if (btemp.arg !== null) {btemp.arg = parseFloat(btemp.arg)}
-				else {btemp.arg = 1}
-				if (isNaN(btemp.arg)) {btemp.arg = 1}
-				newPixel.temp += btemp.arg;
-				pixelTempCheck(newPixel);
+			if (!btemp.pixel.clone && btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
+				return;
+			}
+			if (newPixel.element !== btemp.pixel.element) {
+				btemp.pixel.clone = elements[newPixel.element].pickElement || newPixel.element;
+				btemp.pixel.temp = newPixel.temp;
+			}
+			else if (newPixel.clone) {
+				btemp.pixel.clone = newPixel.clone;
+				btemp.pixel.temp = newPixel.temp;
 			}
 		}
-	},
-	"CO": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (elements[newPixel.element].insulate) { return }
-			if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
-				if (btemp.arg !== null) {btemp.arg = parseFloat(btemp.arg)}
-				else {btemp.arg = 1}
-				if (isNaN(btemp.arg)) {btemp.arg = 1}
-				newPixel.temp -= btemp.arg;
-				pixelTempCheck(newPixel);
-			}
+	}
+},
+"SH": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		chargePixel(newPixel, parseFloat(btemp.arg) || 1);
+		if (btemp.arg !== null && newPixel.element !== btemp.arg) {
+			return;
 		}
-	},
-	"FX": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (elements[newPixel.element].flippableX) {
-				if (btemp.arg === "0") { newPixel.flipX = false; }
-				else if (btemp.arg === "1") { newPixel.flipX = true; }
-				newPixel.flipX = !newPixel.flipX;
-			}
+	}
+},
+"ST": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
+			return;
 		}
-	},
-	"FY": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (elements[newPixel.element].flippableY) {
-				if (btemp.arg === "0") { newPixel.flipY = false; }
-				else if (btemp.arg === "1") { newPixel.flipY = true; }
-				else { newPixel.flipY = !newPixel.flipY; }
-			}
+		if (newPixel.element !== btemp.pixel.element && (btemp.arg === null || newPixel.element == btemp.arg)) {
+			btemp.sticking = true
 		}
-	},
-	"RT": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
-				btemp.arg = choose(btemp.arg.split(","));
-			}
-			if (elements[newPixel.element].rotatable) {
-				newPixel.r = ((newPixel.r||0) + (parseInt(btemp.arg)||1)) % 4;
-			}
-		}
-	},
-	"BO": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y) && (outOfBounds(btemp.newCoords.x, btemp.newCoords.y) || elements[pixelMap[btemp.newCoords.x][btemp.newCoords.y].element].id === elements[btemp.pixel.element].id || elements[pixelMap[btemp.newCoords.x][btemp.newCoords.y].element].state === "solid")) {
-			if (btemp.info.flippableX) {
-				btemp.pixel.flipX = !btemp.pixel.flipX;
-			}
-			if (btemp.info.flippableY) {
-				btemp.pixel.flipY = !btemp.pixel.flipY;
-			}
-			if (btemp.info.rotatable) {
-				// If arg isn't null, set arg to a random choice from arg.split(",")
-				if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
-					btemp.arg = btemp.arg.split(",")[Math.floor(Math.random()*btemp.arg.split(",").length)];
-				}
-				if (btemp.pixel.r !== undefined) {
-					btemp.pixel.r = (btemp.pixel.r + (parseInt(btemp.arg)||2)) % 4;
-				}
-				else { btemp.pixel.r = (parseInt(btemp.arg)||2); }
-			}
-		}
-	},
-	"C2": function() {
-		if (btemp.arg.indexOf(",") !== -1) {
-			btemp.arg = choose(arg.split(","));
-		}
-		btemp.C2 = btemp.arg;
-	},
-	"EX": function() {
-		if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
-			if (btemp.info.ignore && !outOfBounds(btemp.newCoords.x,btemp.newCoords.y)) {
-				if (btemp.info.ignore.indexOf(pixelMap[btemp.newCoords.x][btemp.newCoords.y].element) !== -1) {
+	}
+},
+"LB": function() {
+	if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
+		btemp.arg = choose(btemp.arg.split(","));
+	}
+	if (elements[btemp.arg]) {
+		btemp.leaveBehind = btemp.arg;
+	}
+},
+"L1": function() {
+	if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
+		btemp.arg = choose(btemp.arg.split(","));
+	}
+	if (elements[btemp.arg]) {
+		btemp.leaveBehind1 = btemp.arg;
+	}
+},
+"L2": function() {
+	if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
+		btemp.arg = choose(btemp.arg.split(","));
+	}
+	if (elements[btemp.arg]) {
+		btemp.leaveBehind2 = btemp.arg;
+	}
+},
+"CC": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (btemp.arg.indexOf(">") !== -1) {
+			var argfrom = btemp.arg.split(">")[0];
+			if (argfrom.indexOf(",") !== -1) {
+				if (argfrom.split(",").indexOf(newPixel.element) === -1) {
 					return;
 				}
 			}
-			if (outOfBounds(btemp.newCoords.x,btemp.newCoords.y) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y) || (btemp.pixel.element !== pixelMap[btemp.newCoords.x][btemp.newCoords.y].element && elements[pixelMap[btemp.newCoords.x][btemp.newCoords.y].element].state !== "gas")) {
-				// if arg contains ">", var fire = everything after it, arg = everything before it
-				if (btemp.arg.indexOf(">") !== -1) {
-					var fire = btemp.arg.split(">")[1];
-					btemp.arg = btemp.arg.split(">")[0];
-				}
-				else { var fire = "fire" }
-				// arg = a number
-				if (btemp.arg !== null) {
-					btemp.arg = parseInt(btemp.arg);
-					if (isNaN(btemp.arg)) {btemp.arg = 3}
-				}
-				else {btemp.arg = 3}
-				explodeAt(btemp.pixel.x,btemp.pixel.y,btemp.arg,fire);
-				if (!btemp.pixel.del && btemp.info.hardness !== 1) {
-					deletePixel(btemp.pixel.x,btemp.pixel.y);
-					btemp.deleted = true;
-				}
-				btemp.swapSpots = [];
+			else if (argfrom !== newPixel.element) {
+				return;
+			}
+			btemp.arg = btemp.arg.split(">")[1];
+		}
+		if (btemp.arg === null) {btemp.arg = newPixel.colorObject}
+		else {
+			if (btemp.arg.indexOf(",") !== -1) {
+				btemp.arg = choose(btemp.arg.split(","))
+			}
+			if (!btemp.arg.startsWith("#")) {
+				btemp.arg = "#" + btemp.arg;
 			}
 		}
-	},
-	"SM": function() {
-		if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (isBreakable(newPixel) && Math.random() > (elements[newPixel.element].hardness || 0)) {
-				breakPixel(newPixel);
+		newPixel.color = btemp.arg;
+	}
+},
+"HT": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (elements[newPixel.element].insulate) { return }
+		if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+			if (btemp.arg !== null) {btemp.arg = parseFloat(btemp.arg)}
+			else {btemp.arg = 1}
+			if (isNaN(btemp.arg)) {btemp.arg = 1}
+			newPixel.temp += btemp.arg;
+			pixelTempCheck(newPixel);
+		}
+	}
+},
+"CO": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (elements[newPixel.element].insulate) { return }
+		if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+			if (btemp.arg !== null) {btemp.arg = parseFloat(btemp.arg)}
+			else {btemp.arg = 1}
+			if (isNaN(btemp.arg)) {btemp.arg = 1}
+			newPixel.temp -= btemp.arg;
+			pixelTempCheck(newPixel);
+		}
+	}
+},
+"FX": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (elements[newPixel.element].flippableX) {
+			if (btemp.arg === "0") { newPixel.flipX = false; }
+			else if (btemp.arg === "1") { newPixel.flipX = true; }
+			newPixel.flipX = !newPixel.flipX;
+		}
+	}
+},
+"FY": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (elements[newPixel.element].flippableY) {
+			if (btemp.arg === "0") { newPixel.flipY = false; }
+			else if (btemp.arg === "1") { newPixel.flipY = true; }
+			else { newPixel.flipY = !newPixel.flipY; }
+		}
+	}
+},
+"RT": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
+			btemp.arg = choose(btemp.arg.split(","));
+		}
+		if (elements[newPixel.element].rotatable) {
+			newPixel.r = ((newPixel.r||0) + (parseInt(btemp.arg)||1)) % 4;
+		}
+	}
+},
+"BO": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y) && (outOfBounds(btemp.newCoords.x, btemp.newCoords.y) || elements[pixelMap[btemp.newCoords.x][btemp.newCoords.y].element].id === elements[btemp.pixel.element].id || elements[pixelMap[btemp.newCoords.x][btemp.newCoords.y].element].state === "solid")) {
+		if (btemp.info.flippableX) {
+			btemp.pixel.flipX = !btemp.pixel.flipX;
+		}
+		if (btemp.info.flippableY) {
+			btemp.pixel.flipY = !btemp.pixel.flipY;
+		}
+		if (btemp.info.rotatable) {
+			// If arg isn't null, set arg to a random choice from arg.split(",")
+			if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
+				btemp.arg = btemp.arg.split(",")[Math.floor(Math.random()*btemp.arg.split(",").length)];
+			}
+			if (btemp.pixel.r !== undefined) {
+				btemp.pixel.r = (btemp.pixel.r + (parseInt(btemp.arg)||2)) % 4;
+			}
+			else { btemp.pixel.r = (parseInt(btemp.arg)||2); }
+		}
+	}
+},
+"C2": function() {
+	if (btemp.arg.indexOf(",") !== -1) {
+		btemp.arg = choose(arg.split(","));
+	}
+	btemp.C2 = btemp.arg;
+},
+"EX": function() {
+	if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
+		if (btemp.info.ignore && !outOfBounds(btemp.newCoords.x,btemp.newCoords.y)) {
+			if (btemp.info.ignore.indexOf(pixelMap[btemp.newCoords.x][btemp.newCoords.y].element) !== -1) {
+				return;
 			}
 		}
-	},
-	"MX": function() {
-		if (isEmpty(btemp.newCoords.x, btemp.newCoords.y)) {
-			btemp.mixSpots.push({x:btemp.newCoords.x, y:btemp.newCoords.y});
-		}
-		else if (!outOfBounds(btemp.newCoords.x, btemp.newCoords.y)) {
-			var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-			if (newPixel.element === btemp.pixel.element) { return }
-			if (btemp.arg || !(elements[newPixel.element].movable !== true || elements[newPixel.element].noMix === true)) {
-				btemp.mixSpots.push({x:newPixel.x, y:newPixel.y});
+		if (outOfBounds(btemp.newCoords.x,btemp.newCoords.y) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y) || (btemp.pixel.element !== pixelMap[btemp.newCoords.x][btemp.newCoords.y].element && elements[pixelMap[btemp.newCoords.x][btemp.newCoords.y].element].state !== "gas")) {
+			// if arg contains ">", var fire = everything after it, arg = everything before it
+			if (btemp.arg.indexOf(">") !== -1) {
+				var fire = btemp.arg.split(">")[1];
+				btemp.arg = btemp.arg.split(">")[0];
 			}
+			else { var fire = "fire" }
+			// arg = a number
+			if (btemp.arg !== null) {
+				btemp.arg = parseInt(btemp.arg);
+				if (isNaN(btemp.arg)) {btemp.arg = 3}
+			}
+			else {btemp.arg = 3}
+			explodeAt(btemp.pixel.x,btemp.pixel.y,btemp.arg,fire);
+			if (!btemp.pixel.del && btemp.info.hardness !== 1) {
+				deletePixel(btemp.pixel.x,btemp.pixel.y);
+				btemp.deleted = true;
+			}
+			btemp.swapSpots = [];
 		}
-	},
-	"RL": function() {
-		if (btemp.arg.indexOf(",") !== -1) {
-			btemp.arg = choose(arg.split(","));
+	}
+},
+"SM": function() {
+	if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (isBreakable(newPixel) && Math.random() > (elements[newPixel.element].hardness || 0)) {
+			breakPixel(newPixel);
 		}
-		releaseElement(btemp.pixel, btemp.arg);
-	},
-	"XX": function() {}
+	}
+},
+"MX": function() {
+	if (isEmpty(btemp.newCoords.x, btemp.newCoords.y)) {
+		btemp.mixSpots.push({x:btemp.newCoords.x, y:btemp.newCoords.y});
+	}
+	else if (!outOfBounds(btemp.newCoords.x, btemp.newCoords.y)) {
+		var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+		if (newPixel.element === btemp.pixel.element) { return }
+		if (btemp.arg || !(elements[newPixel.element].movable !== true || elements[newPixel.element].noMix === true)) {
+			btemp.mixSpots.push({x:newPixel.x, y:newPixel.y});
+		}
+	}
+},
+"RL": function() {
+	if (btemp.arg.indexOf(",") !== -1) {
+		btemp.arg = choose(arg.split(","));
+	}
+	releaseElement(btemp.pixel, btemp.arg);
+},
+"XX": function() {}
 }
 	function pixelTick(pixel,custom=null) {
 		if (pixel.start === pixelTicks) {return}
@@ -15392,8 +15470,7 @@ behaviorRules = {
 						var newPixel = pixelMap[x][y];
 						if (elements[newPixel.element].burn && !newPixel.burning) {
 							if (Math.floor(Math.random()*100) < elements[newPixel.element].burn) {
-								newPixel.burning = true;
-								newPixel.burnStart = pixelTicks;
+								burnPixel(newPixel);
 							}
 						}
 						if (elements[newPixel.element].extinguish && elements[pixel.element].burning !== true) {
@@ -16275,8 +16352,7 @@ behaviorRules = {
 						}
 					}
 					if (damage > 0.75 && info.burn) {
-						pixel.burning = true;
-						pixel.burnStart = pixelTicks;
+						burnPixel(pixel);
 					}
 					pixel.temp += damage*radius*power;
 					pixelTempCheck(pixel);
@@ -17178,13 +17254,13 @@ behaviorRules = {
 			var deltaY = e.deltaY;
 			if (settings.invertscroll) {
 				if (deltaY > 0) { deltaY = 1; }
-				else { deltaY = -1.5; }
+				else { deltaY = -1; }
 			}
 			else {
 				if (deltaY < 0) { deltaY = 1; }
-				else { deltaY = -1.5; }
+				else { deltaY = -1; }
 			}
-			mouseSize += Math.round(deltaY*1.5);
+			mouseSize += Math.round(deltaY);
 			checkMouseSize(true);
 		}
 		function chooseElementPrompt() {
@@ -17199,6 +17275,12 @@ behaviorRules = {
 						selectCategory(elements[es].category);
 						if (shiftDown && elements[currentElement].onShiftSelect) {
 							elements[currentElement].onShiftSelect(currentElement);
+							if (promptState) promptState.after = function() {
+								if (currentElementProp) {
+									let btn = document.getElementById("elementButton-"+currentElement);
+									if (btn) btn.setAttribute("modified", "true");
+								}
+							}
 						}
 					}
 					else {
@@ -17312,7 +17394,10 @@ behaviorRules = {
 				elements[currentElement].onUnselect();
 			}
 			var e1 = document.getElementById("elementButton-"+currentElement);
-			if (e1 !== null) { e1.setAttribute("current","false"); }
+			if (e1 !== null) {
+				e1.setAttribute("current","false");
+				e1.setAttribute("modified","false");
+			}
 			prevElement = currentElement;
 			currentElement = element;
 			currentElementProp = null;
@@ -17420,6 +17505,12 @@ behaviorRules = {
 				selectElement(this.getAttribute("element"));
 				if (shiftDown && elements[currentElement].onShiftSelect) {
 					elements[currentElement].onShiftSelect(currentElement);
+					if (promptState) promptState.after = function() {
+						if (currentElementProp) {
+							let btn = document.getElementById("elementButton-"+currentElement);
+							if (btn) btn.setAttribute("modified", "true");
+						}
+					}
 				}
 			}
 		}
@@ -19191,6 +19282,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 					if (!url) return;
 					if (!url.startsWith("http")) url = "https://"+url;
 					setCanvasBackground(url);
+					settings.bg = "#616161";
 				});
 				return;
 			};
@@ -19359,9 +19451,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			if (!promptState) return;
 			if (!promptState.wasPaused && paused) togglePause();
 			let handler = promptState.handler;
+			let after = promptState.after;
 			closeMenu();
 			promptState = null;
 			if (handler) handler(result);
+			if (after) {
+				after();
+			}
 			if (promptState && showingMenu !== "prompt") {
 				showPromptScreen();
 			}

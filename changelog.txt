@@ -4,6 +4,31 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.13.1 - December 18, 2025 - G&G Hotfix]
+    ~ This is a quick group of bug fixes and improvements following yesterday's update.
+    + More Shift-Select functionality:
+        + Fuse can turn into an element after charged
+        + Filler can turn into an element after cloning itself
+        + Heat and Cool tools can specify limits
+        + Paint tool can specify a specific element to paint
+        + Udder can dispense a specific element
+        ~ Distinct border for Shift-Selected element buttons
+    ~ Chlorine Ice kills Virus like gaseous and liquid forms
+    ~ When window is shortened vertically, canvas will shrink to fit screen
+   [Bug Fixes]
+    ~ Fixed: 2- and 4-wide brushes aren't possible with scroll wheel
+    ~ Fixed: Tea doesn't stain Paper very well
+    ~ Fixed: Fireflies change the color of any pixel they touch
+    ~ Fixed: Slow Cloner can't clone more than one element with Shift-Select
+    ~ Fixed: Slow Cloner doesn't immediately grab element
+    ~ Fixed: E-cloners can clone Walls
+    ~ Fixed: Outline View uses white outline with custom URL backgrounds
+    ~ Fixed: Heaters, Coolers, and Cloners can be mixed without holding Shift
+    ~ Fixed: Language isn't autoselected for Brazilian Portuguese or Chinese
+   [Technical]
+    + chargePixel(pixel, amount?) helper function to easily shock a pixel
+    + burnPixel(pixel) helper function to easily ignite a pixel
+
 [Version 1.13 - December 17, 2025 - Gizmos & Gadgets]
     + Filter
         + Only allows the first element it touches to pass
@@ -36,7 +61,7 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     ~ Drag tool is faster and smoother
     ~ Pixelated and colorful button borders
     + Translations for Swedish
-    + Parital translations for Japanese, Thai, Arabic, Hebrew, and Viossa
+    + Partial translations for Japanese, Thai, Arabic, Hebrew, and Viossa
    [Changes]
     + Pipes can transport pixels directly with Filter and Gate
     ~ Pipes no longer conduct heat
