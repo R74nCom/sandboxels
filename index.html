@@ -19328,7 +19328,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			saveSettings();
 		}
 		function checkMouseSize(changed) {
-			console.log(changed,lastMouseSize);
+			// console.log(changed,lastMouseSize);
 			let diff = Math.sign(mouseSize - lastMouseSize);
 			if (changed) { lastMouseSize = mouseSize }
 			else if (lastMouseSize) { mouseSize = lastMouseSize }
