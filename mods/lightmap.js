@@ -353,9 +353,10 @@ elements.firefly.tick = function(pixel) {
 elements.electric.tick = pixel => glowColor(pixel, scaleList(getRandomElement(sparkColors), 0.5));
 
 elements.neon.tick = glowItsOwnColorIfPowered;
-elements.led_r.tick = glowItsOwnColorIfPowered;
-elements.led_g.tick = glowItsOwnColorIfPowered;
-elements.led_b.tick = glowItsOwnColorIfPowered;
+elements.led.tick = glowItsOwnColorIfPowered;
+// elements.led_r.tick = glowItsOwnColorIfPowered;
+// elements.led_g.tick = glowItsOwnColorIfPowered;
+// elements.led_b.tick = glowItsOwnColorIfPowered;
 elements.light_bulb.behaviorOn = null;
 elements.light_bulb.tick = glowItsOwnColorIfPowered;
 elements.sun.tick = glowItsOwnColor;

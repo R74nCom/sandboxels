@@ -199,7 +199,7 @@ elements.rock.breakInto.push("rock_dust")
 
 lightArray = ["fire", "plasma", "cold_fire", "light", "laser", "electric", "radiation", "mystic_fire", "liquid_fire", "liquid_plasma", "liquid_cold_fire", "le_liquid_light", "liquid_laser", "liquid_electric", "liquid_radiation", "liquid_mystic_fire", "magma", "liquid_light", "solid_light"]
 
-ledArray = ["led_r", "led_g", "led_b"]
+ledArray = ["led", "led_r", "led_g", "led_b"]
 
 elements.iocalfaeus_gas = {
 	color: ["#562173", "#481b61"],
