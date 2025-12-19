@@ -7,9 +7,24 @@ const zoom_levels = [
     12
 ]
 window.zoom_data_div = null
-
 window.zoom_level = 1
 window.zoom_panning = [0,0]
+
+let colour_setting;
+
+dependOn("betterSettings.js", () => {
+    const settings_tab = new SettingsTab("zoom.js");
+    colour_setting = new Setting(
+        "Canvas background", 
+        "canvas_bkg", 
+        settingType.COLOR, 
+        false, 
+        defaultValue="#252525"
+    );
+
+    settings_tab.registerSettings(undefined, colour_setting)
+    settingsManager.registerTab(settings_tab)
+})
 
 function handle_zoom(direction){
     switch (direction){
@@ -72,8 +87,8 @@ function gen_button(row, col, html, click, nopos, id){
 
 function add_css(){
     const CSS = `
-    #zm_data_div { margin-bottom: 10px; }
-    #canvasDiv { overflow: hidden }
+    #zm_data_div { margin-bottom: 10px }
+    #canvasDiv   { overflow: hidden; background-color: var(--opac-85) }
 
     @media(pointer=coarse){
         #zm_floater_container#zm_floater_container { 
@@ -95,6 +110,7 @@ function add_css(){
         }
     }
 
+    #colorSelector { z-index: 1; right: 5px }
     #zm_floater_container {
         position: absolute;
         display: grid;
@@ -119,9 +135,14 @@ function add_css(){
         button:where([data-pos="br"]) { border-width: 2px 0px 0px 2px };
     }
     #zm_floater_container:has(#zm_collapse[data-collapsed="true"]) {
+        height: 50px;
+        
         button:not(#zm_collapse) {
-            display: none
+            display: none;
         }
+    }
+    #canvasDiv:has(#colorSelector[style *= "block"]) #zm_floater_container {
+        bottom: 50px;
     }
     
     .zm_corner { border: 2px solid white; }
@@ -159,7 +180,7 @@ function add_zoom_floaters(){
     )
 
     const speed = () => 
-        (window.zoom_level > 3 ? 5  : 10) *          // More granular at higher zoom levels
+        (window.zoom_level > 3 ? 5  : 10) *           // More granular at higher zoom levels
         (pan_mode_sel.dataset.mode == "F" ? 0.25 : 1) // Increase granularity in fine mode
 
     container.append(
@@ -188,6 +209,7 @@ function add_zoom_floaters(){
     )
 
     const canvas_div = document.getElementById("canvasDiv")
+    canvas_div.style.backgroundColor = colour_setting?.value ?? "#252525"
     canvas_div.appendChild(container)
 }
 
@@ -198,7 +220,7 @@ function rescale(){
     const x = zoom_panning[0] * (pixelSize * scale)
     const y = zoom_panning[1] * (pixelSize * scale)
 
-    gameCanvas.style.transform = `translate(${x}px,${y}px) scale(${scale})`
+    gameCanvas.style.transform = `translate(${x}px, ${y}px) translateX(-50%) scale(${scale})`
 }
 
 function log_info(){
