@@ -110,6 +110,7 @@ function add_css(){
         }
     }
 
+    #colorSelector { z-index: 1; right: 5px }
     #zm_floater_container {
         position: absolute;
         display: grid;
@@ -134,9 +135,14 @@ function add_css(){
         button:where([data-pos="br"]) { border-width: 2px 0px 0px 2px };
     }
     #zm_floater_container:has(#zm_collapse[data-collapsed="true"]) {
+        height: 50px;
+        
         button:not(#zm_collapse) {
-            display: none
+            display: none;
         }
+    }
+    #canvasDiv:has(#colorSelector[style *= "block"]) #zm_floater_container {
+        bottom: 50px;
     }
     
     .zm_corner { border: 2px solid white; }
