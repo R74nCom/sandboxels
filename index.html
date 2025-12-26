@@ -20459,10 +20459,10 @@ window.onload = function() {
 	//post-load
 	let tempSave = localStorage.getItem("SandboxelsTempSave");
 	if (tempSave) {
+		localStorage.removeItem("SandboxelsTempSave");
 		let json = JSON.parse(tempSave);
 		lastSaveJSON = json;
 		loadSave(json,3,3)
-		localStorage.removeItem("SandboxelsTempSave")
 	}
 	else if (urlParams.has("discord")) {
 		let saveID = parseInt(urlParams.get("discord"));
