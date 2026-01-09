@@ -14,6 +14,18 @@ let oreChances = {
     uranium: 0.805,
     aluminum: 1
 }
+function makeCurve(pos, w, dir, div = 100){
+    let prevX = pos[0], prevY = pos[1];
+    let res = [];
+    for(i = w; i >= 0; i--){
+        let x2 = (dir == 1) ? pos[0]-i : pos[0]+i;
+        let y2 = height-((1/div)*(x2**2));
+		console.log(prevX, prevY, Math.round(x2), Math.round(y2));
+        res = res.concat(lineCoords(prevX, prevY, Math.round(x2), Math.round(y2), 1));
+        prevX = Math.round(x2), prevY = Math.round(y2);
+    }
+    return res;
+}
 class biome {
     constructor(layersArr, yLevels, properties, afterFunc = false){
         this.layers = layersArr;
