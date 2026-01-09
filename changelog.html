@@ -113,6 +113,137 @@
 <p>The original <a href="https://sandboxels.R74n.com/changelog.txt">plain text version</a> of this is still maintained.</p>
 </div>
 
+<h2 id="1.13.1">[Version 1.13.1 - December 18, 2025 - G&amp;G Hotfix]</h2>
+<ul>
+<li>~ This is a quick group of bug fixes and improvements following yesterday's update.</li>
+<li>+ More Shift-Select functionality:</li>
+<li>    + Fuse can turn into an element after charged</li>
+<li>    + Filler can turn into an element after cloning itself</li>
+<li>    + Heat and Cool tools can specify limits</li>
+<li>    + Paint tool can specify a specific element to paint</li>
+<li>    + Udder can dispense a specific element</li>
+<li>    ~ Distinct border for Shift-Selected element buttons</li>
+<li>~ Chlorine Ice kills Virus like gaseous and liquid forms</li>
+<li>~ When window is shortened vertically, canvas will shrink to fit screen</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: 2- and 4-wide brushes aren't possible with scroll wheel</li>
+<li>~ Fixed: Tea doesn't stain Paper very well</li>
+<li>~ Fixed: Fireflies change the color of any pixel they touch</li>
+<li>~ Fixed: Slow Cloner can't clone more than one element with Shift-Select</li>
+<li>~ Fixed: Slow Cloner doesn't immediately grab element</li>
+<li>~ Fixed: E-cloners can clone Walls</li>
+<li>~ Fixed: Outline View uses white outline with custom URL backgrounds</li>
+<li>~ Fixed: Heaters, Coolers, and Cloners can be mixed without holding Shift</li>
+<li>~ Fixed: Language isn't autoselected for Brazilian Portuguese or Chinese</li>
+<li>[Technical]</li>
+<li>+ chargePixel(pixel, amount?) helper function to easily shock a pixel</li>
+<li>+ burnPixel(pixel) helper function to easily ignite a pixel</li>
+</ul>
+
+<h2 id="1.13">[Version 1.13 - December 17, 2025 - Gizmos & Gadgets]</h2>
+<ul>
+<li>+ Filter</li>
+<li>    + Only allows the first element it touches to pass</li>
+<li>+ Gate</li>
+<li>    + Only allows pixels to pass if electrified</li>
+<li>    + Only conducts electricity into itself and Wire</li>
+<li>+ Canvas background images</li>
+<li>    + Some presets and custom image URLs</li>
+<li>+ Outline View (Press 5)</li>
+<li>+ 2-wide and 4-wide brushes</li>
+<li>+ Ruler tool in Special to measure lengths and angles</li>
+<li>+ Manual element control</li>
+<li>    + Shift-clicking certain element buttons prompt the user for more information</li>
+<li>    + Erase tool allows only deleting certain elements</li>
+<li>    + Cloners allow multiple comma-separated elements</li>
+<li>    + Filters allow states (solid, liquid, or gas) or multiple elements</li>
+<li>    + Sensors allow sensing specific elements</li>
+<li>    + Portals allow the setting of channels</li>
+<li>    + Void allows only deleting certain elements</li>
+<li>    + Random tool allows pre-selected element choices</li>
+<li>    + Explosion allows custom radius</li>
+<li>    + Antibombs allow pre-selected explosion elements</li>
+<li>~ Replaced LED Red, Green, and Blue with a single customizable LED</li>
+<li>    ~ LEDs in old saves are automatically converted to the new element</li>
+<li>- Merged Superheaters and Freezers with Heaters and Coolers</li>
+<li>    + Heaters can be heated to heat the same as a Superheater</li>
+<li>    + Coolers can be cooled to cool the same as a Freezer</li>
+<li>- Removed Tesla Coil and Shocker</li>
+<li>    ~ These elements in old saves are automatically converted to E-cloners</li>
+<li>~ Drag tool is faster and smoother</li>
+<li>~ Pixelated and colorful button borders</li>
+<li>+ Translations for Swedish</li>
+<li>+ Partial translations for Japanese, Thai, Arabic, Hebrew, and Viossa</li>
+<li>[Changes]</li>
+<li>+ Pipes can transport pixels directly with Filter and Gate</li>
+<li>~ Pipes no longer conduct heat</li>
+<li>~ Brightened blue stage in Pipes</li>
+<li>~ Incomplete pipes darken after being initialized</li>
+<li>+ Oxygen can be used to dispose Molten Lead in reactors</li>
+<li>+ Electrolysis of raw Salt</li>
+<li>+ Smashing hot Cooked Meat releases Grease</li>
+<li>+ Worms can compost Lettuce, Tomato, Corn, Pickle, and Bread</li>
+<li>+ Rats can eat Spiders</li>
+<li>+ Caramel and Herb make peppermint-colored sugar</li>
+<li>+ Baking Soda can be made with Lye and Carbon Dioxide</li>
+<li>+ Melting Ash with Dirt creates Tuff</li>
+<li>~ Poison Gas no longer makes Slag from molten elements</li>
+<li>~ Perfume can exist at room temperature</li>
+<li>~ Acid doesn't dissolve Mercury or Diamond</li>
+<li>~ Sulfur ignites when hot</li>
+<li>~ All Cloud types can be smashed like Rain Cloud</li>
+<li>~ Thermite burns into less Iron</li>
+<li>~ Rock Wall deletes Light when placed over it for better eclipses</li>
+<li>- Removed Gallium-Sodium reaction</li>
+<li>~ Copper Sulfate reacts with more carbs</li>
+<li>~ Rainbow recipe uses Pointer instead of Flash</li>
+<li>~ Bless deletes Strange Matter instead of turning it into Neutron</li>
+<li>+ Static recipe</li>
+<li>+ Malware can mix with some metals to create machine parts</li>
+<li>+ Tea stains Paper</li>
+<li>+ Unique fire color for Tin</li>
+<li>~ Element buttons are consistently spaced on all sides</li>
+<li>~ Recolored Pyrite</li>
+<li>~ Acid has a smoother texture</li>
+<li>~ Purple Gold is slightly more purple</li>
+<li>~ Hyphae and Lichen are grainier</li>
+<li>~ Recolored Random button</li>
+<li>~ Recolored Balloon button</li>
+<li>~ Recolored Confetti button</li>
+<li>~ Recolored Hair button</li>
+<li>~ Recolored Pistil button</li>
+<li>~ Reordered colors in many buttons for consistent "lighting" look</li>
+<li>~ Rice, Candy, Nut Oil, Dye, Rainbow, and Spray Paint buttons display with dark text</li>
+<li>+ Firefly alias 'Lightning Bug'</li>
+<li>~ Shortened hiding setting labels</li>
+<li>~ Language should automatically be set from browser preferences (Untested)</li>
+<li>~ Re-saving after saving automatically fills in name, author, and description</li>
+<li>~ Save browser thumbnails are crisper</li>
+<li>~ Steam Deck compliance</li>
+<li>[Technical]</li>
+<li>+ 'onShiftSelect' element property, called when selecting element while holding Shift</li>
+<li>+ 'onlyConduct' element property, list of the only elements to conduct electricity into</li>
+<li>+ 'renderTool' element property, renderer function called once per frame while selected</li>
+<li>+ 'updateOrder' element property, prioritizes (positive) or deprioritizes (negative) tick order (integer; default 0)</li>
+<li>+ autoResizeRatio(height,width) function (e.g. (16,9))</li>
+<li>~ 'shiftDown' variable is set even when in a menu</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Placing Humans with Replace Mode causes a gory mess</li>
+<li>~ Fixed: Using Human on Cloners cause a gory mess</li>
+<li>~ Fixed: Bottom pixels can be cut off on certain window sizes</li>
+<li>~ Fixed: Line-drawing preview is opaque when using a theme</li>
+<li>~ Fixed: Text in Debug popup can't be selected</li>
+<li>~ Fixed: onClicked passes "unknown" when no element is selected, now passes null</li>
+<li>~ Fixed: onMouseDown doesn't get called on mobile</li>
+<li>~ Fixed: onMouseDown is called when clicking out of a menu</li>
+<li>~ Fixed: Using Heat Ray on Stained Glass can make Rainbows</li>
+<li>~ Fixed: Saves with pipes containing invalid elements fail to load</li>
+<li>~ Fixed: Some Fireflies stay illuminated after hitting another</li>
+<li>~ Fixed: Liquid/gaseous pixels with 'skip' property can be displaced by denser pixels</li>
+<li>~ Fixed: Salt isn't considered a food and can't be eaten by Humans</li>
+<li>~ Fixed: Corn can't be dragged or put into Pipes</li>
+</ul>
+
 <h2 id="1.12">[Version 1.12 - July 17, 2025 - Saves For All]</h2>
 <ul>
 <li>+ Featured Saves tab</li>

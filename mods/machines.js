@@ -49,7 +49,11 @@ elements.ledP = {
 elements.esuperheater = {
     color: "#ff69b4",
 	behavior: behaviors.WALL,
-    behaviorOn: elements.superheater.behavior,
+    behaviorOn: [
+        "XX|HT:10|XX",
+        "HT:10|XX|HT:10",
+        "XX|HT:10|XX",
+    ],
     category: "machines",
     insulate: elements.wire.insulate,
     conduct: elements.wire.conduct,
@@ -76,7 +80,11 @@ elements.ecooler = {
 elements.efreezer = {
     color: "#E0FFFF",
 	behavior: behaviors.WALL,
-    behaviorOn: elements.freezer.behavior,
+    behaviorOn: [
+        "XX|CO:10|XX",
+        "CO:10|XX|CO:10",
+        "XX|CO:10|XX",
+    ],
     category: "machines",
     insulate: elements.wire.insulate,
     conduct: elements.wire.conduct,

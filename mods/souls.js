@@ -67,9 +67,7 @@ elements.soul = {
     },
     reactions: {
         "light_bulb": { charged:true, elem2:"explosion" },
-        "led_r": { charged:true, elem2:"explosion" },
-        "led_g": { charged:true, elem2:"explosion" },
-        "led_b": { charged:true, elem2:"explosion" },
+        "led": { charged:true, elem2:"explosion" },
         "wire": { charge2:1, chance:0.05 },
         "body": { attr2:{"panic":20} },
         "proton": { elem1:null },

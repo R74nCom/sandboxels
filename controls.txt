@@ -29,6 +29,7 @@ F or F11          =  Toggle Fullscreen
 2                 =  Thermal View
 3                 =  Basic View (No Effects)
 4                 =  Streak View
+5                 =  Outline View
 H                 =  Hide Canvas
 F1                =  Toggle GUI / HUD
 F2 or C           =  Capture Screenshot
@@ -41,6 +42,7 @@ Ctrl + Shift + O  =  Reload last save
 Escape            =  Close Menu / Clear Logs
 ;                 =  Replace Mode
 Shift + Mid Click =  Pick Element (Copy Properties)
+Shift + Button    =  Extra manual element controls
 Z                 =  Select Secondary Element
 Baskspace         =  Select Previous Element
 

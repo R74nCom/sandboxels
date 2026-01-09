@@ -10,7 +10,7 @@ const FOLLOWUP_COORDS_TO_CHECK = [
 ];
 
 // Pre-initialize the list of transparent elements
-let transparentElementsTmp = "glass,stained_glass,glass_shard,solid_diamond,ice,led_r,led_g,led_b".split(",");
+let transparentElementsTmp = "glass,stained_glass,glass_shard,solid_diamond,ice,led".split(",");
 let transparentElements = [];
 
 // Function to create the list of transparent elements based on their properties

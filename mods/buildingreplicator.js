@@ -112,7 +112,7 @@ elements.submitted_blueprint_2_creator = {
   tick: function(pixel){
     if(!pixel.done){
       if (pixelTicks % 3 == 0){
-        let randomcoord = getRandomPixelCoordinates(pixel, -1, -1, decaybp, {1: "led_r", 2:"porcelain", 3: "glass", 4: "tungsten", 5: "zinc", 6: "aluminum", 7: "copper", 8: "copper", 9: "steel", 10: "bronze", 11: "sterling"});
+        let randomcoord = getRandomPixelCoordinates(pixel, -1, -1, decaybp, {1: "led", 2:"porcelain", 3: "glass", 4: "tungsten", 5: "zinc", 6: "aluminum", 7: "copper", 8: "copper", 9: "steel", 10: "bronze", 11: "sterling"});
         if (randomcoord == "terminated"){pixel.done = true; return;}
         let rx = pixel.x + randomcoord.x+1;
         let ry = pixel.y + randomcoord.y+1;

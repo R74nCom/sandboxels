@@ -206,7 +206,7 @@ elements.molten_iron.reactions.sulfur = { elem1: "pyrite", elem2: null, chance: 
 elements.molten_iron.reactions.molten_sulfur = { elem1: "pyrite", elem2: null, chance: 0.25 }
 elements.molten_iron.reactions.sulfur_gas = { elem1: "pyrite", elem2: null, chance: 0.25 }
 
-elements.pyrite = {
+elements.cubesstuff_pyrite = {
     color: ["#d8c25e", "#bbaa49", "#998f3e"],
     alias: ["fools_gold", "Iron Disulfide"],
     density: 5000,
@@ -215,7 +215,7 @@ elements.pyrite = {
     grain: 0.4,
     state: "solid",
     behavior: behaviors.WALL,
-    category: "solids"
+    category: "deprecated"
 }
 
 elements.fire_extinguisher_powder = {
@@ -789,7 +789,7 @@ elements.rgb_led = {
         "light": { charge1: 1, elem2: null },
         "liquid_light": { charge1: 1, elem2: null }
     },
-    category: "machines",
+    category: "deprecated",
     tempHigh: 1500,
     stateHigh: ["molten_glass", "molten_glass", "molten_glass", "molten_gallium"],
 
@@ -1763,7 +1763,7 @@ globals.heatAmount = 2
 
 elements.adjustable_heater = {
     color: "#ff0000",
-    category: "machines",
+    category: "deprecated",
     insulate: true,
     behavior: behaviors.WALL,
 
@@ -1846,7 +1846,7 @@ globals.coolAmount = 2; // adjustable step
 
 elements.adjustable_cooler = {
     color: "#0000ff",
-    category: "machines",
+    category: "deprecated",
     insulate: true,
     behavior: behaviors.WALL,
 
@@ -3324,5 +3324,6 @@ elements.replace_all_of_element = {
         }
     }
 }
+
 
 

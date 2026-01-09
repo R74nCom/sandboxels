@@ -22,9 +22,12 @@ elems = {
   x: "wire",
   F: "fuse",
   v: "void",
-  R: "led_r",
-  G: "led_g",
-  B: "led_b",
+  R: "led",
+  G: "led",
+  B: "led",
+  // R: "led_r",
+  // G: "led_g",
+  // B: "led_b",
 }
 
 schematics = {
