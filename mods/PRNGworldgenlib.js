@@ -14,23 +14,49 @@ let oreChances = {
     uranium: 0.805,
     aluminum: 1
 }
-function makeCurve(pos, w, dir, div = 100){
+function makeCurve(pos, w, dir, div = 200){
     let prevX = pos[0], prevY = pos[1];
     let res = [];
     for(i = w; i >= 0; i--){
         let x2 = (dir == 1) ? pos[0]-i : pos[0]+i;
-        let y2 = height-((1/div)*(x2**2));
+        let y2 = height-((1/div)*(i**2));
 		console.log(prevX, prevY, Math.round(x2), Math.round(y2));
         res = res.concat(lineCoords(prevX, prevY, Math.round(x2), Math.round(y2), 1));
         prevX = Math.round(x2), prevY = Math.round(y2);
     }
     return res;
 }
+let structureFuncs = {
+	ocean: (seed)=>{
+		let side = (pseudorandom(15, (seed/2**32)*62, 1) > 0.5) ? 0 : width;
+		let positions = makeCurve([side, 45], 90, (side == 0) ? -1 : 1, 200-(pseudorandom(82, (seed/2**32)*972, 70) - 35));
+		let obj = {};
+		for(let pos of positions){
+			if(obj[pos[0]] != undefined){
+				obj[pos[0]] = (obj[pos[0]] > pos[1]) ? obj[pos[0]] : pos[1];
+			} else {
+				obj[pos[0]] = pos[1];
+			}
+		}
+		for(let key in obj){
+			for(let i = obj[key]; i > 0; i--){
+				let p = getPixel(key, i);
+				if(p != null){
+					changePixel(p, "water");
+				}
+				//tryDelete(key, i);
+			}
+		}
+		
+		
+	},
+};
 class biome {
-    constructor(layersArr, yLevels, properties, afterFunc = false){
+    constructor(layersArr, yLevels, properties, afterFunc = false, genStructures = false){
         this.layers = layersArr;
         this.yLevels = yLevels;
         this.vMulti = 1;
+		this.structures = (genStructures != false) ? [].concat(genStructures) : undefined;
         for(let item in properties){
             this[item] = properties[item];
         }
@@ -126,6 +152,11 @@ class biome {
         if(this.afterFunc != null){
             this.afterFunc(seed);
         }
+		if(this.structures != undefined){
+			for(let gen of this.structures){
+				gen(seed);
+			}
+		}
     }
 }
 let biomes = {
@@ -133,6 +164,19 @@ let biomes = {
     desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}),
     savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"], vMulti: 1.5}),
     tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15, vMulti: 2}),
+	beach: new biome([["rock", "rock", "rock", "gravel"], ["rock", "gravel", "sand", "sand"], ["sand"]], [10, 5, 40], {vMulti: 0.8}, (seed)=>{
+		if(enabledMods.includes("mods/plants.js")){
+			for(let i = 0; i < width; i++){
+				if(pseudorandom(82+(i*34), (seed/2**32)*234, 1) < 0.025){
+					console.log("Placing: ", i, 20);
+					tryCreate("banana_seed", i, 20);
+				}
+			}
+				
+			
+		}
+	}, structureFuncs.ocean),
+	
 }
 let seed = Math.random()*(2**32);
 enabledMods.forEach((item)=>{
@@ -148,14 +192,14 @@ enabledMods.forEach((item)=>{
         }});
     }
 });
-elements.PRNGgenerate = {
+elements.SeedGenerate = {
     category: "tools", 
     onSelect: function(){
         let arr = [];
         let txt = shiftDown;
         Object.keys(biomes).forEach(function(b){arr.push(b);});
 		txt = (arr.length >= 7) ? true : txt;
-        promptInput("Leave blank to generate new seed. Your current seed is: " + seed, function(i){
+        promptInput("Leave blank to generate new seed or C to keep current seed. Your current seed is: " + seed, function(i){
             seed = (i != null && i.toLowerCase() == "c") ? seed : parseFloat(i) || Math.random()*(2**32);
             seed = seed % (2**32);
             if(!txt){
@@ -182,6 +226,41 @@ elements.PRNGgenerate = {
             }
         }, "Enter seed:");
     }
+}
+elements.RandomGen = {
+	category: "tools",
+	onSelect: function(){
+		let arr = [];
+		let txt = shiftDown;
+		Object.keys(biomes).forEach(function(b){arr.push(b);});
+		txt = (arr.length >= 7) ? true : txt;
+		seed = Math.random()*(2**32);
+		//seed %= 2**32;
+		if(txt){
+			let str = "";
+			for(let key in biomes){
+				str += `${key}, `;
+			}
+			str = str.replace(/^,|,$/g, '');
+			promptInput("Enter the name of a biome to generate (caps-insensetive)\nBiomes available: \n" + str, function(inp){
+				let choice = inp.toLowerCase();
+				if(!arr.includes(choice)){
+					promptText("Invalid selection.");
+					selectElement("dirt");
+				} else {
+					biomes[choice].generate(seed);
+					selectElement("dirt");
+					
+				}
+			}, "Enter Biome Name: ");
+			
+		} else {
+			promptChoose("", arr, (choice)=>{
+				biomes[choice].generate(seed);
+				selectElement("dirt");
+			}, "Biome Selection");
+		}
+	},
 }
 elements.view_seed = {
     category: "tools",
