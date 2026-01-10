@@ -1,4 +1,4 @@
-/*Version 1.1.0 Pseudorandom world generator*/
+/*Version 1.2.0 Pseudorandom world generator*/
 function pseudorandom(key, num, max = 1){
     return (Math.log(key)*(num*Math.log(1625.4986772154357))) % max;
 };
@@ -20,11 +20,35 @@ function makeCurve(pos, w, dir, div = 200){
     for(i = w; i >= 0; i--){
         let x2 = (dir == 1) ? pos[0]-i : pos[0]+i;
         let y2 = height-((1/div)*(i**2));
-		console.log(prevX, prevY, Math.round(x2), Math.round(y2));
         res = res.concat(lineCoords(prevX, prevY, Math.round(x2), Math.round(y2), 1));
         prevX = Math.round(x2), prevY = Math.round(y2);
     }
     return res;
+}
+
+elements.sandstone = {
+	category: "solids",
+	color: ["#a89f67", "#b89c6b", "#bbad68"],
+	behavior: behaviors.SOLID,
+	breakInto: "sand",
+	tempHigh: 1700,
+	stateHigh: "molten_glass",
+};
+
+elements.packed_sand.tempHigh = 300;
+elements.packed_sand.stateHigh = "sandstone";
+
+function drawLine(elem,x1,y1,x2,y2, replace = null){
+	let coords = lineCoords(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2));
+	for(let pos of coords){
+		let res = tryCreate(elem, pos[0], pos[1]);
+		if(replace != null && res == null){
+			let pixel = getPixel(pos[0], pos[1]);
+			if(pixel != null && replace.includes(pixel.element)){
+				changePixel(pixel, elem);
+			} 
+		}
+	}
 }
 let structureFuncs = {
 	ocean: (seed)=>{
@@ -50,13 +74,32 @@ let structureFuncs = {
 		
 		
 	},
+	pyramid: (seed)=>{
+
+		if(pseudorandom(232, 4564*(seed/2**32), 1) < 0.25){
+			let x = pseudorandom(531, 9834*(seed/2**32), width);
+			let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
+			let hwidth = h*Math.atan(0.78539816);
+			let num = 0;
+			for(let i = x - hwidth; i < x + hwidth; i++){
+				let y = (height-35)-(h);
+				drawLine("sandstone", i, height-35, x, y, ["sand", "cactus"]);
+				num++;
+				if(i == x){
+					num = 0;
+				};
+			}
+		}
+	},
 };
 class biome {
-    constructor(layersArr, yLevels, properties, afterFunc = false, genStructures = false){
+    constructor(layersArr, yLevels, properties, afterFunc = false, genStructures = false, sp = false){
         this.layers = layersArr;
         this.yLevels = yLevels;
         this.vMulti = 1;
 		this.structures = (genStructures != false) ? [].concat(genStructures) : undefined;
+		this.afterFunc = (afterFunc != false) ? afterFunc : undefined;
+		this.sPriority = sp;
         for(let item in properties){
             this[item] = properties[item];
         }
@@ -64,6 +107,13 @@ class biome {
             autoResizeCanvas();
             if(!paused){togglePause();}
             let fraction = seed/(2**32);
+			if(this.sPriority){
+				if(this.structures != undefined){
+					for(let gen of this.structures){
+						gen(seed);
+					}
+				}
+			}
             for(let level of this.yLevels){
                 for(let x = 0; x <= width+2; x++){
                     //console.log(x);
@@ -106,6 +156,11 @@ class biome {
                     }
                 }
             }
+			if(this.structures != undefined){
+				for(let gen of this.structures){
+					gen(seed);
+				}
+			}
             this.generateOreVeins(seed, this.vMulti);
         };
     }
@@ -152,29 +207,35 @@ class biome {
         if(this.afterFunc != null){
             this.afterFunc(seed);
         }
-		if(this.structures != undefined){
-			for(let gen of this.structures){
-				gen(seed);
-			}
-		}
+		
     }
 }
 let biomes = {
     plains: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "dirt", "dirt", "mud", "gravel"], ["grass","flower_seed","grass","grass","grass","grass","sapling","grass","grass","grass","grass","grass","grass","grass","grass"]], [25, 38, 40]),
-    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}),
+    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}, false, structureFuncs.pyramid, true),
     savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"], vMulti: 1.5}),
     tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15, vMulti: 2}),
-	beach: new biome([["rock", "rock", "rock", "gravel"], ["rock", "gravel", "sand", "sand"], ["sand"]], [10, 5, 40], {vMulti: 0.8}, (seed)=>{
-		if(enabledMods.includes("mods/plants.js")){
+	beach: new biome([["rock", "rock", "rock", "gravel"], ["rock", "gravel", "sand", "sand"], ["sand"]], [7, 13, 35], {vMulti: 0.8}, (seed)=>{
+		dependOn("plants.js", ()=>{
 			for(let i = 0; i < width; i++){
-				if(pseudorandom(82+(i*34), (seed/2**32)*234, 1) < 0.025){
-					console.log("Placing: ", i, 20);
-					tryCreate("banana_seed", i, 20);
+				console.log(pseudorandom((i*34), (seed/2**32)*234, 1));
+				if(pseudorandom((i*34), (seed/2**32)*234, 1) < 0.035){
+					let c = true;
+					let np = getPixel(i, 20);
+					let ny = 21;
+					while(np == null){
+						np = getPixel(i, ny);
+						if(np != null && np.element == "water"){
+							c = false;
+						};
+						ny++;
+					}
+					if(c){
+						tryCreate("banana_seed", i, 20);
+					}
 				}
 			}
-				
-			
-		}
+		}, false);
 	}, structureFuncs.ocean),
 	
 }
