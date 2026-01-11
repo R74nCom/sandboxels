@@ -218,3 +218,61 @@ elements.hue_paint = {
     category: "special",
     customColor: true,
 }
+
+elements.burn_powder = {
+    tick: function(pixel) {
+        if (pixelTicks - pixel.start < 30) {
+            doDefaults(pixel);
+            return;
+        }
+        if (pixelTicks - pixel.start < 30 * 2 && Math.random() < 0.95) {
+            doDefaults(pixel);
+            return;
+        }
+        behaviors.POWDER(pixel);
+    },
+    tempHigh: 30,
+    stateHigh: ["fire","fire","fire","ash"],
+    category: "special",
+    state: "solid",
+    density: 1500
+}
+
+elements.burn_fluid = {
+    tick: function(pixel) {
+        if (pixelTicks - pixel.start < 30) {
+            doDefaults(pixel);
+            return;
+        }
+        if (pixelTicks - pixel.start < 30 * 2 && Math.random() < 0.95) {
+            doDefaults(pixel);
+            return;
+        }
+        behaviors.LIQUID(pixel);
+    },
+    tempHigh: 30,
+    stateHigh: ["steam","smoke"],
+    category: "special",
+    state: "liquid",
+    density: 1000
+}
+
+elements.color_eraser = {
+    tool: function(pixel) {
+        let color1 = pixel.color.match(/\d+/g);
+        let pixels = floodPixels(pixel.x, pixel.y, (p) => {
+            if (!p.color.match(/^rgb/)) return false;
+            let color2 = p.color.match(/\d+/g);
+
+            if (Math.abs(color2[0] - color1[0]) < 30 &&
+                Math.abs(color2[1] - color1[1]) < 30 &&
+                Math.abs(color2[2] - color1[2]) < 30) {
+                    return true;
+            }
+        });
+        pixels.forEach((p) => {
+            deletePixel(p.x, p.y);
+        })
+    },
+    category: "special"
+}

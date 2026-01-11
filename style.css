@@ -562,6 +562,18 @@ input[type="button"]:active, input[type="button"]:active:hover {
 #elementControls {
 	flex-direction: column;
 }
+#category-tools {
+	display: flex;
+}
+#category-edit {
+	display: none;
+	flex-wrap: wrap;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+#category-edit .close {
+	color: rgb(255, 100, 100)
+}
 
 /* Scrollbars */
 
@@ -615,6 +627,8 @@ input[type="button"]:active, input[type="button"]:active:hover {
 	display: -ms-flexbox;	  /* TWEENER - IE 10 */
 	display: -webkit-flex;	 /* NEW - Chrome */
 	display:flex;
+	align-items: center;
+    justify-content: center;
 }
 #categoryControls button {
 	/* Borderless buttons */
@@ -1079,4 +1093,15 @@ img {
 }
 #controls .elementButton[modified="true"]::after {
 	background: #0d62ff;
+}
+#loadingP {
+	text-align:center;
+	height:500px;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#loadingP * {
+	padding: 20px;
 }

@@ -188,6 +188,8 @@ if (elements.random) {elements.random.color = ["#3e5f8a","#a334ec","#ea96f9","#a
 if (elements.pyrite) {elements.pyrite.color = ["#e8e0cb","#cdcaaf","#726a53","#8f835e","#bfb9a0"];}
 if (elements.purple_gold) {elements.purple_gold.color = ["#f58fda","#d06cb5","#f58fda"];}
 if (elements.acid) {elements.acid.color = ["#b5cf91","#a1ff5e","#288f2a"];}
+if (elements.fire) {elements.fire.color = ["#ff6b21","#ffa600","#ff4000"];}
+if (elements.cold_fire) {elements.cold_fire.color = ["#21cbff","#006aff","#00ffff"];}
 
 for (let element in elements) {
     if (elements[element].buttonColor !== undefined) delete elements[element].buttonColor;

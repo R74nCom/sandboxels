@@ -49,8 +49,8 @@
 	<meta name="twitter:creator:id" content="1436857621827530753">
 
 	<script> // versioning info
-		currentversion = "1.13.1";
-		saveVersion = 6;
+		currentversion = "1.13.2";
+		saveVersion = 7;
 		standalone = false;
 		standaloneType = null;
 	</script>
@@ -119,21 +119,25 @@
 	</script>
 
 	<script>
+		setTimeout(function() {
+			let loadingP = document.getElementById("loadingP");
+			if (loadingP && loadingP.style.display !== "none") {
+				loadingP.firstChild.textContent = "Failed to load. A mod is likely causing this.\n\n";
+			}
+		}, 5000);
+
 		console.log("%c WELCOME TO R74n ","position: absolute; top: 50%; right: 50%; transform: translate(50%,-50%); font-family: Arial; font-size: 3em; font-weight: 700; color: #00ffff; text-shadow: 1px 1px 1px #14c9c9, 1px 2px 1px #14c9c9, 1px 3px 1px #14c9c9, 1px 4px 1px #14c9c9, 1px 5px 1px #14c9c9, 1px 13px 6px rgba(16,16,16,0.4), 1px 22px 10px rgba(16,16,16,0.2), 1px 25px 35px rgba(16,16,16,0.2), 1px 30px 60px rgba(16,16,16,0.4);padding:10px");
 		console.log("Sandboxels is developed by R74n and can be played on the official website: https://sandboxels.R74n.com/");
 		console.log("Can't access? Join our Discord: https://R74n.com/discord/");
 		console.log("Found this on another website? Let us know!");
 		console.log("©2021-" + new Date().getFullYear() + ". All Rights Reserved. https://sandboxels.R74n.com/license.txt");
 
-		isOnSite = location.hostname === "sandboxels.r74n.com";
+		isOnSite = location.hostname === "sandboxels.r74n.com" || location.hostname === "neal.fun";
 
 		// If settings is in localStorage, load it. If not, create an empty object.
 		settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
 		// URL query handling
 		var urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has("worldgen")) {
-			settings.worldgen = urlParams.get("worldgen");
-		}
 		if (!settings["unlocked"]) {
 			settings["unlocked"] = {};
 		}
@@ -171,16 +175,16 @@ POWDER_OLD: [
 ],
 POWDER: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
-	if (pixel.charge && elements[pixel.element].behaviorOn) {
+	if (pixel.charge !== undefined && elements[pixel.element].behaviorOn !== undefined) {
 		pixelTick(pixel);
 		return;
 	}
-	if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+	if (tryMove(pixel, pixel.x, pixel.y+1) !== true) {
 		if (Math.random() < 0.5) {
-			if (!tryMove(pixel, pixel.x+1, pixel.y+1)) {
+			if (tryMove(pixel, pixel.x+1, pixel.y+1) !== true) {
 				tryMove(pixel, pixel.x-1, pixel.y+1);
 			}
-		} else if (!tryMove(pixel, pixel.x-1, pixel.y+1)) {
+		} else if (tryMove(pixel, pixel.x-1, pixel.y+1) !== true) {
 			tryMove(pixel, pixel.x+1, pixel.y+1);
 		}
 	}
@@ -198,42 +202,35 @@ LIQUID_OLD: [
 ],
 LIQUID: function(pixel) {
 	if (pixel.start === pixelTicks) {return}
-	if (pixel.charge && elements[pixel.element].behaviorOn) {
+	if (pixel.charge !== undefined && pixel.charge && elements[pixel.element].behaviorOn !== undefined) {
 		pixelTick(pixel);
 		return;
 	}
-	var viscMove = true;
-	if (elements[pixel.element].viscosity) {
+	let viscMove = true;
+	if (elements[pixel.element].viscosity !== undefined) {
 		viscMove = (Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25);
 	}
+	let move1Spots;
 	if (!viscMove) {
-		var move1Spots = [
+		move1Spots = [
 			0
 		]
 	}
 	else {
-		var move1Spots = [
+		move1Spots = [
 			1,0,-1
-		]
+		];
+		shuffleArray(move1Spots);
 	}
-	var moved = false;
+	let moved = false;
 	for (var i = 0; i < move1Spots.length; i++) {
-		const j = Math.random()*move1Spots.length | 0;
-		const coord = move1Spots[j];
+		const coord = move1Spots[i];
 		if (tryMove(pixel, pixel.x+coord, pixel.y+1)) { moved = true; break; }
-		move1Spots.splice(j, 1);
 	}
-	if (!moved) {
-		if (viscMove) {
-			if (Math.random() < 0.5) {
-				if (!tryMove(pixel, pixel.x+1, pixel.y)) {
-					tryMove(pixel, pixel.x-1, pixel.y);
-				}
-			} else {
-				if (!tryMove(pixel, pixel.x-1, pixel.y)) {
-					tryMove(pixel, pixel.x+1, pixel.y);
-				}
-			}
+	if (moved === false && viscMove === true) {
+		const dir = Math.random() < 0.5 ? 1 : -1;
+		if (!tryMove(pixel, pixel.x+dir, pixel.y)) {
+			tryMove(pixel, pixel.x-dir, pixel.y);
 		}
 	}
 	doDefaults(pixel);
@@ -251,7 +248,7 @@ SUPERFLUID: function(pixel) {
 	}
 	if (!tryMove(pixel, pixel.x, pixel.y+1)) {
 		// go either left or right depending on pixel.flipX
-		var newx = pixel.flipX ? pixel.x-1 : pixel.x+1;
+		let newx = pixel.flipX ? pixel.x-1 : pixel.x+1;
 		if (Math.random() < 0.5) {
 			if (!tryMove(pixel, newx, pixel.y)) {
 				pixel.flipX = !pixel.flipX;
@@ -331,21 +328,17 @@ GAS: function(pixel) {
 		pixelTick(pixel);
 		return;
 	}
-	let move1Spots = adjacentCoords.slice(0);
-	var moved = false;
-	for (var i = 0; i < move1Spots.length; i++) {
-		const j = Math.random()*move1Spots.length | 0;
-		const coords = move1Spots[j];
+	shuffleArray(adjacentCoordsShuffle);
+	let moved = false;
+	for (var i = 0; i < adjacentCoordsShuffle.length; i++) {
+		const coords = adjacentCoordsShuffle[i];
 		if (tryMove(pixel, pixel.x+coords[0], pixel.y+coords[1])) { moved = true; break; }
-		move1Spots.splice(j, 1);
 	}
 	if (moved === false) {
-		let move2Spots = diagonalCoords.slice(0);
-		for (var i = 0; i < move2Spots.length; i++) {
-			const j = Math.random()*move2Spots.length | 0;
-			const coords = move2Spots[j];
+		shuffleArray(diagonalCoordsShuffle);
+		for (var i = 0; i < diagonalCoordsShuffle.length; i++) {
+			const coords = diagonalCoordsShuffle[i];
 			if (tryMove(pixel, pixel.x+coords[0], pixel.y+coords[1])) { break; }
-			move2Spots.splice(j, 1);
 		}
 	}
 	doDefaults(pixel);
@@ -389,9 +382,9 @@ CLONER_OLD: [
 ],
 CLONER: function(pixel, chance) {
 	for (var i = 0; i < adjacentCoords.length; i++) {
-		var coords = adjacentCoords[i];
-		var x = pixel.x + coords[0];
-		var y = pixel.y + coords[1];
+		let coords = adjacentCoords[i];
+		let x = pixel.x + coords[0];
+		let y = pixel.y + coords[1];
 		if (!pixel.clone) {
 			if (!isEmpty(x,y,true)) {
 				let newPixel = pixelMap[x][y];
@@ -554,9 +547,9 @@ KILLPIXEL2: function(pixel1,pixel2) {
 	pixel2.dead = true;
 },
 FLY: function(pixel, onHit) {
-	var nx = pixel.flipX ? -1 : 1;
-	var ny = Math.random() < 0.5 ? -1 : 1;
-	var hit = false;
+	let nx = pixel.flipX ? -1 : 1;
+	let ny = Math.random() < 0.5 ? -1 : 1;
+	let hit = false;
 	if (!tryMove(pixel, pixel.x+nx, pixel.y+ny)) {
 		if (!tryMove(pixel, pixel.x+nx, pixel.y-ny)) {
 			if (!tryMove(pixel, pixel.x, pixel.y+ny)) {
@@ -580,8 +573,8 @@ FLY: function(pixel, onHit) {
 	doDefaults(pixel);
 },
 CRAWLER2: function(pixel,onHit,afterMove) {
-	var newX = 0; var newY = 0;
-	var floorX = 0; var floorY = 0;
+	let newX = 0; let newY = 0;
+	let floorX = 0; let floorY = 0;
 	if (pixel.r === undefined) { pixel.r = 0 }
 	if (pixel.climb === undefined) { pixel.climb = 0 }
 	if (pixel.r === 0) { newX = 1; floorY = 1; }
@@ -630,13 +623,13 @@ CRAWLER: function(pixel) {},
 ABSORB: function(pixel,limit=100,rate=0.1) {
 	if (pixel.moist === undefined) { pixel.moist = 0 }
 	for (var i = 0; i < adjacentCoords.length; i++) {
-		var coords = adjacentCoords[i];
-		var x = pixel.x + coords[0];
-		var y = pixel.y + coords[1];
+		let coords = adjacentCoords[i];
+		let x = pixel.x + coords[0];
+		let y = pixel.y + coords[1];
 		if (!isEmpty(x,y,true)) {
-			var newPixel = pixelMap[x][y];
+			let newPixel = pixelMap[x][y];
 			if (newPixel.element === pixel.element) {
-				var avg = ((pixel.moist||0) + (newPixel.moist||0))/2;
+				let avg = ((pixel.moist||0) + (newPixel.moist||0))/2;
 				pixel.moist = avg;
 				newPixel.moist = avg;
 			}
@@ -654,9 +647,9 @@ ABSORB: function(pixel,limit=100,rate=0.1) {
 RELEASE_MOISTURE: function(pixel) {
 	if (pixel.moist === undefined) { pixel.moist = 0 }
 	for (var i = 0; i < adjacentCoords.length; i++) {
-		var coords = adjacentCoords[i];
-		var x = pixel.x + coords[0];
-		var y = pixel.y + coords[1];
+		let coords = adjacentCoords[i];
+		let x = pixel.x + coords[0];
+		let y = pixel.y + coords[1];
 		if (isEmpty(x,y) && pixel.moist >= 1) {
 			createPixel("water",x,y);
 			pixel.moist--;
@@ -719,53 +712,54 @@ SEEDRISE: function(pixel) {
 		renderPresets = {
 		HEATGLOW: function(pixel,ctx) {
 			drawDefault(ctx,pixel);
-			if (!viewInfo[view].colorEffects) { return }
-			var max = elements[pixel.element].tempHigh;
-			var ratio = ((pixel.temp/max*100)|0)/100;
-			if (ratio < 0.2) { return }
-			if (ratio > 1) { ratio = 1 }
+			if (viewInfo[view].colorEffects !== true) return;
+			const max = elements[pixel.element].tempHigh;
+			let ratio = ((pixel.temp/max*100)|0)/100;
+			if (ratio < 0.2) return;
+			if (ratio > 1) ratio = 1;
 			ratio -= 0.2;
 			drawSquare(ctx,"hsl("+ratio*60+",100%,50%)",pixel.x,pixel.y,undefined,Math.min(ratio,0.85));
 		},
 		WOODCHAR: function(pixel,ctx) {
 			drawDefault(ctx,pixel);
-			if (!viewInfo[view].colorEffects) { return }
-			var max = 400;
-			var ratio = ((pixel.temp/max*100)|0)/100;
-			if (ratio < 0.5) { return }
-			if (ratio > 1) { ratio = 1 }
+			if (viewInfo[view].colorEffects !== true) return;
+			const max = 400;
+			let ratio = ((pixel.temp/max*100)|0)/100;
+			if (ratio < 0.5) return;
+			if (ratio > 1) ratio = 1;
 			drawSquare(ctx,"#000000",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)*0.8));
 		},
 		PLANTCHAR: function(pixel,ctx) {
 			drawDefault(ctx,pixel);
-			if (!viewInfo[view].colorEffects) { return }
-			var max = 80;
-			var ratio = ((pixel.temp/max*100)|0)/100;
-			if (ratio < 0.5) { return }
-			if (ratio > 1) { ratio = 1 }
+			if (viewInfo[view].colorEffects !== true) return;
+			const max = 80;
+			let ratio = ((pixel.temp/max*100)|0)/100;
+			if (ratio < 0.5) return;
+			if (ratio > 1) ratio = 1;
 			drawSquare(ctx,"#4d4018",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)));
 		},
 		CHARCOALHEAT: function(pixel,ctx) {
 			drawDefault(ctx,pixel);
-			if (!viewInfo[view].colorEffects) { return }
-			var max = 1100;
-			var ratio = ((pixel.temp/max*100)|0)/100;
-			if (ratio < 0.4) { return }
-			if (ratio > 1) { ratio = 1 }
+			if (viewInfo[view].colorEffects !== true) return;
+			const max = 1100;
+			let ratio = ((pixel.temp/max*100)|0)/100;
+			if (ratio < 0.4) return;
+			if (ratio > 1) ratio = 1;
 			drawSquare(ctx,"hsl("+ratio*20+",100%,"+Math.min(90,ratio*70)+"%)",pixel.x,pixel.y,undefined,Math.min(0.7,(ratio-0.4)*0.7));
 		},
 		HUESHIFT: function(pixel,ctx) {
-			if (!pixel.origColor && pixel.color.match(/^rgb/)) {
+			if (pixel.origColor === undefined && pixel.color.match(/^rgb/)) {
 				pixel.origColor = pixel.color.match(/\d+/g);
 			}
-			if (!pixel.origColor || !viewInfo[view].effects) {
+			if (pixel.origColor === undefined || viewInfo[view].effects !== true) {
 				drawDefault(ctx,pixel);
 				return;
 			}
-			var hsl = RGBToHSL(pixel.origColor);
+			let hsl = RGBToHSL(pixel.origColor);
 			hsl[0] += 0.05;
-			hsl[0] -= Math.min(30,(pixelTicks-pixel.start)/1.5)/360;
-			hsl = "hsl("+hsl[0]*360+","+hsl[1]*100+"%,"+hsl[2]*100+"%)";
+			hsl[0] -= Math.min(60,(pixelTicks-pixel.start)/0.5)/360;
+			hsl[0] = Math.max(0.025, hsl[0]);
+			hsl = "hsl("+(hsl[0]*360 >>> 0)+","+(hsl[1]*100 >>> 0)+"%,"+(hsl[2]*100 >>> 0)+"%)";
 			drawPlus(ctx,hsl,pixel.x,pixel.y);
 		},
 		MOLTEN: function(pixel,ctx) {
@@ -776,7 +770,7 @@ SEEDRISE: function(pixel) {
 				drawDefault(ctx,pixel);
 				return;
 			}
-			var hsl = RGBToHSL(pixel.origColor);
+			let hsl = RGBToHSL(pixel.origColor);
 			hsl[0] += (0.025*Math.sin((pixelTicks-pixel.start)*0.033)) - 0.005;
 			hsl = "hsl("+hsl[0]*360+","+hsl[1]*100+"%,"+hsl[2]*100+"%)";
 			drawSquare(ctx,hsl,pixel.x,pixel.y);
@@ -787,15 +781,15 @@ SEEDRISE: function(pixel) {
 			if (pixel.alpha === 0) return;
 			let edge = false;
 			for (var i = 0; i < adjacentCoords.length; i++) {
-				var coords = adjacentCoords[i];
-				var x = pixel.x + coords[0];
-				var y = pixel.y + coords[1];
+				let coords = adjacentCoords[i];
+				let x = pixel.x + coords[0];
+				let y = pixel.y + coords[1];
 				if (isEmpty(x,y) || (!outOfBounds(x,y) && elements[pixelMap[x][y].element].movable !== elements[pixel.element].movable)) {
 					edge = true;
 					break;
 				}
 			}
-			if (edge) { drawSquare(ctx,"rgba(255,255,255,"+(pixel.alpha||1)/4+")",pixel.x,pixel.y) }
+			if (edge) { drawSquare(ctx,"rgb(255,255,255)",pixel.x,pixel.y, undefined, (pixel.alpha||1)/4) }
 		},
 		LED: function(pixel,ctx) {
 			if (!viewInfo[view].colorEffects) { drawDefault(ctx,pixel); return }
@@ -870,6 +864,41 @@ SEEDRISE: function(pixel) {
 		// charge - charge of the element on creation
 		// hardness - chance of resisting damage (0-1)
 		elements = {
+"sand": {
+	color: "#e6d577",
+	behavior: behaviors.POWDER,
+	reactions: {
+		"water":{elem1:"wet_sand",elem2:null},
+		"salt_water":{elem1:"wet_sand",elem2:"foam"},
+		"sugar_water":{elem1:"wet_sand",elem2:null},
+		"seltzer":{elem1:"wet_sand",elem2:null},
+		"dirty_water":{elem1:"wet_sand",elem2:null},
+		"pool_water":{elem1:"wet_sand",elem2:null},
+		"slush":{elem1:"wet_sand",elem2:null},
+		"soda":{elem1:"wet_sand",elem2:null},
+		"juice":{elem1:"wet_sand",elem2:null},
+		"milk":{elem1:"wet_sand",elem2:null},
+		"chocolate_milk":{elem1:"wet_sand",elem2:null},
+		"fruit_milk":{elem1:"wet_sand",elem2:null},
+		"pilk":{elem1:"wet_sand",elem2:null},
+		"eggnog":{elem1:"wet_sand",elem2:null},
+		"nut_milk":{elem1:"wet_sand",elem2:null},
+		"cream":{elem1:"wet_sand",elem2:null},
+		"vinegar":{elem1:"wet_sand",elem2:null},
+		"blood":{elem1:"wet_sand",elem2:null},
+		"vaccine":{elem1:"wet_sand",elem2:null},
+		"antibody":{elem1:"wet_sand",elem2:null},
+		"infection":{elem1:"wet_sand",elem2:null},
+		"poison":{elem1:"wet_sand",elem2:null},
+		"antidote":{elem1:"wet_sand",elem2:null},
+		"tornado":{elem1:"sandstorm", oneway:true}
+	},
+	tempHigh: 1700,
+	stateHigh: "molten_glass",
+	category: "land",
+	state: "solid",
+	density: 1602
+},
 "heat": {
 	color: "#ff0000",
 	behavior: [
@@ -965,7 +994,7 @@ SEEDRISE: function(pixel) {
 			dragStart = pixelTicks;
 			draggingPixels = [];
 		}
-		if (pixelTicks === dragStart && !pixel.drag && (elements[pixel.element].movable || shiftDown)) {
+		if (pixelTicks === dragStart && !pixel.drag && (elements[pixel.element].movable || shiftDown || pixel._r)) {
 			pixel.drag = true;
 			draggingPixels.push(pixel);
 		}
@@ -993,6 +1022,16 @@ SEEDRISE: function(pixel) {
 			let moves = Math.max(1, Math.round(pixelDistance(pixel.x, pixel.y, mousePos.x, mousePos.y) / 10));
 			for (let m = 0; m < moves; m++) {
 				if (pixel.del) { break }
+				if (pixel._r) {
+					let relation = getRelation(pixel._r);
+					if (relation.lastMove === pixelTicks) continue;
+					let r = tryMoveRelation(relation, Math.sign(mousePos.x - pixel.x), Math.sign(mousePos.y - pixel.y));
+					if (!r) {
+						tryMoveRelation(relation, 0, Math.sign(mousePos.y - pixel.y), true);
+						tryMoveRelation(relation, Math.sign(mousePos.x - pixel.x), 0, true);
+					}
+					continue;
+				}
 				const x = pixel.x;
 				const y = pixel.y;
 				const [mX, mY] = [mousePos.x, mousePos.y];
@@ -1139,46 +1178,12 @@ SEEDRISE: function(pixel) {
 			pixel.color = "rgb(" + rgb.join(",") + ")"
 		}
 		delete pixel.origColor;
+		if (elements[pixel.element].trackPaint) pixel.painted = currentColorMap.paint;
 	},
 	customColor: true,
 	category: "tools",
 	canPlace: false,
 	desc: "Use on pixels to change color."
-},
-"sand": {
-	color: "#e6d577",
-	behavior: behaviors.POWDER,
-	reactions: {
-		"water":{elem1:"wet_sand",elem2:null},
-		"salt_water":{elem1:"wet_sand",elem2:"foam"},
-		"sugar_water":{elem1:"wet_sand",elem2:null},
-		"seltzer":{elem1:"wet_sand",elem2:null},
-		"dirty_water":{elem1:"wet_sand",elem2:null},
-		"pool_water":{elem1:"wet_sand",elem2:null},
-		"slush":{elem1:"wet_sand",elem2:null},
-		"soda":{elem1:"wet_sand",elem2:null},
-		"juice":{elem1:"wet_sand",elem2:null},
-		"milk":{elem1:"wet_sand",elem2:null},
-		"chocolate_milk":{elem1:"wet_sand",elem2:null},
-		"fruit_milk":{elem1:"wet_sand",elem2:null},
-		"pilk":{elem1:"wet_sand",elem2:null},
-		"eggnog":{elem1:"wet_sand",elem2:null},
-		"nut_milk":{elem1:"wet_sand",elem2:null},
-		"cream":{elem1:"wet_sand",elem2:null},
-		"vinegar":{elem1:"wet_sand",elem2:null},
-		"blood":{elem1:"wet_sand",elem2:null},
-		"vaccine":{elem1:"wet_sand",elem2:null},
-		"antibody":{elem1:"wet_sand",elem2:null},
-		"infection":{elem1:"wet_sand",elem2:null},
-		"poison":{elem1:"wet_sand",elem2:null},
-		"antidote":{elem1:"wet_sand",elem2:null},
-		"tornado":{elem1:"sandstorm", oneway:true}
-	},
-	tempHigh: 1700,
-	stateHigh: "molten_glass",
-	category: "land",
-	state: "solid",
-	density: 1602
 },
 "water": {
 	color: "#2167ff",
@@ -1707,7 +1712,7 @@ SEEDRISE: function(pixel) {
 	tempHigh: 7,
 	stateHigh: "dead_plant",
 	state: "solid",
-	density: 1050,
+	density: 1000,
 	hidden: true
 },
 "grass": {
@@ -1823,29 +1828,33 @@ SEEDRISE: function(pixel) {
 	insulate: true,
 	hardness: 1,
 	noMix: true,
-	alias: "solid"
+	alias: "solid",
+	density: 20000
 },
 "fire": {
-	color: ["#ff6b21","#ffa600","#ff4000"],
+	color: ["#ffb700","#ff8800"],
+	buttonColor: ["#ff6b21","#ffa600","#ff4000"],
 	tick: function(pixel){
 		if (pixel.start === pixelTicks) {return}
-		let move1Spots = adjacentCoords.slice(0);
+		shuffleArray(adjacentCoordsShuffle);
 		let moved = false;
-		for (var i = 0; i < move1Spots.length; i++) {
-			const j = Math.random()*move1Spots.length | 0;
-			const coords = move1Spots[j];
+		for (var i = 0; i < adjacentCoordsShuffle.length; i++) {
+			const coords = adjacentCoordsShuffle[i];
 			const x = pixel.x+coords[0];
 			const y = pixel.y+coords[1];
-			if (tryMove(pixel, x, y)) { moved = true; break; }
-			move1Spots.splice(j, 1);
+			if (tryMove(pixel, x, y) === true) { moved = true; break; }
+			if (!isEmpty(x,y,true) && pixelMap[x][y].element === "fire") {
+				if (pixel.start < pixelMap[x][y].start && Math.random() < 0.1) {
+					// pixelMap[x][y].temp += pixel.temp / 2;
+					deletePixel(pixel.x, pixel.y);
+				}
+			}
 		}
 		if (moved === false) {
-			let move2Spots = diagonalCoords.slice(0);
-			for (var i = 0; i < move2Spots.length; i++) {
-				const j = Math.random()*move2Spots.length | 0;
-				const coords = move2Spots[j];
-				if (tryMove(pixel, pixel.x+coords[0], pixel.y+coords[1])) { break; }
-				move2Spots.splice(j, 1);
+			shuffleArray(diagonalCoordsShuffle);
+			for (var i = 0; i < diagonalCoordsShuffle.length; i++) {
+				const coords = diagonalCoordsShuffle[i];
+				if (tryMove(pixel, pixel.x+coords[0], pixel.y+coords[1]) === true) break;
 			}
 		}
 		if (pixel.del !== true) {
@@ -1853,11 +1862,11 @@ SEEDRISE: function(pixel) {
 			doAirDensity(pixel);
 			doBurning(pixel);
 
-			if (settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1) { changePixel(pixel,"smoke") }
+			if (settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1) changePixel(pixel,"smoke");
 		}
 	},
 	onCollide: function(pixel1,pixel2) {
-		if (elements[pixel2.element].fireColor) {
+		if (elements[pixel2.element].fireColor !== undefined) {
 			pixel1.color = pixelColorPick(pixel1,elements[pixel2.element].fireColor);
 			pixel1.origColor = undefined;
 			pixel1.cc = true;
@@ -1918,15 +1927,15 @@ SEEDRISE: function(pixel) {
 		}
 	},
 	reactions: {
-		"steam": { elem1: "cloud", elem2: "cloud", chance:0.05, "y":[0,15], "setting":"clouds" },
-		"rain_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"cloud": { elem1: "cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"snow_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"hail_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"thunder_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"pyrocumulus": { elem1: "cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"anesthesia": { elem1:"acid_cloud", elem2:null, chance:0.05, "y":[0,12], "setting":"clouds" },
-		"fire_cloud": { elem1: "cloud", elem2: "pyrocumulus", chance:0.4, "y":[0,12], "setting":"clouds" },
+		"steam": { elem1: "cloud", elem2: "cloud", chance:0.05, "y":[0,15], setting:"clouds" },
+		"rain_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"cloud": { elem1: "cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"snow_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"hail_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"thunder_cloud": { elem1: "rain_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"pyrocumulus": { elem1: "cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"anesthesia": { elem1:"acid_cloud", elem2:null, chance:0.05, "y":[0,12], setting:"clouds" },
+		"fire_cloud": { elem1: "cloud", elem2: "pyrocumulus", chance:0.4, "y":[0,12], setting:"clouds" },
 		"smoke": { elem1: "smog", elem2: null, chance:0.001 },
 		"carbon_dioxide": { elem1: "smog", elem2: null, chance:0.001 },
 		"plasma": { elem1:"ozone", tempMin:500, charged:true },
@@ -2045,22 +2054,23 @@ SEEDRISE: function(pixel) {
 	state: "solid",
 	hardness: 0.15,
 	breakInto: "sawdust",
-	forceSaveColor: true
+	forceSaveColor: true,
+	density: 600
 },
 "smoke": {
 	color: "#383838",
 	behavior: behaviors.DGAS,
 	reactions: {
-		"steam": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"rain_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"snow_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"hail_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"thunder_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"acid_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], "setting":"clouds" },
-		"fire_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], "setting":"clouds" },
-		"rad_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], "setting":"clouds" },
-		"pyrocumulus": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" }
+		"steam": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"rain_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"snow_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"hail_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"thunder_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"acid_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], setting:"clouds" },
+		"fire_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], setting:"clouds" },
+		"rad_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], setting:"clouds" },
+		"pyrocumulus": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" }
 	},
 	temp: 114,
 	tempHigh: 1000,
@@ -2114,7 +2124,8 @@ SEEDRISE: function(pixel) {
 	conduct: 1
 },
 "cold_fire": {
-	color: ["#21cbff","#006aff","#00ffff"],
+	color: "#009dff",
+	buttonColor: ["#21cbff","#006aff","#00ffff"],
 	tick: function(pixel){
 		behaviors.GAS(pixel);
 		if (!pixel.del && Math.random() < 0.08 ) { changePixel(pixel,"smoke") }
@@ -2451,33 +2462,47 @@ SEEDRISE: function(pixel) {
 	insulate: true,
 	conduct: 1,
 	noMix: true,
+	density: 8960,
 	// ignoreConduct:["ecloner"]
 },
 "battery": {
 	color: "#9c6c25",
-	behavior: [
-		"XX|SH|XX", // shocks (adds charge)
-		"SH|XX|SH",
-		"XX|SH|XX"
-	],
-	// tick: function(pixel) {
-	// 	doDefaults(pixel);
-	// 	for (var i = 0; i < adjacentCoords.length; i++) {
-	// 		var coords = adjacentCoords[i];
-	// 		var x = pixel.x + coords[0];
-	// 		var y = pixel.y + coords[1];
-	// 		if (!isEmpty(x,y,true)) {
-	// 			var newPixel = pixelMap[x][y];
-				
-	// 		}
-	// 	}
-	// },
+	// behavior: [
+	// 	"XX|SH|XX", // shocks (adds charge)
+	// 	"SH|XX|SH",
+	// 	"XX|SH|XX"
+	// ],
+	onShiftSelect: function(element) {
+		promptInput("Enter a number to use as the frequency. (Default 1)", function(r) {
+			if (r === "") return;
+			r = parseInt(r);
+			if (isNaN(r)) {
+				logMessage("Invalid integer - battery frequency not set.")
+				return;
+			};
+			currentElementProp = { freq:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
+	tick: function(pixel) {
+		doDefaults(pixel);
+		if (pixel.freq !== undefined && pixelTicks % (pixel.freq * 4) !== 0) return;
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (!isEmpty(x,y,true)) {
+				var newPixel = pixelMap[x][y];
+				chargePixel(newPixel);
+			}
+		}
+	},
 	category: "machines",
 	tempHigh: 1455.5,
 	stateHigh: ["molten_steel","explosion","acid_gas"],
 	hardness: 0.8,
 	breakInto: ["metal_scrap","acid"],
-	movable: false
+	movable: false,
+	density: 4449.5
 },
 "cloner": {
 	color: "#dddd00",
@@ -2579,6 +2604,8 @@ SEEDRISE: function(pixel) {
 	},
 	tick: function(pixel) {
 		let choice = choose( (currentElementProp && currentElementProp.randomChoices) ? currentElementProp.randomChoices.split(",") : randomChoices );
+		if (pixel.randomChoices) choice = choose(pixel.randomChoices.split(","));
+		if (choice === "random") choice = choose(randomChoices);
 		if (choice === "unknown") deletePixel(pixel.x, pixel.y);
 		else if (choice) changePixel(pixel,choice);
 	},
@@ -2590,6 +2617,13 @@ SEEDRISE: function(pixel) {
 },
 "image": {
 	color: ["#78bbff","#5bb81a"],
+	onShiftSelect: function(element) {
+		promptInput("Enter an element to make up the image.", function(r) {
+			r = validateElementList(r);
+			if (!r) return;
+			currentElementProp = { imageelem:r }
+		}, elemTitleCase(elements[element].name || element));
+	},
 	onSelect: function() {
 		// prompt to upload an image file, then store the image in placingImage
 		var file = document.createElement("input");
@@ -2662,9 +2696,8 @@ SEEDRISE: function(pixel) {
 		coords = coords.concat(
 			lineCoords(startX, startY, newX, newY, 1)
 		);
-		coords = coords.concat(
-			lineCoords(newX, startY, newX, newY, 1)
-		);
+		let hypotCoords = lineCoords(newX, startY, newX, newY, 1);
+		coords = coords.concat(hypotCoords);
 
 		let nums = [ /* [value, x position, y position] */ ]
 
@@ -2675,7 +2708,7 @@ SEEDRISE: function(pixel) {
 			nums.push( [Math.abs(newY - startY) + 1, newX + dirX, (newY + startY) / 2] );
 		}
 		if (triWidth > 5 && triHeight >= 5) { /* hypot */
-			nums.push( [hypot, (newX + startX) / 2 - dirX, (newY + startY) / 2 + dirY] );
+			nums.push( [hypotCoords.length, (newX + startX) / 2 - dirX, (newY + startY) / 2 + dirY] );
 		}
 		if (triWidth > 10 && triHeight >= 10) {
 			let area = (triWidth * triHeight) / 2;
@@ -2718,10 +2751,83 @@ SEEDRISE: function(pixel) {
 		}
 	},
 	tool: function() {},
-	category: "special",
+	category: "edit",
 	maxSize: 1,
-	desc: "Use to measure lengths and angles on the canvas.",
-	excludeRandom: true
+	desc: "Use to measure lengths and angles on the canvas."
+},
+"group": {
+	color: "#75ffef",
+	onMouseDown: function() { editStart() },
+	onMouseUp: function() {
+		let pixels = editingPixels;
+		editStop();
+		if (pixels.length === 0) return;
+
+		let id;
+
+		pixels.forEach(pixel => {
+			if (pixel._r !== undefined) {
+				if (id === undefined) id = pixel._r;
+				else removeFromRelation(pixel);
+			}
+		})
+		if (!id) {
+			id = currentRelations._id;
+			currentRelations._id ++;
+		}
+		
+		pixels.forEach(pixel => {
+			addToRelation(pixel, id);
+		})
+		getRelation(id);
+	},
+	tool: function(pixel) {
+		if (editingPixels.indexOf(pixel) === -1) {
+			editingPixels.push(pixel);
+		}
+	},
+	renderTool: function(ctx) {
+		if (shiftDown || mouseIsDown) return;
+		let pixel = getPixel(mousePos.x, mousePos.y);
+		if (!pixel) return;
+		if (pixel._r === undefined) return;
+		let relation = getRelation(pixel._r);
+		relation.p.forEach((p) => {
+			drawSquare(ctx, mouseColor, p.x, p.y, undefined, 0.5);
+		})
+	},
+	category: "edit",
+	desc: "Use to combine pixels into a single structure."
+},
+"ungroup": {
+	color: "#8a0010",
+	onMouseDown: function() { editStart() },
+	onMouseUp: function() {
+		let pixels = editingPixels;
+		editStop();
+
+		if (pixels.length === 0) return;
+		pixels.forEach(pixel => {
+			removeFromRelation(pixel);
+		})
+	},
+	tool: function(pixel) {
+		if (editingPixels.indexOf(pixel) === -1) {
+			editingPixels.push(pixel);
+		}
+	},
+	renderTool: function(ctx) {
+		if (shiftDown || mouseIsDown) return;
+		let pixel = getPixel(mousePos.x, mousePos.y);
+		if (!pixel) return;
+		if (pixel._r === undefined) return;
+		let relation = getRelation(pixel._r);
+		relation.p.forEach((p) => {
+			drawSquare(ctx, mouseColor, p.x, p.y, undefined, 0.5);
+		})
+	},
+	category: "edit",
+	desc: "Use to remove pixels from a structure."
 },
 "unpaint": {
 	color: ["#ffffff","#000000"],
@@ -2738,6 +2844,7 @@ SEEDRISE: function(pixel) {
 				pixel.color = pixelColorPick(pixel)
 			}
 		}
+		if (pixel.painted) delete pixel.painted;
 	},
 	reactions: {
 		"color_sand": { elem2:"sand" },
@@ -2751,7 +2858,7 @@ SEEDRISE: function(pixel) {
 		"dye": { elem2:"ink" },
 		"paint": { elem2:null }
 	},
-	category: "special",
+	category: "edit",
 	desc: "Use on pixels to return their original color."
 },
 "uncharge": {
@@ -2776,8 +2883,7 @@ SEEDRISE: function(pixel) {
 		"proton": { elem2:"neutron" },
 		"shock": { elem2:null }
 	},
-	category: "special",
-	excludeRandom: true,
+	category: "edit",
 	desc: "Use on pixels to remove electric charge."
 },
 "unburn": {
@@ -2800,8 +2906,7 @@ SEEDRISE: function(pixel) {
 		"fw_ember": { elem2:"smoke" },
 		"torch": { elem2:"wood" }
 	},
-	category: "special",
-	excludeRandom: true,
+	category: "edit",
 	desc: "Use on pixels to stop burning."
 },
 "smash": {
@@ -2823,138 +2928,7 @@ SEEDRISE: function(pixel) {
 		}
 	},
 	category: "tools",
-	excludeRandom: true,
 	desc: "Use on pixels to break them, if possible."
-},
-"filler": {
-	color: "#ae4cd9",
-	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
-	tick: function(pixel) {
-		doDefaults(pixel);
-
-		for (var i = 0; i < adjacentCoords.length; i++) {
-			var coords = adjacentCoords[i];
-			var x = pixel.x + coords[0];
-			var y = pixel.y + coords[1];
-			if (isEmpty(x,y)) {
-				createPixel(pixel.element, x, y);
-				if (pixel.clone) pixelMap[x][y].clone = pixel.clone;
-			}
-		}
-		if (pixel.clone !== undefined && pixelTicks - pixel.start >= 2) {
-			changePixel(pixel, choose(pixel.clone.split(",")));
-		}
-	},
-	category:"special",
-	excludeRandom: true,
-	reactions: {
-		"neutron": { elem1:"lattice" },
-		"proton": { elem1:"vertical" },
-		"electric": { elem1:"horizontal" },
-		"positron": { elem1:"vertical" },
-		"plasma": { elem1:"armageddon", tempMin:500, charged:true }
-	},
-	density: 1834,
-	movable: false
-},
-"lattice": {
-	color: "#cb4cd9",
-	behavior: [
-		"CL|XX|CL",
-		"XX|XX|XX",
-		"CL|XX|CL"
-	],
-	tick: function(pixel) {
-		for (var i = 0; i < adjacentCoords.length; i++) {
-			var coords = adjacentCoords[i];
-			var x = pixel.x + coords[0];
-			var y = pixel.y + coords[1];
-			if (!isEmpty(x,y,true) && pixelMap[x][y].element === "lattice") {
-				deletePixel(x,y)
-			}
-		}
-	},
-	onPlace: function(pixel) {
-		if (pixel.del) return;
-		if (Math.random() < 0.2) return;
-		for (var i = 0; i < adjacentCoords.length; i++) {
-			var coords = adjacentCoords[i];
-			var x = pixel.x + coords[0];
-			var y = pixel.y + coords[1];
-			if (!isEmpty(x,y,true) && pixelMap[x][y].element === "lattice") {
-				deletePixel(x,y);
-			}
-		}
-	},
-	reactions: {
-		"cold_fire": { elem1:"ice_nine", chance:0.1 },
-		"proton": { elem1:"filler", elem2:null, chance:0.1 },
-		"electric": { elem1:null, elem2:"filler", chance:0.1 }
-	},
-	category:"special",
-	excludeRandom: true,
-	movable: false,
-	density: 917
-},
-"gravel": {
-	color: ["#e3e0df","#b1aba3","#74736d","#524b47"],
-	behavior: behaviors.POWDER,
-	reactions: {
-		"broth": { elem2:"water", chance:0.01 },
-		"tea": { elem2:"water", chance:0.01 }
-	},
-	category:"land",
-	tempHigh: 950,
-	stateHigh: "magma",
-	state: "solid",
-	density: 1680,
-	hardness: 0.2,
-	breakInto: "sand"
-},
-"slime": {
-	color: "#81cf63",
-	behavior: behaviors.LIQUID,
-	viscosity: 5000,
-	tempHigh: 120,
-	stateHigh: "steam",
-	tempLow: 0,
-	category:"liquids",
-	state: "liquid",
-	density: 1450,
-	stain: 0.05
-},
-"cement": {
-	color: "#b5b5b5",
-	behavior: behaviors.LIQUID,
-	tick: function(pixel) {
-		if (pixelTicks - pixel.start > 100 && Math.random() < 0.1) {
-			changePixel(pixel,"concrete")
-		}
-	},
-	onMix: function(pixel) {
-		pixel.start = pixelTicks;
-	},
-	category:"liquids",
-	tempHigh: 1550,
-	stateHigh: "magma",
-	tempLow: -10,
-	stateLow: "concrete",
-	state: "solid",
-	density: 1440,
-	hardness: 0.1,
-	viscosity: 1000,
-	darkText: true
-},
-"dust": {
-	color: "#666666",
-	behavior: behaviors.POWDER,
-	category: "powders",
-	burn: 10,
-	burnTime: 1,
-	tempHigh: 425,
-	stateHigh: "fire",
-	state: "solid",
-	density: 1490
 },
 "void": {
 	color: "#262626",
@@ -3043,6 +3017,238 @@ SEEDRISE: function(pixel) {
 	noMix: true,
 	alias: "star",
 	movable: false
+},
+"torch": {
+	color: "#d68542",
+	behavior: [
+		"XX|CR:fire|XX",
+		"XX|XX|XX",
+		"XX|XX|XX"
+	],
+	reactions: {
+		"water": { elem1:"wood" },
+		"sugar_water": { elem1:"wood" },
+		"salt_water": { elem1:"wood" },
+		"seltzer": { elem1:"wood" },
+		"dirty_water": { elem1:"wood" },
+		"pool_water": { elem1:"wood" },
+		"steam": { elem1:"wood" },
+		"smog": { elem1:"wood" },
+		"rain_cloud": { elem1:"wood" },
+		"cloud": { elem1:"wood" },
+		"snow_cloud": { elem1:"wood" },
+		"hail_cloud": { elem1:"wood" },
+		"thunder_cloud": { elem1:"wood" },
+		"ice_nine": { elem1:"wood" }
+	},
+	temp:600,
+	category:"special",
+	breakInto: "sawdust",
+	tempLow: -273,
+	stateLow: "wood"
+},
+"spout": {
+	color: "#606378",
+	behavior: [
+		"XX|CR:water|XX",
+		"CR:water|XX|CR:water",
+		"XX|CR:water|XX"
+	],
+	category:"special",
+	tempHigh: 1455.5,
+	stateHigh: "molten_steel",
+	conduct: 0.42
+},
+"filler": {
+	color: "#ae4cd9",
+	onShiftSelect: behaviors.CLONER_SHIFT_SELECT,
+	tick: function(pixel) {
+		doDefaults(pixel);
+
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (isEmpty(x,y)) {
+				createPixel(pixel.element, x, y);
+				if (pixel.clone) pixelMap[x][y].clone = pixel.clone;
+				if (pixel.painted) {
+					pixelMap[x][y].color = pixelColorPick(pixel, pixel.painted);
+					pixelMap[x][y].painted = pixel.painted;
+				}
+			}
+			else if (!outOfBounds(x,y)) {
+				if (elements[pixelMap[x][y].element].id === elements.filler.id && pixelMap[x][y].painted !== pixel.painted) {
+					deletePixel(x,y);
+					createPixel(pixel.element, x, y);
+					if (pixel.clone) pixelMap[x][y].clone = pixel.clone;
+					if (pixel.painted) {
+						pixelMap[x][y].color = pixelColorPick(pixel, pixel.painted);
+						pixelMap[x][y].painted = pixel.painted;
+					}
+				}
+			}
+		}
+		if (pixel.clone !== undefined && pixelTicks - pixel.start >= 2) {
+			changePixel(pixel, choose(pixel.clone.split(",")));
+		}
+	},
+	trackPaint: true,
+	category:"special",
+	excludeRandom: true,
+	reactions: {
+		"neutron": { elem1:"lattice" },
+		"proton": { elem1:"vertical" },
+		"electric": { elem1:"horizontal" },
+		"positron": { elem1:"vertical" },
+		"plasma": { elem1:"armageddon", tempMin:500, charged:true }
+	},
+	density: 1834,
+	movable: false
+},
+"lattice": {
+	color: "#cb4cd9",
+	behavior: [
+		"CL|XX|CL",
+		"XX|XX|XX",
+		"CL|XX|CL"
+	],
+	tick: function(pixel) {
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (!isEmpty(x,y,true) && pixelMap[x][y].element === "lattice") {
+				deletePixel(x,y)
+			}
+		}
+	},
+	onPlace: function(pixel) {
+		if (pixel.del) return;
+		if (Math.random() < 0.2) return;
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var coords = adjacentCoords[i];
+			var x = pixel.x + coords[0];
+			var y = pixel.y + coords[1];
+			if (!isEmpty(x,y,true) && pixelMap[x][y].element === "lattice") {
+				deletePixel(x,y);
+			}
+		}
+	},
+	reactions: {
+		"cold_fire": { elem1:"ice_nine", chance:0.1 },
+		"proton": { elem1:"filler", elem2:null, chance:0.1 },
+		"electric": { elem1:null, elem2:"filler", chance:0.1 }
+	},
+	category:"special",
+	excludeRandom: true,
+	movable: false,
+	density: 917
+},
+"ball": {
+	color: "#e35693",
+	behavior: [
+		"XX|XX|XX",
+		"XX|FY:0%5|XX",
+		"XX|M1 AND BO|XX"
+	],
+	tempHigh: 250,
+	stateHigh: "molten_plastic",
+	category: "special",
+	state: "solid",
+	density: 1052,
+	flipY: false,
+	flippableY: true,
+	hidden: true
+},
+"balloon": {
+	color: ["#fe4a75","#267cb0","#1a743c","#ff6ffa","#eaede5","#1dc9f3","#ff0101","#f4cd32","#bee347","#fab937","#91c7cc"],
+	buttonColor: ["#ff8080","#ff2626"],
+	behavior: [
+		"M1%50|M1%50|M1%50",
+		"M2%5|XX|M2%5",
+		"M2%5|M2%5|M2%5"
+	],
+	reactions: {
+		"cloud": {elem1:"pop"},
+		"rain_cloud": {elem1:"pop"},
+		"snow_cloud": {elem1:"pop"},
+		"thunder_cloud": {elem1:"pop"},
+		"hail_cloud": {elem1:"pop"},
+		"acid_cloud": {elem1:"pop"},
+		"ozone": {elem1:"pop"}
+	},
+	category:"special",
+	tempHigh: 120,
+	stateHigh: "pop",
+	tempLow: -272.20,
+	stateLow: "pop",
+	burn: 20,
+	burnTime: 2,
+	burnInto: "pop",
+	state: "solid",
+	density: 0.164,
+	breakInto: ["confetti","helium","helium","helium","pop"]
+},
+"gravel": {
+	color: ["#e3e0df","#b1aba3","#74736d","#524b47"],
+	behavior: behaviors.POWDER,
+	reactions: {
+		"broth": { elem2:"water", chance:0.01 },
+		"tea": { elem2:"water", chance:0.01 }
+	},
+	category:"land",
+	tempHigh: 950,
+	stateHigh: "magma",
+	state: "solid",
+	density: 1680,
+	hardness: 0.2,
+	breakInto: "sand"
+},
+"slime": {
+	color: "#81cf63",
+	behavior: behaviors.LIQUID,
+	viscosity: 5000,
+	tempHigh: 120,
+	stateHigh: "steam",
+	tempLow: 0,
+	category:"liquids",
+	state: "liquid",
+	density: 1450,
+	stain: 0.05
+},
+"cement": {
+	color: "#b5b5b5",
+	behavior: behaviors.LIQUID,
+	tick: function(pixel) {
+		if (pixelTicks - pixel.start > 100 && Math.random() < 0.1) {
+			changePixel(pixel,"concrete")
+		}
+	},
+	onMix: function(pixel) {
+		pixel.start = pixelTicks;
+	},
+	category:"liquids",
+	tempHigh: 1550,
+	stateHigh: "magma",
+	tempLow: -10,
+	stateLow: "concrete",
+	state: "solid",
+	density: 1440,
+	hardness: 0.1,
+	viscosity: 1000,
+	darkText: true
+},
+"dust": {
+	color: "#666666",
+	behavior: behaviors.POWDER,
+	category: "powders",
+	burn: 10,
+	burnTime: 1,
+	tempHigh: 425,
+	stateHigh: "fire",
+	state: "solid",
+	density: 1490
 },
 "cell": {
 	color: ["#d6ee00","#83ee00","#00ee00"],
@@ -3173,9 +3379,9 @@ SEEDRISE: function(pixel) {
 "worm": {
 	color: "#d34c37",
 	behavior: [
-		"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3",
+		"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,mulch,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,mulch,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3",
 		"M2%10|XX|M2%10",
-		"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3"
+		"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,mulch,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,mulch,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand%3"
 	],
 	reactions: {
 		"ash": { elem2:[null,null,null,null,null,null,null,null,null,null,"dirt"], chance:0.1, func:behaviors.FEEDPIXEL },
@@ -3206,9 +3412,18 @@ SEEDRISE: function(pixel) {
 		"tomato": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
 		"corn": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
 		"pickle": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"rotten_cheese": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
 		"bread": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
 		"toast": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"flour": { elem2:"dough", chance:0.01 },
+		"dough": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+		"paper": { elem2:"cellulose", chance:0.01 },
+		"confetti": { elem2:"cellulose", chance:0.01 },
+		"cellulose": { elem2:[null,"dirt"], chance:0.01, func:behaviors.FEEDPIXEL },
+		"potato": { elem2:"mashed_potato", chance:0.01 },
+		"mashed_potato": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
 		"mudstone": { elem2:"dirt", chance:0.1 },
+		"adobe": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
 		"permafrost": { elem2:"dirt", chance:0.1 },
 		"packed_sand": { elem2:"sand", chance:0.1 },
 		"lichen": { elem2:"dirt", chance:0.0025 },
@@ -4615,6 +4830,11 @@ SEEDRISE: function(pixel) {
 	onSelect: function() {
 		logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole.");
 	},
+	onMix: function(pixel) {
+		if (!pixel.con) return;
+		pixel.con.x = pixel.x;
+		pixel.con.y = pixel.y;
+	},
 	tick: function(pixel) {
 		if (!pixel.stage && pixelTicks-pixel.start > 60) {
 			for (var i = 0; i < squareCoords.length; i++) {
@@ -4766,6 +4986,11 @@ SEEDRISE: function(pixel) {
 		if (elements[element].canPlace === false) return;
 		if (elements[element].movable) pixel.filter = element;
 	},
+	onMix: function(pixel) {
+		if (!pixel.con) return;
+		pixel.con.x = pixel.x;
+		pixel.con.y = pixel.y;
+	},
 	tick: function(pixel) {
 		doDefaults(pixel);
 		if (!pixel.con) { //collect pixel
@@ -4802,6 +5027,9 @@ SEEDRISE: function(pixel) {
 			return;
 		}
 
+		pixel.con.x = pixel.x;
+		pixel.con.y = pixel.y;
+
 		//move pixel
 		let targets;
 		let element = pixel.con.element;
@@ -4830,15 +5058,15 @@ SEEDRISE: function(pixel) {
 			let newPixel = getPixel(x, y);
 			if (!newPixel) continue;
 			if (elements[newPixel.element].canContain && !newPixel.con && newPixel.filterTick !== pixelTicks) {
-				if (newPixel.filter !== pixel.filter) {
+				if (newPixel.filter && newPixel.filter !== pixel.filter) {
 					if (newPixel.filter !== pixel.con.element && !newPixel.filter.split(",").includes(pixel.con.element)) continue
 				}
 				newPixel.con = pixel.con;
 				newPixel.con.x = newPixel.x;
 				newPixel.con.y = newPixel.y;
-				newPixel.con.del; //???
+				// newPixel.con.del = true; //???
 				newPixel.filterTick = pixelTicks;
-				delete newPixel.con.del;
+				// delete newPixel.con.del;
 				pixel.con = null;
 				break;
 			}
@@ -4862,6 +5090,11 @@ SEEDRISE: function(pixel) {
 		"DD",
 		"LL"
 	],
+	onMix: function(pixel) {
+		if (!pixel.con) return;
+		pixel.con.x = pixel.x;
+		pixel.con.y = pixel.y;
+	},
 	tick: function(pixel) {
 		doDefaults(pixel);
 		if (!pixel.charge) {
@@ -4984,6 +5217,7 @@ SEEDRISE: function(pixel) {
 			pixel.charge = 0;
 		}
 	},
+	hoverStat: function(pixel) { return pixel.clone ? "???" : "" },
 	movable: true,
 	tempHigh: 500,
 	stateHigh: "fire",
@@ -5005,47 +5239,6 @@ SEEDRISE: function(pixel) {
 	hardness: 1,
 	noMix: true,
 	conduct: 1
-},
-"torch": {
-	color: "#d68542",
-	behavior: [
-		"XX|CR:fire|XX",
-		"XX|XX|XX",
-		"XX|XX|XX"
-	],
-	reactions: {
-		"water": { elem1:"wood" },
-		"sugar_water": { elem1:"wood" },
-		"salt_water": { elem1:"wood" },
-		"seltzer": { elem1:"wood" },
-		"dirty_water": { elem1:"wood" },
-		"pool_water": { elem1:"wood" },
-		"steam": { elem1:"wood" },
-		"smog": { elem1:"wood" },
-		"rain_cloud": { elem1:"wood" },
-		"cloud": { elem1:"wood" },
-		"snow_cloud": { elem1:"wood" },
-		"hail_cloud": { elem1:"wood" },
-		"thunder_cloud": { elem1:"wood" },
-		"ice_nine": { elem1:"wood" }
-	},
-	temp:600,
-	category:"special",
-	breakInto: "sawdust",
-	tempLow: -273,
-	stateLow: "wood"
-},
-"spout": {
-	color: "#606378",
-	behavior: [
-		"XX|CR:water|XX",
-		"CR:water|XX|CR:water",
-		"XX|CR:water|XX"
-	],
-	category:"special",
-	tempHigh: 1455.5,
-	stateHigh: "molten_steel",
-	conduct: 0.42
 },
 "udder": {
 	color: "#ecb3f5",
@@ -5127,51 +5320,6 @@ SEEDRISE: function(pixel) {
 	density: 1900,
 	hardness: 0.5,
 	breakInto: ["quicklime","quicklime","quicklime","bone_marrow"]
-},
-"ball": {
-	color: "#e35693",
-	behavior: [
-		"XX|XX|XX",
-		"XX|FY:0%5|XX",
-		"XX|M1 AND BO|XX"
-	],
-	tempHigh: 250,
-	stateHigh: "molten_plastic",
-	category: "special",
-	state: "solid",
-	density: 1052,
-	flipY: false,
-	flippableY: true,
-	hidden: true
-},
-"balloon": {
-	color: ["#fe4a75","#267cb0","#1a743c","#ff6ffa","#eaede5","#1dc9f3","#ff0101","#f4cd32","#bee347","#fab937","#91c7cc"],
-	buttonColor: ["#ff8080","#ff2626"],
-	behavior: [
-		"M1%50|M1%50|M1%50",
-		"M2%5|XX|M2%5",
-		"M2%5|M2%5|M2%5"
-	],
-	reactions: {
-		"cloud": {elem1:"pop"},
-		"rain_cloud": {elem1:"pop"},
-		"snow_cloud": {elem1:"pop"},
-		"thunder_cloud": {elem1:"pop"},
-		"hail_cloud": {elem1:"pop"},
-		"acid_cloud": {elem1:"pop"},
-		"ozone": {elem1:"pop"}
-	},
-	category:"special",
-	tempHigh: 120,
-	stateHigh: "pop",
-	tempLow: -272.20,
-	stateLow: "pop",
-	burn: 20,
-	burnTime: 2,
-	burnInto: "pop",
-	state: "solid",
-	density: 0.164,
-	breakInto: ["confetti","helium","helium","helium","pop"]
 },
 "antipowder": {
 	color: "#ebd1d8",
@@ -5286,14 +5434,14 @@ SEEDRISE: function(pixel) {
 	color: ["#8c8c8c","#9c9c9c"],
 	behavior: behaviors.POWDER,
 	reactions: {
-		"steam": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"rain_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"snow_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"hail_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"thunder_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
-		"acid_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], "setting":"clouds" },
-		"pyrocumulus": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], "setting":"clouds" },
+		"steam": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"rain_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"snow_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"hail_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"thunder_cloud": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
+		"acid_cloud": { elem1: "pyrocumulus", chance:0.05, "y":[0,12], setting:"clouds" },
+		"pyrocumulus": { elem1: "pyrocumulus", chance:0.08, "y":[0,12], setting:"clouds" },
 		"tornado":{elem1:"pyrocumulus", oneway:true},
 		"stench": { elem2:null, chance:0.1 },
 		"molten_dirt": { elem1:null, elem2:"molten_tuff" }
@@ -5622,9 +5770,9 @@ SEEDRISE: function(pixel) {
 		"seltzer": { elem1:"foam", attr1:{"clone":"oxygen"} },
 		"soda": { elem1:"foam", attr1:{"clone":"oxygen"} },
 		"dirty_water": { elem1:"foam", attr1:{"clone":"oxygen"} },
-		"oxygen": { elem1: null, elem2: "ozone", chance:0.01, "y":[0,12], "setting":"clouds" },
-		"ozone": { elem1: "ozone", chance:0.01, "y":[0,12], "setting":"clouds" },
-		"light": { elem1: "ozone", elem2: null, chance:0.3, "y":[0,12], "setting":"clouds" },
+		"oxygen": { elem1: null, elem2: "ozone", chance:0.01, "y":[0,12], setting:"clouds" },
+		"ozone": { elem1: "ozone", chance:0.01, "y":[0,12], setting:"clouds" },
+		"light": { elem1: "ozone", elem2: null, chance:0.3, "y":[0,12], setting:"clouds" },
 		"proton": { elem1:"flash", color1:"#e36d88", attr1:{delay:500}, elem2:"flash", color2:"#e36d88", attr2:{delay:500}, chance:0.25, "y":[0,10] },
 		"paper": { elem1:"fragrance", chance:0.005 },
 		"molten_lead": { elem2:"poison_gas" }
@@ -6124,7 +6272,8 @@ SEEDRISE: function(pixel) {
 	stateHigh: "molten_dirt",
 	hardness: 0.33,
 	breakInto: ["dirt","dirt","dirt","dirt","dirt","flour"],
-	alias: "mud brick"
+	alias: "mud brick",
+	density: 1946
 },
 "sapling": {
 	color: "#3e9c3e",
@@ -6895,7 +7044,7 @@ SEEDRISE: function(pixel) {
 		"DB%5 AND M2|XX|DB%5 AND M2",
 		"DB%5 AND M2|DB%10 AND M1|DB%5 AND M2"
 	],
-	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","clay","pipe","pipe_wall","lye","rose_gold","purple_gold","blue_gold","electrum","mercury","bubble","diamond"],
+	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","clay","pipe","pipe_wall","filter","gate","lye","rose_gold","purple_gold","blue_gold","electrum","mercury","bubble","diamond"],
 	reactions: {
 		"ash": { elem1:"neutral_acid", elem2:null },
 		"limestone": { elem1:"neutral_acid", elem2:["calcium","carbon_dioxide"] },
@@ -6964,16 +7113,16 @@ SEEDRISE: function(pixel) {
 			changePixel(pixel,Math.random() < 0.66 ? "hydrogen" : "chlorine");
 		}
 	},
-	ignore: ["fire","smoke","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor","pipe","pipe_wall","lye","mercury","bubble","diamond"],
+	ignore: [],
 	reactions: {
-		"acid_gas": { elem1: null, elem2: "acid_cloud", chance:0.3, "y":[0,12], "setting":"clouds" },
-		"rain_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"snow_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"hail_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"thunder_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"pyrocumulus": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"fire_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
+		"acid_gas": { elem1: null, elem2: "acid_cloud", chance:0.3, "y":[0,12], setting:"clouds" },
+		"rain_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"snow_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"hail_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"thunder_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"pyrocumulus": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"fire_cloud": { elem1: null, elem2: "acid_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
 		"ash": { elem1:"hydrogen", elem2:null, chance:0.05 },
 		"limestone": { elem1:"hydrogen", elem2:null, chance:0.05 },
 		"quicklime": { elem1:"hydrogen", elem2:null, chance:0.05 },
@@ -7150,7 +7299,10 @@ SEEDRISE: function(pixel) {
 			}
 		}
 	},
-	onClicked: behaviors.CLONE_ON_CLICK,
+	onClicked: function(pixel,element) {
+		if (element === "fuse") pixel.clone = "fuse";
+		else behaviors.CLONE_ON_CLICK(pixel,element)
+	},
 	ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","wire","wall","ewall","sensor","battery","fuse"],
 	ignoreConduct:["fuse"],
 	category:"machines",
@@ -7704,6 +7856,7 @@ SEEDRISE: function(pixel) {
 	burnInto: ["smoke","smoke","smoke","smoke","ash"],
 	category: "solids",
 	state: "solid",
+	density: 1314,
 	breakInto: "dust",
 	movable:false
 },
@@ -7798,6 +7951,7 @@ SEEDRISE: function(pixel) {
 	category: "solids",
 	insulate: true,
 	state: "solid",
+	density: 160,
 	noMix: true,
 	darkText: true
 },
@@ -7903,7 +8057,8 @@ SEEDRISE: function(pixel) {
 	density: 7860,
 	conduct: 0.47,
 	hardness: 0.4,
-	darkText: true
+	darkText: true,
+	fireColor: "#d45100"
 },
 "copper": {
 	color: ["#a95232","#be4322","#c76035"],
@@ -8043,7 +8198,8 @@ SEEDRISE: function(pixel) {
 	category: "solids",
 	density: 8900,
 	conduct: 0.51,
-	hardness: 0.4
+	hardness: 0.4,
+	fireColor: "#fff1d4"
 },
 "aluminum": {
 	color: ["#d1c6be","#b5c0ad","#b9b8bc"],
@@ -8071,7 +8227,8 @@ SEEDRISE: function(pixel) {
 	density: 19300,
 	conduct: 0.65,
 	superconductAt: -270.65,
-	hardness: 0.75
+	hardness: 0.75,
+	fireColor: "#59ff4d"
 },
 "molten_tungsten": {
 	color: ['#ffff67', '#ffd367', '#ff9e00', '#d1ff5c', '#5cffb0', '#0073ff', '#ca57ff', '#ffba57', '#ff8c00', '#c46f28', '#c45928', '#c44300']
@@ -8697,7 +8854,8 @@ SEEDRISE: function(pixel) {
 	color: "#ffe46b",
 	behavior: behaviors.STURDYPOWDER,
 	reactions: {
-		"caustic_potash": { elem1:"soap", elem2:"soap" }
+		"caustic_potash": { elem1:"soap", elem2:"soap" },
+		"sugar": { elem1:"icing", elem2:"icing" }
 	},
 	tempHigh: 33,
 	stateHigh: "melted_butter",
@@ -8732,7 +8890,8 @@ SEEDRISE: function(pixel) {
 		"acid_gas": { elem1:"rotten_cheese", chance:0.4 },
 		"cyanide": { elem1:"rotten_cheese", elem2:null, chance:0.5 },
 		"cyanide_gas": { elem1:"rotten_cheese", elem2:null, chance:0.5 },
-		"rotten_meat": { elem1:"rotten_cheese", chance:0.02 }
+		"rotten_meat": { elem1:"rotten_cheese", chance:0.02 },
+		"rad_steam": { elem1:"rotten_cheese", chance:0.1 }
 	},
 	tempHigh: 54,
 	stateHigh: "melted_cheese",
@@ -9595,6 +9754,18 @@ SEEDRISE: function(pixel) {
 	density: 1096,
 	isFood: true
 },
+"icing": {
+	color: "#EEE4CD",
+	behavior: behaviors.STURDYPOWDER,
+	tempHigh: 100,
+	stateHigh: "cream",
+	category: "food",
+	state: "solid",
+	density: 1001.74,
+	isFood: true,
+	hidden: true,
+	alias: ["buttercream","frosting"]
+},
 "beans": {
 	//color: ["#f33d02","#f04703","#fd9d24","#ffbf61"],
 	//color: ["#b81901","#b61a00","#e97501","#f9922b"],
@@ -9642,6 +9813,7 @@ SEEDRISE: function(pixel) {
 	burnTime: 400,
 	burnInto: ["ash","fire"],
 	state: "solid",
+	density: 700,
 	hardness: 0.2,
 	breakInto: "sawdust",
 	hidden: true
@@ -10050,7 +10222,8 @@ SEEDRISE: function(pixel) {
 	category:"liquids",
 	state: "liquid",
 	density: 13545,
-	conduct: 0.85
+	conduct: 0.85,
+	fireColor: "#f53500"
 },
 "mercury_gas": {
 	density: 12800,
@@ -10806,7 +10979,7 @@ SEEDRISE: function(pixel) {
 		"pool_water": { elem1:null, elem2:"hydrogen", chance:0.01 },
 		"nut_milk": { elem1:null, elem2:"hydrogen", chance:0.01 }
 	},
-	tempHigh: 63.5,
+	tempHigh: 650,
 	category: "powders",
 	state: "solid",
 	density: 890,
@@ -10820,8 +10993,6 @@ SEEDRISE: function(pixel) {
 	color: "#768487",
 	fireElement: "flash",
 	burnInto: "flash",
-	tempLow: 63,
-	stateLow: "magnesium",
 	reactions: {
 		"water": { elem1:null, elem2:"hydrogen", chance:0.03 },
 		"steam": { elem1:null, elem2:"hydrogen", chance:0.05 },
@@ -11156,7 +11327,7 @@ SEEDRISE: function(pixel) {
 		"electric": { elem1:"rain_cloud", temp1:-20 },
 		"cloud": { elem1:"rain_cloud", elem2:"rain_cloud", temp1:-20, temp2:-20, charged:true },
 		"anesthesia": { elem1:"acid_cloud", elem2:null, chance:0.05 },
-		"sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], "setting":"clouds" }
+		"sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], setting:"clouds" }
 	},
 	category:"gases",
 	temp: 110,
@@ -11177,8 +11348,8 @@ SEEDRISE: function(pixel) {
 	],
 	reactions: {
 		"anesthesia": { elem1:"acid_cloud", elem2:null, chance:0.05 },
-		"sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], "setting":"clouds" },
-		"wet_sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], "setting":"clouds" }
+		"sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], setting:"clouds" },
+		"wet_sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], setting:"clouds" }
 	},
 	category:"gases",
 	temp: 70,
@@ -11285,7 +11456,7 @@ SEEDRISE: function(pixel) {
 		"XX|XX|XX"
 	],
 	reactions: {
-		"sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], "setting":"clouds" }
+		"sand": { elem2: "sandstorm", chance:0.2, "y":[0,12], setting:"clouds" }
 	},
 	category:"gases",
 	hidden: true,
@@ -11356,15 +11527,15 @@ SEEDRISE: function(pixel) {
 		"XX|M2%10|XX"
 	],
 	reactions: {
-		"rad_steam": { elem1: null, elem2: "rad_cloud", chance:0.3, "y":[0,15], "setting":"clouds" },
-		"steam": { elem1: null, elem2: "rad_cloud", chance:0.3, "y":[0,12], "setting":"clouds" },
-		"cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"rain_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"snow_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"hail_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"thunder_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"pyrocumulus": { elem1: "rad_cloud", chance:0.4, "y":[0,12], "setting":"clouds" },
-		"rad_cloud": { elem1: "rad_cloud", chance:0.3, "y":[0,12], "setting":"clouds" }
+		"rad_steam": { elem1: null, elem2: "rad_cloud", chance:0.3, "y":[0,15], setting:"clouds" },
+		"steam": { elem1: null, elem2: "rad_cloud", chance:0.3, "y":[0,12], setting:"clouds" },
+		"cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"rain_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"snow_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"hail_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"thunder_cloud": { elem1: "rad_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"pyrocumulus": { elem1: "rad_cloud", chance:0.4, "y":[0,12], setting:"clouds" },
+		"rad_cloud": { elem1: "rad_cloud", chance:0.3, "y":[0,12], setting:"clouds" }
 	},
 	tempLow: 10,
 	stateLow: "fallout",
@@ -11414,6 +11585,7 @@ SEEDRISE: function(pixel) {
 		if (!ticktemp.portal_out[channel]) {
 			ticktemp.portal_out[channel] = currentPixels.filter((p) => {
 				return elements[p.element].id === elements.portal_out.id && (
+					pixel.charge ||
 					isEmpty(p.x,p.y+1) || isEmpty(p.x,p.y-1) ||
 					isEmpty(p.x+1,p.y) || isEmpty(p.x-1,p.y)
 				) &&
@@ -11427,7 +11599,8 @@ SEEDRISE: function(pixel) {
 				var coord = squareCoordsShuffle[i];
 				var x = pixel.x+coord[0];
 				var y = pixel.y+coord[1];
-				if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+				if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable &&
+					elements.portal_in.ignore.indexOf(pixelMap[x][y].element) === -1) {
 					r = pixelMap[x][y];
 					break;
 				}
@@ -11459,8 +11632,52 @@ SEEDRISE: function(pixel) {
 		};
 		doElectricity(pixel);
 	},
+	ignore: ["fuse"],
 	properties: { channel:0 },
 	renderer: renderPresets.BORDER,
+	renderTool: function(ctx) {
+		let pixel = getPixel(mousePos.x, mousePos.y);
+		if (pixel && (pixel.element === "portal_in" || pixel.element === "portal_out")) return;
+		let portals = currentPixels.filter((p) => {
+			if (!p) return;
+			return elements[p.element].id === elements.portal_in.id;
+		});
+		if (!portals.length) return;
+		let groups = categorizePixels(portals);
+		if (!groups.length) return;
+		let lines = 0;
+		for (let i = 0; i < groups.length; i++) {
+			elements.portal_in.hoverRender(ctx, groups[i][Math.floor(groups[i].length / 2)]);
+			lines ++;
+			if (lines > 30) return;
+		}
+	},
+	hoverRender: function(ctx, pixel) {
+		if (shiftDown || mouseIsDown) return;
+		if (!pixel) pixel = getPixel(mousePos.x, mousePos.y);
+		if (!pixel) return;
+		if (pixel.channel === undefined) return;
+
+		let portals = currentPixels.filter((p) => {
+			if (!p) return;
+			return elements[p.element].id === elements.portal_out.id && p.channel === pixel.channel;
+		})
+		if (!portals.length) return;
+
+		let groups = categorizePixels(portals);
+		if (!groups.length) return;
+
+		ctx.lineWidth = pixelSizeHalf;
+		for (let i = 0; i < groups.length; i++) {
+			const newPixel = groups[i][Math.floor(groups[i].length / 2)];
+			ctx.strokeStyle = newPixel.color;
+			ctx.globalAlpha = 0.5;
+			ctx.beginPath();
+			ctx.moveTo(canvasCoord(pixel.x + 0.5), canvasCoord(pixel.y + 0.5));
+			ctx.lineTo(canvasCoord(newPixel.x + 0.5), canvasCoord(newPixel.y + 0.5));
+			ctx.stroke();
+		}
+	},
 	hoverStat: function(pixel) { return pixel.channel },
 	grain:0,
 	category:"machines",
@@ -11468,7 +11685,8 @@ SEEDRISE: function(pixel) {
 	movable:false,
 	hardness:1,
 	conduct:1,
-	emit:true
+	emit:true,
+	alias:"portal"
 },
 "portal_out": {
 	color: "#00a2ff",
@@ -11488,6 +11706,49 @@ SEEDRISE: function(pixel) {
 	},
 	properties: { channel:0 },
 	renderer: renderPresets.BORDER,
+	renderTool: function(ctx) {
+		let pixel = getPixel(mousePos.x, mousePos.y);
+		if (pixel && (pixel.element === "portal_in" || pixel.element === "portal_out")) return;
+		let portals = currentPixels.filter((p) => {
+			if (!p) return;
+			return elements[p.element].id === elements.portal_out.id;
+		});
+		if (!portals.length) return;
+		let groups = categorizePixels(portals);
+		if (!groups.length) return;
+		let lines = 0;
+		for (let i = 0; i < groups.length; i++) {
+			elements.portal_out.hoverRender(ctx, groups[i][Math.floor(groups[i].length / 2)]);
+			lines ++;
+			if (lines > 30) return;
+		}
+	},
+	hoverRender: function(ctx, pixel) {
+		if (shiftDown || mouseIsDown) return;
+		if (!pixel) pixel = getPixel(mousePos.x, mousePos.y);
+		if (!pixel) return;
+		if (pixel.channel === undefined) return;
+
+		let portals = currentPixels.filter((p) => {
+			if (!p) return;
+			return elements[p.element].id === elements.portal_in.id && p.channel === pixel.channel;
+		})
+		if (!portals.length) return;
+
+		let groups = categorizePixels(portals);
+		if (!groups.length) return;
+
+		ctx.lineWidth = pixelSizeHalf;
+		for (let i = 0; i < groups.length; i++) {
+			const newPixel = groups[i][Math.floor(groups[i].length / 2)];
+			ctx.strokeStyle = newPixel.color;
+			ctx.globalAlpha = 0.5;
+			ctx.beginPath();
+			ctx.moveTo(canvasCoord(pixel.x + 0.5), canvasCoord(pixel.y + 0.5));
+			ctx.lineTo(canvasCoord(newPixel.x + 0.5), canvasCoord(newPixel.y + 0.5));
+			ctx.stroke();
+		}
+	},
 	hoverStat: function(pixel) { return pixel.channel },
 	grain:0,
 	category:"machines",
@@ -11708,7 +11969,8 @@ SEEDRISE: function(pixel) {
 	},
 	density: 193,
 	state: "liquid",
-	category:"special"
+	category:"special",
+	excludeRandom: true
 },
 "radiation": {
 	color: ["#00ff00","#6fff00"],
@@ -11732,6 +11994,7 @@ SEEDRISE: function(pixel) {
 		"broth": { elem2:"rad_steam", chance:0.3 },
 		"tea": { elem2:"rad_steam", chance:0.25 },
 		"coffee": { elem2:"rad_steam", chance:0.25 },
+		"batter": { elem2:["baked_batter","rad_steam"], chance:0.5 },
 		"bubble": { elem2:"rad_steam", chance:0.4 },
 		"foam": { elem2:"rad_steam", chance:0.4 },
 		"ice": { elem2:"rad_steam", chance:0.4 },
@@ -12257,12 +12520,30 @@ SEEDRISE: function(pixel) {
 },
 "lightning": {
 	color: "#ffffed",
+	onPlace: function(pixel) {
+		let coords = circleCoords(pixel.x, pixel.y, 10);
+		for (let i = 0; i < coords.length; i++) {
+			const coord = coords[i];
+			let newPixel = getPixel(coord.x, coord.y);
+			if (!newPixel) continue;
+			if (elements[newPixel.element].colorOn) {
+				pixel.color = pixelColorPick(pixel, elements[newPixel.element].colorOn);
+				pixel.colored = true;
+				return;
+			}
+			if (elements[newPixel.element].fireColor) {
+				pixel.color = pixelColorPick(pixel, elements[newPixel.element].fireColor);
+				pixel.colored = true;
+				return;
+			}
+		}
+	},
 	tick: function(pixel) {
 		if (!pixel.stage) { // create bolt
 			var y = pixel.y;
 			var xoffset = 0;
 			var last = [pixel.x,pixel.y]
-			for (var i = 0; i < height; i++) {
+			for (var i = 0; i < height - pixel.y + 1; i++) {
 				y++;
 				// randomly go back and forth
 				if (Math.random() > 0.5) { xoffset++; }
@@ -12272,6 +12553,7 @@ SEEDRISE: function(pixel) {
 					createPixel("lightning",x,y);
 					pixelMap[x][y].stage = 1;
 					pixelMap[x][y].color = pixel.color;
+					if (pixel.colored === true) pixelMap[x][y].colored = true;
 					last = [x,y];
 				}
 				else if (outOfBounds(x,y) || !elements[pixelMap[x][y].element].isGas) {
@@ -12309,7 +12591,14 @@ SEEDRISE: function(pixel) {
 		else if (pixelTicks - pixel.start >= 4) {
 			doDefaults(pixel);
 			//deletePixel(pixel.x, pixel.y);
-			changePixel(pixel, "electric")
+			if (pixel.colored) {
+				let color = pixel.color;
+				changePixel(pixel, "electric");
+				pixel.color = color;
+			}
+			else {
+				changePixel(pixel, "electric");
+			}
 		}
 		else {
 			doDefaults(pixel);
@@ -12706,8 +12995,7 @@ SEEDRISE: function(pixel) {
 			pixelTempCheck(pixel);
 		}
 	},
-	category: "energy",
-	excludeRandom: true
+	category: "energy"
 },
 "incinerate": {
 	color: ["#e600ff","#d984d8","#ff00e1"],
@@ -12718,8 +13006,7 @@ SEEDRISE: function(pixel) {
 		}
 		pixelTempCheck(pixel);
 	},
-	category: "energy",
-	excludeRandom: true
+	category: "energy"
 },
 "room_temp": {
 	color: "#b1c96d",
@@ -12727,8 +13014,7 @@ SEEDRISE: function(pixel) {
 		pixel.temp = (pixel.temp+airTemp)/2;
 		pixelTempCheck(pixel);
 	},
-	category: "energy",
-	excludeRandom: true
+	category: "energy"
 },
 "positron": {
 	color: "#a6bfff",
@@ -13679,7 +13965,7 @@ SEEDRISE: function(pixel) {
 		lastDebug = pixelTicks;
 	},
 	maxSize: 1,
-	category: "special"
+	category: "edit"
 },
 "prop": {
 	color: ["#d46f50","#d4aa50"],
@@ -13755,8 +14041,14 @@ SEEDRISE: function(pixel) {
 		}
 		pixel[currentProp] = currentPropValue;
 		if (currentProp === "temp") pixelTempCheck(pixel);
+		if (currentProp === "_r" && currentPropValue) {
+			let relation = getRelation(currentPropValue);
+			if (relation && relation.p.indexOf(pixel) === -1) {
+				relation.p.push(pixel);
+			}
+		}
 	},
-	category: "special"
+	category: "edit"
 },
 //ice color: "#c5e9f0"
 "salt_ice": { color: "#b6ced4" },
@@ -13769,6 +14061,7 @@ SEEDRISE: function(pixel) {
 "infection_ice": { color: "#ff7090" }
 
 };
+elements.acid_gas.ignore = elements.acid.ignore;
 
 // detect if discord activity
 if (!standalone && location.hostname.match(/discordsays/i)) {
@@ -13918,7 +14211,9 @@ keybinds["Equal"] = ()=>{ // Increase the mouse size by 2
 }
 keybinds["BracketRight"] = keybinds["Equal"];
 keybinds["Space"] = ()=>{ // Pause
-	togglePause();
+	paused = !paused;
+	manualPaused = paused;
+	checkPause();
 }
 keybinds["KeyP"] = keybinds["Space"];
 keybinds["KeyK"] = keybinds["Space"];
@@ -14003,6 +14298,12 @@ keybinds["KeyH"] = ()=>{ // Hide rendering
 		loadingP.style.display = "none";
 		document.getElementById("canvasDiv").style.display = "block";
 	}
+}
+keybinds["KeyT"] = ()=>{
+	tpsPrompt();
+}
+keybinds["Quote"] = ()=>{
+	toggleEditMode();
 }
 keybinds["KeyZ"] = ()=>{ // Secondary element
 	if (storedElement === null) {
@@ -14193,7 +14494,7 @@ function langKey(key,fallback,template) {
 }
 
 		function hexToRGB(hex) {
-			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 			return result ? {
 				r: parseInt(result[1], 16),
 				g: parseInt(result[2], 16),
@@ -14201,18 +14502,18 @@ function langKey(key,fallback,template) {
 			} : null;
 		}
 		function RGBToHex(rgb) {
-			var r = parseInt(rgb.r||rgb[0]);
-			var g = parseInt(rgb.g||rgb[1]);
-			var b = parseInt(rgb.b||rgb[2]);
+			const r = parseInt(rgb.r||rgb[0]);
+			const g = parseInt(rgb.g||rgb[1]);
+			const b = parseInt(rgb.b||rgb[2]);
 			return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 		}
 		// https://gist.github.com/mjackson/5311256
 		function RGBToHSL(rgb){var e,r,c=rgb[0]/255,s=rgb[1]/255,i=rgb[2]/255,n=Math.max(c,s,i),$=Math.min(c,s,i),t=(n+$)/2;if(n==$)e=r=0;else{var b=n-$;switch(r=t>.5?b/(2-n-$):b/(n+$),n){case c:e=(s-i)/b+(s<i?6:0);break;case s:e=(i-c)/b+2;break;case i:e=(c-s)/b+4}e/=6}return[e,r,t]}
 		function HSLtoRGB(hsl){var n,r,t,$=hsl[0],e=hsl[1],u=hsl[2];if(0==e)n=r=t=u;else{function f(_,n,r){return(r<0&&(r+=1),r>1&&(r-=1),r<1/6)?_+(n-_)*6*r:r<.5?n:r<2/3?_+(n-_)*(2/3-r)*6:_}var i=u<.5?u*(1+e):u+e-u*e,o=2*u-i;n=f(o,i,$+1/3),r=f(o,i,$),t=f(o,i,$-1/3)}return[255*n,255*r,255*t]}
 		function averageRGB(rgblist) {
-			var r = 0;
-			var g = 0;
-			var b = 0;
+			let r = 0;
+			let g = 0;
+			let b = 0;
 			for (var i = 0; i < rgblist.length; i++) {
 				let rgb = rgblist[i];
 				let newr, newg, newb;
@@ -14274,7 +14575,7 @@ function langKey(key,fallback,template) {
 					element = "unknown";
 				}
 				this.element = element;
-				var elementInfo = elements[element];
+				const elementInfo = elements[element];
 				if (elementInfo.colorPattern && settings.textures!==0) {
 					this.color = colorPatternPick(this);
 				}
@@ -14398,18 +14699,19 @@ function langKey(key,fallback,template) {
 			// remove pixelMap[x][y] from currentPixels
 			let pixel = pixelMap[x][y];
 			let i = currentPixels.indexOf(pixel);
-			if (i !== -1) currentPixels.splice(i,1);
+			// if (i !== -1) currentPixels.splice(i,1);
+			// if (i !== -1) currentPixels.splice(currentPixels.indexOf(pixel),1);
 			if (pixel) {
 				pixel.del = true;
-				if (elements[pixel.element].onDelete) {
+				if (elements[pixel.element].onDelete !== undefined) {
 					elements[pixel.element].onDelete(pixel)
 				}
 			}
-			delete pixelMap[x][y];
+			pixelMap[x][y] = undefined;
 		}
 		function swapPixels(pixel1,pixel2) {
-			var tempX = pixel1.x;
-			var tempY = pixel1.y;
+			const tempX = pixel1.x;
+			const tempY = pixel1.y;
 			pixel1.x = pixel2.x;
 			pixel1.y = pixel2.y;
 			pixel2.x = tempX;
@@ -14427,10 +14729,18 @@ function langKey(key,fallback,template) {
 				pixel.invalidElement = element;
 				element = "unknown"
 			}
+			if (pixel._r !== undefined) {
+				if (elements[pixel.element].state !== elements[element].state) {
+					removeFromRelation(pixel);
+				}
+				else if (!elements[pixel.element].movable && elements[element].movable === true) {
+					removeFromRelation(pixel);
+				}
+			}
 			pixel.element = element;
 			pixel.color = pixelColorPick(pixel);
 			pixel.start = pixelTicks;
-			var elementInfo = elements[element];
+			const elementInfo = elements[element];
 			if (elementInfo.burning == true) {
 				pixel.burning = true;
 				pixel.burnStart = pixelTicks;
@@ -14440,7 +14750,9 @@ function langKey(key,fallback,template) {
 				delete pixel.burnStart;
 			}
 			delete pixel.origColor; // remove stain
-			delete pixel.clone;
+			if (pixel.clone !== undefined) {
+				delete pixel.clone;
+			}
 			if (pixel.glow !== undefined) {
 				delete pixel.glow;
 			}
@@ -14463,7 +14775,7 @@ function langKey(key,fallback,template) {
 			else if (elementInfo.flippableY) {
 				pixel.flipY = Math.random() >= 0.5;
 			}
-			if (elementInfo.temp !== undefined && changetemp) {
+			if (elementInfo.temp !== undefined && changetemp === true) {
 				pixel.temp = (elementInfo.temp+pixel.temp)/2;
 				pixelTempCheck(pixel)
 			}
@@ -14497,15 +14809,15 @@ function langKey(key,fallback,template) {
 			checkUnlock(element);
 		}
 		function reactPixels(pixel1,pixel2) {
-			var r = elements[pixel1.element].reactions[pixel2.element];
+			const r = elements[pixel1.element].reactions[pixel2.element];
+			if (r.tempMin !== undefined && pixel1.temp < r.tempMin) {
+				return false;
+			}
 			if (r.chance !== undefined && Math.random() > r.chance) {
 				return false;
 			}
 			if (pixel1.skip === true || pixel2.skip === true) { return false }
-			if (r.setting && settings[r.setting]===0) {
-				return false;
-			}
-			if (r.tempMin !== undefined && pixel1.temp < r.tempMin) {
+			if (r.setting !== undefined && settings[r.setting]===0) {
 				return false;
 			}
 			if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
@@ -14525,9 +14837,10 @@ function langKey(key,fallback,template) {
 			}
 			if (r.elem1 !== undefined) {
 				// if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
+				let elem1;
 				if (Array.isArray(r.elem1)) {
-					var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
-				} else { var elem1 = r.elem1; }
+					elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
+				} else { elem1 = r.elem1; }
 				
 				if (elem1 === null) {
 					deletePixel(pixel1.x,pixel1.y);
@@ -14552,9 +14865,10 @@ function langKey(key,fallback,template) {
 			if (r.stain1) { stainPixel(pixel1,r.stain1,0.05); }
 			if (r.elem2 !== undefined) {
 				// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
+				let elem2;
 				if (Array.isArray(r.elem2)) {
-					var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
-				} else { var elem2 = r.elem2; }
+					elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
+				} else { elem2 = r.elem2; }
 
 				if (elem2 === null) {
 					deletePixel(pixel2.x,pixel2.y);
@@ -14633,7 +14947,7 @@ function langKey(key,fallback,template) {
 			return null;
 		}
 		function chargePixel(pixel,amount=1) {
-			var con = elements[pixel.element].conduct;
+			const con = elements[pixel.element].conduct;
 			if (con !== undefined) {
 				if (Math.random() < con) { // If random number is less than conductivity
 					if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(pixel.element) !== -1) {
@@ -14658,6 +14972,58 @@ function langKey(key,fallback,template) {
 			let b = y1 - y2;
 			return Math.sqrt( a*a + b*b );
 		}
+		function floodPixels(x, y, check, limit, stopAt) {
+			let checked = {};
+			let toCheck = [[x,y]];
+			let toCheckKeys = {};
+			toCheckKeys[x+","+y] = true;
+			let results = [];
+			while (toCheck.length) {
+				let pixel = getPixel(toCheck[0][0], toCheck[0][1]);
+				let key = toCheck[0][0] + "," + toCheck[0][1];
+				checked[key] = true;
+				if (pixel && check(pixel)) {
+					results.push(pixel);
+					if (limit !== undefined && results.length >= limit) break;
+					for (let i = 0; i < adjacentCoords.length; i++) {
+						const coords = adjacentCoords[i];
+						const newPixel = getPixel(pixel.x + coords[0], pixel.y + coords[1]);
+						if (!newPixel) continue;
+						const newKey = (pixel.x+coords[0]) + "," + (pixel.y+coords[1]);
+						if (checked[newKey] !== undefined) continue;
+						if (toCheckKeys[newKey] !== undefined) continue;
+						if (stopAt !== undefined && stopAt(pixel)) {
+							if (check(pixel)) results.push(pixel);
+							continue;
+						}
+						toCheck.push([newPixel.x, newPixel.y]);
+						toCheckKeys[newPixel.x + "," + newPixel.y] = true;
+					}
+				}
+				toCheck.shift();
+			}
+			return results;
+		}
+		function categorizePixels(pixels) {
+			let groups = [];
+
+			for (let i = 0; i < pixels.length; i++) {
+				const pixel = pixels[i];
+				if (pixel._CATDONE) continue;
+				let flood = floodPixels(pixel.x, pixel.y, (p) => pixels.indexOf(p) !== -1);
+				flood.forEach((p) => {
+					p._CATDONE = true;
+				})
+				if (flood.length) groups.push(flood);
+			}
+
+			for (let i = 0; i < pixels.length; i++) {
+				const pixel = pixels[i];
+				delete pixel._CATDONE;
+			}
+
+			return groups;
+		}
 
 		validDensitySwaps = {
 			"solid": {
@@ -14674,8 +15040,8 @@ function langKey(key,fallback,template) {
 			undefined: {}
 		}
 		function tryMove(pixel,nx,ny,leaveBehind,force) {
-			if (pixel.drag && force !== true) { return true; }
-			if (pixel.del) { return false }
+			if (pixel.drag === true && force !== true) return true;
+			if (pixel.del === true) return false;
 			if (validateMovesList.length !== 0 && force !== true) {
 				for (let i = 0; i < validateMovesList.length; i++) {
 					const result = validateMovesList[i](pixel,nx,ny);
@@ -14686,51 +15052,68 @@ function langKey(key,fallback,template) {
 					}
 				}
 			}
+			if (pixel._r !== undefined) {
+				let relation = getRelation(pixel._r);
+				if (relation.lastMove === pixelTicks) return;
+				let dirX = Math.sign(nx - pixel.x);
+				let dirY = Math.sign(ny - pixel.y);
+				tryMoveRelation(relation, dirX, dirY);
+				return;
+			}
 			const info = elements[pixel.element];
 			const oob = outOfBounds(nx,ny);
 			if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
 				movePixel(pixel,nx,ny,leaveBehind);
 				return true;
 			}
-			else if (!oob) {
-				// Reactions
-				const newPixel = pixelMap[nx][ny];
-				let rr1 = false;
-				if (info.reactions !== undefined && info.reactions[newPixel.element] !== undefined) {
-					rr1 = reactPixels(pixel,newPixel)
-					if (rr1) {
-						return true;
-					}
+			
+			const infoReactions = info.reactions;
+			if (oob === true) return false;
+			
+			// Reactions
+			const newPixel = pixelMap[nx][ny];
+			const newElement = newPixel.element;
+			let rr1 = false;
+			if (infoReactions !== undefined && infoReactions[newElement] !== undefined) {
+				rr1 = reactPixels(pixel,newPixel)
+				if (rr1 === true) {
+					return true;
 				}
-				if (!rr1 && elements[newPixel.element].reactions !== undefined && elements[newPixel.element].reactions[pixel.element] !== undefined && !elements[newPixel.element].reactions[pixel.element].oneway) {
+			}
+			const newPixelInfo = elements[newElement];
+			const newPixelReactions = newPixelInfo.reactions;
+			if (rr1 !== true && newPixelReactions !== undefined) {
+				const reaction = newPixelReactions[pixel.element];
+				if (reaction !== undefined && reaction.oneway !== true) {
 					if (reactPixels(newPixel,pixel)) {
 						return true;
 					}
 				}
-				if (elements[pixel.element].id !== elements[newPixel.element].id) {
-					// Density
-					if (info.density !== undefined && elements[newPixel.element].density !== undefined) {
-						// if the pixel's state + ">" + newPixel's state is in validDensitySwaps, and the pixel's density is larger than the newPixel's density, swap the pixels
-						if (validDensitySwaps[info.state][elements[newPixel.element].state] !== undefined && info.density >= elements[newPixel.element].density && newPixel.skip !== true) {
-							// chance depending on the difference in density
-							if (Math.random() < (info.density - elements[newPixel.element].density)/(info.density + elements[newPixel.element].density)) {
-								swapPixels(pixel,newPixel);
-								return true;
-							}
+			}
+			if (info.id !== newPixelInfo.id) {
+				// Density
+				if (info.density !== undefined && newPixelInfo.density !== undefined) {
+					// if the pixel's state + ">" + newPixel's state is in validDensitySwaps, and the pixel's density is larger than the newPixel's density, swap the pixels
+					if (validDensitySwaps[info.state][newPixelInfo.state] !== undefined && info.density >= newPixelInfo.density && newPixel.skip !== true) {
+						// chance depending on the difference in density
+						if (Math.random() < (info.density - newPixelInfo.density)/(info.density + newPixelInfo.density)) {
+							swapPixels(pixel,newPixel);
+							return true;
 						}
 					}
-					if (elements[newPixel.element].onMoveInto !== undefined) {
-						elements[newPixel.element].onMoveInto(newPixel,pixel);
-					}
-					if (info.onCollide !== undefined) {
-						info.onCollide(pixel,newPixel);
-					}
 				}
-				else if (info.isGas !== true && validDensitySwaps[info.state][info.state] !== undefined && Math.random() < 1/(currentPixels.length/10)) {
-					swapPixels(pixel,newPixel);
-					return true;
+				if (newPixelInfo.onMoveInto !== undefined) {
+					newPixelInfo.onMoveInto(newPixel,pixel);
+				}
+				if (info.onCollide !== undefined) {
+					info.onCollide(pixel,newPixel);
 				}
 			}
+			else if (info.isGas !== true && validDensitySwaps[info.state][info.state] !== undefined && Math.random() < 1/(currentPixels.length/10)) {
+				swapPixels(pixel,newPixel);
+				return true;
+			}
+			
 			return false;
 		}
 		function behaviorCoords(x,y,bx,by,width,height) {
@@ -14755,10 +15138,10 @@ function langKey(key,fallback,template) {
 			if (rotation < 0) {
 				rotation = 4 + rotation;
 			}
-			var check = behaviorCache[behavior.toString()+rotation];
-			if (check !== undefined) { return check; }
+			const check = behaviorCache[behavior.toString()+rotation];
+			if (check !== undefined) return check;
 
-			var newBehavior = []
+			let newBehavior = []
 			if (rotation == 1) {
 				// rotate counter-clockwise 90 degrees
 				for (var i = 0; i < behavior.length; i++) {
@@ -14793,11 +15176,11 @@ function langKey(key,fallback,template) {
 		}
 		function flipBehavior(behavior,axis) {
 			// returns flipped 2D array depending on axis "x" or "y"
-			var check = behaviorCache[behavior.toString()+axis];
+			const check = behaviorCache[behavior.toString()+axis];
 			if (check !== undefined) { return check; }
 
 			if (axis === "x") {
-				var newBehavior = [];
+				let newBehavior = [];
 				for (var i = 0; i < behavior.length; i++) {
 					newBehavior[i] = [];
 					for (var j = 0; j < behavior[i].length; j++) {
@@ -14813,6 +15196,138 @@ function langKey(key,fallback,template) {
 			}
 
 			return behavior;
+		}
+
+		function getRelation(id) {
+			if (currentRelations[id] === undefined) {
+				currentRelations[id] = {
+					p: currentPixels.filter((pixel) => {
+						return pixel._r === id;
+					})
+				}
+			}
+			return currentRelations[id];
+		}
+		function tryMoveRelation(relation, dirX, dirY, forceTry) {
+			if (!relation.p || !relation.p.length) return false;
+			if (relation.lastMove === pixelTicks && forceTry !== true) return false;
+			relation.lastMove = pixelTicks;
+
+			let possible = true;
+			let toDisplace = [];
+
+			for (let i = 0; i < relation.p.length; i++) {
+				const pixel = relation.p[i];
+				if (pixel.del) {
+					relation.p.splice(i,1);
+					i--;
+					delete pixel._r;
+					continue;
+				}
+				const x = pixel.x + dirX;
+				const y = pixel.y + dirY;
+				if (outOfBounds(x,y)) {
+					possible = false;
+					break;
+				}
+				const newPixel = getPixel(x, y);
+				if (newPixel) {
+					if (pixel._r === newPixel._r) {
+						continue; //is possible
+					}
+					// // sink in liquids/gases
+					if (validDensitySwaps[elements[pixel.element].state][elements[newPixel.element].state] === true &&
+						elements[newPixel.element].density < elements[pixel.element].density
+					) {
+						toDisplace.push(newPixel);
+						continue; //is possible
+					}
+					else if (dirY < 0 && newPixel._r === undefined && elements[newPixel.element].movable) {
+						toDisplace.push(newPixel);
+						continue; //is possible
+					}
+					possible = false;
+					break;
+				}
+			}
+			if (!possible) return false;
+
+			let spots = [];
+			if (toDisplace.length !== 0) {
+				for (let i = 0; i < relation.p.length; i++) {
+					const pixel = relation.p[i];
+					spots.push([pixel.x, pixel.y]);
+				}
+			}
+			for (let i = 0; i < relation.p.length; i++) {
+				const pixel = relation.p[i];
+				pixelMap[pixel.x][pixel.y] = undefined;
+				pixel.x += dirX;
+				pixel.y += dirY;
+			}
+			for (let i = 0; i < relation.p.length; i++) {
+				const pixel = relation.p[i];
+				pixelMap[pixel.x][pixel.y] = pixel;
+			}
+			if (toDisplace.length !== 0) {
+				spots = spots.filter((coords) => {
+					return pixelMap[coords[0]][coords[1]] === undefined;
+				})
+				shuffleArray(spots);
+				for (let i = 0; i < toDisplace.length; i++) {
+					const pixel = toDisplace[i];
+					let coords = spots[i];
+					// if (!coords) break;
+					pixel.x = coords[0];
+					pixel.y = coords[1];
+					pixelMap[pixel.x][pixel.y] = pixel;
+					// movePixel(pixel, coords[0], coords[1]);
+				}
+			}
+			return true;
+		}
+		function addToRelation(pixel, id) {
+			if (id === undefined) id = pixel._r;
+			if (id === undefined) return;
+
+			let relation = getRelation(id);
+			let index = relation.p.indexOf(pixel);
+			if (index === -1) relation.p.push(pixel);
+			pixel._r = id;
+			checkRelation(relation);
+		}
+		function removeFromRelation(pixel) {
+			if (pixel._r === undefined) return;
+			let relation = getRelation(pixel._r);
+			let index = relation.p.indexOf(pixel);
+			if (index !== -1) relation.p.splice(index,1);
+			delete pixel._r;
+			checkRelation(relation);
+		}
+		function checkRelation(relation) {
+			if (relation.p !== undefined && relation.p.length === 0) deleteRelation(relation);
+		}
+		function deleteRelation(rid) {
+			if (currentRelations[rid]) {
+				let relation = getRelation(rid);
+				delete currentRelations[rid];
+				if (relation.p !== undefined) {
+					relation.p.forEach((pixel) => {
+						delete pixel._r;
+					})
+				}
+			}
+		}
+
+		function editStart() {
+			editingPixels = [];
+			paused = true;
+			checkPause();
+		}
+		function editStop() {
+			paused = false;
+			checkPause();
+			editingPixels = [];
 		}
 		
 /* Behavior Rules
@@ -15255,6 +15770,7 @@ behaviorRules = {
 		btemp.mixSpots = [];
 		btemp.move = true;
 		// Parse behavior
+	if (behavior === undefined) return;
 	var height = behavior.length;
 	for (var by = 0; by < behavior.length; by++) {
 	var behaviorby = behavior[by];
@@ -15359,34 +15875,26 @@ behaviorRules = {
 		}
 		
 		// Move First Priority
-		if (btemp.move) {
+		if (btemp.move === true) {
 			if (move1Spots.length > 0) {
+				shuffleArray(move1Spots);
 				// While move1Spots is not empty
-				while (move1Spots.length > 0) {
-					// coords = random item of move1Spots
-					var j = Math.floor(Math.random()*move1Spots.length);
-					var coords = move1Spots[j];
+				for (let i = 0; i < move1Spots.length; i++) {
+					const coords = move1Spots[i];
 					var nx = coords.x;
 					var ny = coords.y;
 					moved = tryMove(pixel,nx,ny,btemp.leaveBehind1 || btemp.leaveBehind);
 					if (moved) {
 						break;
 					}
-					else {
-						// remove coords from move1Spots
-						move1Spots.splice(j,1);
-					}
-
-					
 				}
 			}
 			// Move Second Priority
-			if (!moved && move2Spots.length > 0) {
+			if (moved === false && move2Spots.length > 0) {
+				shuffleArray(move2Spots);
 				// While move2Spots is not empty
-				while (move2Spots.length > 0) {
-					// coords = random item of move2Spots
-					var j = Math.floor(Math.random()*move2Spots.length);
-					var coords = move2Spots[j];
+				for (let i = 0; i < move2Spots.length; i++) {
+					var coords = move2Spots[i];
 					var nx = coords.x;
 					var ny = coords.y;
 					moved = tryMove(pixel,nx,ny,btemp.leaveBehind2 || btemp.leaveBehind);
@@ -15396,21 +15904,10 @@ behaviorRules = {
 						}
 						break;
 					}
-					else {
-						// remove coords from move2Spots
-						move2Spots.splice(j,1);
-					}
 				}
 			}
 		}
 		doAirDensity(pixel);
-
-
-		// Change tempearture if needed (unused)
-		/*if (info.tempChange != undefined) {
-			pixel.temp += info.tempChange;
-			pixelTempCheck(pixel);
-		}*/
 
 		// Burning
 		doBurning(pixel);
@@ -15431,16 +15928,16 @@ behaviorRules = {
 	}
 
 		function doDefaults(pixel) {
-			if (pixel.del === true) {return}
-			if (elements[pixel.element].insulate !== true) { doHeat(pixel) };
+			if (pixel.del === true) return;
+			if (elements[pixel.element].insulate !== true) doHeat(pixel);
 			doAirDensity(pixel);
 			doBurning(pixel);
 			doElectricity(pixel);
-			if (elements[pixel.element].stain) { doStaining(pixel) };
+			if (elements[pixel.element].stain !== undefined) doStaining(pixel);
 		}
 
 		function doAirDensity(pixel) {
-			if (pixel.del === true) {return}
+			if (pixel.del === true) return;
 			var info = elements[pixel.element];
 			if (info.density < airDensity && info.ignoreAir !== true && info.movable === true) {
 				if (validDensitySwaps.gas[info.state]) {
@@ -15454,7 +15951,7 @@ behaviorRules = {
 
 		function doBurning(pixel) {
 			if (pixel.burning) { // Burning
-				if (settings.burn === 0) { return }
+				if (settings.burn === 0) return;
 				if (pixel.burnStart === undefined) { pixel.burnStart = pixelTicks }
 				var info = elements[pixel.element];
 				if (info.insulate !== true) { pixel.temp += 1; }
@@ -15469,12 +15966,12 @@ behaviorRules = {
 					var y = pixel.y+adjacentCoords[i][1];
 					if (!isEmpty(x,y,true)) {
 						var newPixel = pixelMap[x][y];
-						if (elements[newPixel.element].burn && !newPixel.burning) {
+						if (elements[newPixel.element].burn !== undefined && newPixel.burning !== true) {
 							if (Math.floor(Math.random()*100) < elements[newPixel.element].burn) {
 								burnPixel(newPixel);
 							}
 						}
-						if (elements[newPixel.element].extinguish && elements[pixel.element].burning !== true) {
+						if (elements[newPixel.element].extinguish === true && elements[pixel.element].burning !== true) {
 							pixel.burning = undefined;
 							pixel.burnStart = undefined;
 							return;
@@ -15500,7 +15997,7 @@ behaviorRules = {
 						pixel.color = pixelColorPick(pixel)
 					}
 				}
-				else if (Math.floor(Math.random()*100)<10 && info.id !== elements.fire.id && info.fireElement !== null) { // Spawn fire
+				else if (Math.random() < 0.1 && info.id !== elements.fire.id && info.fireElement !== null) { // Spawn fire
 					if (isEmpty(pixel.x,pixel.y-1)) {
 						createPixel((info.fireElement || "fire"),pixel.x,pixel.y-1);
 						pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
@@ -15522,30 +16019,34 @@ behaviorRules = {
 		}
 
 		function doHeat(pixel) {
+			// const weight1 = elements[pixel.element].heatCapacity || 1;
+			let changed = false;
 			// Check right and bottom adjacent pixels
 			for (var i = 0; i < biCoords.length; i++) {
-				var x = pixel.x+biCoords[i][0];
-				var y = pixel.y+biCoords[i][1];
-				if (!isEmpty(x,y,true)) {
-					var newPixel = pixelMap[x][y];
+				const x = pixel.x+biCoords[i][0];
+				const y = pixel.y+biCoords[i][1];
+				if (isEmpty(x,y,true) === false) {
+					const newPixel = pixelMap[x][y];
 					// Skip if both temperatures are the same
 					if (pixel.temp === newPixel.temp || elements[newPixel.element].insulate === true) {
 						continue;
 					}
 					// Set both pixel temperatures to their average
-					var avg = (pixel.temp + newPixel.temp)/2;
+					const avg = (pixel.temp + newPixel.temp)/2;
+					// const weight2 = elements[newPixel.element].heatCapacity || 1;
+					// pixel.temp += (avg - pixel.temp) / weight1;
+					// newPixel.temp += (avg - newPixel.temp) / weight2;
 					pixel.temp = avg;
 					newPixel.temp = avg;
-					pixelTempCheck(pixel);
+					changed = true;
 					pixelTempCheck(newPixel);
 				}
 			}
+			if (changed === true) pixelTempCheck(pixel);
 		}
 
 		function doElectricity(pixel,step) {
-			if (pixel.chargeStart === pixelTicks && !step) {
-				return;
-			}
+			if (pixel.chargeStart === pixelTicks && !step) return;
 			if (pixel.charge) {
 				// pixel.charge -= 0.2;
 				pixel.charge = Math.round((pixel.charge-0.2) * 100) / 100
@@ -15611,25 +16112,29 @@ behaviorRules = {
 		gasStates = {gas:true};
 
 		function doStaining(pixel) {
-			if (settings.stain===0) { return }
-			var stain = elements[pixel.element].stain;
+			if (settings.stain === 0) return;
+			const stain = elements[pixel.element].stain;
 			if (stain > 0) {
 				var newColor = pixel.color.match(/\d+/g);
 			}
 			else {
 				var newColor = null;
 			}
+			const stainAbs = Math.abs(stain);
 
 			for (var i = 0; i < adjacentCoords.length; i++) {
-				var x = pixel.x+adjacentCoords[i][0];
-				var y = pixel.y+adjacentCoords[i][1];
+				const x = pixel.x + adjacentCoords[i][0];
+				const y = pixel.y + adjacentCoords[i][1];
 				if (!isEmpty(x,y,true)) {
-					var newPixel = pixelMap[x][y];
-					if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(newPixel.element) !== -1) {
-						continue;
-					}
-					if ((elements[newPixel.element].id !== elements[pixel.element].id || elements[newPixel.element].stainSelf) && (solidStates[elements[newPixel.element].state] || elements[newPixel.element].id === elements[pixel.element].id)) {
-						if (Math.random() < Math.abs(stain)) {
+					const newPixel = pixelMap[x][y];
+					if (
+						(elements[newPixel.element].id !== elements[pixel.element].id || elements[newPixel.element].stainSelf === true) &&
+						(solidStates[elements[newPixel.element].state] || elements[newPixel.element].id === elements[pixel.element].id)
+					) {
+						if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(newPixel.element) !== -1) {
+							continue;
+						}
+						if (Math.random() < stainAbs) {
 							// if newPixel.color doesn't start with rgb, continue
 							if (!newPixel.color.match(/^rgb/)) { continue; }
 							if (stain < 0) {
@@ -15638,7 +16143,7 @@ behaviorRules = {
 								}
 								else { continue; }
 							}
-							else if (!newPixel.origColor) {
+							else if (newPixel.origColor === undefined) {
 								newPixel.origColor = newPixel.color.match(/\d+/g);
 							}
 							// parse rgb color string of newPixel rgb(r,g,b)
@@ -15741,7 +16246,7 @@ behaviorRules = {
 			// If the pixel's temp >= the elementInfo tempHigh, change pixel.element to elementInfo.stateHigh
 			if (pixel.temp >= elementInfo.tempHigh) {
 				var result = elementInfo.stateHigh;
-				if (elementInfo.extraTempHigh) {
+				if (elementInfo.extraTempHigh !== undefined) {
 					for (var extraTemp in elementInfo.extraTempHigh) {
 						if (pixel.temp >= extraTemp) {
 							result = elementInfo.extraTempHigh[extraTemp];
@@ -15754,16 +16259,16 @@ behaviorRules = {
 				}
 				if (result === null) {deletePixel(pixel.x,pixel.y);return false}
 				else {
-					if (elements[result].customColor) {
+					if (elements[result].customColor !== undefined) {
 						var tempColor = pixel.color;
 						changePixel(pixel,result,false);
 						pixel.color = tempColor;
 					}
-					else if (elementInfo.stateHighColor) {
+					else if (elementInfo.stateHighColor !== undefined) {
 						changePixel(pixel,result,false);
 						pixel.color = pixelColorPick(pixel,elementInfo.stateHighColor);
 					}
-					else if (elementInfo.stateHighColorMultiplier) {
+					else if (elementInfo.stateHighColorMultiplier !== undefined) {
 						var color = pixel.color;
 						changePixel(pixel,result,false);
 						var rgb = color.match(/\d+/g);
@@ -15781,10 +16286,10 @@ behaviorRules = {
 						pixel.color = "rgb("+r+","+g+","+b+")";
 					}
 					else { changePixel(pixel,result,false); }
-					if (elementInfo.fireColor && result==="fire") {
+					if (elementInfo.fireColor !== undefined && result === "fire") {
 						pixel.color = pixelColorPick(pixel,elementInfo.fireColor);
 					}
-					if (elementInfo.onStateHigh) {
+					if (elementInfo.onStateHigh !== undefined) {
 						elementInfo.onStateHigh(pixel);
 					}
 				}
@@ -15792,7 +16297,7 @@ behaviorRules = {
 			// If the pixel's temp <= the elementInfo tempLow, change pixel.element to elementInfo.stateLow
 			else if (pixel.temp <= elementInfo.tempLow) {
 				var result = elementInfo.stateLow;
-				if (elementInfo.extraTempLow) {
+				if (elementInfo.extraTempLow !== undefined) {
 					for (var extraTemp in elementInfo.extraTempLow) {
 						if (pixel.temp <= extraTemp) {
 							result = elementInfo.extraTempLow[extraTemp];
@@ -15805,16 +16310,16 @@ behaviorRules = {
 				}
 				if (result === null) {deletePixel(pixel.x,pixel.y);return false}
 				else {
-					if (elements[result].customColor) {
+					if (elements[result].customColor !== undefined) {
 						var tempColor = pixel.color;
 						changePixel(pixel,result,false);
 						pixel.color = tempColor;
 					}
-					else if (elementInfo.stateLowColor) {
+					else if (elementInfo.stateLowColor !== undefined) {
 						changePixel(pixel,result,false);
 						pixel.color = pixelColorPick(pixel,elementInfo.stateLowColor);
 					}
-					else if (elementInfo.stateLowColorMultiplier) {
+					else if (elementInfo.stateLowColorMultiplier !== undefined) {
 						var color = pixel.color;
 						changePixel(pixel,result,false);
 						var rgb = color.match(/\d+/g);
@@ -15832,7 +16337,7 @@ behaviorRules = {
 						pixel.color = "rgb("+r+","+g+","+b+")";
 					}
 					else { changePixel(pixel,result,false); }
-					if (elementInfo.onStateLow) {
+					if (elementInfo.onStateLow !== undefined) {
 						elementInfo.onStateLow(pixel);
 					}
 				}
@@ -15982,7 +16487,7 @@ behaviorRules = {
 					var pixel = pixelarray[i][j];
 					if (pixel) {
 						var keepColor = false;
-						if (elements[pixel.element].singleColor || elements[pixel.element].customColor || elements[pixel.element].forceSaveColor) {
+						if (elements[pixel.element].singleColor || elements[pixel.element].customColor || elements[pixel.element].forceSaveColor || pixel.painted !== undefined) {
 							keepColor = pixel.color
 						}
 						// remove unneeded properties
@@ -16062,6 +16567,10 @@ behaviorRules = {
 					seriesId = currentSaveData.seriesId;
 				}
 			}
+			let relations = JSON.parse(JSON.stringify(currentRelations));
+			for (let rid in relations) {
+				delete relations[rid].p;
+			}
 			let saveConfig = {
 				"settings":userSettings,
 				"mods":mods,
@@ -16097,7 +16606,8 @@ behaviorRules = {
 				},
 				"saveConfig":saveConfig,
 				"codes":codesReverse,
-				"pixelMap":compressedMap
+				"pixelMap":compressedMap,
+				"relations":relations
 			}
 		}
 		saveElementMigrations = {
@@ -16189,7 +16699,7 @@ behaviorRules = {
 					return;
 				}
 			}
-			resizeCanvas(saveConfig.height*savePixelSize+savePixelSize,saveConfig.width*savePixelSize+savePixelSize,savePixelSize);
+			resizeCanvas(saveConfig.height*savePixelSize+savePixelSize,saveConfig.width*savePixelSize+savePixelSize,savePixelSize,true,true);
 			clearAll(true);
 			tempSettings = JSON.stringify(settings);
 			if (saveConfig.settings) {
@@ -16206,7 +16716,11 @@ behaviorRules = {
 			// }
 			// if (saveConfig.mouseSize) { mouseSize = saveConfig.mouseSize };
 			// if (saveConfig.view) { setView(saveConfig.view) };
-			if (saveConfig.paused && !paused) { togglePause(); }
+			if (saveConfig.paused) {
+				paused = true;
+				manualPaused = true;
+				checkPause();
+			}
 			if (typeof compressedMap !== "object") {
 				if (version >= 2) {
 					compressedMap = compressedMap.replace(/ª/g,")¸").replace(/º/g,"rgb(");
@@ -16217,6 +16731,7 @@ behaviorRules = {
 			else {
 				pixelarray = compressedMap;
 			}
+			currentRelations = saveJSON.relations || { _id:1 };
 			for (var x = 0; x < pixelarray.length; x++) {
 				for (var y = 0; y < pixelarray[x].length; y++) {
 					var pixel = pixelarray[x][y];
@@ -16246,6 +16761,11 @@ behaviorRules = {
 							if (pixel.color === undefined && pixel.element === "unknown") {
 								pixelMap[x][y].color = pixelColorPick(pixelMap[x][y]);
 							}
+						}
+						if (pixel._r && currentRelations[pixel._r]) {
+							let relation = currentRelations[pixel._r];
+							if (!relation.p) relation.p = [];
+							relation.p.push(pixelMap[x][y]);
 						}
 					}
 					else {
@@ -16408,6 +16928,10 @@ behaviorRules = {
 			else if (result !== undefined) {
 				changePixel(pixel,result);
 			}
+
+			if (pixel._r !== undefined && result !== undefined) {
+				removeFromRelation(pixel);
+			}
 		}
 
 		function shuffleArray(array) {
@@ -16462,6 +16986,7 @@ behaviorRules = {
 		];
 		squareCoordsShuffle = squareCoords.slice();
 		adjacentCoordsShuffle = adjacentCoords.slice();
+		diagonalCoordsShuffle = diagonalCoords.slice();
 		interactCoordsShuffle = interactCoords.slice();
 		function clearLayers() {
 			const canvasLayerKeys = Object.keys(canvasLayers);
@@ -16501,7 +17026,9 @@ behaviorRules = {
 			if (paused || pixelTicks !== lastPixelDraw) {
 				if (!drawPixels() && !paused) {
 					logMessage("One or more of your mods are outdated and cannot render properly.");
-					togglePause();
+					paused = true;
+					manualPaused = true;
+					checkPause();
 				}
 				lastPixelDraw = pixelTicks;
 			}
@@ -16529,22 +17056,27 @@ behaviorRules = {
 			// draw one transparent pixel in the center
 			if (settings.precision) {
 				layerCtx.fillStyle = mouseColor;
-				layerCtx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
+				layerCtx.fillRect(mousePos.x*pixelSize - (mouseSize % 2 ? 0 : pixelSize), mousePos.y*pixelSize - (mouseSize % 2 ? 0 : pixelSize), pixelSize + (mouseSize % 2 ? 0 : pixelSize), pixelSize + (mouseSize % 2 ? 0 : pixelSize));
 			}
 			if (shaping) {
 				if (shaping === 1) { // Draw a white line from shapeStart.x to shapeStart.y
 					let coords = lineCoords(shapeStart.x,shapeStart.y,mousePos.x,mousePos.y);
 					coords.forEach((coord) => {
 						if (outOfBounds(coord[0],coord[1])) return;
-						drawSquare(layerCtx,mouseColor,coord[0],coord[1],undefined,0.5)
+						drawSquare(layerCtx,mouseColor,coord[0],coord[1],undefined,0.5);
 					})
 				}
+			}
+			if (editingPixels && editingPixels.length) {
+				editingPixels.forEach((pixel) => {
+					drawSquare(layerCtx,mouseColor,pixel.x,pixel.y,undefined,0.5);
+				})
 			}
 		}
 		function tickPixels() {
 			ticktemp = {};
 
-			var newCurrentPixels = currentPixels.slice();
+			var newCurrentPixels = [...currentPixels];
 			shuffleArray(newCurrentPixels);
 			if (hasUpdateOrder) {
 				newCurrentPixels.sort((a, b) => {
@@ -16552,10 +17084,12 @@ behaviorRules = {
 				})
 			}
 
-			for (var i = 0; i < newCurrentPixels.length; i++) {
-				var pixel = newCurrentPixels[i];
+			for (let i = 0; i < newCurrentPixels.length; i++) {
+				const pixel = newCurrentPixels[i];
+				const info = elements[pixel.element];
 				if (pixel.skip === true) continue;
-				if (elements[pixel.element].movable) {
+				if (pixel.del === true) continue;
+				if (info.movable === true) {
 					if (currentSaveData.voidX === true && onBorderX(pixel.x)) {
 						deletePixel(pixel.x,pixel.y); continue;
 					}
@@ -16571,20 +17105,32 @@ behaviorRules = {
 						else if (pixel.y === height-currentSaveData.border) tryMove(pixel,pixel.x,currentSaveData.border+1);
 					}
 				}
-				if (pixel.del) {continue}
-				if (elements[pixel.element].tick) { // Run tick function if it exists
-					elements[pixel.element].tick(pixel);
+				if (pixel.del === true) continue;
+				if (info.tick !== undefined) { // Run tick function if it exists
+					info.tick(pixel);
 				}
-				if (pixel.del) {continue}
-				if (runPerPixelList.length) {
+				if (pixel.del === true) continue;
+				if (runPerPixelList.length !== 0) {
 					for (let i = 0; i < runPerPixelList.length; i++) {
 						runPerPixelList[i](pixel);
-						if (pixel.del) {continue}
+						if (pixel.del === true) continue;
 					}
-					if (pixel.del) {continue}
+					if (pixel.del === true) continue;
 				}
-				if (elements[pixel.element].behavior) { // Parse behavior if it exists
+				if (info.behavior !== undefined) { // Parse behavior if it exists
 					pixelTick(pixel);
+				}
+			}
+
+			for (let rid in currentRelations) {
+				let relation = currentRelations[rid];
+				if (relation.p !== undefined) {
+					if (relation.p.length === 0) {
+						delete currentRelations[rid];
+						continue;
+					}
+					if (relation.lastMove === pixelTicks) continue;
+					tryMoveRelation(relation, 0, 1);
 				}
 			}
 
@@ -16610,7 +17156,7 @@ behaviorRules = {
 					}
 					if (pixel.charge && view !== 2) { // Yellow glow on charge
 						if (!elements[pixel.element].colorOn) {
-							drawSquare(ctx,"rgba(255,255,0,0.5)",pixel.x,pixel.y);
+							drawSquare(ctx,"rgb(255,255,0)",pixel.x,pixel.y,undefined,0.5);
 						}
 					}
 				}
@@ -16642,7 +17188,7 @@ behaviorRules = {
 					if (pixel.alpha !== 0) { drawSquare(ctx,pixel.color,pixel.x,pixel.y) }
 					if (pixel.charge && view !== 2) { // Yellow glow on charge
 						if (!elements[pixel.element].colorOn) {
-							drawSquare(ctx,"rgba(255,255,0,0.5)",pixel.x,pixel.y);
+							drawSquare(ctx,"rgb(255,255,0)",pixel.x,pixel.y,undefined,0.5);
 						}
 					}
 				}
@@ -16732,41 +17278,72 @@ behaviorRules = {
 				viewInfo[view].pixel(pixel,ctx)
 			}
 		}
+		_RGBToHexCache = {};
+		function RGBToHexCache(rgbstring) {
+			if (_RGBToHexCache[rgbstring] !== undefined) return _RGBToHexCache[rgbstring];
+			const match = rgbstring.match(/[\d\.]+/g);
+			if (match === null) return rgbstring;
+			const color = RGBToHex(rgbstring.match(/[\d\.]+/g));
+			_RGBToHexCache[rgbstring] = color;
+			return color;
+		}
+		_HSLToHexCache = {};
+		function HSLToHexCache(hslstring) {
+			if (_HSLToHexCache[hslstring] !== undefined) return _HSLToHexCache[hslstring];
+			const match = hslstring.match(/[\d\.]+/g);
+			if (match === null) return hslstring;
+			const color = RGBToHex(HSLtoRGB([match[0]/360,match[1]/100,match[2]/100]));
+			_HSLToHexCache[hslstring] = color;
+			return color;
+		}
 		function drawSquare(ctx,color,x,y,scale=1,opacity=1) {
-			if (color) { ctx.fillStyle = color; }
-			if (ctx.globalAlpha !== opacity) { ctx.globalAlpha = opacity; }
+			// console.log(color);
+			if (color.charCodeAt(0) === 114) color = RGBToHexCache(color);
+			ctx.fillStyle = color;
+			if (ctx.globalAlpha !== opacity) ctx.globalAlpha = opacity;
 			ctx.fillRect(canvasCoord(x), canvasCoord(y), pixelSize*scale, pixelSize*scale);
 		}
 		function drawPlus(ctx,color,x,y,scale=1,opacity=1) {
-			if (color) { ctx.fillStyle = color; }
+			// console.log(color);
+			if (color.charCodeAt(0) === 114) color = RGBToHexCache(color);
+			else if (color.charCodeAt(0) === 104) color = HSLToHexCache(color);
+			ctx.fillStyle = color;
 			opacity = 0.5*opacity;
-			if (ctx.globalAlpha!==opacity) { ctx.globalAlpha = opacity; }
+			if (ctx.globalAlpha !== opacity) ctx.globalAlpha = opacity;
+
 			ctx.fillRect(canvasCoord(x-1), canvasCoord(y), pixelSize3, pixelSize);
 			ctx.fillRect(canvasCoord(x), canvasCoord(y-1), pixelSize, pixelSize3);
+		}
+		function currentPixelsFilterTest(i) {
+			return i !== undefined;
 		}
 		function drawPixels(forceTick=false) {
 			const canvas = canvasLayers.pixels;
 			const ctx = canvas.getContext("2d");
 			let pixelsFirst = [];
 			let pixelsLast = [];
+			let hasDeleted = false;
 			for (let i = 0; i < currentPixels.length; i++) {
 				let pixel = currentPixels[i];
-				if (pixel.del) {
-					if (pixelMap[pixel.x][pixel.y]) { delete pixelMap[pixel.x][pixel.y]; }
-					currentPixels.splice(i,1);
-					i--;
+				if (pixel.del === true) {
+					if (pixelMap[pixel.x][pixel.y] === pixel) pixelMap[pixel.x][pixel.y] = undefined;
+					// currentPixels.splice(i,1);
+					currentPixels[i] = undefined;
+					hasDeleted = true;
+					// i--;
 					continue;
 				}
 				if (pixel.con) {
 					if (!elements[pixel.con.element]) delete pixel.con;
-					else pixel = pixel.con;
+					else if (elements[pixel.element].canContain === true) {
+						pixel = pixel.con;
+					}
 				}
-				if (elements[pixel.element].isGas || elements[pixel.element].glow) {
-					pixelsLast.push(pixel);
-				}
-				else {
-					pixelsFirst.push(pixel);
-				}
+				if (elements[pixel.element].isGas === true || elements[pixel.element].glow === true) pixelsLast.push(pixel);
+				else pixelsFirst.push(pixel);
+			}
+			if (hasDeleted === true) {
+				currentPixels = currentPixels.filter(currentPixelsFilterTest);
 			}
 			// Draw the current pixels
 			if (!hiding) {
@@ -16805,6 +17382,12 @@ behaviorRules = {
 						renderPostPixelList[i](ctx);
 					}
 				}
+				const hoverPixel = getPixel(mousePos.x, mousePos.y);
+				if (hoverPixel) {
+					if (elements[hoverPixel.element].hoverRender !== undefined) {
+						elements[hoverPixel.element].hoverRender(ctx);
+					}
+				}
 				if (elements[currentElement].renderTool !== undefined) {
 					elements[currentElement].renderTool(ctx);
 				}
@@ -16820,28 +17403,26 @@ behaviorRules = {
 		height = undefined;
 		width = undefined;
 		function tick() {
-			if (mouseIsDown && !shaping) {
+			if (mouseIsDown !== false && shaping === 0) {
 				mouseAction(null,mousePos.x,mousePos.y);
 			}
 
-			if (!paused) {
-				if (settings.events) {
-					doRandomEvents();
-				}
-				if (elements[currentElement].perTick) {
-					elements[currentElement].perTick();
-				}
-				
-				tickPixels();
+			if (paused === true || manualPaused === true) return;
 
-				if (runEveryTickList.length) {
-					for (let i = 0; i < runEveryTickList.length; i++) {
-						runEveryTickList[i]();
-					}
+			if (settings.events !== undefined && settings.events !== 0) {
+				doRandomEvents();
+			}
+			if (elements[currentElement].perTick !== undefined) {
+				elements[currentElement].perTick();
+			}
+			
+			tickPixels();
+
+			if (runEveryTickList.length !== 0) {
+				for (let i = 0; i < runEveryTickList.length; i++) {
+					runEveryTickList[i]();
 				}
 			}
-
-			updateStats();
 		}
 	
 		currentElement = "unknown";
@@ -16865,6 +17446,7 @@ behaviorRules = {
 			}
 		}
 		currentSaveData = defaultSaveData();
+		currentRelations = { _id:1 };
 		updateBorder();
 		savingState = null;
 		lastSaveJSON = null;
@@ -16960,6 +17542,9 @@ behaviorRules = {
 			ctx.drawImage(placingImage,0,0,newWidth,newHeight);
 			var newImage = ctx.getImageData(0,0,newWidth,newHeight);
 			var elem = (settings.imageelem || "wood");
+			if (currentElementProp && currentElementProp.imageelem) {
+				elem = currentElementProp.imageelem;
+			}
 			if ((!elements[elem] || elements[elem].tool || elements[elem].canPlace===false) && elem !== "paint" && !elements[elem].canPlace) { elem = "wood";}
 			// loop through each pixel in the ImageData
 			for (var x = 0; x < newWidth; x++) {
@@ -17108,7 +17693,6 @@ behaviorRules = {
 				
 				var existingPixel = null;
 				if (!isEmpty(x,y,true)) { existingPixel = pixelMap[x][y] }
-
 
 				if (mode === "replace" && (!elements[currentElement].tool || elements[currentElement].canPlace)) {
 					if (outOfBounds(x,y)) {
@@ -17265,7 +17849,12 @@ behaviorRules = {
 			checkMouseSize(Math.sign(deltaY));
 		}
 		function chooseElementPrompt() {
-			promptInput("Enter the element's ID.",
+			if (promptState && promptState.id === "elem") {
+				delete promptState.id;
+				closeMenu();
+				return;
+			}
+			promptInput("Enter the element's ID or name.",
 				(e) => {
 					if (!e) { return; }
 					// replace spaces with underscores
@@ -17290,7 +17879,8 @@ behaviorRules = {
 					focusGame();
 				},
 				"Select Element"
-			)
+			);
+			promptState.id = "elem";
 		}
 		function togglePause() {
 			paused = !paused;
@@ -17300,6 +17890,13 @@ behaviorRules = {
 			else {
 				document.getElementById("pauseButton").setAttribute("on","false");
 			}
+		}
+		function checkPause() {
+			const pauseButton = document.getElementById("pauseButton");
+			if (paused || manualPaused) pauseButton.setAttribute("on","true");
+			else pauseButton.setAttribute("on","false");
+
+			if (manualPaused && !paused) paused = true;
 		}
 		function toggleShift() {
 			if (shiftDown) {
@@ -17371,15 +17968,34 @@ behaviorRules = {
 			)
 		}
 		function doFrame() {
-			if (paused) {
-				togglePause();
-			}
-
+			paused = false;
+			manualPaused = false;
+			
 			tick();
+			
+			paused = true;
+			manualPaused = true;
+			checkPause();
+		}
 
-			if (!paused) {
-				togglePause();
+		function toggleEditMode() {
+			let button = document.getElementById("editModeButton");
+			let editDiv = document.getElementById("category-edit");
+			let categoriesDiv = document.getElementById("categoryControls");
+			let elementsDiv = document.getElementById("elementControls");
+			if (editMode) {
+				elementsDiv.style.display = "flex";
+				// categoriesDiv.style.display = "flex";
+				editDiv.style.display = "none";
+				button.setAttribute("on","false");
+				editMode = false;
+				return;
 			}
+			button.setAttribute("on","true");
+			editDiv.style.display = "flex";
+			// categoriesDiv.style.display = "none";
+			elementsDiv.style.display = "none";
+			editMode = true;
 		}
 
 		function selectElement(element) {
@@ -17424,6 +18040,12 @@ behaviorRules = {
 			if (elements[element].onSelect) {
 				elements[element].onSelect();
 			}
+			if (editMode && elements[element].category !== "edit" && elements[element].category !== "tools" && element !== "unknown") {
+				toggleEditMode();
+			}
+			else if (!editMode && elements[element].category === "edit") {
+				toggleEditMode();
+			}
 			checkMouseSize();
 		}
 		function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) !== s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
@@ -17463,6 +18085,9 @@ behaviorRules = {
 			if (!category) { return; }
 			var categoryButton = document.getElementById("categoryButton-"+category);
 			if (!categoryButton) {return}
+			if (editMode) {
+				toggleEditMode();
+			}
 			// if categoryButton has the class "notify", remove it
 			if (categoryButton.classList.contains("notify")) {
 				categoryButton.classList.remove("notify");
@@ -17705,221 +18330,11 @@ behaviorRules = {
 			mouseAlpha = 1;
 		}
 
-		worldgentypes = {
-			// layers: [minimum y from bottom, element, chance per pixel]
-			"grass": {
-				layers: [
-					[0.85, "grass"],
-					[0.50, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				]
-			},
-			"flower_field": {
-				layers: [
-					[0.90, "grass"],
-					[0.50, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["flower_seed", 0.1]
-				]
-			},
-			"wheat_field": {
-				layers: [
-					[0.50, "mud"],
-					[0.25, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["wheat_seed", 0.25]
-				],
-				baseHeight: 0.35
-			},
-			"tide_pool": {
-				layers: [
-					[0.98, "primordial_soup"],
-					[0.92, "water"],
-					[0.50, "sand"],
-					[0.25, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["methane", 0.1],
-					["rain_cloud", 0.75]
-				],
-				baseHeight: 0.35,
-				temperature: 30
-			},
-			"dirt": {
-				layers: [
-					[0.50, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				]
-			},
-			"snow": {
-				layers: [
-					[0.85, "snow"],
-					[0.50, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["pinecone", 0.05],
-					["snow_cloud", 0.75]
-				],
-				baseHeight: 0.25,
-				temperature: -5
-			},
-			"rain": {
-				layers: [
-					[0.85, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["cloud", 1, 2],
-					["rain_cloud", 1, 7],
-					["rain_cloud", 1, 10],
-					["rain_cloud", 1, 13],
-					["rain_cloud", 1, 15],
-				],
-				baseHeight: 0.25
-			},
-			"forest": {
-				layers: [
-					[0.95, "grass"],
-					[0.50, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				],
-				decor: [ // [element, chance, distance from top]
-					["sapling", 0.075],
-					["bird", 0.025, 10],
-				],
-				baseHeight: 0.25
-			},
-			"jungle": {
-				layers: [
-					[0.95, "grass"],
-					[0.50, "mud"],
-					[0.05, "gravel"],
-					[0, "basalt"],
-				],
-				decor: [
-					["sapling", 0.075],
-					["bamboo_plant", 0.05],
-					["frog", 0.05, 10],
-					["bird", 0.05, 5, ["#ff0000","#00ff00","#00ffff","#0000ff"]],
-				],
-				baseHeight: 0.25
-			},
-			"taiga": {
-				layers: [
-					[0.95, "mud"],
-					[0.50, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["pinecone", 0.075],
-					["snow_cloud", 0.75]
-				],
-				baseHeight: 0.25,
-				temperature: -5
-			},
-			"mushrooms": {
-				layers: [
-					[0.50, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["mushroom_spore", 0.075],
-				],
-				baseHeight: 0.25
-			},
-			"ant_farm": {
-				layers: [
-					[0.10, "dirt"],
-					[0.02, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["ant", 0.2],
-				],
-				baseHeight: 0.5
-			},
-			"sun": {
-				layers: [
-					[0.50, "magma"],
-				],
-				decor: [
-					["cloner", 0.1],
-					["plasma", 0.3],
-					["light", 0.5],
-					["hydrogen", 0.5],
-					["helium", 0.5],
-				],
-				baseHeight: 0.25,
-				temperature: 5498.85
-			},
-			"ocean": {
-				layers: [
-					[0.25, "salt_water"],
-					[0.1, "clay", 0.1],
-					[0.1, "gravel", 0.2],
-					[0.1, "wet_sand"],
-					[0.03, "gravel", 0.5],
-					[0.03, "rock"],
-					[0, "basalt"],
-				],
-				decor: [
-					["fish", 0.1, 10],
-					["snail", 0.01, 10],
-					["algae", 0.4, 10],
-					["kelp", 0.2, 10],
-					["coral", 0.2, 10],
-				]
-			},
-			"rock": {
-				layers: [
-					[0, "rock"],
-				],
-				baseHeight: 0.33
-			},
-			"volcanic": {
-				layers: [
-					[0.3, "basalt"],
-					[0.2, "basalt", 0.5],
-					[0, "magma"]
-				],
-				decor: [
-					["pyrocumulus", 0.75]
-				],
-				baseHeight: 0.4,
-				temperature: 950
-			},
-			"desert": {
-				layers: [
-					[0.55, "sand"],
-					[0.35, "bone", 0.03],
-					[0.35, "charcoal", 0.03],
-					[0.30, "dirt"],
-					[0.05, "rock"],
-					[0, "basalt"],
-				],
-				decor: [ // [element, chance, distance from top]
-					["cactus", 0.05],
-				],
-				temperature: 38
-			}
-		};
-		function clearAll(skipworldgen) {
+		worldgentypes = {/*deprecated*/};
+		function clearAll() {
 			mouseIsDown = false;
 			currentPixels = [];
+			currentRelations = { _id:1 };
 			pixelMap = [];
 			for (var i = 0; i <= width; i++) {
 				pixelMap[i] = [];
@@ -17929,9 +18344,6 @@ behaviorRules = {
 			}
 			updateBorder();
 			pixelTicks = 0;
-			if (!skipworldgen && settings["worldgen"] && settings["worldgen"] !== "off") {
-				worldGen(worldgentypes[settings["worldgen"]]);
-			}
 			if (tempSettings) {
 				settings = JSON.parse(tempSettings);
 				tempSettings = null;
@@ -17944,7 +18356,7 @@ behaviorRules = {
 			clearLog();
 			if (runAfterResetList.length) {
 				for (let i = 0; i < runAfterResetList.length; i++) {
-					runAfterResetList[i](skipworldgen);
+					runAfterResetList[i]();
 				}
 			}
 		}
@@ -17976,72 +18388,6 @@ behaviorRules = {
 				newHeights = newHeights2;
 			}
 			return newHeights;
-		}
-		function worldGen(worldtype) {
-			var complexity = worldtype.complexity || 20;
-			var heightVariance = worldtype.heightVariance || 0.5;
-			var baseHeight = height-(height*(worldtype.baseHeight || 0.5));
-			var layers = worldtype.layers || {0:"rock"};
-			var yoffsets = generateTerrainHeights(width,heightVariance,complexity);
-			// 2D world vertical generator
-			for (var x = 0; x <= width; x++) {
-				var yoffset = yoffsets[x];
-				var worldHeight = baseHeight+yoffset;
-				for (var y = 0; y <= height; y++) {
-					// Change element type based on y, from grass > dirt > rock > basalt
-					if (y > worldHeight) {
-						// distance from the bottom of worldHeight
-						var frombottom = worldHeight-(y-worldHeight);
-						var element = null;
-						for (var i in layers) {
-							var layer = layers[i];
-							if (layer[0] == 0 && yoffset < 0) {
-								layer[0] = yoffset;
-							}
-							if (frombottom > worldHeight*layer[0] && Math.random() < (layer[2] || 1)) {
-								if (elements[layer[1]]) {
-									element = layer[1];
-									break
-								}
-							}
-						}
-						if (y >= height && (currentSaveData.voidY || currentSaveData.loopY)) {
-							element = currentSaveData.borderElem ? null : "wall";
-						}
-						if ((x >= width || x === 0) && (currentSaveData.voidX || currentSaveData.loopX)) {
-							element = currentSaveData.borderElem ? null : "wall";
-						}
-						if (element) {
-							createPixel(element,x,y);
-							if (worldtype.temperature) {
-								pixelMap[x][y].temp = worldtype.temperature;
-							}
-						}
-					}
-				}
-			}
-			// decor
-			if (worldtype.decor) {
-				for (var i = 0; i < worldtype.decor.length; i++) {
-					var decor = worldtype.decor[i];
-					var element = decor[0];
-					var chance = decor[1];
-					for (var x = 1; x < width; x++) {
-						var y = decor[2] || 5;
-						// add or subtract worldtype.decorVariance from y
-						y += Math.round(Math.random()*(worldtype.decorVariance||2) - (worldtype.decorVariance||2)/2);
-						if (Math.random() < chance && isEmpty(x,y)) {
-							createPixel(element,x,y);
-							if (worldtype.temperature) {
-								pixelMap[x][y].temp = worldtype.temperature;
-							}
-							if (decor[3]) {
-								pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],decor[3])
-							}
-						}
-					}
-				}
-			}
 		}
 
 		randomEvents = {
@@ -18216,6 +18562,8 @@ behaviorRules = {
 			}
 		}
 function showInfo(element,back=false) { // this is such a mess please don't look at it
+	paused = true;
+	checkPause();
 	showingMenu = "info";
 	var infoParent = document.getElementById("infoParent");
 	infoParent.style.display = "block";
@@ -18321,7 +18669,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		swaps = swaps.filter(function(item, pos) {return swaps.indexOf(item) == pos;});
 		creates = creates.filter(function(item, pos) {return creates.indexOf(item) == pos;});
 		sticks = sticks.filter(function(item, pos) {return sticks.indexOf(item) == pos;});
-		if ((info.category == "tools" || info.tool) && !info.canPlace) { infoText.innerHTML += "\nTool."}
+		if ((info.category == "tools" || info.category == "edit" || info.tool) && !info.canPlace) { infoText.innerHTML += "\nTool."}
 		else {
 			if (!moves && info.behavior) { infoText.innerHTML += "\nStationary."; }
 			if (info.category) { infoText.innerHTML += "\nCategory: "+infoLink(info.category)+"."; }
@@ -18522,12 +18870,12 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		}
 		function closeMenu(nextMenu) {
 			if (!showingMenu) { return; }
+			paused = false;
+			checkPause();
 			if (showingMenu == "prompt") {
 				if (showingMenu === nextMenu) return;
 				var promptParent = document.getElementById("promptParent");
 				promptParent.style.display = "none";
-				showingMenu = false;
-				if (promptState && !promptState.wasPaused && paused) togglePause();
 				// promptState = null;
 			}
 			else if (showingMenu == "info") {
@@ -18535,7 +18883,6 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				var infoSearch = document.getElementById("infoSearch");
 				infoParent.style.display = "none";
 				infoSearch.value = "";
-				showingMenu = false;
 				infoHistory = [];
 			}
 			else if (showingMenu == "mods") {
@@ -18543,23 +18890,19 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				var modManagerUrl = document.getElementById("modManagerUrl");
 				modParent.style.display = "none";
 				modManagerUrl.value = "";
-				showingMenu = false;
 			}
 			else if (showingMenu == "saves") {
 				var savesParent = document.getElementById("savesParent");
 				savesParent.style.display = "none";
-				showingMenu = false;
 			}
 			else if (showingMenu == "savePrompt") {
 				var savePrompt = document.getElementById("savePromptParent");
 				savePrompt.style.display = "none";
-				showingMenu = false;
 				savingState = null;
 			}
 			else if (showingMenu == "settings") {
 				var settingsParent = document.getElementById("settingsParent");
 				settingsParent.style.display = "none";
-				showingMenu = false;
 			}
 			else {
 				// do it to all elements with the class "menuParent"
@@ -18567,9 +18910,9 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 				for (var i = 0; i < menuParents.length; i++) {
 					menuParents[i].style.display = "none";
 				}
-				showingMenu = false;
 				genericMenuHandler=null;
 			}
+			showingMenu = false;
 		}
 		function showModManager() {
 			var modParent = document.getElementById("modParent");
@@ -18577,6 +18920,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			modParent.style.display = "block";
 			modManagerUrl.focus();
 			showingMenu = "mods";
+			paused = true;
+			checkPause();
 		}
 		function handleTab(elem) {
 			let tabID = elem.getAttribute("data-tab");
@@ -18751,6 +19096,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			displaySavesList("saveSlotList", saveItems, true);
 			savesParent.style.display = "block";
 			showingMenu = "saves";
+			paused = true;
+			checkPause();
 		}
 		function showOnlineWarning(callback) {
 			if (settings.onlineWarning) {
@@ -19180,7 +19527,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		function showPromptScreen() {
 			if (!promptState) return;
 			closeMenu("prompt");
-			if (!paused) togglePause();
+			paused = true;
+			checkPause();
 			var promptParent = document.getElementById("promptParent");
 			var menuTitle = document.querySelector("#promptMenu .menuTitle");
 			menuTitle.innerText = promptState.title || "Notice";
@@ -19244,6 +19592,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			var settingsParent = document.getElementById("settingsParent");
 			settingsParent.style.display = "block";
 			showingMenu = "settings";
+			paused = true;
+			checkPause();
 		}
 		function setSetting(setting,value) {
 			settings[setting] = value;
@@ -19453,7 +19803,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		}
 		function handlePrompt(result) {
 			if (!promptState) return;
-			if (!promptState.wasPaused && paused) togglePause();
+			paused = false;
+			checkPause();
 			let handler = promptState.handler;
 			let after = promptState.after;
 			closeMenu();
@@ -19474,16 +19825,23 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		placingImage = null;
 		dragStart = null;
 		draggingPixels = null;
+		editingPixels = [];
 		lookupTempElements = {};
 		hiding = false;
 		// On window load, run tick() 30 times per second
-		tps = 30;
+		tps = settings.tps || 30;
 		tickInterval = window.setInterval(tick, 1000/tps);
 		function resetInterval(newtps=30) {
 			window.clearInterval(tickInterval);
 			tickInterval = window.setInterval(tick, 1000/newtps);
 		}
-		renderInterval = window.setInterval(drawLayers, 1000/60);
+		// renderInterval = window.setInterval(drawLayers, 1000/60);
+		let animation = function() {
+			drawLayers();
+			updateStats();
+			requestAnimationFrame(animation);
+		}
+		requestAnimationFrame(animation);
 		lastPixelDraw = -10;
 		pixelTicks = 0;
 
@@ -19493,6 +19851,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			setView(settings.view)
 		}
 		paused = true;
+		manualPaused = true;
+		editMode = false;
 		function focusGame() { document.getElementById("game").focus(); if(showingMenu) { closeMenu(); } }
 
 		autoElements = {
@@ -19789,9 +20149,12 @@ function finalizeElementAfter(key) {
 
 	}
 
+	if (elements[key].state === undefined && elements[key].density !== undefined) elements[key].state = "solid";
+
 	// If the element's state is "gas", isGas = true
 	if (elements[key].state === "gas") {
 		elements[key].isGas = true;
+		if (elements[key].grain === undefined) elements[key].grain = 0.1;
 	}
 	else if (elements[key].state !== "liquid") {
 		// Else if the state is not "solid" or "liquid", delete it
@@ -19808,6 +20171,7 @@ function finalizeElementAfter(key) {
 		if (elements[key].stateLow && elements[key].temp > 500 && elements[key].renderer === undefined) {
 			elements[key].renderer = renderPresets.MOLTEN;
 		}
+		if (elements[key].grain === undefined) elements[key].grain = 0.5;
 	}
 
 	if (elements[key].colorPattern) {
@@ -19885,6 +20249,7 @@ canvas = null;
 ctx = null;
 window.onload = function() {
 	paused = false;
+	manualPaused = false;
 	// If the browser is Firefox, set #categoryControls padding-bottom:11px;
 	// if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 	//	 document.getElementById("categoryControls").style.paddingBottom = "11px";
@@ -19941,15 +20306,6 @@ window.onload = function() {
 	// Loop through each element, final checks
 	for (var key in elements) {
 		finalizeElementAfter(key);
-	}
-
-	// Generate worldgen options
-	// Loop through the worldgentypes object, add the key to the #worldgenselect select as an option with the value of the key and the name of the key capitalized and underscores replaced with spaces
-	for (var key in worldgentypes) {
-		document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
-	}
-	if (settings["worldgen"] && !worldgentypes[settings["worldgen"]]) {
-		settings["worldgen"] = "off";
 	}
 
 	// Loop through randomEventChoices, and loop through the array of each. If the element doesn't exist, remove it from the array.
@@ -20072,11 +20428,13 @@ window.onload = function() {
 	autoResizeRatio = function(height, width) {
 		autoResizeCanvas(undefined, width/height)
 	}
-	resizeCanvas = function(newHeight,newWidth,newPixelSize,clear) {
+	resizeCanvas = function(newHeight,newWidth,newPixelSize,clear,noFix) {
 		var gameCanvas = document.getElementById("game");
 		var ctx = gameCanvas.getContext("2d");
-		newHeight -= newHeight % pixelSize;
-		newWidth -= newWidth % pixelSize;
+		if (noFix !== true) {
+			newHeight -= newHeight % pixelSize;
+			newWidth -= newWidth % pixelSize;
+		}
 		ctx.canvas.width = newWidth;
 		ctx.canvas.height = newHeight;
 		document.getElementById("gameDiv").style.width = newWidth + "px";
@@ -20128,10 +20486,13 @@ window.onload = function() {
 	clearAll();
 	// randomChoices = the keys of "elements" with any element with the category "tools" or the property excludeRandom set to true removed
 	randomChoices = Object.keys(elements).filter(function(e) {
-		return elements[e].excludeRandom != true && elements[e].category !== "tools" && !elements[e].tool;
+		let info = elements[e];
+		if (info.excludeRandom === true) return false;
+		if (info.canPlace === true) return true;
+		return info.category !== "tools" && info.category !== "edit" && !info.tool;
 	});
 	gameCanvas.addEventListener("mousedown", function(e){
-		if (!showingMenu && elements[currentElement] && elements[currentElement].onMouseDown) {
+		if (!showingMenu && elements[currentElement] && elements[currentElement].onMouseDown && e.button == 0) {
 			elements[currentElement].onMouseDown(e);
 		}
 	});
@@ -20325,9 +20686,21 @@ window.onload = function() {
 			return;
 		}
 		else {
-			if (e.keyCode == 27) {
+			if (e.keyCode == 27) { // escape
 				e.preventDefault();
-				if (logInterval) {
+				if (shaping) {
+					mouseIsDown = false;
+					shaping = 0;
+					shapeStart = null;
+				}
+				if (editingPixels && editingPixels.length) {
+					mouseIsDown = false;
+					editingPixels = [];
+				}
+				else if (editMode) {
+					toggleEditMode();
+				}
+				else if (logInterval) {
 					clearLog();
 				}
 				else {
@@ -20405,11 +20778,6 @@ window.onload = function() {
 	for (var element in elements) {
 		if (elementCount === 0) { currentElement = element; firstElement = element }
 		elementCount++;
-		if (settings.cheerful && elements[element].nocheer) {
-			elements[element].hidden = true;
-			hiddenCount++;
-			continue;
-		}
 		if (element === "unknown") {continue;}
 		var category = elements[element].category;
 		if (category==null) {category="other"}
@@ -20443,7 +20811,7 @@ window.onload = function() {
 		}
 	}
 
-	if (location.ancestorOrigins && location.ancestorOrigins[0] && standaloneType !== "discord") {
+	if (location.ancestorOrigins && location.ancestorOrigins[0] && standaloneType !== "discord" && location.hostname !== "neal.fun") {
 		//lol
 		var _0x3f4094=_0x2f29;function _0x2f29(_0x3c9905,_0x43fa2c){var _0x35230b=_0x3523();return _0x2f29=function(_0x2f29a1,_0x2c7678){_0x2f29a1=_0x2f29a1-0x133;var _0x12514f=_0x35230b[_0x2f29a1];return _0x12514f;},_0x2f29(_0x3c9905,_0x43fa2c);}(function(_0x408068,_0x2c46ce){var _0x22155d=_0x2f29,_0x9c939f=_0x408068();while(!![]){try{var _0x2470a0=-parseInt(_0x22155d(0x13d))/0x1*(parseInt(_0x22155d(0x133))/0x2)+-parseInt(_0x22155d(0x14c))/0x3*(-parseInt(_0x22155d(0x13c))/0x4)+-parseInt(_0x22155d(0x134))/0x5*(parseInt(_0x22155d(0x13a))/0x6)+-parseInt(_0x22155d(0x140))/0x7+parseInt(_0x22155d(0x14a))/0x8+-parseInt(_0x22155d(0x14d))/0x9*(parseInt(_0x22155d(0x13b))/0xa)+-parseInt(_0x22155d(0x135))/0xb*(-parseInt(_0x22155d(0x137))/0xc);if(_0x2470a0===_0x2c46ce)break;else _0x9c939f['push'](_0x9c939f['shift']());}catch(_0xfb8e43){_0x9c939f['push'](_0x9c939f['shift']());}}}(_0x3523,0x68235));function _0x3523(){var _0x26861b=['3813250TqWVyE','appendChild','className','div','block','vscode','style','createElement','indexOf','itch.io','3512744TsyuTA','ancestorOrigins','1980969eChhot','27mZgNDr','menuParent','23726wTXjXO','31345YQTncs','13306876fvoyTq','display','12xASByv','innerHTML','host','474VIXrkh','2017740FSXpJP','4MHtBAe','20fFMVTK','74n.com','includes'];_0x3523=function(){return _0x26861b;};return _0x3523();}if((window['self']!==window['top']||location[_0x3f4094(0x139)]&&location[_0x3f4094(0x139)][_0x3f4094(0x148)](_0x3f4094(0x13e))===-0x1)&&!(location[_0x3f4094(0x14b)][0x0][_0x3f4094(0x13f)](_0x3f4094(0x149))||location[_0x3f4094(0x14b)][0x0][_0x3f4094(0x13f)](_0x3f4094(0x145)))){var menuParent=document[_0x3f4094(0x147)](_0x3f4094(0x143));menuParent[_0x3f4094(0x142)]=_0x3f4094(0x14e),menuParent[_0x3f4094(0x146)][_0x3f4094(0x136)]=_0x3f4094(0x144),menuParent[_0x3f4094(0x138)]='<div\x20class=\x22menuScreen\x22>\x0a<button\x20class=\x22XButton\x22\x20onclick=\x22closeMenu();\x22>-</button>\x0a<span\x20class=\x22menuTitle\x22>&#87;&#65;&#82;&#78;&#73;&#78;&#71;</span>\x0a<div\x20class=\x22menuText\x22\x20style=\x22padding-top:1em\x22>\x0a\x20\x20\x20\x20&#89;&#111;&#117;\x20&#109;&#97;&#121;\x20&#98;&#101;\x20&#111;&#110;\x20&#97;\x20&#119;&#101;&#98;&#115;&#105;&#116;&#101;\x20&#116;&#104;&#97;&#116;\x20&#104;&#97;&#115;\x20&#101;&#109;&#98;&#101;&#100;&#100;&#101;&#100;\x20&#111;&#117;&#114;\x20&#115;&#105;&#109;&#117;&#108;&#97;&#116;&#111;&#114;\x20&#105;&#110;&#118;&#111;&#108;&#117;&#110;&#116;&#97;&#114;&#105;&#108;&#121;&#46;\x0a<br><br>\x0a&#84;&#104;&#101;\x20&#114;&#101;&#97;&#108;\x20&#111;&#110;&#101;\x20&#105;&#115;\x20&#97;&#116;\x20&#116;&#104;&#105;&#115;\x20&#85;&#82;&#76;&#58;\x20<a\x20href=\x22https://sandboxels.r74n.com\x22\x20target=\x22_blank\x22>sandboxels.R74n.com</a>.\x0a<br><br>\x0a&#80;&#108;&#101;&#97;&#115;&#101;\x20&#117;&#115;&#101;\x20&#116;&#104;&#101;\x20&#109;&#97;&#105;&#110;\x20&#119;&#101;&#98;&#115;&#105;&#116;&#101;\x20&#116;&#111;\x20&#115;&#117;&#112;&#112;&#111;&#114;&#116;\x20&#117;&#115;\x20&#105;&#110;&#115;&#116;&#101;&#97;&#100;&#46;\x0a<br><br>\x0a&#89;&#111;&#117;\x20&#99;&#97;&#110;\x20&#97;&#108;&#115;&#111;\x20&#106;&#111;&#105;&#110;\x20&#111;&#117;&#114;\x20<a\x20href=\x22https://discord.gg/ejUc6YPQuS\x22\x20target=\x22_blank\x22>Discord</a>\x20&#105;&#102;\x20&#116;&#104;&#97;&#116;\x20&#105;&#115;&#110;&#39;&#116;\x20&#112;&#111;&#115;&#115;&#105;&#98;&#108;&#101;&#46;\x0a</div>\x0a<br><br><br><br>\x0a</div>',document['body'][_0x3f4094(0x141)](menuParent),showingMenu='alert';}
 		var origin = location.ancestorOrigins[0];
@@ -20452,7 +20820,7 @@ window.onload = function() {
 		}
 	}
 	//get the first .elementButton in the first .category, and selectElement(button.element)
-	var firstDiv = document.getElementsByClassName("category")[0];
+	var firstDiv = document.querySelector("#elementControls .category");
 	var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 	selectElement(firstElementButton.getAttribute("element"));
 
@@ -20487,9 +20855,9 @@ window.onload = function() {
 	<div id="totalWrapper">
 	<div id="gameWrapper">
 	<div id="gameDiv">
-		<p id="loadingP" style="text-align:center;height:500px;line-height:500px;">Loading...</p>
+		<p id="loadingP">Loading...</p>
 		<script>
-			if (enabledMods.length > 0) {
+			if (enabledModNames.length > 0) {
 				document.getElementById("loadingP").innerHTML += ` Not loading? <a href="#" onclick="localStorage.removeItem('enabledMods');location.reload()">Click to Clear Mods</a>`
 				document.getElementById("loadingP").style.fontSize = "0.8em"
 			}
@@ -20516,7 +20884,7 @@ window.onload = function() {
 			<div id="stats"></div>
 			<div id="controls">
 				<div id="toolControls">
-					<button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:1;checkMouseSize(-1);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:1;checkMouseSize(1);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='tpsPrompt()'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
+					<button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='paused=!paused;manualPaused=paused;checkPause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:1;checkMouseSize(-1);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:1;checkMouseSize(1);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();'>Elem</button><button id="editModeButton" title="Switch to Edit Mode" class="controlButton" onclick='toggleEditMode();'>Edit</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
 				</div>
 				<script>
 					// if it is the 1st of April, add a rainbow-colored button
@@ -20536,6 +20904,7 @@ window.onload = function() {
 					}
 				</script>
 				<div id="category-tools" category="tools" style="display: flex;"></div>
+				<div id="category-edit" class="category" category="edit" style="display: none;"><button class="elementButton close" onclick="toggleEditMode();">X</button></div>
 				<div id="categoryControls"></div>
 				<div id="elementControls"></div>
 			</div>
@@ -20824,22 +21193,20 @@ window.onload = function() {
 					<span setting="limitless" class="setting-span multisetting" title="Default: OFF">
 						<input type="button" value="Limitless" id="settingLabel-limitless" class="toggleInput" onclick="toggleInput(this,'limitless',false); refreshMaxPixels(); checkMouseSize(true);" state="0">
 					</span>
-					<span setting="cheerful" class="setting-span multisetting">
-						<input type="button" value="Cheerful Mode" id="settingLabel-cheerful" class="toggleInput" onclick="toggleInput(this,'cheerful',false);this.nextElementSibling.nextElementSibling.innerText=langKey('gui.settingsRefresh','Refresh Page')" state="0"><span class="helpMark" title="If you're going through a bad time, enable this to hide these elements from the menu:
-Cancer, Landmine, Grenade, Smoke Grenade">?</span>
-						<a onclick="window.location.reload();" href="#" class="settingsRefresh"></a>
-					</span>
 					<span setting="lang" class="setting-span" title="Default: Disabled" style="display:none" id="setting-span-lang">
 						<span id="settingLabel-lang">Language</span>
 					</span>
-					<span setting="events" class="setting-span" title="Default: Disabled">
+					<span setting="events" class="setting-span multisetting" title="Default: Disabled">
 						<span id="settingLabel-events">Random Events</span> <select onchange="setSetting('events',parseFloat(this.value));">
 							<option value="0" id="setting-events-0" selected>Disabled</option>
 							<option value="0.005" id="setting-events-0.005">Rare (For casual play)</option>
 							<option value="0.025" id="setting-events-0.025">Common</option>
 							<option value="0.05" id="setting-events-0.05">Annoying</option>
 							<option value="0.25" id="setting-events-0.25">Overdrive (DANGEROUS)</option>
-						</select>
+						</select>&nbsp;
+					</span>
+					<span setting="tps" class="setting-span multisetting" title="Simulation speed in Ticks Per Second. Default: 30">
+						<span id="settingLabel-airtemp">Speed</span> <input type="number" value="30" placeholder="30" onchange="if(this.value===''){this.value=30} setTPS(Math.abs(parseInt(this.value)) || 30); setSetting('tps',tps)">&nbsp;
 					</span>
 					<span setting="airtemp" class="setting-span multisetting" title="Temperature that pixels spawn in at. Default: 20 (°C)">
 						<span id="settingLabel-airtemp">Air Temp</span> <input type="number" value="20" placeholder="20" onchange="if(this.value===''){this.value=20} airTemp=parseFloat(this.value); setSetting('airtemp',airTemp)">&nbsp;
@@ -20855,12 +21222,6 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 						<input type="button" value="Reset All" id="resetAll" onclick="promptConfirm('This action will RESET ALL YOUR DATA, not including save slots, and refresh the page.', (r)=>{if (!r)return;localStorage.removeItem('settings');location.reload()}, 'WARNING', true)" class="settingsButton">
 						<input type="button" value="Clear Mods" id="clearMods" onclick="promptConfirm('This action will remove all enabled mods and refresh the page.', (r)=>{if (!r)return;localStorage.removeItem('enabledMods');location.reload()}, 'WARNING', true)" class="settingsButton">
 						<input type="button" value="Clear Saves" id="clearSaves" onclick="promptConfirm('This action will PERMANENTLY ERASE all local save slots.', (r)=>{if (!r)return;for (var i = 1; i <= 12; i++) {localStorage.removeItem('SandboxelsSaves/'+i)}}, 'WARNING', true)" class="settingsButton">
-					</span>
-					<span setting="worldgen" style="padding-bottom:0" class="setting-span" title="Default: Disabled">
-						<span id="settingLabel-worldgen">World Gen</span> <small>[Beta]</small> <select id="worldgenselect" onchange="setSetting('worldgen',this.value); if(!currentPixels.length){autoResizeCanvas()} else {this.nextElementSibling.innerText=langKey('gui.settingsReset','Reset Scene')}">
-							<option value="off" id="setting-worldgen-off" selected>Disabled</option>
-						</select>
-						<span onclick="resetPrompt();" class="settingsReset"></span>
 					</span>
 					<span setting="imageelem" class="setting-span multisetting" title="Default: Wood">
 						<span id="settingLabel-imageelem">Image Elem</span> <input type="text" value="wood" placeholder="wood" onchange="if(this.value===''){this.value='wood'}; setSetting('imageelem',this.value.trim())">
@@ -20878,24 +21239,6 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 <div id="bottomInfoBox">
 	<div id="bottomTopBox">
 		<!-- <iframe src="promo.html" style="border:none;width: 300px; height: 250px;"></iframe> -->
-		<!-- Affiliate Links -->
-		<!-- <p style="font-size:1.2em;display:none" id="aff"><a id="affLink" href="#" target="_blank" rel="sponsored">Loading...</a></p>
-		<script>
-			var aff = {};
-			var affRequest = new XMLHttpRequest();
-			affRequest.open("GET", "https://sandboxels.R74n.com/aff.json", true);
-			affRequest.onload = function() {
-				if (affRequest.status >= 200 && affRequest.status < 400) {
-					aff = JSON.parse(affRequest.responseText);
-					var affKeys = Object.keys(aff);
-					var randomAff = affKeys[Math.floor(Math.random() * affKeys.length)];
-					document.getElementById("affLink").innerHTML = aff[randomAff];
-					document.getElementById("affLink").href = randomAff;
-					document.getElementById("aff").style.display = "block";
-				}
-			};
-			affRequest.send();
-		</script> -->
 		<p id="langSelectP">🌐 <span id="langSelectLabel">Language</span> <a href="https://sandboxels.R74n.com/translate" target="_blank">[BETA]</a>: <select onchange="if (this.value === 'en'){setSetting('lang',null)}else{setSetting('lang',this.value)}window.location.reload()" id="langSelect">
 			<option selected value="en">English (American)</option>
 			<option value="en_gb">English (British)</option>
@@ -20989,7 +21332,7 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			<div>
 				<div id="newsletterFrame"><a href="https://news.r74n.com/" target="_blank">R74n Newsletter</a>: Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
 					<form action="https://news.r74n.com/api/v1/free?nojs=true" method="post" class="form _form_1mxvn_6" novalidate="" target="_blank"><input type="hidden" name="first_url" value="https://news.r74n.com/embed"><input type="hidden" name="first_referrer"><input type="hidden" name="current_url" value="https://news.r74n.com/embed"><input type="hidden" name="current_referrer"><input type="hidden" name="referral_code"><input type="hidden" name="source" value="embed"><input type="hidden" name="referring_pub_id"><input type="hidden" name="additional_referring_pub_ids">
-					<input type="email" placeholder="Type your email..." name="email" style="padding:15px;margin-right:0;border-color:#F4ABFF;border-right:none"><input type="submit" value="Subscribe" style="background: #F4ABFF; padding:15px; border:solid 2px #F4ABFF; border-radius: 0"></input>
+					<input type="email" placeholder="Type your email..." name="email" autocomplete="email" style="padding:15px;margin-right:0;border-color:#F4ABFF;border-right:none"><input type="submit" value="Subscribe" style="background: #F4ABFF; padding:15px; border:solid 2px #F4ABFF; border-radius: 0"></input>
 					</form>
 				</div>
 			</div>
@@ -21157,6 +21500,11 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			// Hide scrollbars
 			document.head.insertAdjacentHTML("beforeend",`<style>::-webkit-scrollbar { display: none; }</style>`)
 			document.getElementById("setting-pixelsize-6w").value = "7w";
+			document.getElementById("setting-pixelsize-6w").innerText = document.getElementById("setting-pixelsize-6").innerText;
+			document.getElementById("setting-pixelsize-6").remove();
+			document.getElementById("setting-pixelsize-12").value = "12w";
+			document.getElementById("setting-pixelsize-8").value = "8w";
+			document.getElementById("setting-pixelsize-4").value = "5w";
 		}
 	}
 </script>

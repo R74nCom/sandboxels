@@ -113,6 +113,82 @@
 <p>The original <a href="https://sandboxels.R74n.com/changelog.txt">plain text version</a> of this is still maintained.</p>
 </div>
 
+<h2 id="1.13.2">[Version 1.13.2 - January 11, 2026]</h2>
+<ul>
+<li>+ Edit Mode</li>
+<li>    ~ Moved Special tools to the edit tab</li>
+<li>    ~ Expect more tools in the future</li>
+<li>+ Relations - Multiple pixels as a single entity</li>
+<li>    + Group and Ungroup tool in edit tab</li>
+<li>    + Grouped pixels fall and move as one structure</li>
+<li>    + Grouped pixels are ungrouped when broken or changing states</li>
+<li>    + Grouped pixels can displace fluids (Experimental)</li>
+<li>+ More Shift-Select functionality:</li>
+<li>    + Battery can set a frequency to create timers</li>
+<li>    + Image tool can set element</li>
+<li>~ Fire begins more yellow and gets redder quicker</li>
+<li>+ Icing (Hidden) made with Butter and Sugar</li>
+<li>~ Liquids and Gases appear less grainy</li>
+<li>~ Settings changes</li>
+<li>    + Speed option in Settings to replace TPS button</li>
+<li>    + Keybind: T to change TPS</li>
+<li>    ~ Renamed E button to Elem button</li>
+<li>~ Improved simulation speeds</li>
+<li>- Removed World Gen</li>
+<li>    ~ We recommend the PRNGworldgenlib.js mod, a much better world generator</li>
+<li>- Removed Cheerful Mode</li>
+<li>[Changes]</li>
+<li>+ Escape can be pressed to cancel while drawing a line</li>
+<li>+ Fillers can be painted and will fight other colors</li>
+<li>+ Portals show destination lines when hovered over or selected</li>
+<li>+ Portal In can be selected with the Elem button by typing 'Portal'</li>
+<li>+ Lightning placed near certain elements will change color</li>
+<li>+ Worms can break down Flour, Dough, Adobe, Paper, Confetti, Cellulose, Cheese, and Potato</li>
+<li>+ Worms can move through Mulch</li>
+<li>+ Radiation will radiate Batter</li>
+<li>+ Rad Steam causes Cheese to rot</li>
+<li>~ Filters and Gates are Acid-resistant</li>
+<li>~ Portals no longer teleport Fuse</li>
+<li>~ Ruler measures diagonal lines as a pixel count instead of hypotenuse</li>
+<li>~ Unique flame colors for Nickel, Iron, and Mercury</li>
+<li>~ Rearranged Special category</li>
+<li>~ Opening the Info, Mods, or Settings menus will pause the game</li>
+<li>~ Steam: All canvas sizes now stretch to the full screen width</li>
+<li>+ Assigned densities to many solids</li>
+<li>+ Keybind: Quote (") to toggle Edit Mode</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Dragging pixels through Filters creates ghost pixels</li>
+<li>~ Fixed: Filters can break when transporting to Gates or Pipes</li>
+<li>~ Fixed: Pixels are rendered in incorrect position when mixing with Pipe, Filter, or Gate</li>
+<li>~ Fixed: Broken modded saves are loaded every bootup</li>
+<li>~ Fixed: Precision Dot is misaligned with 2- and 4-wide brushes</li>
+<li>~ Fixed: Portals can't transmit electricity if surrounded by pixels</li>
+<li>~ Fixed: E-cloner can't be set to Fuse by clicking on it</li>
+<li>~ Fixed: Some saves throw TypeError "Cannot set properties of undefined"</li>
+<li>~ Fixed: Prop tool always unpauses after dialog</li>
+<li>~ Fixed: Z and Backspace keys select Heat by default instead of Sand</li>
+<li>~ Fixed: Random can't place Fire, Plasma, Ink, Bless, Rock Wall, Cold Fire, Sun, Pointer, or Art</li>
+<li>~ Fixed: Elem dialog doesn't close if button is pressed again</li>
+<li>~ Fixed: Wrong font when language set to Italian</li>
+<li>~ Fixed: Magnesium melts at a much lower temperature than expected</li>
+<li>~ Fixed: Shift-selecting Random and inputting 'random' causes errors</li>
+<li>[Technical]</li>
+<li>~ Note: Optimizations mean a lot of code was rewritten, please report any issues and be patient</li>
+<li>~ Note: Don't pass an 'rgba' color to drawSquare, use the 'alpha' argument instead</li>
+<li>+ Pixel relations system</li>
+<li>    + Used to group pixels together</li>
+<li>    + '_r' pixel property to identify its relation (should be an integer)</li>
+<li>+ 'trackPaint' element property (boolean)</li>
+<li>    + 'painted' pixel property (color code) given to these elements when painted</li>
+<li>+ "Failed to load" message instead of hanging forever</li>
+<li>~ 'con' contents only render if element has existing 'canContain' property</li>
+<li>~ 'onMouseDown' element event only triggers with left clicks</li>
+<li>~ Acid Gas 'ignore' property is now identical to Acid</li>
+<li>~ Elements with a set density but no state are set to solid</li>
+<li>~ Fuse no longer shows hidden element</li>
+<li>~ Save version is now sb7</li>
+</ul>
+
 <h2 id="1.13.1">[Version 1.13.1 - December 18, 2025 - G&amp;G Hotfix]</h2>
 <ul>
 <li>~ This is a quick group of bug fixes and improvements following yesterday's update.</li>

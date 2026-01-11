@@ -105,7 +105,7 @@ class biome {
         }
         this.generate = function(seed){
             autoResizeCanvas();
-            if(!paused){togglePause();}
+            // paused = true;
             let fraction = seed/(2**32);
 			if(this.sPriority){
 				if(this.structures != undefined){
@@ -254,7 +254,7 @@ enabledMods.forEach((item)=>{
     }
 });
 elements.SeedGenerate = {
-    category: "tools", 
+    category: "edit", 
     onSelect: function(){
         let arr = [];
         let txt = shiftDown;
@@ -289,7 +289,7 @@ elements.SeedGenerate = {
     }
 }
 elements.RandomGen = {
-	category: "tools",
+	category: "edit",
 	onSelect: function(){
 		let arr = [];
 		let txt = shiftDown;
@@ -324,7 +324,7 @@ elements.RandomGen = {
 	},
 }
 elements.view_seed = {
-    category: "tools",
+    category: "edit",
     onSelect: function(){
         alert(seed);
         selectElement("dirt");

@@ -4,6 +4,80 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.13.2 - January 11, 2026]
+    + Edit Mode
+        ~ Moved Special tools to the edit tab
+        ~ Expect more tools in the future
+    + Relations - Multiple pixels as a single entity
+        + Group and Ungroup tool in edit tab
+        + Grouped pixels fall and move as one structure
+        + Grouped pixels are ungrouped when broken or changing states
+        + Grouped pixels can displace fluids (Experimental)
+    + More Shift-Select functionality:
+        + Battery can set a frequency to create timers
+        + Image tool can set element
+    ~ Fire begins more yellow and gets redder quicker
+    + Icing (Hidden) made with Butter and Sugar
+    ~ Liquids and Gases appear less grainy
+    ~ Settings changes
+        + Speed option in Settings to replace TPS button
+        + Keybind: T to change TPS
+        ~ Renamed E button to Elem button
+    ~ Improved simulation speeds
+    - Removed World Gen
+        ~ We recommend the PRNGworldgenlib.js mod, a much better world generator
+    - Removed Cheerful Mode
+   [Changes]
+    + Escape can be pressed to cancel while drawing a line
+    + Fillers can be painted and will fight other colors
+    + Portals show destination lines when hovered over or selected
+    + Portal In can be selected with the Elem button by typing 'Portal'
+    + Lightning placed near certain elements will change color
+    + Worms can break down Flour, Dough, Adobe, Paper, Confetti, Cellulose, Cheese, and Potato
+    + Worms can move through Mulch
+    + Radiation will radiate Batter
+    + Rad Steam causes Cheese to rot
+    ~ Filters and Gates are Acid-resistant
+    ~ Portals no longer teleport Fuse
+    ~ Ruler measures diagonal lines as a pixel count instead of hypotenuse
+    ~ Unique flame colors for Nickel, Iron, and Mercury
+    ~ Rearranged Special category
+    ~ Opening the Info, Mods, or Settings menus will pause the game
+    ~ Steam: All canvas sizes now stretch to the full screen width
+    + Assigned densities to many solids
+    + Keybind: Quote (") to toggle Edit Mode
+   [Bug Fixes]
+    ~ Fixed: Dragging pixels through Filters creates ghost pixels
+    ~ Fixed: Filters can break when transporting to Gates or Pipes
+    ~ Fixed: Pixels are rendered in incorrect position when mixing with Pipe, Filter, or Gate
+    ~ Fixed: Broken modded saves are loaded every bootup
+    ~ Fixed: Precision Dot is misaligned with 2- and 4-wide brushes
+    ~ Fixed: Portals can't transmit electricity if surrounded by pixels
+    ~ Fixed: E-cloner can't be set to Fuse by clicking on it
+    ~ Fixed: Some saves throw TypeError "Cannot set properties of undefined"
+    ~ Fixed: Prop tool always unpauses after dialog
+    ~ Fixed: Z and Backspace keys select Heat by default instead of Sand
+    ~ Fixed: Random can't place Fire, Plasma, Ink, Bless, Rock Wall, Cold Fire, Sun, Pointer, or Art
+    ~ Fixed: Elem dialog doesn't close if button is pressed again
+    ~ Fixed: Wrong font when language set to Italian
+    ~ Fixed: Magnesium melts at a much lower temperature than expected
+    ~ Fixed: Shift-selecting Random and inputting 'random' causes errors
+   [Technical]
+    ~ Note: Optimizations mean a lot of code was rewritten, please report any issues and be patient
+    ~ Note: Don't pass an 'rgba' color to drawSquare, use the 'alpha' argument instead
+    + Pixel relations system
+        + Used to group pixels together
+        + '_r' pixel property to identify its relation (should be an integer)
+    + 'trackPaint' element property (boolean)
+        + 'painted' pixel property (color code) given to these elements when painted
+    + "Failed to load" message instead of hanging forever
+    ~ 'con' contents only render if element has existing 'canContain' property
+    ~ 'onMouseDown' element event only triggers with left clicks
+    ~ Acid Gas 'ignore' property is now identical to Acid
+    ~ Elements with a set density but no state are set to solid
+    ~ Fuse no longer shows hidden element
+    ~ Save version is now sb7
+
 [Version 1.13.1 - December 18, 2025 - G&G Hotfix]
     ~ This is a quick group of bug fixes and improvements following yesterday's update.
     + More Shift-Select functionality:
