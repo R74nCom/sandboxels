@@ -61,9 +61,9 @@ renderEachPixel(function(pixel,ctx) {
 		}
 	}
 	if (elements[pixel.element].glow || elements[pixel.element].isGas){
-		drawPlus(ctx,"rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + opacity +")",pixel.x,pixel.y)
+		drawPlus(ctx,"rgb(" + color.r + ", " + color.g + ", " + color.b +")",pixel.x,pixel.y,undefined,opacity)
 	} else {
-		drawSquare(ctx,"rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + opacity +")",pixel.x,pixel.y)
+		drawSquare(ctx,"rgb(" + color.r + ", " + color.g + ", " + color.b +")",pixel.x,pixel.y,undefined,opacity)
 	}}
 })
 keybinds["KeyH"] = function(){
