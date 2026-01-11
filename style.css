@@ -627,8 +627,6 @@ input[type="button"]:active, input[type="button"]:active:hover {
 	display: -ms-flexbox;	  /* TWEENER - IE 10 */
 	display: -webkit-flex;	 /* NEW - Chrome */
 	display:flex;
-	align-items: center;
-    justify-content: center;
 }
 #categoryControls button {
 	/* Borderless buttons */

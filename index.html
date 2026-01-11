@@ -17382,7 +17382,7 @@ behaviorRules = {
 						renderPostPixelList[i](ctx);
 					}
 				}
-				const hoverPixel = getPixel(mousePos.x, mousePos.y);
+				const hoverPixel = getPixel(Math.round(mousePos.x), Math.round(mousePos.y));
 				if (hoverPixel) {
 					if (elements[hoverPixel.element].hoverRender !== undefined) {
 						elements[hoverPixel.element].hoverRender(ctx);
@@ -18120,7 +18120,7 @@ behaviorRules = {
 			view = n;
 		}
 		function centerMouse() {
-			mousePos = {x:width/2,y:height/2};
+			mousePos = {x:Math.round(width/2),y:Math.round(height/2)};
 		}
 
 		function handleElementButtonClick() {
