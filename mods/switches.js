@@ -13,7 +13,7 @@ elements.switch_off = {
 	name: "switch (off)",
 	color: "#7F3333",
 	behavior: behaviors.WALL,
-	noConduct: ["switch_on_control","switch_off_control"],
+	ignoreConduct: ["switch_on_control","switch_off_control"],
 	category: "machines",
 };
 
@@ -22,7 +22,7 @@ elements.switch_on = {
 	color: "#33CC33",
 	behavior: behaviors.WALL,
 	conduct: 1,
-	noConduct: ["switch_on_control","switch_off_control"],
+	ignoreConduct: ["switch_on_control","switch_off_control"],
 	category: "machines",
 };
 
@@ -35,7 +35,7 @@ elements.switch_off_control = {
 		"XX|CH:switch_on>switch_off|XX"
 	],
 	conduct: 1,
-	noConduct: ["switch_on","switch_off"],
+	ignoreConduct: ["switch_on","switch_off"],
 	category: "machines",
 };
 
@@ -48,6 +48,6 @@ elements.switch_on_control = {
 		"XX|CH:switch_off>switch_on|XX"
 	],
 	conduct: 1,
-	noConduct: ["switch_on","switch_off"],
+	ignoreConduct: ["switch_on","switch_off"],
 	category: "machines",
 };
