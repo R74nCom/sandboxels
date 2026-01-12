@@ -26,6 +26,15 @@ function makeCurve(pos, w, dir, div = 200){
     return res;
 }
 
+function makePool(pos, w=1, h=1){
+	let res = [];
+	for(let i = (w*12*Math.PI); i >= 0; i--){
+		let y = ((h*35)/3)*Math.sin(i/(12*w));
+		res.push([i, y]);
+	}
+	return res;
+}
+
 elements.sandstone = {
 	category: "solids",
 	color: ["#a89f67", "#b89c6b", "#bbad68"],
@@ -79,7 +88,7 @@ let structureFuncs = {
 		if(pseudorandom(232, 4564*(seed/2**32), 1) < 0.25){
 			let x = pseudorandom(531, 9834*(seed/2**32), width);
 			let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
-			let hwidth = h*Math.atan(0.78539816);
+			let hwidth = h*Math.tan(0.78539816);
 			let num = 0;
 			for(let i = x - hwidth; i < x + hwidth; i++){
 				let y = (height-35)-(h);
@@ -91,6 +100,23 @@ let structureFuncs = {
 			}
 		}
 	},
+	
+	volcano: (seed)=>{
+		let x = pseudorandom(531, 9834*(seed/2**32), width);
+		let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
+		let num = 0;
+		for(let i = x - h; i < x + h; i++){
+			let y = (height-35)-(h);
+			drawLine("basalt", i, height-35, x, y);
+			num++;
+			if(i == x){
+				num = 0;
+			};
+		}
+	},
+	lava_pool: (seed)=>{
+		
+	}
 };
 class biome {
     constructor(layersArr, yLevels, properties, afterFunc = false, genStructures = false, sp = false){
@@ -106,6 +132,9 @@ class biome {
         this.generate = function(seed){
             autoResizeCanvas();
             // paused = true;
+			if(seed <= 50000000){
+				seed = (seed*50000000) % (2**32);
+			}
             let fraction = seed/(2**32);
 			if(this.sPriority){
 				if(this.structures != undefined){
@@ -212,7 +241,7 @@ class biome {
 }
 let biomes = {
     plains: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "dirt", "dirt", "mud", "gravel"], ["grass","flower_seed","grass","grass","grass","grass","sapling","grass","grass","grass","grass","grass","grass","grass","grass"]], [25, 38, 40]),
-    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}, false, structureFuncs.pyramid, true),
+    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand", "sandstone", "sandstone"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}, false, structureFuncs.pyramid, true),
     savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"], vMulti: 1.5}),
     tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15, vMulti: 2}),
 	beach: new biome([["rock", "rock", "rock", "gravel"], ["rock", "gravel", "sand", "sand"], ["sand"]], [7, 13, 35], {vMulti: 0.8}, (seed)=>{
