@@ -1098,7 +1098,7 @@ elements.polytetrafluoroethylene = {
     colored: false,
   },
   tick: function (pixel) {
-    if (!pixel.colored) {
+    if (!pixel.colored || !pixel.origColor) {
       let rgb = elements.polytetrafluoroethylene.colorObject;
 
       let coloroffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * 2);
