@@ -26,6 +26,21 @@ function makeCurve(pos, w, dir, div = 200){
     return res;
 }
 
+function makePool(pos, w=1, h=1){
+	let res = [];
+	for(let i = (w*12*Math.PI); i >= 0; i--){
+		let y = ((h*35)/3)*Math.sin(i/(12*w));
+		res.push([i, y]);
+	}
+	return res;
+}
+
+function drawTriangle(pos, height, elem, replace = null, properties = {}){
+	for(let i = 0; i < 2*height; i++){
+	    drawLine(elem, pos[0]+i, pos[1], pos[0]+height, pos[1]-(height), replace, properties);
+	}
+}
+
 elements.sandstone = {
 	category: "solids",
 	color: ["#a89f67", "#b89c6b", "#bbad68"],
@@ -38,14 +53,24 @@ elements.sandstone = {
 elements.packed_sand.tempHigh = 300;
 elements.packed_sand.stateHigh = "sandstone";
 
-function drawLine(elem,x1,y1,x2,y2, replace = null){
-	let coords = lineCoords(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2));
+function drawLine(elem,x1,y1,x2,y2, replace = null, properties = {}){
+	let coords = lineCoords(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2), 1);
 	for(let pos of coords){
 		let res = tryCreate(elem, pos[0], pos[1]);
+		if(res != null){
+			for(let key in properties){
+				console.log(properties[key], key)
+				res[key] = properties[key];
+			}
+		}
 		if(replace != null && res == null){
 			let pixel = getPixel(pos[0], pos[1]);
 			if(pixel != null && replace.includes(pixel.element)){
 				changePixel(pixel, elem);
+				for(let key in properties){
+					console.log(properties[key], key)
+					pixel[key] = properties[key];
+				}
 			} 
 		}
 	}
@@ -79,18 +104,53 @@ let structureFuncs = {
 		if(pseudorandom(232, 4564*(seed/2**32), 1) < 0.25){
 			let x = pseudorandom(531, 9834*(seed/2**32), width);
 			let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
-			let hwidth = h*Math.atan(0.78539816);
-			let num = 0;
-			for(let i = x - hwidth; i < x + hwidth; i++){
-				let y = (height-35)-(h);
-				drawLine("sandstone", i, height-35, x, y, ["sand", "cactus"]);
-				num++;
-				if(i == x){
-					num = 0;
-				};
+			let y = (height-35);
+			drawTriangle([x,y], h, "sandstone", ["sand","cactus"]);
+		}
+	},
+	
+	volcano: (seed)=>{
+		let x = pseudorandom(531, 9834*(seed/2**32), width);
+		let h = pseudorandom(659, 2342*(seed/2**32), 10) + 25;
+		let hwidth = h*Math.tan(0.78539816);
+		let num = 0;
+		let y = (height-35);
+		drawTriangle([x,y], h, "basalt", null, {temp: 850});
+		let w = Math.round(pseudorandom(2423,34543*(seed/2**32), 2))+1;
+		let d = Math.round(pseudorandom(1231, 54345*(seed/2**32), 12)-6);
+		let coords = lineCoords(Math.round(x+(h)+d), height-11, Math.round(x+(h)), Math.round(y-h), w);
+		for(let pos of coords){
+			let p = getPixel(pos[0],pos[1]);
+			if(p != null && p.element == "basalt"){
+				changePixel(p, "magma", 850);
 			}
 		}
 	},
+	lava_pool: (seed)=>{
+		let x = pseudorandom(455, 67854*(seed/2**32), width);
+		let y;
+		let vx = pseudorandom(531, 9834*(seed/2**32), width);
+		let vh = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
+		if(x > vx-vh && x < vx+vh){
+			return;
+		}
+		for(let i = height; i > 0; i--){
+			if(getPixel(Math.round(x), i-1) == null && !outOfBounds(Math.round(x), i-1)){
+				y = i;
+				break;
+			}
+		}
+		let positions = makePool([x,y], 1+pseudorandom(678, 3453*seed, 1), 1+pseudorandom(232, 8754*seed, 0.75));
+		for(let pos of positions){
+			for(let i = y+pos[1]; i > y-10; i--){
+				let p = getPixel(Math.round(pos[0]), Math.round(i));
+				if(p != null){
+					changePixel(p, "magma");
+					p.temp = 850;
+				}
+			}
+		}
+	}
 };
 class biome {
     constructor(layersArr, yLevels, properties, afterFunc = false, genStructures = false, sp = false){
@@ -106,6 +166,9 @@ class biome {
         this.generate = function(seed){
             autoResizeCanvas();
             // paused = true;
+			if(seed <= 50000000){
+				seed = (seed*50000000) % (2**32);
+			}
             let fraction = seed/(2**32);
 			if(this.sPriority){
 				if(this.structures != undefined){
@@ -161,7 +224,9 @@ class biome {
 					gen(seed);
 				}
 			}
-            this.generateOreVeins(seed, this.vMulti);
+			if(!this.noOres){
+            	this.generateOreVeins(seed, this.vMulti);
+			}
         };
     }
 
@@ -212,7 +277,7 @@ class biome {
 }
 let biomes = {
     plains: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "dirt", "dirt", "mud", "gravel"], ["grass","flower_seed","grass","grass","grass","grass","sapling","grass","grass","grass","grass","grass","grass","grass","grass"]], [25, 38, 40]),
-    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}, false, structureFuncs.pyramid, true),
+    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand", "sandstone", "sandstone"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}, false, structureFuncs.pyramid, true),
     savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"], vMulti: 1.5}),
     tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15, vMulti: 2}),
 	beach: new biome([["rock", "rock", "rock", "gravel"], ["rock", "gravel", "sand", "sand"], ["sand"]], [7, 13, 35], {vMulti: 0.8}, (seed)=>{
@@ -237,6 +302,7 @@ let biomes = {
 			}
 		}, false);
 	}, structureFuncs.ocean),
+	volcano: new biome([["magma", "magma", "basalt"], ["basalt", "tuff", "magma"], ["basalt"]], [13, 23, 40], {temp: 850, noOres: true}, null, [structureFuncs.volcano, structureFuncs.lava_pool]),
 	
 }
 let seed = Math.random()*(2**32);
