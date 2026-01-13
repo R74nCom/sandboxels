@@ -35,6 +35,13 @@ function makePool(pos, w=1, h=1){
 	return res;
 }
 
+function drawTriangle(pos, height, elem, replace = null){
+	for(let i = 0; i < height; i++){
+	    drawLine(elem, pos[0]+i, pos[1], pos[0]+height, pos[1]-(height), replace);
+		drawLine(elem, pos[i]+height+i, pos[1], pos[0]+height, pos[1]-height, replace);
+	}
+}
+
 elements.sandstone = {
 	category: "solids",
 	color: ["#a89f67", "#b89c6b", "#bbad68"],
@@ -90,8 +97,8 @@ let structureFuncs = {
 			let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
 			let hwidth = h*Math.tan(0.78539816);
 			let num = 0;
+			let y = (height-35)-(h);
 			for(let i = x - hwidth; i < x + hwidth; i++){
-				let y = (height-35)-(h);
 				drawLine("sandstone", i, height-35, x, y, ["sand", "cactus"]);
 				num++;
 				if(i == x){
@@ -104,9 +111,10 @@ let structureFuncs = {
 	volcano: (seed)=>{
 		let x = pseudorandom(531, 9834*(seed/2**32), width);
 		let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
+		let hwidth = h*Math.tan(0.78539816);
 		let num = 0;
-		for(let i = x - h; i < x + h; i++){
-			let y = (height-35)-(h);
+		let y = (height-35)-(h);
+		for(let i = (x-hwidth); i < (x+hwidth); i++){
 			drawLine("basalt", i, height-35, x, y);
 			num++;
 			if(i == x){
@@ -115,7 +123,29 @@ let structureFuncs = {
 		}
 	},
 	lava_pool: (seed)=>{
-		
+		let x = pseudorandom(455, 67854*(seed/2**32), width);
+		let y;
+		let vx = pseudorandom(531, 9834*(seed/2**32), width);
+		let vh = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
+		if(x > vx-vh && x < vx+vh){
+			return;
+		}
+		for(let i = height; i > 0; i--){
+			if(getPixel(Math.round(x), i-1) == null && !outOfBounds(Math.round(x), i-1)){
+				y = i;
+				break;
+			}
+		}
+		let positions = makePool([x,y], 1+pseudorandom(678, 3453*seed, 1), 1+pseudorandom(232, 8754*seed, 0.75));
+		for(let pos of positions){
+			for(let i = y+pos[1]; i > y-10; i--){
+				let p = getPixel(Math.round(pos[0]), Math.round(i));
+				if(p != null){
+					changePixel(p, "magma");
+					p.temp = 850;
+				}
+			}
+		}
 	}
 };
 class biome {
