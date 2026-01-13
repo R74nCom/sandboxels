@@ -35,10 +35,9 @@ function makePool(pos, w=1, h=1){
 	return res;
 }
 
-function drawTriangle(pos, height, elem, replace = null){
-	for(let i = 0; i < height; i++){
-	    drawLine(elem, pos[0]+i, pos[1], pos[0]+height, pos[1]-(height), replace);
-		drawLine(elem, pos[i]+height+i, pos[1], pos[0]+height, pos[1]-height, replace);
+function drawTriangle(pos, height, elem, replace = null, properties = {}){
+	for(let i = 0; i < 2*height; i++){
+	    drawLine(elem, pos[0]+i, pos[1], pos[0]+height, pos[1]-(height), replace, properties);
 	}
 }
 
@@ -54,14 +53,24 @@ elements.sandstone = {
 elements.packed_sand.tempHigh = 300;
 elements.packed_sand.stateHigh = "sandstone";
 
-function drawLine(elem,x1,y1,x2,y2, replace = null){
-	let coords = lineCoords(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2));
+function drawLine(elem,x1,y1,x2,y2, replace = null, properties = {}){
+	let coords = lineCoords(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2), 1);
 	for(let pos of coords){
 		let res = tryCreate(elem, pos[0], pos[1]);
+		if(res != null){
+			for(let key in properties){
+				console.log(properties[key], key)
+				res[key] = properties[key];
+			}
+		}
 		if(replace != null && res == null){
 			let pixel = getPixel(pos[0], pos[1]);
 			if(pixel != null && replace.includes(pixel.element)){
 				changePixel(pixel, elem);
+				for(let key in properties){
+					console.log(properties[key], key)
+					pixel[key] = properties[key];
+				}
 			} 
 		}
 	}
@@ -95,31 +104,26 @@ let structureFuncs = {
 		if(pseudorandom(232, 4564*(seed/2**32), 1) < 0.25){
 			let x = pseudorandom(531, 9834*(seed/2**32), width);
 			let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
-			let hwidth = h*Math.tan(0.78539816);
-			let num = 0;
-			let y = (height-35)-(h);
-			for(let i = x - hwidth; i < x + hwidth; i++){
-				drawLine("sandstone", i, height-35, x, y, ["sand", "cactus"]);
-				num++;
-				if(i == x){
-					num = 0;
-				};
-			}
+			let y = (height-35);
+			drawTriangle([x,y], h, "sandstone", ["sand","cactus"]);
 		}
 	},
 	
 	volcano: (seed)=>{
 		let x = pseudorandom(531, 9834*(seed/2**32), width);
-		let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
+		let h = pseudorandom(659, 2342*(seed/2**32), 10) + 25;
 		let hwidth = h*Math.tan(0.78539816);
 		let num = 0;
-		let y = (height-35)-(h);
-		for(let i = (x-hwidth); i < (x+hwidth); i++){
-			drawLine("basalt", i, height-35, x, y);
-			num++;
-			if(i == x){
-				num = 0;
-			};
+		let y = (height-35);
+		drawTriangle([x,y], h, "basalt", null, {temp: 850});
+		let w = Math.round(pseudorandom(2423,34543*(seed/2**32), 2))+1;
+		let d = Math.round(pseudorandom(1231, 54345*(seed/2**32), 12)-6);
+		let coords = lineCoords(Math.round(x+(h)+d), height-11, Math.round(x+(h)), Math.round(y-h), w);
+		for(let pos of coords){
+			let p = getPixel(pos[0],pos[1]);
+			if(p != null && p.element == "basalt"){
+				changePixel(p, "magma", 850);
+			}
 		}
 	},
 	lava_pool: (seed)=>{
@@ -220,7 +224,9 @@ class biome {
 					gen(seed);
 				}
 			}
-            this.generateOreVeins(seed, this.vMulti);
+			if(!this.noOres){
+            	this.generateOreVeins(seed, this.vMulti);
+			}
         };
     }
 
@@ -296,6 +302,7 @@ let biomes = {
 			}
 		}, false);
 	}, structureFuncs.ocean),
+	volcano: new biome([["magma", "magma", "basalt"], ["basalt", "tuff", "magma"], ["basalt"]], [13, 23, 40], {temp: 850, noOres: true}, null, [structureFuncs.volcano, structureFuncs.lava_pool]),
 	
 }
 let seed = Math.random()*(2**32);
