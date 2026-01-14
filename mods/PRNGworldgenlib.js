@@ -14,6 +14,89 @@ let oreChances = {
     uranium: 0.805,
     aluminum: 1
 }
+
+let promptMenus = {};
+let keys = ["OK", "Cancel", "Confirm", "Input", "Choices", "Dirs", "Dropdown"];
+
+runAfterLoad(()=>{
+	let dropDown = document.createElement("select");
+	dropDown.id = "promptDropdown";
+	dropDown.style.position = "absolute";
+	dropDown.style.top = "50%";
+	dropDown.style.left = "50%";
+	dropDown.title = "prompt";
+	dropDown.style.display = "none";
+	document.getElementById("promptParent").appendChild(dropDown);
+	
+	for(let key of keys){
+		promptMenus[key] = document.getElementById(`prompt${key}`);
+		promptMenus[key].style.display = "none";
+	}
+	
+	function prompt
+	
+	function showPromptScreen() {
+		if (!promptState) return;
+		closeMenu("prompt");
+		paused = true;
+		checkPause();
+		var promptParent = document.getElementById("promptParent");
+		var menuTitle = document.querySelector("#promptMenu .menuTitle");
+		menuTitle.innerText = promptState.title || "Notice";
+		menuTitle.style.color = promptState.titleColor || "unset";
+		var promptMenuText = document.getElementById("promptMenuText");
+		promptMenuText.innerText = promptState.text || "";
+		if (promptState.html) {
+			promptMenuText.insertAdjacentHTML("beforeend",promptState.html);
+		}
+		let promptOK = document.getElementById("promptOK");
+		let promptCancel = document.getElementById("promptCancel");
+		let promptConfirm = document.getElementById("promptConfirm");
+		let promptInput = document.getElementById("promptInput");
+		let promptChoices = document.getElementById("promptChoices");
+		let promptDirs = document.getElementById("promptDirs");
+		for(let key of promptMenus){
+			promptMenus[key].style.display = "none";
+		}
+		promptConfirm.classList.remove("danger");
+		if (promptState.type === "text") {
+			promptOK.style.display = "block";
+		}
+		else if (promptState.type === "confirm") {
+			promptCancel.style.display = "block";
+			promptConfirm.style.display = "block";
+			if (promptState.danger) promptConfirm.classList.add("danger");
+		}
+		else if (promptState.type === "input") {
+			promptInput.value = "";
+			promptInput.style.display = "block";
+			if (promptState.defaultInput !== undefined) {
+				promptInput.value = ""+promptState.defaultInput;
+			}
+		}
+		else if (promptState.type === "choose" && promptState.choices) {
+			promptChoices.innerHTML = "";
+			for (let i = 0; i < promptState.choices.length; i++) {
+				const choice = promptState.choices[i];
+				let span = document.createElement("span");
+				span.className = "promptChoice";
+				span.onclick = function(){ handlePrompt(choice) };
+				span.innerText = choice;
+				promptChoices.appendChild(span);
+			}
+			promptChoices.style.display = "block";
+		}
+		else if (promptState.type === "dir") {
+			promptDirs.style.display = "block";
+		}
+		promptParent.style.display = "block";
+		showingMenu = "prompt";
+		if (promptState.type === "input") {
+			document.getElementById("promptInput").focus();
+			document.getElementById("promptInput").select();
+		}
+	}
+});
 function makeCurve(pos, w, dir, div = 200){
     let prevX = pos[0], prevY = pos[1];
     let res = [];
