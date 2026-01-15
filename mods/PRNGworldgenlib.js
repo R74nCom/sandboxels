@@ -515,6 +515,7 @@ elements.RandomGen = {
 		}
 	},
 }
+
 elements.view_seed = {
     category: "edit",
     onSelect: function(){
