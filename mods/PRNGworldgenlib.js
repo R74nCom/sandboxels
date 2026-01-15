@@ -1,4 +1,4 @@
-/*Version 1.2.0 Pseudorandom world generator*/
+/*Version 1.2.1 Pseudorandom world generator*/
 function pseudorandom(key, num, max = 1){
     return (Math.log(key)*(num*Math.log(1625.4986772154357))) % max;
 };
