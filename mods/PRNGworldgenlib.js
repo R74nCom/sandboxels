@@ -43,6 +43,7 @@ runAfterLoad(()=>{
 	
 	
 });
+
 function showPromptScreen() {
 	if (!promptState) return;
 	closeMenu("prompt");
