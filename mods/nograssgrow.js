@@ -1,4 +1,4 @@
-elements.grass.tick = null;
+delete elements.grass.tick;
 elements.grass.behavior = [
   ["XX", "XX", "XX"],
   ["XX", "XX", "XX"],
