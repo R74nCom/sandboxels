@@ -5,13 +5,13 @@ function tempToRGB(temp){
 	if (temp <= 6500){
 		return{
 			r: 255,
-			g: Math.max(-325.757*Math.pow(0.999581, temp)+272.879, 0),
-			b: Math.max(-571.403*Math.pow(0.999675, temp)+321.955, 0)
+			g: Math.trunc(Math.max(-325.757*Math.pow(0.999581, temp)+272.879, 0)),
+			b: Math.trunc(Math.max(-571.403*Math.pow(0.999675, temp)+321.955, 0))
 		} 
 	} else {
 		return {
-			r: Math.max(604.879*Math.pow(0.999697, temp)+169.618, 0),
-			g: Math.max(719.488*Math.pow(0.999599, temp)+201.788, 0),
+			r: Math.trunc(Math.max(604.879*Math.pow(0.999697, temp)+169.618, 0)),
+			g: Math.trunc(Math.max(719.488*Math.pow(0.999599, temp)+201.788, 0)),
 			b: 255
 		}
 	}
@@ -27,7 +27,7 @@ function oldtempToRgb(temp, pixel){
 	}
 	if (ctemp <= 0.5){
 		return{
-			r: (510*ctemp),
+			r: Math.trunc(510*ctemp),
 			g: 0,
 			b: 0,
 			opacity: (ctemp/1.3)
@@ -35,8 +35,8 @@ function oldtempToRgb(temp, pixel){
 	} else {
 		return {
 			r: 255,
-			g: ((510*ctemp)-255),
-			b: ((280*ctemp)-140),
+			g: Math.trunc((510*ctemp)-255),
+			b: Math.trunc((280*ctemp)-140),
 			opacity: (ctemp/1.3)
 		}
 	}
