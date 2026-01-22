@@ -1207,6 +1207,9 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.unripe_fruit = {
+		desc: "Poisonous unripe fruit.",
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         category: "life",
         breakInto: ["poison", "sugar_water", "dirty_water"],
         color: ["#7ed934", "#78d42c", "#7cdb2e", "#7bde2a"],
@@ -1223,6 +1226,9 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.pineapple = {
+		tempHigh: 140,
+		stateHigh: "dead_plant",
+		desc: "The multiple fruit of the Ananas Cosmosus plant, a bromeliad. Known for its acidity and sweet, tropical flavour, this fruit contains bromelain, an enzyme that can and will digest your mouth.",
         category: "food", 
         breakInto: "juice",
         bloomColor: ["#ff6682", "#ff6e88", "#ff6198", "#de73a5"],
@@ -1231,6 +1237,9 @@ dependOn("orchidslibrary.js", ()=>{
         isFood: true,
     }
     elements.sugarcane = {
+		desc: "The canes of Saccharum species, a member of the grass family. The stalks are rich in sucrose, so sugar can be extracted from it.",
+		tempHigh: 110,
+		stateHigh: "dead_plant",
         category: "life",
         extract: "sugar_water",
         color: ["#60d10f", "#5abf11", "#66cc1d", "#78ed24"],
@@ -1264,6 +1273,8 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.sugarcane_seed = {
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         category: "life",
         behavior: behaviors.POWDER,
         color: ["#f0e07a", "#e0d277", "#e3ca71", "#d9ba77"],
@@ -1283,7 +1294,10 @@ dependOn("orchidslibrary.js", ()=>{
     elements.watermelon = new fruit("watermelon", ["#0e6614", "#065c0c", "#03700b", "#109119", "#098f12"], ["#ff4242", "#ed2f2f", "#ff2e2e", "#ed2828"]);
     elements.watermelon.bloomColor = ["#e9ed11", "#f1f50a", "#fbff19", "#fbff29"];
     elements.watermelon.behavior = behaviors.WALL;
+	elements.watermelon.desc = "The berry of Citrullus Lanatus, though quite a sizeable one at that. A Cucurbit known for its watery but sweet flesh, making it a great summer treat.";
     elements.watermelon_seed = {
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         behavior: behaviors.POWDER,
         color: ["#5e4a22", "#423417", "#241b0b", "#1f1709", "#120e05"],
         category: "life",
@@ -1316,6 +1330,8 @@ dependOn("orchidslibrary.js", ()=>{
     }
     elements.tomato.bloomColor = ["#edd93e", "#fae334", "#e6dc22", "#f5ec3d"];
     elements.banana_seed = {
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         behavior: [['XX', 'XX', 'XX'],['XX', 'XX', 'XX'],['M2', 'M1 AND ST:wood', 'M2']],
         color: ["#121211", "#121211", "#0f0f0e", "#171716"],
         category: "life",
@@ -1364,6 +1380,9 @@ dependOn("orchidslibrary.js", ()=>{
     }
     elements.dead_plant.behavior = [["XX","XX","XX"],["XX","CH:dirt%0.015","XX"],["M2","M1","M2"]];
     elements.banana = {
+		desc: "A berry produced by members of the Musa genus, although often referred to as palms, members of this genus are actually not in the palm family, Arecaceae.",
+		tempHigh: 110,
+		stateHigh: ["dead_plant","dead_plant","dead_plant","sugar"],
         category: "food", 
         breakInto: "juice",
         bloomColor: ["#6e2942", "#63293e", "#703249", "#82314f"],
@@ -1372,8 +1391,11 @@ dependOn("orchidslibrary.js", ()=>{
         isFood: true,
     };
     elements.coconut = {
+		desc: "The fruit of the Cocos Nucifera palm, contains a watery beverage meny people like to drink and a solid fat.",
         behavior: [['XX', 'XX', 'XX'],['XX', 'XX', 'XX'],['M2', 'M1 AND ST:wood', 'M2']],
         color: ["#291706", "#382007", "#2e1905", "#361d05", "#361e06"],
+		tempHigh: 70,
+		stateHigh: "dead_plant",
         category: "food",
         properties: {
             age: 0,
@@ -1428,6 +1450,7 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.coconut_oil = {
+		desc: "The fat derived from the flesh of the coconut, solid at room temperature.",
         behavior: behaviors.SOLID,
         color: ["#f0efed", "#edeceb", "#e6e4e3", "#ebe9e8"],
         category: "food",
@@ -1452,9 +1475,12 @@ dependOn("orchidslibrary.js", ()=>{
             lye: {elem1: "soap", elem2: "soap"},
         }, 
         tempLow: 23,
-        stateLow: "coconut_oil"
+        stateLow: "coconut_oil",
+		tempHigh: 200,
+		stateHigh: ["stench", "smoke","smoke","smoke","dioxin"]
     }
     elements.coconut_water = {
+		desc: "The clear fluid found inside of young coconuts to sustain the endosperm during development.",
         color: ["#8dd6d9", "#8cd9db", "#82d6d9"],
         behavior: behaviors.LIQUID,
         isFood: true,
@@ -1464,7 +1490,10 @@ dependOn("orchidslibrary.js", ()=>{
         stateHigh: ["sugar", "steam", "steam", "steam", "potassium_salt", "salt", "epsom_salt", "steam", "steam", "steam"]
     }
     elements.morning_glory_seed = {
+		tempHigh: 50,
+		stateHigh: "dead_plant",
         behavior: behaviors.VINEFRUIT,
+		desc: "Very proliferative and potentially invasive decorative vine.",
         bloomColors: [["#f783f0", "#fa8cf3", "#fa96f3", "#f590ee"], ["#8d40f7", "#9a52ff", "#8041d9", "#7e3ade"], ["#ed5365", "#f0485b", "#f55b6d", "#eb3d51"], ["#f53d49", "#fa4652", "#f54e59", "#f23a46"], ["#f53d49", "#fa8cf3", "#f55b6d", "#f23a46"]],
         color: ["#5c5036", "#473e29", "#4f4631", "#fcf2b8"],
         properties: {
@@ -1479,14 +1508,18 @@ dependOn("orchidslibrary.js", ()=>{
                 while(!Array.isArray(arr)){
                     arr = elements.morning_glory_seed.bloomColors[Math.round(Math.random()*elements.morning_glory_seed.bloomColors.length)];
                 }
+				if(Math.random()<0.1){
+					arr = ["#FFE108", "#F0EC1F", "#FFD208", "#FFF754"];
+				}
                 let num = 100*(10**Math.random()/10);
-                let newArr = false;
+                let newArr = [];
                 for(let item of arr){
                     let o = item;
                     let rgb = hexToRGB(item);
                     let newRGB = {r: Math.min(255, rgb.r+num), g: Math.min(255, rgb.g+num), b: Math.min(255, rgb.b+num)};
-                    newArr = [];
-                    newArr[arr.indexOf(item)] = RGBToHex(newRGB);
+                    //newArr = [];
+                    newArr.push(RGBToHex(newRGB));
+					//console.log(newRGB);
                     
                 }
                 pixel.bloomColor = (newArr) ? newArr : arr;
@@ -1501,6 +1534,7 @@ dependOn("orchidslibrary.js", ()=>{
     elements.apricot_seed.tempHigh = 175;
     elements.apricot_seed.stateHigh = "almond";
     elements.almond = {
+		desc: "The roasted pit of a prune closely related to apricots.",
         color: ["#ab9450", "#b3994d", "#a18943", "#a18c43", "#a18d47"],
         behavior: behaviors.POWDER, 
         state: "solid",
@@ -1521,6 +1555,7 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.almond_extract = {
+		desc: "Benzaldehyde-rich extracts of prunes, while called \"almond extract,\" it is often made using cherry pits.",
         color: ["#cfccbe", "#d6d4c7", "#c9c7bb", "#ccc9b8"],
         behavior: behaviors.LIQUID,
         isFood: true,
@@ -1548,9 +1583,13 @@ dependOn("orchidslibrary.js", ()=>{
     }
     
     elements.onion = {
+		desc: "A lilioid monocot of the Ammarylidaceae family in the asparagales order, commonly used in flavouring savoury dishes.",
+		tempHigh: 110,
+		stateHigh: "dead_plant",
         category: "food", 
         color: ["#dbaa5a", "#cc9b4b", "#bd9048", "#faebb4", "#fcf5d9", "#f2e9c7", "#7d2d50", "#ad3d6e", "#c25182"],
         state: "solid",
+		
         properties: {
             age: 0,
             sprouted: null,
@@ -1609,6 +1648,8 @@ dependOn("orchidslibrary.js", ()=>{
         color: ["#0f0f0f", "#0f0f0f", "#0a0a0a", "#0a0a0a"],
         category: "life",
         state: "solid",
+		stateHigh: "dead_plant",
+		tempHigh: 70, 
         tick: function(pixel){
             let inDirt = (getPixel(pixel.x,pixel.y+1) != null && eLists.SOIL.includes(pixelMap[pixel.x][pixel.y+1].element)) ? true : false;
             for(let coords of adjacentCoords){
@@ -1626,6 +1667,7 @@ dependOn("orchidslibrary.js", ()=>{
     elements.grape.reactions.sugar_water = {elem2: "wine", chance: 0.0006};
     elements.grape.reactions.water = {elem2: "wine", chance: 0.00006};
     elements.wine = {
+		desc: "Fermented juice, can be fermented with naturally ocurring yeast on the outside of many fruits or from lab grown yeast.",
         density: 992,
         color: ["#381b30", "#402137", "#261321", "#38192f"],
         behavior: behaviors.LIQUID,
