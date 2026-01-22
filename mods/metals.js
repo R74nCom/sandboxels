@@ -21,7 +21,7 @@ var modName = "mods/metals.js";
 // var changeTempMod = "mods/changeTempReactionParameter.js";
 // var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 var libraryMod = "mods/code_library.js";
-dependOn("library_test.js", function(){
+dependOn("code_library.js", function(){
 	elements.iron.hardness = 0.74
 	//https://www.engineeringtoolbox.com/bhn-brinell-hardness-number-d_1365.html
 	//https://en.wikipedia.org/wiki/Hardnesses_of_the_elements_(data_page)

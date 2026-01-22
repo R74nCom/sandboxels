@@ -520,7 +520,7 @@ elements.RandomGen = {
 elements.view_seed = {
     category: "edit",
     onSelect: function(){
-        alert(seed);
-        selectElement("dirt");
+		promptText(seed, undefined, "Seed");
+        selectElement(prevElement);
     }
 }

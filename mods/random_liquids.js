@@ -1,7 +1,7 @@
 var modName = "mods/random_liquids.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	if(urlParams.get('liquidAmount') != null) { //null check
 		liquidAmount = urlParams.get('liquidAmount')
 		if(isNaN(liquidAmount) || liquidAmount === "" || liquidAmount === null) { //NaN check
@@ -213,8 +213,4 @@ if(enabledMods.includes(libraryMod)) {
 	if(makeLiquidString == true) {
 		console.log(`Liquids added to liquidString (length ${liquidString.length})`)
 	}
-} else {
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true);

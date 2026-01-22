@@ -32,7 +32,7 @@ elements.change = {
     tool: function(pixel) {
 		changePixel(pixel,changeTo,true);
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes any pixels it is used on to a specified type.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.",
 };
 
@@ -41,7 +41,7 @@ elements.alt_change = {
     tool: function(pixel) {
 		pixel.element = changeTo;
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes any pixels it is used on to a specified type, but keeping their non-element-based properties.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.",
 	hidden: true,
 };
@@ -52,7 +52,7 @@ elements.alt_alt_change = {
 		pixel.element = changeTo;
 		pixel.color = pixelColorPick(pixel);
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes any pixels it is used on to a specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.",
 	hidden: true,
 };

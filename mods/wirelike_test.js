@@ -1,7 +1,7 @@
 var modName = "mods/wirelike_test.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	//The CMYK is symbolic
 	elements.start_test = {
 		color: "#dddddd",
@@ -674,8 +674,4 @@ if(enabledMods.includes(libraryMod)) {
 			};
 		},
 	};
-} else {
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true)

@@ -1,11 +1,7 @@
 var modName = "mods/life_eater.js";
 var fireMod = "mods/fire_mod.js";
 
-if(!enabledMods.includes(fireMod)) {
-	enabledMods.splice(enabledMods.indexOf(modName),0,fireMod);
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The ${fireMod} mod is required and has been automatically inserted (reload for this to take effect).`);
-} else {
+dependOn("fire_mod.js", function() {
 
 	var lifeEaterCategories = ["life","auto creepers","food","fantastic creatures","fey","auto_fey"];
 	var lifeEaterBlacklist = ["life_eater_virus","life_eater_slurry","life_eater_infected_dirt"];
@@ -166,4 +162,4 @@ if(!enabledMods.includes(fireMod)) {
 		stateHigh: elements.metal_scrap.stateHigh.concat("life_eater_virus","life_eater_virus","life_eater_virus"),
 	};
 
-}
+}, true);

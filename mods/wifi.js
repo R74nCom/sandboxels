@@ -1,7 +1,7 @@
 var modName = "mods/wifi.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	//https://stackoverflow.com/a/60922255
 	elements.wifi = {
 		color: "#bfff7f",
@@ -155,8 +155,4 @@ if(enabledMods.includes(libraryMod)) {
 		state: "solid",
 	}
 	
-} else {
-	if(!enabledMods.includes(libraryMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${libraryMod}" mods is required; and has been automatically inserted (reload for this to take effect).`)
-};
+}, true);
