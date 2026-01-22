@@ -1,3 +1,6 @@
+// This mod has been deprecated as of 2026-01-22.
+
+/*
 function reactPixels(pixel1,pixel2) {
 	var r = elements[pixel1.element].reactions[pixel2.element];
 	if (r.setting && settings[r.setting]===0) {
@@ -71,3 +74,4 @@ function reactPixels(pixel1,pixel2) {
 	if (r.func) { r.func(pixel1,pixel2); }
 	return r.elem1!==undefined || r.elem2!==undefined;
 }
+*/
