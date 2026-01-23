@@ -1,6 +1,9 @@
 /*
 *Version 2.2.1
 */
+
+
+
 let plants;
 let growthPatterns = {
     pineapple1: [[-1,-1],[-2,-2],[1,-1],[2,-2],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[-1,-6],[1,-6],[-1,-5],[1,-5],[-1,-4],[1,-4],[-1,-3],[1,-3],[0,-7],[-1,-8],[1,-8]],
@@ -185,7 +188,18 @@ dependOn("orchidslibrary.js", ()=>{
                 if(this[item] && Array.isArray(this[item]) && this[item].includes(target)){return true;}
             }
             return false;
-        }
+        },
+		get all(){
+			let res = [];
+			for(let key in plants){
+				if(key != "all" && Array.isArray(plants[key])){
+					for(let plant of plants[key]){
+						res.push(plant);
+					}
+				}
+			}
+			return res;
+		}
     }
     
     let ethyleneChance = {
@@ -293,6 +307,8 @@ dependOn("orchidslibrary.js", ()=>{
             type: "fruit",
         };
         isFood = true;
+		tempHigh = 65;
+		stateHigh = ["sugar", "dead_plant", "dead_plant", "dead_plant"];
         constructor(name, colour, jColour, type = "tree", sColour = false, extract = false, low = false){
             this.properties.fruit = name;
             this.color = colour;
@@ -529,6 +545,9 @@ dependOn("orchidslibrary.js", ()=>{
             dir: [1,1],
             bloomColor: "#FFE2E2",
         },
+		hoverStat: function(pixel){
+			return pixel?.fruit || "NONE";
+		},
         tick: function(pixel){
           if(pixel.dieAfter != undefined){
               let chance = (pixel.age-pixel.dieAfter)/150;
@@ -635,14 +654,19 @@ dependOn("orchidslibrary.js", ()=>{
             if(pixelTicks > pixel.start + 150){
               if(Math.random() < chance){
                 if(pixel.fruit){
-                  if(pixel.fruit == "random"){
-                    changePixel(pixel, fruits[Math.floor(Math.random() * fruits.length)]);
+                  if(pixel.fruit == "randomfruit"){
+					all = plants.all;
+					let elem = all[Math.round(Math.random()*all.length)];
+					while(elem == undefined || elements[elem] == undefined){
+						elem = all[Math.round(Math.random()*all.length)]
+					}
+                    changePixel(pixel, elem);
                   } 
 				  if (pixel.pattern && pixel.growthPattern == false) {
 						pixel.blooming = false;
 						pixel.growthPattern = true;
 						
-				 } else {
+				 } else if(pixel.fruit != "randomfruit") {
                     let c = (pixel.offspringColor) ? pixel.offspringColor : undefined;
                     changePixel(pixel, pixel.fruit);
                     if(c != undefined){
@@ -886,7 +910,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.005){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -894,7 +918,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.5){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -902,7 +926,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.005){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -910,7 +934,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.5){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -919,8 +943,8 @@ dependOn("orchidslibrary.js", ()=>{
             let rgb = interpolateRgb(getRGB(p1.color), getRGB(p2.color), 0.25);
             changePixel(p1, "fruit_milk");
             changePixel(p2, "fruit_milk");
-            p1.color = rgb;
-            p2.color = rgb;
+            p1.color = noiseify(rgb, 6);
+            p2.color = noiseify(rgb, 6);
         }
     };
     elements.juice.reactions.carbon_dioxide = { func: function(p1,p2){

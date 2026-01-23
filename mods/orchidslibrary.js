@@ -1,6 +1,6 @@
-/*
-*Version 1.0.0
-*/
+
+
+
 function noiseify(color, range){
     if(color.startsWith("#")){
         color = hexToRGB(color);
@@ -18,10 +18,17 @@ function is2d(arr){
   return arr.some(item => Array.isArray(item));
 }
 
-function colorMix(p1, p2, bias = 0.5){
-	c1 = p1.color;
-	p1.color = interpolateRgb(getRGB(p1.color), getRGB(p2.color), bias);
-	p2.color = interpolateRgb(getRGB(c1), getRGB(p2.color), bias);
+function colorMix(p1, p2, bias = 0.5, condition = undefined){
+	if(condition != undefined && condition(p1,p2)){
+		c1 = p1.color;
+		p1.color = interpolateRgb(getRGB(p1.color), getRGB(p2.color), bias);
+		p2.color = interpolateRgb(getRGB(c1), getRGB(p2.color), bias);
+	} else {
+		c1 = p1.color;
+		p1.color = interpolateRgb(getRGB(p1.color), getRGB(p2.color), bias);
+		p2.color = interpolateRgb(getRGB(c1), getRGB(p2.color), bias);
+	}
+	
 }
 
 function interpolateRgb(rgb1, rgb2, ratio = 0.5) {
@@ -68,3 +75,15 @@ function pixelToggle(pixel, multi = {r:1,g:1,b:1}){
 function normalize(obj){
     return `rgb(${obj.r},${obj.g},${obj.b})`;
 }
+let mixConditions = {
+	ifDifferent: function(p1,p2){
+		let res = false;
+		let rgb1 = getRGB(p1.color), rgb2 = getRGB(p2.color);
+		for(let key in rgb1){
+			if(rgb1[key] < rgb2[key]+6 || rgb1[key] > rgb2[key]-6){
+				res = true;
+			}
+		}
+		return res;
+	}
+};
