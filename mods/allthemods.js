@@ -11,7 +11,7 @@ if(!all_mods_included) {
     var mods_needed = mods_to_include.filter(function(modPath) { return !(enabledMods.includes(modPath)) });
 
     mods_needed.forEach(function(modPath) {
-		enabledMods.splice(enabledMods.indexOf("mods/electricitymods"),0,modPath);
+		enabledMods.splice(enabledMods.indexOf("mods/allthemods"),0,modPath);
 	});
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 	alert(`The following mods have been inserted: ${mods_needed.join(", ")}
