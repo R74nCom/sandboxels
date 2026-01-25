@@ -76,7 +76,9 @@ runAfterAutogen(function(){
     for (var element in elements) {
         if (elements[element].category !== "tools") {
             elements[element].hidden = true;
-            elements[element].category = "inventory";
+            if (!settings.survival || Object.keys(settings.survival).length < 25) {
+                elements[element].category = "inventory";
+            }
         }
         if (elements[element].onShiftSelect) delete elements[element].onShiftSelect;
     }
