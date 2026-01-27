@@ -1,5 +1,6 @@
 elements.dry_acid = {
     name:"Anhydrous acid",
+    alias:"anhydrous_acid",
     desc:"It's pretty much just acid without water in it.",
     color: ["#62e36f", "#a5d9aa", "#b3c9b6"],
     behavior: behaviors.POWDER,
