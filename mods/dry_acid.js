@@ -32,3 +32,7 @@ elements.acid.reactions["dirty_water"] = {
 
 delete elements.acid.reactions.water
 delete elements.water.reactions.acid
+delete elements.acid_gas
+
+elements.acid.tempHigh = 100
+elements.acid.stateHigh = ["dry_acid","steam"]
