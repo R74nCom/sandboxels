@@ -5,7 +5,7 @@ var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
 
 if (!isChromium && !isAndroid) {
     window.addEventListener("load",function(){
-        console.log(1)
+        console.log("Error: glow.js only works on Chrome or Chromium-based browsers.")
         logMessage("Error: glow.js only works on Chrome or Chromium-based browsers.")
     })
 }
@@ -20,16 +20,31 @@ delete canvasLayers.glowmod;
 delete canvasLayers.glowmod2;
 
 elements.fire.emit = true;
+elements.fire.emitColor = "#ff6b21";
+elements.fire.emitColorFunc = function(pixel) {
+    if (pixel.origColor === undefined) {
+        return pixel.color;
+    }
+    var hsl = RGBToHSL(pixel.origColor);
+    hsl[0] += 0.05;
+    hsl[0] -= (pixelTicks-pixel.start)/0.75/360;
+    hsl[0] = Math.max(0.025, hsl[0]);
+    hsl = "hsl("+(hsl[0]*360 >>> 0)+","+(hsl[1]*100 >>> 0)+"%,"+(hsl[2]*100 >>> 0)+"%)";
+    return hsl;
+};
 elements.lightning.emit = 15;
 elements.electric.emit = true;
 elements.positron.emit = true;
 elements.plasma.emit = true;
 elements.uranium.emit = 3;
 elements.uranium.emitColor = "#009800";
+elements.molten_uranium.emit = 3;
+elements.molten_uranium.emitColor = "#009800";
 elements.rainbow.emit = true;
 elements.static.emit = true;
 elements.flash.emit = true;
 elements.cold_fire.emit = true;
+elements.cold_fire.emitColor = "#21cbff";
 elements.blaster.emit = true;
 elements.ember.emit = true;
 elements.fw_ember.emit = 10;
@@ -94,13 +109,17 @@ viewInfo[1] = { // Blur Glow (Emissive pixels only)
 };
 
 renderEachPixel(function(pixel,ctx) {
-    if (view === 1 && settings.textures !== 0) {
+    if ((view === 1 || viewInfo[view].alias === 1) && settings.textures !== 0) {
         if (elements[pixel.element].emit || pixel.emit || (elements[pixel.element].colorOn && pixel.charge)) {
             let a = (settings.textures !== 0) ? pixel.alpha : undefined;
             let d = pixel.emit||elements[pixel.element].emit||true;
             if (d === true) d = 5;
             let r = Math.floor(d/2);
-            drawSquare(glowmodCtx2,elements[pixel.element].emitColor||pixel.color,pixel.x-r,pixel.y-r,d,a);
+            let color = elements[pixel.element].emitColor||pixel.color;
+            if (elements[pixel.element].emitColorFunc) {
+                color = elements[pixel.element].emitColorFunc(pixel);
+            }
+            drawSquare(glowmodCtx2,color,pixel.x-r,pixel.y-r,d,a);
         }
         if (pixel.charge && !elements[pixel.element].colorOn) {
             drawSquare(glowmodCtx2,"#ffff00",pixel.x-1,pixel.y-1,3);

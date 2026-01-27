@@ -102,3 +102,130 @@
 			if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto]) { delete elements[key].breakInto; }
 		}
 	}
+
+
+
+
+
+let xstart = x-1;
+let ystart = y-1;
+let xsize = pixelSize3;
+let ysize = pixelSize3;
+if (!isEmpty(x-1, y)) {
+	xstart ++;
+	xsize -= pixelSize;
+}
+if (!isEmpty(x+1, y)) {
+	xsize -= pixelSize;
+}
+if (!isEmpty(x, y-1)) {
+	ystart ++;
+	ysize -= pixelSize;
+}
+if (!isEmpty(x, y+1)) {
+	ysize -= pixelSize;
+}
+
+ctx.fillRect(canvasCoord(xstart), canvasCoord(y), xsize, pixelSize);
+ctx.fillRect(canvasCoord(x), canvasCoord(ystart), pixelSize, ysize);
+
+
+
+if (Math.random() < 0.5) {
+let trapped = true;
+for (let i = 0; i < adjacentCoords.length; i++) {
+	const coord = adjacentCoords[i];
+	const x = pixel.x + coord[0];
+	const y = pixel.y + coord[1];
+	if (!(y > height-currentSaveData.border || y < currentSaveData.border || x > width-currentSaveData.border || x < currentSaveData.border) &&
+		(pixelMap[x][y] === undefined ||
+		elements[pixelMap[x][y].element].id !== info.id)
+	) {
+		trapped = false;
+		break;
+	}
+}
+if (trapped === true) {
+	pixel.opti = pixelTicks;
+	return false;
+}
+}
+
+
+
+
+function worldGen(worldtype) {
+	var complexity = worldtype.complexity || 20;
+	var heightVariance = worldtype.heightVariance || 0.5;
+	var baseHeight = height-(height*(worldtype.baseHeight || 0.5));
+	var layers = worldtype.layers || {0:"rock"};
+	var yoffsets = generateTerrainHeights(width,heightVariance,complexity);
+	// 2D world vertical generator
+	for (var x = 0; x <= width; x++) {
+		var yoffset = yoffsets[x];
+		var worldHeight = baseHeight+yoffset;
+		for (var y = 0; y <= height; y++) {
+			// Change element type based on y, from grass > dirt > rock > basalt
+			if (y > worldHeight) {
+				// distance from the bottom of worldHeight
+				var frombottom = worldHeight-(y-worldHeight);
+				var element = null;
+				for (var i in layers) {
+					var layer = layers[i];
+					if (layer[0] == 0 && yoffset < 0) {
+						layer[0] = yoffset;
+					}
+					if (frombottom > worldHeight*layer[0] && Math.random() < (layer[2] || 1)) {
+						if (elements[layer[1]]) {
+							element = layer[1];
+							break
+						}
+					}
+				}
+				if (y >= height && (currentSaveData.voidY || currentSaveData.loopY)) {
+					element = currentSaveData.borderElem ? null : "wall";
+				}
+				if ((x >= width || x === 0) && (currentSaveData.voidX || currentSaveData.loopX)) {
+					element = currentSaveData.borderElem ? null : "wall";
+				}
+				if (element) {
+					createPixel(element,x,y);
+					if (worldtype.temperature) {
+						pixelMap[x][y].temp = worldtype.temperature;
+					}
+				}
+			}
+		}
+	}
+	// decor
+	if (worldtype.decor) {
+		for (var i = 0; i < worldtype.decor.length; i++) {
+			var decor = worldtype.decor[i];
+			var element = decor[0];
+			var chance = decor[1];
+			for (var x = 1; x < width; x++) {
+				var y = decor[2] || 5;
+				// add or subtract worldtype.decorVariance from y
+				y += Math.round(Math.random()*(worldtype.decorVariance||2) - (worldtype.decorVariance||2)/2);
+				if (Math.random() < chance && isEmpty(x,y)) {
+					createPixel(element,x,y);
+					if (worldtype.temperature) {
+						pixelMap[x][y].temp = worldtype.temperature;
+					}
+					if (decor[3]) {
+						pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],decor[3])
+					}
+				}
+			}
+		}
+	}
+}
+
+// Generate worldgen options
+// Loop through the worldgentypes object, add the key to the #worldgenselect select as an option with the value of the key and the name of the key capitalized and underscores replaced with spaces
+for (var key in worldgentypes) {
+	document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
+}
+if (settings["worldgen"] && !worldgentypes[settings["worldgen"]]) {
+	settings["worldgen"] = "off";
+}

@@ -1,8 +1,8 @@
 var modName = "mods/portal.js";
-var onTryMoveIntoMod = "mods/onTryMoveInto.js";
+// var onTryMoveIntoMod = "mods/onTryMoveInto.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	//https://stackoverflow.com/a/60922255
 	if(!enabledMods.includes("mods/mobs.js")) {
 		headBodyObject = {
@@ -17,7 +17,7 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 			_correspondingPortals: null,
 		},
 		insulate: true,
-		onTryMoveInto: function(pixel,otherPixel) {
+		onMoveInto: function(pixel,otherPixel) {
 			if(pixel._correspondingPortals == null) {
 				return;
 			};
@@ -112,9 +112,8 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 		state: "solid",
 		insulate: true,
 	}
-} else {
-	if(!enabledMods.includes(libraryMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
-	if(!enabledMods.includes(onTryMoveIntoMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod) };
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${libraryMod}" and "${onTryMoveIntoMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
-};
+}, true);
+	// if(!enabledMods.includes(libraryMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
+	// if(!enabledMods.includes(onTryMoveIntoMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod) };
+	// localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	// alert(`The "${libraryMod}" and "${onTryMoveIntoMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)

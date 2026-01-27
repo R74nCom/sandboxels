@@ -10,6 +10,7 @@
     <meta name="copyright" content="R74n">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all">
+    <link rel="canonical" href="https://sandboxels.r74n.com/changelog" id="canonicalLink"/>
 
     <!--Favicons-->
     <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
@@ -26,22 +27,22 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Sandboxels Changelog">
     <meta property="og:description" content="Latest updates to the free falling-sand browser game.">
-    <meta property="og:url" content="https://sandboxels.r74n.com">
-    <meta property="og:site_name" content="Sandboxels">
-    <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
-    <meta property="og:image:width" content="1980">
-    <meta property="og:image:height" content="971">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="A rainforest made in Sandboxels">
+	<meta property="og:url" content="https://sandboxels.r74n.com/changelog">
+	<meta property="og:site_name" content="Sandboxels">
+	<meta property="og:image" content="https://sandboxels.r74n.com/icons/cover-3840x1240px-text.png">
+	<meta property="og:image:width" content="3840">
+	<meta property="og:image:height" content="1240">
+	<meta property="og:image:type" content="image/png">
+	<meta property="og:image:alt" content="Magma falling into Water, forming Steam and Basalt. Pixel art style.">
 
     <!--Twitter-->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:description" content="Latest updates to the free falling-sand browser game.">
     <meta name="twitter:title" content="Sandboxels Changelog">
+    <meta name="twitter:description" content="Latest updates to the free falling-sand browser game.">
     <meta name="twitter:site:id" content="1436857621827530753">
-    <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
-    <meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
-    <meta name="twitter:creator:id" content="1436857621827530753">
+	<meta name="twitter:image" content="https://sandboxels.r74n.com/icons/cover-3840x1240px-text.png">
+	<meta name="twitter:image:alt" content="Magma falling into Water, forming Steam and Basalt. Pixel art style.">
+	<meta name="twitter:creator:id" content="1436857621827530753">
 
     <link rel="stylesheet" type="text/css" href="style.css?nocache=3">
     <style>
@@ -58,6 +59,8 @@
         h2 {
             margin-bottom: 5px;
             display: inline-block;
+            font-family: 'VT323';
+            font-size: 1.75em
         }
         ul {
             margin: 0;
@@ -83,8 +86,9 @@
             color: #ff0000;
         }
         li.update-section {
-            font-size: 1.25em;
+            font-size: 1.5em;
             margin-left: 10px;
+            font-family: 'VT323';
         }
         #intro {
             font-family: Arial, Helvetica, sans-serif;
@@ -103,11 +107,375 @@
 <div id="changelog">
 
 <div id="intro">
-<p>Below are all of the updates to Sandboxels.</p>
+<p>Below are all of the updates to <a href="https://sandboxels.R74n.com/">Sandboxels</a>.</p>
 <p>Suggest new additions on our <strong><a href="https://sandboxels.R74n.com/feedback" target="_blank">Feedback Form</a></strong>.</p>
 <p>Join our <strong><a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a></strong> or our free <a href="https://news.R74n.com/subscribe">Newsletter</a> to be notified when new updates drop.</p>
 <p>The original <a href="https://sandboxels.R74n.com/changelog.txt">plain text version</a> of this is still maintained.</p>
 </div>
+
+<h2 id="1.13.2">[Version 1.13.2 - January 11, 2026]</h2>
+<ul>
+<li>+ Edit Mode</li>
+<li>    ~ Moved Special tools to the edit tab</li>
+<li>    ~ Expect more tools in the future</li>
+<li>+ Relations - Multiple pixels as a single entity</li>
+<li>    + Group and Ungroup tool in edit tab</li>
+<li>    + Grouped pixels fall and move as one structure</li>
+<li>    + Grouped pixels are ungrouped when broken or changing states</li>
+<li>    + Grouped pixels can displace fluids (Experimental)</li>
+<li>+ More Shift-Select functionality:</li>
+<li>    + Battery can set a frequency to create timers</li>
+<li>    + Image tool can set element</li>
+<li>~ Fire begins more yellow and gets redder quicker</li>
+<li>+ Icing (Hidden) made with Butter and Sugar</li>
+<li>~ Liquids and Gases appear less grainy</li>
+<li>~ Settings changes</li>
+<li>    + Speed option in Settings to replace TPS button</li>
+<li>    + Keybind: T to change TPS</li>
+<li>    ~ Renamed E button to Elem button</li>
+<li>~ Improved simulation speeds</li>
+<li>- Removed World Gen</li>
+<li>    ~ We recommend the PRNGworldgenlib.js mod, a much better world generator</li>
+<li>- Removed Cheerful Mode</li>
+<li>[Changes]</li>
+<li>+ Escape can be pressed to cancel while drawing a line</li>
+<li>+ Fillers can be painted and will fight other colors</li>
+<li>+ Portals show destination lines when hovered over or selected</li>
+<li>+ Portal In can be selected with the Elem button by typing 'Portal'</li>
+<li>+ Lightning placed near certain elements will change color</li>
+<li>+ Worms can break down Flour, Dough, Adobe, Paper, Confetti, Cellulose, Cheese, and Potato</li>
+<li>+ Worms can move through Mulch</li>
+<li>+ Radiation will radiate Batter</li>
+<li>+ Rad Steam causes Cheese to rot</li>
+<li>~ Filters and Gates are Acid-resistant</li>
+<li>~ Portals no longer teleport Fuse</li>
+<li>~ Ruler measures diagonal lines as a pixel count instead of hypotenuse</li>
+<li>~ Unique flame colors for Nickel, Iron, and Mercury</li>
+<li>~ Rearranged Special category</li>
+<li>~ Opening the Info, Mods, or Settings menus will pause the game</li>
+<li>~ Steam: All canvas sizes now stretch to the full screen width</li>
+<li>+ Assigned densities to many solids</li>
+<li>+ Keybind: Quote (") to toggle Edit Mode</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Dragging pixels through Filters creates ghost pixels</li>
+<li>~ Fixed: Filters can break when transporting to Gates or Pipes</li>
+<li>~ Fixed: Pixels are rendered in incorrect position when mixing with Pipe, Filter, or Gate</li>
+<li>~ Fixed: Broken modded saves are loaded every bootup</li>
+<li>~ Fixed: Precision Dot is misaligned with 2- and 4-wide brushes</li>
+<li>~ Fixed: Portals can't transmit electricity if surrounded by pixels</li>
+<li>~ Fixed: E-cloner can't be set to Fuse by clicking on it</li>
+<li>~ Fixed: Some saves throw TypeError "Cannot set properties of undefined"</li>
+<li>~ Fixed: Prop tool always unpauses after dialog</li>
+<li>~ Fixed: Z and Backspace keys select Heat by default instead of Sand</li>
+<li>~ Fixed: Random can't place Fire, Plasma, Ink, Bless, Rock Wall, Cold Fire, Sun, Pointer, or Art</li>
+<li>~ Fixed: Elem dialog doesn't close if button is pressed again</li>
+<li>~ Fixed: Wrong font when language set to Italian</li>
+<li>~ Fixed: Magnesium melts at a much lower temperature than expected</li>
+<li>~ Fixed: Shift-selecting Random and inputting 'random' causes errors</li>
+<li>[Technical]</li>
+<li>~ Note: Optimizations mean a lot of code was rewritten, please report any issues and be patient</li>
+<li>~ Note: Don't pass an 'rgba' color to drawSquare, use the 'alpha' argument instead</li>
+<li>+ Pixel relations system</li>
+<li>    + Used to group pixels together</li>
+<li>    + '_r' pixel property to identify its relation (should be an integer)</li>
+<li>+ 'trackPaint' element property (boolean)</li>
+<li>    + 'painted' pixel property (color code) given to these elements when painted</li>
+<li>+ "Failed to load" message instead of hanging forever</li>
+<li>~ 'con' contents only render if element has existing 'canContain' property</li>
+<li>~ 'onMouseDown' element event only triggers with left clicks</li>
+<li>~ Acid Gas 'ignore' property is now identical to Acid</li>
+<li>~ Elements with a set density but no state are set to solid</li>
+<li>~ Fuse no longer shows hidden element</li>
+<li>~ Save version is now sb7</li>
+</ul>
+
+<h2 id="1.13.1">[Version 1.13.1 - December 18, 2025 - G&amp;G Hotfix]</h2>
+<ul>
+<li>~ This is a quick group of bug fixes and improvements following yesterday's update.</li>
+<li>+ More Shift-Select functionality:</li>
+<li>    + Fuse can turn into an element after charged</li>
+<li>    + Filler can turn into an element after cloning itself</li>
+<li>    + Heat and Cool tools can specify limits</li>
+<li>    + Paint tool can specify a specific element to paint</li>
+<li>    + Udder can dispense a specific element</li>
+<li>    ~ Distinct border for Shift-Selected element buttons</li>
+<li>~ Chlorine Ice kills Virus like gaseous and liquid forms</li>
+<li>~ When window is shortened vertically, canvas will shrink to fit screen</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: 2- and 4-wide brushes aren't possible with scroll wheel</li>
+<li>~ Fixed: Tea doesn't stain Paper very well</li>
+<li>~ Fixed: Fireflies change the color of any pixel they touch</li>
+<li>~ Fixed: Slow Cloner can't clone more than one element with Shift-Select</li>
+<li>~ Fixed: Slow Cloner doesn't immediately grab element</li>
+<li>~ Fixed: E-cloners can clone Walls</li>
+<li>~ Fixed: Outline View uses white outline with custom URL backgrounds</li>
+<li>~ Fixed: Heaters, Coolers, and Cloners can be mixed without holding Shift</li>
+<li>~ Fixed: Language isn't autoselected for Brazilian Portuguese or Chinese</li>
+<li>[Technical]</li>
+<li>+ chargePixel(pixel, amount?) helper function to easily shock a pixel</li>
+<li>+ burnPixel(pixel) helper function to easily ignite a pixel</li>
+</ul>
+
+<h2 id="1.13">[Version 1.13 - December 17, 2025 - Gizmos & Gadgets]</h2>
+<ul>
+<li>+ Filter</li>
+<li>    + Only allows the first element it touches to pass</li>
+<li>+ Gate</li>
+<li>    + Only allows pixels to pass if electrified</li>
+<li>    + Only conducts electricity into itself and Wire</li>
+<li>+ Canvas background images</li>
+<li>    + Some presets and custom image URLs</li>
+<li>+ Outline View (Press 5)</li>
+<li>+ 2-wide and 4-wide brushes</li>
+<li>+ Ruler tool in Special to measure lengths and angles</li>
+<li>+ Manual element control</li>
+<li>    + Shift-clicking certain element buttons prompt the user for more information</li>
+<li>    + Erase tool allows only deleting certain elements</li>
+<li>    + Cloners allow multiple comma-separated elements</li>
+<li>    + Filters allow states (solid, liquid, or gas) or multiple elements</li>
+<li>    + Sensors allow sensing specific elements</li>
+<li>    + Portals allow the setting of channels</li>
+<li>    + Void allows only deleting certain elements</li>
+<li>    + Random tool allows pre-selected element choices</li>
+<li>    + Explosion allows custom radius</li>
+<li>    + Antibombs allow pre-selected explosion elements</li>
+<li>~ Replaced LED Red, Green, and Blue with a single customizable LED</li>
+<li>    ~ LEDs in old saves are automatically converted to the new element</li>
+<li>- Merged Superheaters and Freezers with Heaters and Coolers</li>
+<li>    + Heaters can be heated to heat the same as a Superheater</li>
+<li>    + Coolers can be cooled to cool the same as a Freezer</li>
+<li>- Removed Tesla Coil and Shocker</li>
+<li>    ~ These elements in old saves are automatically converted to E-cloners</li>
+<li>~ Drag tool is faster and smoother</li>
+<li>~ Pixelated and colorful button borders</li>
+<li>+ Translations for Swedish</li>
+<li>+ Partial translations for Japanese, Thai, Arabic, Hebrew, and Viossa</li>
+<li>[Changes]</li>
+<li>+ Pipes can transport pixels directly with Filter and Gate</li>
+<li>~ Pipes no longer conduct heat</li>
+<li>~ Brightened blue stage in Pipes</li>
+<li>~ Incomplete pipes darken after being initialized</li>
+<li>+ Oxygen can be used to dispose Molten Lead in reactors</li>
+<li>+ Electrolysis of raw Salt</li>
+<li>+ Smashing hot Cooked Meat releases Grease</li>
+<li>+ Worms can compost Lettuce, Tomato, Corn, Pickle, and Bread</li>
+<li>+ Rats can eat Spiders</li>
+<li>+ Caramel and Herb make peppermint-colored sugar</li>
+<li>+ Baking Soda can be made with Lye and Carbon Dioxide</li>
+<li>+ Melting Ash with Dirt creates Tuff</li>
+<li>~ Poison Gas no longer makes Slag from molten elements</li>
+<li>~ Perfume can exist at room temperature</li>
+<li>~ Acid doesn't dissolve Mercury or Diamond</li>
+<li>~ Sulfur ignites when hot</li>
+<li>~ All Cloud types can be smashed like Rain Cloud</li>
+<li>~ Thermite burns into less Iron</li>
+<li>~ Rock Wall deletes Light when placed over it for better eclipses</li>
+<li>- Removed Gallium-Sodium reaction</li>
+<li>~ Copper Sulfate reacts with more carbs</li>
+<li>~ Rainbow recipe uses Pointer instead of Flash</li>
+<li>~ Bless deletes Strange Matter instead of turning it into Neutron</li>
+<li>+ Static recipe</li>
+<li>+ Malware can mix with some metals to create machine parts</li>
+<li>+ Tea stains Paper</li>
+<li>+ Unique fire color for Tin</li>
+<li>~ Element buttons are consistently spaced on all sides</li>
+<li>~ Recolored Pyrite</li>
+<li>~ Acid has a smoother texture</li>
+<li>~ Purple Gold is slightly more purple</li>
+<li>~ Hyphae and Lichen are grainier</li>
+<li>~ Recolored Random button</li>
+<li>~ Recolored Balloon button</li>
+<li>~ Recolored Confetti button</li>
+<li>~ Recolored Hair button</li>
+<li>~ Recolored Pistil button</li>
+<li>~ Reordered colors in many buttons for consistent "lighting" look</li>
+<li>~ Rice, Candy, Nut Oil, Dye, Rainbow, and Spray Paint buttons display with dark text</li>
+<li>+ Firefly alias 'Lightning Bug'</li>
+<li>~ Shortened hiding setting labels</li>
+<li>~ Language should automatically be set from browser preferences (Untested)</li>
+<li>~ Re-saving after saving automatically fills in name, author, and description</li>
+<li>~ Save browser thumbnails are crisper</li>
+<li>~ Steam Deck compliance</li>
+<li>[Technical]</li>
+<li>+ 'onShiftSelect' element property, called when selecting element while holding Shift</li>
+<li>+ 'onlyConduct' element property, list of the only elements to conduct electricity into</li>
+<li>+ 'renderTool' element property, renderer function called once per frame while selected</li>
+<li>+ 'updateOrder' element property, prioritizes (positive) or deprioritizes (negative) tick order (integer; default 0)</li>
+<li>+ autoResizeRatio(height,width) function (e.g. (16,9))</li>
+<li>~ 'shiftDown' variable is set even when in a menu</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Placing Humans with Replace Mode causes a gory mess</li>
+<li>~ Fixed: Using Human on Cloners cause a gory mess</li>
+<li>~ Fixed: Bottom pixels can be cut off on certain window sizes</li>
+<li>~ Fixed: Line-drawing preview is opaque when using a theme</li>
+<li>~ Fixed: Text in Debug popup can't be selected</li>
+<li>~ Fixed: onClicked passes "unknown" when no element is selected, now passes null</li>
+<li>~ Fixed: onMouseDown doesn't get called on mobile</li>
+<li>~ Fixed: onMouseDown is called when clicking out of a menu</li>
+<li>~ Fixed: Using Heat Ray on Stained Glass can make Rainbows</li>
+<li>~ Fixed: Saves with pipes containing invalid elements fail to load</li>
+<li>~ Fixed: Some Fireflies stay illuminated after hitting another</li>
+<li>~ Fixed: Liquid/gaseous pixels with 'skip' property can be displaced by denser pixels</li>
+<li>~ Fixed: Salt isn't considered a food and can't be eaten by Humans</li>
+<li>~ Fixed: Corn can't be dragged or put into Pipes</li>
+</ul>
+
+<h2 id="1.12">[Version 1.12 - July 17, 2025 - Saves For All]</h2>
+<ul>
+<li>+ Featured Saves tab</li>
+<li>+ Discord Saves tab</li>
+<li>    + Browse community-made saves from our server</li>
+<li>+ Lye, a reactive powder</li>
+<li>+ Invar, a dark metal alloy (Hidden)</li>
+<li>+ Streak View (Press 4)</li>
+<li>[Steam Edition Changes]</li>
+<li>+ Workshop support</li>
+<li>    + Add and load community-made saves</li>
+<li>    + Publish saves for everyone to discover</li>
+<li>    + Save tagging support</li>
+<li>+ Rich Presence support for Discord and Steam Chat</li>
+<li>    + Show off your current element and canvas state</li>
+<li>~ Saves are stored in a new game data folder instead of slots</li>
+<li>+ Mods can be loaded from the game data folder for offline use</li>
+<li>    ~ Dependencies are currently not supported for local files</li>
+<li>+ "Open Data Folder" button in Settings</li>
+<li>+ Steam automatically selects supported languages</li>
+<li>- Hid "Clear Saves" button</li>
+<li>~ Version and element count are shown again</li>
+<li>[Changes]</li>
+<li>+ Button click animations</li>
+<li>+ Corn has gravity</li>
+<li>+ Cloner elements can be set by clicking over them</li>
+<li>+ Dyes can be mixed into liquids</li>
+<li>+ Sand can be dyed into Color Sand</li>
+<li>+ Stained Glass can be made by melting Glass with certain metals</li>
+<li>+ Batteries are breakable</li>
+<li>+ Vaccine and Antidote can freeze</li>
+<li>+ Small amounts of Vaccine can be made by boiling Antibody</li>
+<li>+ Vaccine can be made by mixing Antibody with Sugar Water</li>
+<li>+ Cream can be turned into Yogurt</li>
+<li>+ Clay and Brick Rubble makes Clay Soil</li>
+<li>+ Slime rots Meat</li>
+<li>+ Glue turns Crumb into Bread</li>
+<li>+ Yeast ferments Wheat</li>
+<li>+ Vinegar-Ammonia reaction</li>
+<li>+ Bleach-Baking Soda reaction</li>
+<li>+ Blood bubbles before boiling</li>
+<li>+ Infection passively creates Plague</li>
+<li>+ Pool Water slowly breaks down DNA</li>
+<li>+ Distilling Oil with Hydrogen makes Sulfur and Water (Claus process)</li>
+<li>+ Greek Fire is made with Oil and Sap, instead of Sulfur</li>
+<li>+ Sulfur stains Silver</li>
+<li>+ Candy from freezing Honey or Molasses has a unique color</li>
+<li>+ Ember changes color when hitting elements with flame colors</li>
+<li>+ Plasma can heat existing pixels when placed over them</li>
+<li>+ Magnesium-Acid reaction produces Hydrogen</li>
+<li>+ Gold variants are immune to Acid</li>
+<li>+ Acid decomposes at extreme temperatures</li>
+<li>+ Ammonia decomposes at high temperatures</li>
+<li>+ Copper Sulfate reacts with other carbs like Sugar</li>
+<li>+ Molten Caustic Potash electrolysis</li>
+<li>+ Virus and Strange Matter ignore Pointer</li>
+<li>+ Neutrons radiate Glass Shards</li>
+<li>+ Cancer kills Homunculi</li>
+<li>+ Anesthesia and Alcohol Gas calm Humans</li>
+<li>~ Human will be selected when using Pick on Head or Body</li>
+<li>~ Tweaked Diamond formation</li>
+<li>~ Walls and Pipes don't change Light color</li>
+<li>~ God Ray is better at extinguishing fires</li>
+<li>~ Ember no longer produces Fire on its own</li>
+<li>~ Salt Water electrolysis produces Lye (Chloralkali process)</li>
+<li>~ Sodium-Water reaction produces Lye</li>
+<li>~ Improved Sodium-Acid reaction</li>
+<li>~ Potassium-Acid reaction is more violent</li>
+<li>~ Acid no longer deletes Smoke or Fire</li>
+<li>~ Gallium-Aluminum reaction is more destructive</li>
+<li>~ Supernovae create Mercury and Aluminum</li>
+<li>~ Antimatter no longer explodes when hitting the border</li>
+<li>~ Lightning no longer explodes when hitting the border on Void mode</li>
+<li>~ Uranium releases Radiation more consistently when falling</li>
+<li>~ Rats release Plague more consistently when falling</li>
+<li>~ Molten Stained Glass has colorful Fire</li>
+<li>+ Rainbow and Static affect the color of Fire</li>
+<li>~ Canvas will shrink dynamically to fit screen width</li>
+<li>+ Empty canvases will be reset automatically when window is resized</li>
+<li>+ Saves menu tabs</li>
+<li>~ Saves menu takes up more screen space</li>
+<li>~ Modded saves automatically reload the save and remove new mods after session</li>
+<li>+ Sandboxels will reload on canvas reset after changing mods</li>
+<li>+ TPS is restored after unloading a save</li>
+<li>+ Button to reload after adding or removing mods</li>
+<li>~ Currently-loaded save will be underscored in menu</li>
+<li>~ Saves keep track of standalone version (i.e. Steam)</li>
+<li>~ Save warnings use native Sandboxels prompts</li>
+<li>~ Reset Warning setting affects save loading popup on non-empty canvas</li>
+<li>- Loading a save no longer changes your selected view</li>
+<li>~ 'Reset Scene' buttons in Settings now confirm before resetting</li>
+<li>~ Cursor color is affected by theme color</li>
+<li>~ Canvas Size and Worldgen settings automatically reset empty canvases</li>
+<li>~ Updated styling of bottom links</li>
+<li>~ Links are underlined when hovered over</li>
+<li>~ Prompts are closed when elements are deselected</li>
+<li>~ Confirm buttons for data reset prompts are red to show danger</li>
+<li>~ Entering an invalid TPS no longer resets to 30 TPS</li>
+<li>~ Recolored Gold</li>
+<li>~ Recolored Zinc</li>
+<li>~ Recolored Nickel</li>
+<li>~ Recolored Tungsten</li>
+<li>~ Recolored Sulfur</li>
+<li>~ Recolored Brass</li>
+<li>~ Recolored Sterling</li>
+<li>~ Recolored Solder</li>
+<li>~ Recolored Molten Aluminum and removed heat glow</li>
+<li>~ Recolored Molten Caustic Potash and removed Fire</li>
+<li>~ Recolored Soda made from Juice</li>
+<li>~ Poison, Radiation, God Ray, Aluminum, Insulation, Bead, and Color Sand display with dark text</li>
+<li>~ Prop tool can convert between boolean and number types</li>
+<li>+ Broth alias 'Soup'</li>
+<li>+ Jelly alias 'Jam'</li>
+<li>+ Soda alias 'Cola'</li>
+<li>+ Hard Yolk alias 'Fried Egg'</li>
+<li>+ Gunpowder alias 'Black Powder'</li>
+<li>[Steam Changes]</li>
+<li>+ Save author name will default to Steam username</li>
+<li>~ Debug console has been re-enabled</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Enabled mods can be stuck behind input box</li>
+<li>~ Fixed: Flies and Bees get stuck on Loop border modes</li>
+<li>~ Fixed: Rock Wall and Bless can't be used as Image element</li>
+<li>~ Fixed: Screenshots don't include background color if it was never set</li>
+<li>~ Fixed: Corrupted save error messages don't appear</li>
+<li>~ Fixed: Large save canvases can go off-screen</li>
+<li>~ Fixed: Cheerful Mode setting button has old behavior</li>
+<li>~ Fixed: Cheerful Mode setting 'Refresh Page' button doesn't work</li>
+<li>~ Fixed: runEveryTick() runs even when paused</li>
+<li>~ Fixed: World gen replaces Destroyable border pixels with Wall</li>
+<li>~ Fixed: Random events and modded per-tick events don't happen when stepping ticks</li>
+<li>~ Fixed: Maximum cursor size doesn't fill entire canvas with odd widths</li>
+<li>~ Fixed: Unpaint tool removes fancy textures</li>
+<li>~ Fixed: Category buttons don't glow in Unlock as Discovered mode</li>
+<li>~ Fixed: Coolers and Freezers affect insulative elements</li>
+<li>~ Fixed: Lightning heats insulative elements</li>
+<li>~ Fixed: Dark element button text isn't triggered by buttonColor</li>
+<li>~ Fixed: Force-loaded mod dependencies don't load properly on Steam</li>
+<li>~ Fixed: Theme background doesn't affect entire page on Steam Edition</li>
+<li>[Technical]</li>
+<li>+ New helper functions:</li>
+<li>    + getPixel(x, y) -> Pixel object or null</li>
+<li>    + tryCreate(element, x, y, replace?) -> Pixel object or null</li>
+<li>    + tryDelete(x, y) -> Pixel object or null</li>
+<li>+ 'onCollide' element property, called when the pixel moves into any other (function(pixel1,pixel2))</li>
+<li>+ 'onClicked' element property, called when the pixel is clicked on (function(pixel,element))</li>
+<li>+ 'skip' pixel property, skips simulation of the pixel</li>
+<li>+ 'RL' behavior rule, releases an element in any available space</li>
+<li>+ 'clear' view property for clearing the canvas layers, defaults to true</li>
+<li>+ modIsEnabled(str) function, checks only file names (e.g. "glow.js")</li>
+<li>+ promptChoose() for multiple-choice prompts</li>
+<li>+ promptDir() for direction-based prompts</li>
+<li>~ Pick and Erase tools are no longer hard-coded</li>
+<li>~ Sensor 'sense' property can take multiple comma-separated values</li>
+<li>~ Save version is now sb5</li>
+</ul>
 
 <h2 id="1.11.2">[Version 1.11.2 - May 16, 2025 - Steam Release]</h2>
 <ul>

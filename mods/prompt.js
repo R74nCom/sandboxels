@@ -3,7 +3,7 @@ var variablesMod = "mods/prop and prompt variables.js";
 var promptInputNullishes = ["null","none","","n/a"];
 var eightSpaces = " ".repeat(8);
 
-if(enabledMods.includes(variablesMod)) {
+dependOn("prop and prompt variables.js", function(){
 	commandHelpObject = {
 		"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
 
@@ -1208,8 +1208,4 @@ Make sure to save your command in a file if you want to add this preset again.`
 		desc: "<span style='color:#FF00FF;' onClick=funniPrompt()>Click here or press Shift+1 to open the command prompt.</span>",
 		category:"special",
 	};
-} else {
-	alert(`The ${variablesMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,variablesMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true);

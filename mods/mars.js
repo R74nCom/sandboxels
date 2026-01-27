@@ -113,7 +113,7 @@ elements.mars_ironheart_ore = {
 elements.mars_ironheart = {
     color: ["#e8e8e8", "#bd1102"],
     behavior: [
-        "XX|CR:radiation%3|XX",
+        "XX|XX|XX",
         "XX|XX|XX",
         "XX|XX|XX",
     ],
@@ -187,22 +187,6 @@ elements.depleted_ironheart = {
     density: 1200,
     state: "solid",
     stateHigh: "molten_mars",
-    reactions: {
-        "electric": { elem1: "smint", elem2: "null" },
-    },
-}
-elements.feynmanium = {
-    color: "#8C7656",
-    behavior: [
-        "XX|XX|XX|",
-        "XX|XX|XX|",
-        "M2|M1|M2|",
-    ],
-    category: "mars",
-    density: 1200,
-    state: "solid",
-    stateHigh: "molten_mars",
-    tempHigh: 6000,
     reactions: {
         "electric": { elem1: "smint", elem2: "null" },
     },
@@ -391,8 +375,59 @@ elements.ironheart_core = {
     conduct: 1,
     extraInfo: "wha"
 }
-
-// 2.10.20
+elements.mars_fossil = {
+    color: ["#3d3d3d", "#707070", "#395034"],
+    behavior: behaviors.WALL,
+    category: "mars",
+    state: "solid",
+    tempHigh: 2500,
+    hardness: 0.975,
+    stateHigh: "molten_mars",
+    tempLow: -170,
+    stateLow: "mars_rock",
+    extraInfo: "Fossils! From Mars! Simply just smash them to get some tiny creatures.",
+    hardness: 0.4,
+    breakInto: "mars_debris"
+}
+elements.ironheart_gas = {
+    color: ["#500000ff", "#a7a7a7ff", "#a80000ff"],
+    behavior: behaviors.GAS,
+    category: "mars",
+    state: "gas",
+    tempLow: -100,
+    stateLow: "liquid_ironheart_gas",
+    extraInfo: "gasses"
+}
+elements.liquid_ironheart_gas = {
+    color: ["#500000ff", "#a7a7a7ff", "#a80000ff"],
+    behavior: behaviors.LIQUID,
+    category: "mars",
+    state: "liquid",
+    temp: -150,
+    extraInfo: "liquids"
+}
+elements.phing = {
+    color: "#00c40aff",
+    behavior: [
+        "XX|XX|XX|",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "phings",
+    state: "solid",
+    tempHigh: "800",
+    stateHigh: "dead_phing",
+    breakInto: "dead_phing",
+    extraInfo: "wha"
+}
+elements.dead_phing = {
+    color: "#947e00ff",
+    behavior: behaviors.POWDER,
+    category: "phings",
+    state: "solid",
+    extraInfo: "DEAD! You KILLED THEM!"
+}
+// 2.11.20
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -427,6 +462,12 @@ elements.ironheart_core = {
 // Red Gold is Solid
 // Feynmanium
 // make things have recaitons
+// its here!
+// remove feynmanium
+// ironheart is no longer radioactive
+// fossils!
+
 
 // Creditssss
 // Ghanisma - idea for 2.9.16
+

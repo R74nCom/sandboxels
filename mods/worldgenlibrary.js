@@ -1,3 +1,6 @@
+/*
+Version 1.1.0
+*/
 Array.prototype.getClosest = function(num){
     let arr = [];
     for(value of this){
@@ -129,7 +132,7 @@ elements.generate = {
                 b[b.length] = key;
             }
         }
-        promptInput("There are the following biomes available: \n"+ b.join(", "), (out)=>{
+        promptChoose("", b, (out)=>{
             if(biomes[out] == undefined){
                 alert("Invalid Selection.");
             } else {
@@ -138,7 +141,7 @@ elements.generate = {
                 elements.generate.default = out;
                 selectElement("dirt");
             }
-        }, "Enter biome to generate: ", elements.generate.default);
+        }, "Select a biome to generate: ");
     }
 }
 for(item of enabledMods){

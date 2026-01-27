@@ -76,8 +76,11 @@ runAfterAutogen(function(){
     for (var element in elements) {
         if (elements[element].category !== "tools") {
             elements[element].hidden = true;
-            elements[element].category = "inventory";
+            if (!settings.survival || Object.keys(settings.survival).length < 25) {
+                elements[element].category = "inventory";
+            }
         }
+        if (elements[element].onShiftSelect) delete elements[element].onShiftSelect;
     }
     for (var element in settings.survival) {
         if (!elements[element]) { continue; }
@@ -119,7 +122,7 @@ elements.cloner.ignore = elements.cloner.ignore.concat(["gold","gold_coin","molt
 elements.cloner.desc = "You can only clone one element at a time!"
 
 elements.smash.tool = function(pixel) {
-    if (elements[pixel.element].seed === true) { return }
+    if (elements[pixel.element].seed === true && pixel.element !== "cactus") { return }
     if (elements[pixel.element].breakInto !== undefined || (elements[pixel.element].seed !== undefined && elements[pixel.element].seed !== true)) {
         // times 0.25 if not shiftDown else 1
         if (Math.random() < (elements[pixel.element].hardness || 1) * (shiftDown ? 1 : 0.25)) {

@@ -10,26 +10,30 @@ document.addEventListener("keydown", function(e) { //replace prompt listener
 });
 
 function replaceElementPrompt() {
-	var fromElement = prompt("Enter the element you want to change");
-	// replace spaces with underscores
-	fromElement = fromElement.replace(/ /g, "_");
-	fromElementS = mostSimilarElement(fromElement);
-	if (fromElementS === null || fromElementS === undefined || fromElementS === "") {
-		alert("Element \"" + fromElement + "\" not found! Defaulting to rock.");
-		fromElementS = "rock";
-	};
-
-	var toElement = prompt("Enter what you want to replace \"" + fromElementS + "\" with");
-	// replace spaces with underscores
-	toElement = toElement.replace(/ /g, "_");
-	toElementS = mostSimilarElement(toElement);
-	if (toElementS === null || toElementS === undefined || toElementS === "") {
-		alert("Element \"" + toElement + "\" not found! Defaulting to sand.");
-		toElementS = "sand";
-	};
-	replaceFrom = fromElementS;
-	replaceTo = toElementS;
-	updateReplaceDescriptions();	
+	promptInput("Enter the element you want to change", (fromElement) => {
+		// var fromElement = prompt("Enter the element you want to change");
+		// replace spaces with underscores
+		fromElement = fromElement.replace(/ /g, "_");
+		fromElementS = mostSimilarElement(fromElement);
+		if (fromElementS === null || fromElementS === undefined || fromElementS === "") {
+			alert("Element \"" + fromElement + "\" not found! Defaulting to rock.");
+			fromElementS = "rock";
+		};
+	
+		promptInput("Enter what you want to replace \"" + fromElementS + "\" with", (toElement) => {
+			// var toElement = prompt("Enter what you want to replace \"" + fromElementS + "\" with");
+			// replace spaces with underscores
+			toElement = toElement.replace(/ /g, "_");
+			toElementS = mostSimilarElement(toElement);
+			if (toElementS === null || toElementS === undefined || toElementS === "") {
+				alert("Element \"" + toElement + "\" not found! Defaulting to sand.");
+				toElementS = "sand";
+			};
+			replaceFrom = fromElementS;
+			replaceTo = toElementS;
+			updateReplaceDescriptions();	
+		},"Replace With")
+	},"Replace Element")
 }
 
 function updateReplaceDescriptions() {
@@ -45,7 +49,7 @@ elements.replace = {
 			changePixel(pixel,replaceTo,true);
 		};
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 };
 
@@ -56,7 +60,7 @@ elements.alt_replace = {
 			pixel.element = replaceTo;
 		};
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 	hidden: true,
 };
@@ -69,7 +73,7 @@ elements.alt_alt_replace = {
 			pixel.color = pixelColorPick(pixel);
 		};
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 	hidden: true,
 };

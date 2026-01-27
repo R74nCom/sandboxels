@@ -394,6 +394,7 @@
     "led_r": ["AlInGaP"],
     "led_g": ["InGaN"],
     "led_b": ["InGaN"],
+    "led": ["InGaN"],
     "tesla_coil": ["Cu"],
     "light_bulb": ["SiO<sub>2</sub>","Cu"],
     "shocker": ["Cu"],

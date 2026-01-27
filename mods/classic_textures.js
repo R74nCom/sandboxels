@@ -175,3 +175,22 @@ if (elements.border) {elements.border.tick = function(pixel){
 };}
 if (elements.pipe_wall) {elements.pipe_wall.color = "#808080";}
 if (elements.molten_rad_glass) {delete elements.molten_rad_glass.color;}
+if (elements.zinc) {elements.zinc.color = ["#8d8c8e","#f6f6f1","#c7c7c5","#ccccca","#6b6a6a","#848382"];}
+if (elements.gold) {elements.gold.color = ["#fff0b5","#986a1a","#f0bb62"];}
+if (elements.molten_aluminum) {delete elements.molten_aluminum.color;}
+if (elements.tungsten) {elements.tungsten.color = ["#d4d3cd","#c3c0b8","#bcbaae","#625950"];}
+if (elements.brass) {elements.brass.color = ["#cb9e5d","#865e39"];}
+if (elements.bronze) {elements.bronze.color = "#cd7f32";}
+if (elements.sterling) {elements.sterling.color = ["#858478","#eae8e2","#bfbcb7"];}
+if (elements.solder) {elements.solder.color = "#a1a19d";}
+if (elements.sulfur) {elements.sulfur.color = ["#e9d74c","#89761b","#ddc56b"];}
+if (elements.random) {elements.random.color = ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"];}
+if (elements.pyrite) {elements.pyrite.color = ["#e8e0cb","#cdcaaf","#726a53","#8f835e","#bfb9a0"];}
+if (elements.purple_gold) {elements.purple_gold.color = ["#f58fda","#d06cb5","#f58fda"];}
+if (elements.acid) {elements.acid.color = ["#b5cf91","#a1ff5e","#288f2a"];}
+if (elements.fire) {elements.fire.color = ["#ff6b21","#ffa600","#ff4000"];}
+if (elements.cold_fire) {elements.cold_fire.color = ["#21cbff","#006aff","#00ffff"];}
+
+for (let element in elements) {
+    if (elements[element].buttonColor !== undefined) delete elements[element].buttonColor;
+}

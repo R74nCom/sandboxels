@@ -12,6 +12,6 @@ elements.delete_all_of_element = {
 			}
 		}
 	},
-	category: "tools",
+	category: "edit",
 	excludeRandom: true,
 };

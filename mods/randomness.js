@@ -1,7 +1,7 @@
 var modName = "mods/randomness.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	//i made some stupid things
 
 	//TPT reference
@@ -723,8 +723,4 @@ if(enabledMods.includes(libraryMod)) {
 		}
 	  }
 	});
-} else {
-	if(!enabledMods.includes(libraryMod)) { enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
-	alert(`The "${libraryMod}" mod is required and has been automatically inserted (reload for this to take effect).`)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true);

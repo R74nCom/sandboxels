@@ -1,10 +1,7 @@
 var modName = "mods/structure_test.js";
 var libraryMod = "mods/code_library.js";
 
-if(!enabledMods.includes(libraryMod)) {
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod);
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`);
-} else {
+dependOn("code_library.js", function(){
 	arrayLoaderVoids = ["air", "null", null];
 	buildingOneSegmentDoor = ["concrete","wood_plank","concrete","wood_plank","concrete"];
 	buildingOneSegmentWindows = ["concrete","glass_pane","concrete","glass_pane","concrete"];
@@ -752,4 +749,4 @@ if(!enabledMods.includes(libraryMod)) {
 			worldgentypes.desert.layers.shift();
 		};
 	};
-};
+}, true);

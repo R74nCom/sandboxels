@@ -1,1726 +1,1764 @@
-//This mod was made by Adora the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
-let version = "1.6.2";
-function pixelInRange(pixel, range){
-  let i = 0;
-  while (i < range.length) {
-    if (pixel.x === range[i][0] && pixel.y === range[i][1]) {
-      i++;
-      return true;
-    } else {
-        i++;
-      }
+/*
+*Version 2.2.2
+*/
 
+dependOn("orchidslibrary.js", ()=>{
+    elements.cloner.keyInput = "str:clone", elements.ecloner.keyInput = "str:clone", elements.slow_cloner.keyInput = "str:clone", elements.floating_cloner.keyInput = "str:clone";
+    let xDown = false;
+    elements.copper_sulfate.reactions = {
+        ant: {"elem2": "dead_bug"},
+        fly: {"elem2": "dead_bug"},
+        firefly: {"elem2": "dead_bug"},
+        stink_bug: {"elem2": "dead_bug"},
+        bee: {"elem2": "dead_bug"},
+        termite: {"elem2": "dead_bug"},
+        spider: {"elem2": "dead_bug"},
+        plant: {"elem2": "dead_plant"},
+        grass: {"elem2": "dead_plant"},
+        algae: {"elem2": null},
+        kelp: {"elem2": "water"},
+        coral: {"elem2": "water"},
+        mushroom_cap: {"elem2": null},
+        mushroom_stalk: {"elem2": null},
+        mushroom_gill: {"elem2": null},
+        mushroom_spore: {"elem2": null},
+        zinc: {"stain2": "#2A1210"},
+        fire: {"elem1": null,"elem2": "poison_gas","chance": 0.1},
+        sugar: {"elem1": "oxidized_copper","elem2": null,"color1": ["#CB3D3D","#A6292B","#6E1B1B"]},
+        magnesium: {elem1: "copper", elem2: "epsom_salt"},
+        wood: {stain2: "#043023"},
     }
-    return false;
-
-}
-
-function customExplosion(pixel1, pixel2, radius, list) {
-  let x = pixel1.x;
-  let y = pixel1.y;
-  deletePixel(x, y);
-  deletePixel(pixel2.x, pixel2.y);
-  doFrame();
-  focusGame();
-  explodeAt(x, y, radius, list);
-};
-function reactPixels(pixel1,pixel2) {
-    var r = elements[pixel1.element].reactions[pixel2.element];
-    if (r.setting && settings[r.setting]===0) {
-        return false;
-    }
-    // r has the attribute "y" which is a range between two y values
-    // r.y example: [10,30]
-    // return false if y is defined and pixel1's y is not in the range
-    if (r.tempMin !== undefined && pixel1.temp < r.tempMin) {
-        return false;
-    }
-    if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
-        return false;
-    }
-    if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
-        return false;
-    }
-    if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
-        return false;
-    }
-    if (r.charged && !pixel1.charge) {
-        return false;
-    }
-    if (r.chance !== undefined && Math.random() > r.chance) {
-        return false;
-    }
-    if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
-        return false;
-    }
-    if (r.explosion !== undefined){
-      if (r.radius !== undefined){
-        let radius = r.radius;
-        let list = r.explosion.split(",");
-        customExplosion(pixel1, pixel2, radius, list);
-      }
-    }
-    if (r.elem1 !== undefined) {
-        // if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
-        if (Array.isArray(r.elem1)) {
-            var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
-        } else { var elem1 = r.elem1; }
-
-        if (elem1 == null) {
-            deletePixel(pixel1.x,pixel1.y);
-        }
-        else {
-            changePixel(pixel1,elem1);
-        }
-    }
-    if (r.charge1) { pixel1.charge = r.charge1; }
-    if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
-    if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
-        pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
-    }
-    if (r.attr1) { // add each attribute to pixel1
-        for (var key in r.attr1) {
-            pixel1[key] = r.attr1[key];
-        }
-    }
-    if (r.elem2 !== undefined) {
-        // if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
-        if (Array.isArray(r.elem2)) {
-            var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
-        } else { var elem2 = r.elem2; }
-
-        if (elem2 == null) {
-            deletePixel(pixel2.x,pixel2.y);
-        }
-        else {
-            changePixel(pixel2,elem2);
-        }
-    }
-    if (r.charge2) { pixel2.charge = r.charge2; }
-    if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
-    if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
-        pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
-    }
-    if (r.attr2) { // add each attribute to pixel2
-        for (var key in r.attr2) {
-            pixel2[key] = r.attr2[key];
-        }
-    }
-    if (r.func) { r.func(pixel1,pixel2); }
-    return r.elem1!==undefined || r.elem2!==undefined;
-}
-function customExplosion(pixel1, pixel2, radius, list) {
-  let x = pixel1.x;
-  let y = pixel1.y;
-  deletePixel(x, y);
-  deletePixel(pixel2.x, pixel2.y);
-  explodeAt(x, y, radius, list);
-};
-let obj = {};
-obj.items = "";
-elements.sodiumhydroxide = {
-    color: "#c9c5b1",
-    behavior: behaviors.LIQUID,
-    reactions: {
-        "acid": { "elem2":"water", },
-        "acid": { "elem2":"smoke", },
-        "acid": { "elem2":"fire", },
-        "acid": { "elem2":"fire", },
-        "acid": { "elem2":"fire", },
-        "acid_gas": { "elem2":"water", },
-        "acid_gas": { "elem2":"smoke", },
-        "acid_gas": { "elem2":"fire", },
-        "acid_gas": { "elem2":"fire", },
-        "acid_gas": { "elem2":"fire", },
-        "vinegar": { "elem1": ["sodium_acetate", "water"], },
-        "aqua_regia": { "elem1": null, "elem2": ["fire", "fire", "hydrogen"], },
-        "acidic_water": { "elem1": null, "elem2": ["water", "pop"], },
-        "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "hydrogen"], },
-        "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop"], },
-    },
-    viscosity: 0.56,
-    //tempHigh: 64.7,
-    fireColor: "#fba600",
-    category: "liquids",
-    state: "liquid",
-    density: 1.525,
-    stain: -0.25,
-    name: "SodiumHydroxide",
-    stateHigh: "sodiumhydroxidecrystals",
-    tempHigh: "1388",
-}
-elements.sodiumhydroxidecrystals = {
-    color: "#c9c5b1",
-    behavior: behaviors.POWDER,
-    reactions: {
-        "acid": { "elem2":"smoke", },
-        "acid": { "elem2":"fire", },
-        "acid": { "elem2":"fire", },
-        "acid": { "elem2":"fire", },
-        "acid_gas": { "elem2":"smoke", },
-        "acid_gas": { "elem2":"pop", },
-        "acid_gas": { "elem2":"fire", },
-        "acid_gas": { "elem2":"fire", },
-        "water": { "elem1": null, "elem2": "sodiumhydroxide", },
-        "vinegar": { "elem1": null, "elem2": "sodium_acetate", },
-        "aqua_regia": { "elem1": null, "elem2": ["fire", "fire", "hydrogen"], },
-        "acidic_water": { "elem1": null, "elem2": ["water", "pop"], },
-        "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "hydrogen"], },
-        "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop"], },
-    },
-    //tempHigh: 64.7,
-    fireColor: "#fba600",
-    category: "powders",
-    state: "solid",
-    density: 2130,
-    name: "SodiumHydroxideCrystals",
-}
-
-elements.sodium.reactions = {
-  "chlorine": {
-      "elem1": "salt",
-      "elem2": "pop"
-  },
-  "vinegar": {
-      "elem1": "sodium_acetate",
-      "elem2": [
-          null,
-          null,
-          null,
-          "hydrogen"
-      ],
-      "attr1": {
-          "foam": 15
-      }
-  },
-  "water": {
-      "elem1": [
-          "sodiumhydroxide"
-      ],
-      "chance": 1,
-      "temp2": 299.6
-  },
-  "salt_water": {
-      "elem1": [
-          "sodiumhydroxide",
-          "salt"
-      ],
-      "chance": 1,
-      "temp2": 299.6
-  },
-  "sugar_water": {
-      "elem1": [
-          "sodiumhydroxide",
-          "sugar"
-      ],
-      "chance": 1,
-      "temp2": 299.6
-  },
-  "acid": {
-    "elem1": "explosion",
-  },
-  "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "fire", "fire", "hydrogen"], },
-  "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
-  "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "pop", "hydrogen"], },
-  "chloroauric_acid": { "elem1": "gold", "elem2": ["fire", "fire", "pop"], },
-};
-elements.magnesium = {
-  color: "#e6e6e6",
-  reactions: {
-    "acid": { "elem1": "hydrogen", "chance": 0.02, },
-    "aqua_regia": { "elem1": "hydrogen", "chance": 0.2, "elem2": "pop", },
-
-  },
-  behavior: behaviors.POWDER,
-  fireColor: "#ffffff",
-  category: "powders",
-  state: "solid",
-  density: 1740,
-  burnTime: 500,
-  name: "Magnesium",
-  stateHigh: "molten_magnesium",
-  tempHigh: "650",
-  burn: 50,
-  density: 1738,
-}
-elements.molten_magnesium = {
-  color: ["#fab298", "#f78157", "#ff9169", "#ff9e7a"],
-  behavior: behaviors.MOLTEN,
-  fireColor: "#ffffff",
-  category: "states",
-  state: "liquid",
-  density: 1740,
-  name: "MoltenMagnesium",
-  temp: 650,
-  stateLow: "magnesium",
-  tempLow: 600,
-  density: 1460,
-}
-elements.acidic_water = {
-  burn: 0,
-  behavior: behaviors.LIQUID,
-  reactions: {
-    "quicklime": {"elem2": ["hydrogen", "water", "water", "water", "water"], "elem1": null, },
-    "slaked_lime": {"elem2": ["hydrogen", "water", "water", "water", "water"], "elem1": null, },
-    "calcium": {"elem2": ["hydrogen", "fire", "water", "water", "water"], "elem1": null, },
-    "sodium": {"elem2": ["hydrogen", "fire", "fire", "pop", "fire"], "elem1": null, },
-    "sodiumhydroxide": {"elem2": ["hydrogen", "fire", "pop", "pop", "water"], "elem1": null, },
-    "sodiumhydroxidecrystals": {"elem2": ["hydrogen", "pop", "water", "water"], "elem1": null, },
-  },
-    category: "liquids",
-    state: "liquid",
-    density: 1000,
-    name: "AcidWater",
-  density: 1100,
-}
-elements.acid.ignore.push("magnesium");
-elements.acid.ignore.push("sodiumhydroxide");
-elements.acid.ignore.push("sodiumhydroxidecrystals");
-elements.acid.ignore.push("rubidiumhydroxide");
-elements.acid.ignore.push("rubidiumhydroxidecrystals");
-elements.acid.ignore.push("rubidiumsalt");
-elements.acid.ignore.push("rubidium");
-elements.acid.ignore.push("moltenrubidium");
-elements.acid.ignore.push("potassium");
-elements.acid.ignore.push("MoltenPotassium");
-elements.acid.ignore.push("potassiumhydroxide");
-elements.acid.ignore.push("potassiumhydroxidecrystals");
-elements.acid.ignore.push("water");
-elements.acid.ignore.push("acidic_water");
-elements.acid.ignore.push("gold");
-elements.acid.ignore.push("chloroauric_acid");
-elements.acid.ignore.push("nitric_acid");
-elements.acid.ignore.push("aqua_regia");
-elements.cwall = {
-      "color": "rgb(128,128,128)",
-      "name": "Conductive Wall",
-      "behavior": [["XX", "XX", "XX"], ["XX", "XX", "XX"], ["XX", "XX", "XX"]],
-      "category": "solids",
-      "insulate": false,
-      "hardness": 1,
-      "noMix": true,
-      "colorObject": {
-          "r": 128,
-          "g": 128,
-          "b": 128
-      },
-  }
-elements.acid.reactions = {
-    "ash": {
-        "elem1": "neutral_acid",
-        "elem2": null
-    },
-    "limestone": {
-        "elem1": "neutral_acid",
-        "elem2": null
-    },
-    "quicklime": {
-        "elem1": "neutral_acid",
-        "elem2": null
-    },
-    "slaked_lime": {
-        "elem1": "neutral_acid",
-        "elem2": null
-    },
-    "borax": {
-        "elem1": "neutral_acid",
-        "elem2": null
-    },
-    "ammonia": {
-        "elem1": "neutral_acid",
-        "elem2": null
-    },
-    "bleach": {
-        "elem1": "neutral_acid",
-        "elem2": null
-    },
-    "water": {
-        "elem1": "acidic_water",
-    },
-    "salt_water": {
-        "elem1": null,
-        "elem2": "water"
-    },
-    "sugar_water": {
-        "elem1": null,
-        "elem2": "water"
-    },
-    "charcoal": {
-        "elem1": null,
-        "elem2": "carbon_dioxide"
-    },
-    "rock": {
-        "elem1": null,
-        "elem2": "sand",
-        "chance": 0.05
-    },
-    "baking_soda": {
-        "elem1": "salt_water",
-        "elem2": [
-            "carbon_dioxide",
-            "foam"
-        ]
-    },
-    "zinc": { "elem1": null, "elem2": "zinc_chloride", },
-    "iron": { "elem1": null, "elem2": "iron_chloride", },
-    "aluminum": { "elem1": null, "elem2": "aluminum_chloride", },
-}
-elements.chloroauric_acid = {
-  behavior: behaviors.POWDER,
-  category: "powders",
-  state: "solid",
-  name: "ChloroauricAcid",
-  color: "#ba7b00",
-  tempHigh: 60,
-  stateHigh: "liquid_chloroauric_acid",
-  density: 4400,
-}
-elements.liquid_chloroauric_acid = {
-  behavior: behaviors.LIQUID,
-  category: "states",
-  state: "liquid",
-  name: "LiquidChloroauricAcid",
-  color: "#ba7b00",
-  reactions: {
-    "sodiumhydroxide": { "elem2": "gold", "elem1": ["water", "pop", "pop", "fire", "fire"], },
-    "sodiumhydroxidecrystals": { "elem2": "gold", "elem1": ["water", "pop", "pop", "fire", "fire"], },
-    "sodium": { "elem2": "gold", "elem1": ["fire", "pop", "pop", "fire", "fire"], },
-    "calcium": { "elem2": "gold", "elem1": ["water", "pop", "water", "fire"], },
-  },
-  tempLow: 59,
-  stateLow: "chloroauric_acid",
-  tempHigh: 115,
-  stateHigh: "gold",
-  density: 2500,
-}
-elements.nitrogen_oxide = {
-  behavior: behaviors.GAS,
-  category: "gases",
-  state: "gas",
-  name: "NitrogenOxide",
-  color: "#961400",
-  reactions: {
-    "water": { "elem1": null, "elem2": "nitric_acid", },
-  },
-  density: 2.62,
-}
-elements.nitric_acid = {
-  behavior: behaviors.LIQUID,
-  category: "liquids",
-  state: "liquid",
-  name: "NitricAcid",
-  color: "#ffffff",
-  reactions: { "acid": { "elem1": null, "elem2": "aqua_regia",}, },
-  density: 1.51,
-}
-elements.aqua_regia = {
-      "behavior": [
-          [
-              "XX",
-              "DB%5",
-              "XX"
-          ],
-          [
-              "DB%5 AND M2",
-              "XX",
-              "DB%5 AND M2"
-          ],
-          [
-              "DB%5 AND M2",
-              "DB%10 AND M1",
-              "DB%5 AND M2"
-          ]
-      ],
-      "ignore": [
-          "glass",
-          "rad_glass",
-          "glass_shard",
-          "rad_shard",
-          "stained_glass",
-          "baked_clay",
-          "acid_gas",
-          "neutral_acid",
-          "acid_cloud",
-          "water",
-          "salt_water",
-          "sugar_water",
-          "dirty_water",
-          "copper",
-          "gold",
-          "porcelain",
-          "plastic",
-          "bead",
-          "microplastic",
-          "molten_plastic",
-          "pool_water",
-          "chlorine",
-          "hydrogen",
-          "magnesium",
-          "sodiumhydroxide",
-          "sodiumhydroxidecrystals",
-          "water",
-          "acidic_water",
-          "gold",
-          "chloroauric_acid",
-          "acid_ice",
-          "acid",
-          "nitric_acid",
-          "NaK",
-      ],
-      "reactions": {
-          "ash": {
-              "elem1": "neutral_acid",
-              "elem2": null
-          },
-          "limestone": {
-              "elem1": "neutral_acid",
-              "elem2": null
-          },
-          "quicklime": {
-              "elem1": "neutral_acid",
-              "elem2": null
-          },
-          "slaked_lime": {
-              "elem1": "neutral_acid",
-              "elem2": null
-          },
-          "borax": {
-              "elem1": "neutral_acid",
-              "elem2": null
-          },
-          "ammonia": {
-              "elem1": "neutral_acid",
-              "elem2": null
-          },
-          "bleach": {
-              "elem1": "neutral_acid",
-              "elem2": null
-          },
-          "water": {
-              "elem1": "acidic_water"
-          },
-          "salt_water": {
-              "elem1": null,
-              "elem2": "water"
-          },
-          "sugar_water": {
-              "elem1": null,
-              "elem2": "water"
-          },
-          "charcoal": {
-              "elem1": null,
-              "elem2": "carbon_dioxide"
-          },
-          "rock": {
-              "elem1": null,
-              "elem2": "sand",
-              "chance": 0.05
-          },
-          "baking_soda": {
-              "elem1": "salt_water",
-              "elem2": [
-                  "carbon_dioxide",
-                  "foam"
-              ]
-          },
-          "gold": {
-              "elem1": null, "elem2": "chloroauric_acid", "temp2": 20,
-          },
-          "gold_coin": {
-              "elem1": null, "elem2": "chloroauric_acid", "temp2": 20,
-          },
-      },
-      "category": "liquids",
-      "state": "liquid",
-      "density": 1049,
-      "stain": -0.1,
-      name: "AquaRegia",
-      "alias": "HCl + HN03",
-      "movable": true,
-      "color": "#ffdd9b",
-  density: 1.3,
-  }
-elements.potassium = {
-  behavior: behaviors.POWDER,
-  color: ["#545454", "#737373", "#7d7d7d", "#8f8f8f"],
-  "category": "powders",
-  "state": "powder",
-  "alias": "K",
-  tempHigh: 63.65,
-  stateHigh: "MoltenPotassium",
-  reactions: {
-    "water": { "elem1": "potassiumhydroxide", "elem2": ["fire", "fire", "pop", "water"], },
-    "acid": { "elem1": null, "elem2": ["water", "smoke", "fire"], },
-    "acid": { "elem2":"fire", },
-    "acid": { "elem2":"fire", },
-    "acid_gas": { "elem1": null, "elem2": ["water", "smoke", "fire"], },
-    "acid_gas": { "elem2":"fire", },
-    "acid_gas": { "elem2":"fire", },
-    "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "pop", "fire", "fire", "hydrogen"], },
-    "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
-    "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "fire", "pop", "hydrogen"], },
-    "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
-    "liquid_chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
-  },
-  density: 862,
-}
-elements.MoltenPotassium = {
-  behavior: behaviors.LIQUID,
-  color: ["#9c9c9c", "#8c8b8b", "#7d7d7d", "#999797"],
-  state: "liquid",
-  name: "MoltenPotassium",
-  viscosity: 0.55,
-  reactions: {
-    water: { explosion: "fire,potassiumhydroxide,potassiumhydroxide,potassiumhydroxide,hydrogen,hydrogen,pop", radius: 3 },
-    molten_sodium: { elem1: null, elem2: "NaK" },
-    acid: { explosion: "fire,fire,hydrogen,pop,pop,hydrogen", radius: 5 },
-    chloroauric_acid: { elem1: "gold", explosion: "fire,fire,gold_coin,hydrogen,hydrogen,pop", radius: 6},
-    liquid_chloroauric_acid: { elem1: "gold", explosion: "fire,fire,gold_coin,hydrogen,hydrogen,pop", radius: 6
-    },
-    aqua_regia: { explosion: "fire,fire,fire,fire,hydrogen,pop,hydrogen,pop", radius: 7},
-    nitric_acid: { explosion: "fire,fire,fire,hydrogen,pop", radius: 6},
-    acidic_water: { explosion: "fire,potassiumhydroxide,hydrogen,hydrogen", radius: 4 },
-  },
-  temp: 70,
-  tempLow: 63.65,
-  stateLow: "potassium",
-  density: 862,
-}
-elements.potassiumhydroxide = {
-    color: "#c9c5b1",
-    behavior: behaviors.LIQUID,
-    reactions: {
-        "acid": { "elem1": null, "elem2": ["water", "smoke", "fire"], },
-        "acid": { "elem2":"fire", },
-        "acid": { "elem2":"fire", },
-        "acid_gas": { "elem1": null, "elem2": ["water", "smoke", "fire"], },
-        "acid_gas": { "elem2":"fire", },
-        "acid_gas": { "elem2":"fire", },
-        "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "pop", "fire", "fire", "hydrogen"], },
-        "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
-        "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "fire", "pop", "hydrogen"], },
-        "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "pop"], }
-    },
-    viscosity: 0.56,
-    //tempHigh: 64.7,
-    fireColor: "#fba600",
-    category: "liquids",
-    state: "liquid",
-    density: 2.12,
-    stain: -0.25,
-    name: "PotassiumHydroxide",
-    stateHigh: "potassiumhydroxidecrystals",
-    tempHigh: "1388",
-}
-elements.potassiumhydroxidecrystals = {
-    color: "#c9c5b1",
-    behavior: behaviors.POWDER,
-    reactions: {
-        "acid": { "elem2":"smoke", },
-        "acid": { "elem2":"fire", },
-        "acid": { "elem2":"fire", },
-        "acid": { "elem2":"fire", },
-        "acid_gas": { "elem2":"smoke", },
-        "acid_gas": { "elem2":"pop", },
-        "acid_gas": { "elem2":"fire", },
-        "acid_gas": { "elem2":"fire", },
-        "water": { "elem1": null, "elem2": "potassiumhydroxide", },
-        "vinegar": { "elem1": null, "elem2": "sodium_acetate", },
-        "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "pop", "fire", "fire", "hydrogen"], },
-        "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
-        "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "fire", "pop", "hydrogen"], },
-        "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
-    },
-    //tempHigh: 64.7,
-    fireColor: "#fba600",
-    category: "powders",
-    state: "solid",
-    density: 2040,
-    name: "PotassiumHydroxideCrystals",
-}
-let filterItems;
-let direction;
-
-elements.iron_chloride = {
-  color: ["#010014", "#a2ff94"],
-  reactions: {
-    "dirty_water": { "elem1": "water", },
-    "aluminum": { "elem1": "aluminum_chloride", "elem2": "iron" },
-  },
-  behavior: behaviors.POWDER,
-  category: "powders",
-  state: "solid",
-  density: 1740,
-  burnTime: 500,
-  name: "IronChloride",
-  density: 2900,
-}
-elements.aluminum_chloride = {
-  color: ["#faff61", "#f7f7e4", "#ffffb5"],
-  reactions: {
-    "dirty_water": { "elem1": "water", },
-  },
-  behavior: behaviors.POWDER,
-  category: "powders",
-  state: "solid",
-  density: 1740,
-  burnTime: 500,
-  name: "AluminumChloride",
-  density: 2440,
-}
-
-elements.zinc_chloride = {
-  color: ["#faff61", "#f7f7e4", "#ffffb5"],
-  reactions: {
-    "dirty_water": { "elem1": "water", },
-    "water": { "elem1": null, "chance": 0.2 },
-  },
-  behavior: behaviors.POWDER,
-  category: "powders",
-  state: "solid",
-  density: 1740,
-  burnTime: 500,
-  name: "ZincChloride",
-  density: 2910,
-}
-elements.acid.ignore.push("zinc");
-elements.acid.ignore.push("iron");
-elements.acid.ignore.push("aluminum");
-elements.acid.ignore.push("zinc_chloride");
-elements.acid.ignore.push("iron_chloride");
-elements.acid.ignore.push("aluminum_chloride");
-elements.kilonova = {
-  name: "Kilonova",
-  category: "energy",
-  maxSize: 1,
-  temp: 100000000,
-}
-elements.supernova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium AND CH:NeutronStar", "XX" ], ["XX", "XX", "XX"] ]
-elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
-elements.NeutronStar = {
-  behavior: [["XX", "XX", "XX"], ["CR:light", "XX", "CR:light"], ["XX", "XX", "XX"]],
-  name: "NeutronStar",
-  category: "energy",
-  maxSize: 1,
-  color: "#ffffff",
-  temp: 1000000000,
-  tempLow: -100,
-  insulate: true,
-  noMix: true,
-  movable: false,
-  stateLow: "kilonova",
-  reactions: {
-    "NeutronStar": { "elem1": "kilonova", "temp1": 100000000, },
-  },
-  density: 10**17,
-  hardness: 1,
-}
-elements.acid.ignore.push("pipe");
-elements.acid.ignore.push("gold");
-elements.acid.ignore.push("gold_coin");
-if(enabledMods.includes("mods/nousersthings.js")) {
-  elements.acid.ignore.push("filter");
-}
-elements.acid.ignore.push("NaK");
-elements.NaK = {
-  behavior: behaviors.LIQUID,
-  category: "liquids",
-  state: "liquid",
-  alias: "Sodium-Potassium alloy",
-  color: "#848484",
-  viscosity: 9.4,
-  reactions: {
-    water: {
-      explosion: "fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide,sodiumhydroxide,potassiumhydroxide,sodiumhydroxide,potassiumhydroxide", radius: 5,},
-    acid: {
-      explosion: "fire,fire,pop,hydrogen,salt,potassium_salt,hydrogen,fire", radius: 6,},
-    acidic_water: {
-      explosion: "fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide,salt,potassium_salt", radius: 5,},
-    nitric_acid: {
-      explosion: "fire,fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide", radius: 6,},
-    aqua_regia: {
-      explosion: "fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide,salt,potassium_salt,fire,hydrogen,pop", radius: 7,},
-  },
-  density: 868,
-};
-elements.rubidium = {
-  behavior: behaviors.POWDER,
-  category: "powders",
-  name: "Rubidium",
-  color: ["#9e9e9e", "#ababab", "#bababa", "#adadad"],
-  tempHigh: 39.5,
-  stateHigh: "moltenrubidium",
-  reactions: {
-    chlorine: { elem1: "rubidiumsalt" },
-    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
-    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
-    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
-    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    water: { explosion: "fire,rubidiumhydroxide", radius: 6 },
-    },
-  density: 1532,
-  fireColor: "#d91e1e",
-  tick: function(pixel) {
-    pixel.burning = true;
-  },
-  state: "solid",
-}
-elements.moltenrubidium = {
-  density: 1532,
-  behavior: behaviors.LIQUID,
-  viscosity: 8,
-  name: "MoltenRubidium",
-  category: "liquids",
-  color: ["#adacac", "#adadad", "#c2c2c2", "#b8b8b8"],
-  reactions: {
-    chlorine: { elem1: "rubidiumsalt" },
-    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
-    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
-    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
-    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    water: { explosion: "fire,rubidiumhydroxide", radius: 6 },
-
-    },
-  fireColor: "#d91e1e",
-  tick: function(pixel) {
-    pixel.burning = true;
-  },
-  tempLow: 38,
-  stateLow: "rubidium",
-}
-
-elements.rubidiumsalt = {
-  state: "solid",
-  name: "RubidiumSalt",
-  alias: "Rubidium Chloride or RbCl",
-  color: ["#e6e6e6", "#f5f5f5", "#fafafa", "#f0f0f0"],
-  behavior: behaviors.POWDER,
-  category: "powders",
-  density: 2800,
-}
-
-elements.irradiate = {
-      "color": "rgb(25,150,25)",
-      "temp": 2,
-      "category": "tools",
-      "canPlace": false,
-      "desc": "Use on irradiatable pixels to turn them radioactive.",
-      "colorObject": {
-          "r": 25,
-          "g": 150,
-          "b": 25
-      },
-  tool: function(pixel) {
-        if (pixel.element == "lead") {
-            changePixel(pixel, "uranium");
-        } else if(pixel.element == "glass"){
-          changePixel(pixel, "rad_glass");
-        } else if (pixel.element == "steam"){
-          changePixel(pixel, "rad_steam");
-        }  else if (pixel.element == "cloud" || pixel.element == "rain_cloud"){
-          changePixel(pixel, "rad_cloud");
-        } else if (pixel.element == "water"){
-          changePixel(pixel, "fallout");
-        }
-    },
-  }
-elements.deradiate = {
-  name: "DE-radiate",
-    "color": "rgb(255,255,255)",
-    "temp": 2,
-    "category": "tools",
-    "canPlace": false,
-    "desc": "Use on irradiatable pixels to turn them radioactive.",
-    "colorObject": {
-        "r": 25,
-        "g": 150,
-        "b": 25
-    },
-tool: function(pixel) {
-      if (pixel.element == "uranium") {
-          changePixel(pixel, "lead");
-      } else if (pixel.element == "rad_glass") {
-        changePixel(pixel, "glass");
-      } else if (pixel.element == "rad_steam"){
-        changePixel(pixel, "steam");
-      } else if (pixel.element == "rad_cloud"){
-        changePixel(pixel, "cloud");
-      } else if (pixel.element == "fallout"){
-        changePixel(pixel, "water");
-      } else if (pixel.element == "radiation"){
-        deletePixel(pixel.x, pixel.y);
-      }
-    },
-};
-elements.rubidiumhydroxide = {
-  burn: 50,
-    color: "#c9c5b1",
-    behavior: behaviors.LIQUID,
-  reactions: {
-    chlorine: { elem1: "rubidiumsalt" },
-    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
-    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
-    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
-    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    },
-    viscosity: 0.56,
-    //tempHigh: 64.7,
-    fireColor: "#d91e1e",
-    category: "liquids",
-    state: "liquid",
-    density: 2.12,
-    name: "RubidiumHydroxide",
-    stateHigh: "rubidiumhydroxidecrystals",
-    tempHigh: "1388",
-}
-elements.rubidiumhydroxidecrystals = {
-  burn: 50,
-  color: "#c9c5b1",
-  behavior: behaviors.POWDER,
-  reactions: {
-    water: { elem1: null, elem2: "rubidiumhydroxide", },
-    chlorine: { elem1: "rubidiumsalt" },
-    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
-    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
-    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
-    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    },
-  fireColor: "#d91e1e",
-  category: "powders",
-  state: "solid",
-  density: 2.12,
-  name: "RubidiumHydroxideCrystals",
-}
-elements.esuperheater = {
-  conduct: 1,
-  color: '#dd1111',
-  colorObject: {
-        "r": 221,
-        "g": 17,
-        "b": 17
-    },
-  behavior: behaviors.WALL,
-  behaviorOn: [
-        [
-            "XX",
-            "HT:10",
-            "XX"
-        ],
-        [
-            "HT:10",
-            "XX",
-            "HT:10"
-        ],
-        [
-            "XX",
-            "HT:10",
-            "XX"
-        ]
-    ],
-  category: "machines",
-  name: "e-superheater",
-},
-  elements.efreezer = {
-    conduct: 1,
-    color: '#ffffff',
-    colorObject: {
-          "r": 255,
-          "g": 255,
-          "b": 255
-      },
-    behavior: behaviors.WALL,
-    behaviorOn: [
-          [
-              "XX",
-              "CO:10",
-              "XX"
-          ],
-          [
-              "CO:10",
-              "XX",
-              "CO:10"
-          ],
-          [
-              "XX",
-              "CO:10",
-              "XX"
-          ]
-      ],
-    category: "machines",
-    name: "e-freezer",
-}
-let num = 0;
-elements.morechemmixer = {
-    name: "MoreChemMixer",
-    behavior: behaviors.WALL,
-    category: "machines",
-    noMix: true,
-  onSelect: function(pixel) {
-    let item = prompt("enter range for mixing.");
-    if(/^\d+$/.test(item)){
-      num = parseInt(item);
-    } else {
-      alert("that is not an integer.");
-    }
-  },
-    tick: function(pixel) {
-      if(pixel.start == pixelTicks) {
-        pixel.range = num;
-      }
-      let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      mix(range);
-    }
-  }
-let num1 = 0;
-elements.morechemsmasher = {
-    name: "MoreChemSmasher",
-    behavior: behaviors.WALL,
-    category: "machines",
-    noMix: true,
-  onSelect: function(pixel) {
-    let item = prompt("enter range for smashing.");
-    if(/^\d+$/.test(item)){
-      num1 = parseInt(item);
-    } else {
-      alert("that is not an integer.");
-    }
-  },
-    tick: function(pixel) {
-      if(pixel.start == pixelTicks) {
-        pixel.range = num1;
-      }
-      let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      smash(range);
-    }
-  }
-let num2 = 0;
-let exclude = [];
-elements.specialsmasher = {
-    name: "SpecialSmasher",
-    behavior: behaviors.WALL,
-    category: "machines",
-    noMix: true,
-  onSelect: function(pixel) {
-    let item = prompt("enter range for smashing.");
-    exclude = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
-    if(/^\d+$/.test(item)){
-      num2 = parseInt(item);
-    } else {
-      alert("that is not an integer.");
-    }
-  },
-    tick: function(pixel) {
-      if(pixel.start + 1 == pixelTicks) {
-        pixel.range = num2;
-        pixel.exclude = exclude;
-      }
-      let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      smash(range, pixel.exclude);
-    }
-  }
-let num3 = 0;
-let exclude1 = [];
-elements.specialmixer = {
-    name: "SpecialMixer",
-    behavior: behaviors.WALL,
-    category: "machines",
-    noMix: true,
-  onSelect: function(pixel) {
-    let item = prompt("enter range for mixing.");
-    exclude1 = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
-    if(/^\d+$/.test(item)){
-      num3 = parseInt(item);
-    } else {
-      alert("that is not an integer.");
-    }
-  },
-    tick: function(pixel) {
-      if(pixel.start + 1 == pixelTicks) {
-        pixel.range = num3;
-        pixel.exclude = exclude1;
-      }
-      let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      mix(range, pixel.exclude);
-    }
-  }
-
-let num4 = 0;
-let exclude2 = [];
-let property1 = "";
-let value2 = "";
-
-let item = "";
-elements.improvedsensor = {
-  behavior: behaviors.WALL,
-      color: "#bebfa3",
-      onSelect: function(){
-        item = prompt("what item should it detect?");
-      },
-      tick: function(pixel) {
-        if(pixel.start == pixelTicks){
-          pixel.clone = item;
-        }
-
-          for (var i = 0; i < adjacentCoords.length; i++) {
-              var coords = adjacentCoords[i];
-              var x = pixel.x + coords[0];
-              var y = pixel.y + coords[1];
-              if (!isEmpty(x,y,true)) {
-                  var sensed = pixelMap[x][y];
-                  if (sensed.element == pixel.clone) {
-                      pixel.charge = 5;
-                      break;
-                  }
-              }
-          }
-          doDefaults(pixel);
-      },
-      conduct: 1,
-      movable: false,
-      category:"machines",
-      darkText: true,
-  hardness: 1,
-
-  };
-
-elements.eincinerator = {
-  conduct: 1,
-  color: 'rgb(255, 70, 0)',
-  colorObject: {
-        "r": 240,
-        "g": 10,
-        "b": 0
-    },
-  behavior: behaviors.WALL,
-  behaviorOn: [
-        [
-            "XX",
-            "HT:100000",
-            "XX"
-        ],
-        [
-            "HT:100000",
-            "XX",
-            "HT:100000"
-        ],
-        [
-            "XX",
-            "HT:100000",
-            "XX"
-        ]
-    ],
-  category: "machines",
-  name: "E-Incinerator",
-  noMix: true,
-}
-elements.incinerator = {
-
-  behavior: [
-        [
-            "XX",
-            "HT:100000",
-            "XX"
-        ],
-        [
-            "HT:100000",
-            "XX",
-            "HT:100000"
-        ],
-        [
-            "XX",
-            "HT:100000",
-            "XX"
-        ]
-    ],
-  name: "Incinerator",
-  category: "machines",
-  colorObject: {
-      "r": 255,
-      "g": 50,
-      "b": 0
-  },
-  color: 'rgb(255, 50, 0)',
-  noMix: true,
-}
-function conditionTrue(condition, pixel){
-  let p = pixel;
-  let string = "";
-  condition = condition.split("!OR").join("||").split("&AND").join("&&").split("\"").join("")
-
-  condition = eval(condition);
-  return condition;
-}
-let ifCondition = "";
-let currentProp = "";
-let currentPropValue = "";
-let Func = "";
-elements.propmachine = {
-  name: "PropMachine",
-  behavior: behaviors.WALL,
-  category: "machines",
-  noMix: true,
-onSelect: function(pixel) {
-
-  let item = prompt("enter range for prop changing.");
-  if(/^\d+$/.test(item)){
-    num4 = parseInt(item);
-  } else {
-    alert("that is not an integer.");
-  }
-  exclude2 = prompt("Enter elements to exclude, seperate them with commas. You can also enter !IF if you wish to enter conditions for it to change the property and add the exclude elements.").replace(/\s/g, "");
-  if(exclude2.includes("!IF")){
-    exclude2.split("!IF").join("");
-    ifCondition = prompt("Enter the condition for the property to change. A list of variables can be seen at the bottom of the page. you cannot use \"\" but you can use `` and ''.");
-  } else { ifCondition = '1 == 1'; }
-  exclude2.split(",");
-  if(exclude2.constructor == [].constructor){
-    exclude2.push("propmachine");
-  } else {
-    exclude2 += "propmachine";
-  }
-  var answer1 = prompt("Warning - This tool may break the simulator if used incorrectly.\n\nEnter a pixel attribute to modify or enter !FUNC to execute a function on pixels.",(currentProp||undefined));
-  if(answer1.includes("!FUNC")){
-    alert("enter the function you wish to execute in the function textbox at the bottom of the page. if you have not before you get this alert, nothing will happen. make sure the function has \"function(){\" before it and \"}\" after it. an example is: \"function(){console.log(\"Hello World!\")}\"");
-    var answer2 = Func;
-  }
-  console.log(answer1)
-  if (!answer1) { return }
-  if(!answer2){
-      var answer2 = prompt("Now, enter a value for "+answer1+":",(currentPropValue||undefined));
-      if (!answer2) { return }
-      var valueL = answer2.toLowerCase();
-      if (valueL === "true") { answer2 = true }
-      else if (valueL === "false") { answer2 = false }
-      else if (valueL === "null") { answer2 = null }
-      else if (valueL === "undefined") { answer2 = undefined }
-      else if (answer1 === "color" && valueL[0] === "#") {
-          var rgb = hexToRGB(valueL);
-          answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-      }
-      currentProp = answer1;
-      currentPropValue = answer2;
-      console.log(answer1);
-      var num = parseFloat(answer2);
-      if (!isNaN(num)) { answer2 = num }
-      currentPropValue = answer2;
-      logMessage("Prop: "+currentProp);
-      logMessage("Value: "+currentPropValue);
-    }
-  },
-  tick: function(pixel) {
-    if(pixel.start == pixelTicks) {
-      pixel.range = num4;
-      pixel.condition = ifCondition;
-      pixel.prop = currentProp;
-      pixel.val = currentPropValue;
-      pixel.func = Func;
-    }
-      let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      prop({ property: pixel.prop, value: pixel.val },range, exclude2, pixel.condition, pixel.func);
-   }
-}
-function prop(obj, range, exclude = [], condition = "", func = undefined){
-  let list = [];
-  for (var i = 0; i < range.length; i++) {
-  var x = range[i][0];
-  var y = range[i][1];
-      if (!isEmpty(x,y,true)) {
-          var pixel = pixelMap[x][y];
-            list.push(pixel);
-      }
-  }
-  for (var i = 0; i < list.length; i++) {
-  if (!isEmpty(list[i].x, list[i].y, true)) {
-    var pixel = list[i];
-    if(func){
-      eval(func);
-    }
-    if (!exclude.includes(pixel.element) && conditionTrue(condition, pixel)){
-      if(/^\d+$/.test(obj.value)){
-        obj.value = parseInt(obj.value);
-      }
-      if (!obj.property) { return }
-      if (pixel[obj.property] !== undefined && typeof pixel[obj.property] !== typeof obj.value) {
-          logMessage("Error: "+obj.property+" type is "+typeof pixel[obj.property]+", not "+typeof obj.value+".");
-          obj.property = null;
-          obj.value = null;
-          return;
-        }
-      if (obj.property === "element") {
-          changePixel(pixel, obj.value);
-          list.splice(list.indexOf(pixel),1);
-          return;
-      }
-      if (obj.property === "burning" && obj.value === "true") {
-          pixel.burnStart = pixelTicks;
-          list.splice(list.indexOf(pixel),1);
-          return;
-      }
-        pixel[obj.property] = obj.value;
-        list.splice(list.indexOf(pixel),1);
-      }
-    }
-  }
-}
-function mix(range, exclude = []){
-  let mixlist = [];
-  for (var i = 0; i < range.length; i++) {
-  var x = range[i][0];
-  var y = range[i][1];
-      if (!isEmpty(x,y,true)) {
-          var pixel = pixelMap[x][y];
-          if (elements[pixel.element].noMix !== true) {
-              mixlist.push(pixel);
-          }
-      }
-  }
-  for (var i = 0; i < mixlist.length; i++) {
-    var pixel1 = mixlist[Math.floor(Math.random()*mixlist.length)];
-    var pixel2 = mixlist[Math.floor(Math.random()*mixlist.length)];
-    if (exclude.includes(pixel1.element) || exclude.includes(pixel2.element)){
-      mixlist.splice(mixlist.indexOf(pixel1),1);
-      mixlist.splice(mixlist.indexOf(pixel2),1);
-    } else {
-      swapPixels(pixel1,pixel2);
-      mixlist.splice(mixlist.indexOf(pixel1),1);
-      mixlist.splice(mixlist.indexOf(pixel2),1);
-      if (elements[pixel1.element].onMix) {
-        elements[pixel1.element].onMix(pixel1,pixel2);
-      }
-      if (elements[pixel2.element].onMix ) {
-        elements[pixel2.element].onMix(pixel2,pixel1);
-      }
-    }
-  }
-}
-function smash(range, exclude = []){
-  let smashlist = [];
-  for (var i = 0; i < range.length; i++) {
-  var x = range[i][0];
-  var y = range[i][1];
-      if (!isEmpty(x,y,true)) {
-          var pixel = pixelMap[x][y];
-          if (elements[pixel.element].noMix !== true) {
-              smashlist.push(pixel);
-          }
-      }
-  }
-  for (var i = 0; i < smashlist.length; i++) {
-    var pixel1 = smashlist[Math.floor(Math.random()*smashlist.length)];
-    smashlist.splice(smashlist.indexOf(pixel1),1);
-    if (elements[pixel1.element].breakInto && !exclude.includes(pixel1.element)) {
-      if (Array.isArray(elements[pixel1.element].breakInto)){
-        changePixel(pixelMap[pixel1.x][pixel1.y], elements[pixel1.element].breakInto[Math.floor(Math.random()*elements[pixel1.element].breakInto.length)])
-      } else {
-        changePixel(pixelMap[pixel1.x][pixel1.y], elements[pixel1.element].breakInto)
-      }
-    }
-  }
-}
-function pull(range, pixel1, include = []){
-  let pulllist = [];
-  for (var i = 0; i < range.length; i++) {
-  var x = range[i][0];
-  var y = range[i][1];
-      if (!isEmpty(x,y,true)) {
-          var pixel = pixelMap[x][y];
-          if (elements[pixel.element].noMix !== true) {
-              pulllist.push(pixel);
-          }
-      }
-  }
-  for (var i = 0; i < pulllist.length; i++) {
-    var pixel = pulllist[Math.floor(Math.random()*pulllist.length)];
-    pulllist.splice(pulllist.indexOf(pixel),1);
-    if (elements[pixel.element].movable != false && include.includes(pixel.element)) {
-        for (var i = 0; i < pulllist.length; i++) {
-            if (pixelInRange(pulllist[i], range)) {
-              let Xdistance = pixel1.x - pixel.x;
-              let Ydistance = pixel1.y - pixel.y;
-              let newX = (Xdistance > pixel.x ? pixel.x + 3 : pixel.x + 1);
-              let newY = (Ydistance > pixel.y ? pixel.y + 3 : pixel.y + 1);
-              tryMove(pixel, newX, newY, undefined, false);
+    elements.copper_sulfate.tick = function(pixel){
+        if(pixelTicks-pixel.start == 2 && xDown){
+            pixel.anhydrous = true;
+            let rgb = {r: 235, g: 247, b: 250};
+            let num = 6 - (Math.round(Math.random()*12));
+            for(let key in rgb){
+                rgb[key] += num;
             }
-          }
-      }
-    }
-  }
-function reduceToSign(num) {
-  if(num == 0){return 0;}
-  return num && num / Math.abs(num);
-}
-let prevNum;
-elements.etemper = {
-  name: "E-Temper",
-  category: "machines",
-  conduct: 1,
-  insulate: true,
-  behavior: behaviors.WALL,
-  onSelect: function(pixel){
-    prevNum = parseInt(prompt("Enter the temperature you want it set to.", (prevNum || undefined)));
-  },
-  tick: function(pixel){
-    if(pixel.start === pixelTicks){
-        pixel.clone = `Temp: ${prevNum}`;
-        pixel.Temp = prevNum;
-    }
-      for (var i = 0; i < adjacentCoords.length; i++){
-      let x = pixel.x + adjacentCoords[i][0];
-      let y = pixel.y + adjacentCoords[i][1];
-      if(outOfBounds(x,y)){ continue; }
-      if(isEmpty(x,y)){ continue; }
-      let pixel2 = pixelMap[x][y];
-      if(reduceToSign(pixel.Temp) == -1){
-        if (pixel2.temp > pixel.Temp && pixel.charge > 0 ){
-            pixel2.temp += pixel.Temp / 6;
+            pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
         }
-      } else {
-        if (pixel2.temp < pixel.Temp && pixel.charge > 0 ){
-            pixel2.temp += pixel.Temp / 6;
-        }
-      }
-    }
-  },
-}
-let prevString;
-elements.sign = {
-  name: "Sign",
-  category: "machines",
-  onSelect: function(){
-    prevString = prompt("Enter the text you want it to say.", (prevString || undefined));
-  },
-  tick: function(pixel){
-    if(pixel.start == pixelTicks){
-      pixel.clone = prevString;
-    }
-  }
-}
-let attrElem = "";
-let magnetRange = 0;
-let magnetElems = [];
-let magnetPixels = [];
-elements.magnet = {
-  category: "machines",
-  tick:function(pixel){
-    if(pixelTicks == pixel.start){
-      if(attrElem.includes(" ")){attrElem.replace(/s/g, "")}
-      pixel.elem = (attrElem.includes(",")) ? attrElem.split(",") : attrElem;
-      pixel.range = magnetRange;
-    }
-    let range = mouseRange(pixel.x, pixel.y, pixel.range)
-    for (var i = 0; i < currentPixels.length; i++){
-      if(pixelInRange(currentPixels[i], range)){
-        let pixel2 = currentPixels[i]
-        if(!magnetPixels.includes(pixel2)){
-          magnetPixels.push(pixel2);
-        }
-        if(!pixel2.drag && pixel.elem.includes(pixel2.element)){pixel2.drag = true}
-        if(pixel2.drag && !pixel.elem.includes(pixel2.element) && !beamPixels.includes(pixel2) && ((draggingPixels && draggingPixels.includes(pixel2)) || !draggingPixels)){pixel2.drag = false;}
-          if(!magnetElems.includes(pixel2) && pixel.elem.includes(pixel2.element)){magnetElems.push(pixel2)}
-        if(pixel.elem.includes(pixel2.element)){
-          (pixel2.x > pixel.x) ? tryMove(pixel2, pixel2.x - 1, pixel2.y, undefined, true) : tryMove(pixel2, pixel2.x + 1, pixel2.y, undefined, true);
-          (pixel2.y > pixel.y) ? tryMove(pixel2, pixel2.x, pixel2.y - 1, undefined, true) : tryMove(pixel2, pixel2.x, pixel2.y + 1, undefined, true);
-        }
-      } else if (draggingPixels && !draggingPixels.includes(currentPixels[i])){
-        currentPixels[i].drag = false; 
-      }
-    }
-    for(var i = 0; i < magnetPixels.length; i++){
-      if(magnetPixels.length != 0){
-        if(!pixel.elem.includes(magnetPixels[i].element)){
-          magnetPixels[i].drag = false;
-          magnetPixels.splice(i, 1);
-        }
-        if(!pixelInRange(magnetPixels[i], range)){
-          magnetPixels[i].drag = false;
-          magnetPixels.splice(i, 1);
-        }
-      }
-    }
-  },
-  onSelect: function(){
-    attrElem = prompt("Enter the element you want to attract.", (attrElem || undefined));
-    magnetRange = parseInt(prompt("Enter the range you want to attract " + attrElem + " to.", (magnetRange || undefined)));
-  }
-}
-let move = false;
-let moves = {
-  a: [-1,0],
-  d: [1,0],
-  s: [0,1],
-  w: [0,-1]
-}
-let UFOs = [];
-let beamPixels = [];
-let a = adjacentCoords;
-function randomString(length){
-  let str = "";
-  let chars = "abcdefghijklmnopqrstuvwxyz";
-  let charArr = chars.split("");
-  for(var i = 0; i < length; i++){
-    str += charrArr[Math.floor(Math.random() * charArr.length)];
-  }
-  return str;
-}
-elements.ufo = {
-  category: "machines",
-  behavior: behaviors.WALL,
-  properties: {
-    cooldown: 0,
-  },
-  tick: function(pixel){
-    if(!UFOs.includes(pixel)){ UFOs = []; UFOs.push(pixel); }
-    if(move){
-      tryMove(pixel, pixel.x + move[0], pixel.y + move[1])
-    }
-  },
-  hardness: 1,
-  insulate: true,
-}
-let keysDown = {};
-document.addEventListener("keydown", function(event){
-  if(moves[event.key.toLowerCase()]){
-    move = moves[event.key.toLowerCase()];
-  }
-  keysDown[event.key.toLowerCase()] = true;
-  if(event.key.toLowerCase() == "b"){
-    for(var i = 0; i < UFOs.length; i++){
-      if(isEmpty(UFOs[i].x, UFOs[i].y+1) && !outOfBounds(UFOs[i].x, UFOs[i].y+1)){
-        createPixel("heat_ray", UFOs[i].x, UFOs[i].y+1);
-      }
-    }
-  }
-  if(event.key.toLowerCase() == "q"){
-    for(var i = 0; i < UFOs.length; i++){
-      if(isEmpty(UFOs[i].x, UFOs[i].y+1) && !outOfBounds(UFOs[i].x, UFOs[i].y+1)){
-        for(var ii = 0; ii < adjacentCoords.length; ii++){
-          let x = UFOs[i].x + adjacentCoords[ii][0];
-          let y = UFOs[i].y + adjacentCoords[ii][1];
-          if(event.shiftKey){
-            explodeAt(x, y, 10)
-          } else {
-            explodeAt(x, y, 4);
-          }
-        }
-      }    
-    }
-  }
-  if(event.key.toLowerCase() == "x"){
-    for(var i = 0; i < UFOs.length; i++){
-        for(var ii = 0; ii < currentPixels.length; ii++){
-          if([UFOs[i].x].includes(currentPixels[ii].x) && currentPixels[ii].y > UFOs[i].y){
-            if(isEmpty(currentPixels[ii].x, currentPixels[ii].y - 1) && !outOfBounds(currentPixels[ii].x, currentPixels[ii].y - 1)){
-              beamPixels.push(currentPixels[ii]);
-              currentPixels[ii].drag = true;
-              movePixel(currentPixels[ii], currentPixels[ii].x, currentPixels[ii].y - 1);
+        let multi = (pixel.temp-70)/100;
+        multi = (multi < 0) ? 0 : ((multi > 1) ? 1 : multi);
+        if(Math.random() < 0.05*multi){
+            pixel.anhydrous = true;
+            let rgb = {r: 235, g: 247, b: 250};
+            let num = 6 - (Math.round(Math.random()*12));
+            for(let key in rgb){
+                rgb[key] += num;
             }
-          }
-
+            pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
         }
-      }
-  } 
-  if(event.key.toLowerCase() == "g"){
-    for(var i = 0; i < UFOs.length; i++){
-      pixel = UFOs[i];
-      for (var ii = 0; i < adjacentCoords.length; ii++){
-        let x = pixel.x + a[ii][0];
-        let y = pixel.y + a[ii][1];
-        if(!isEmpty(x, y) && !outOfBounds(x, y)){
-          let pixel2 = pixelMap[x][y];
-          if(elements[pixel2.element].breakInto){
-            if(typeof elements[pixel2.element].breakInto == "object"){
-              changePixel(pixel2, elements[pixel2.element].breakInto[Math.floor(Math.random() * elements[pixel2.element].breakInto.length)]);
+        if(pixel.anhydrous){
+            let neighbors = [];
+            for(let coords of squareCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                neighbors[neighbors.length] = (isEmpty(x,y) && !outOfBounds(x,y)) ? "air" : (!outOfBounds(x,y)) ? pixelMap[x][y].element : undefined;
+            }
+            if(neighbors.includes("air") && pixel.temp < 50 && Math.random() < 0.00035){
+                pixel.anhydrous = false;
+                let rgb = (Math.random() > 0.5) ? {r: 67, g: 145, b: 253} :  {r: 0, g: 76, b: 254};
+                let num = 6 - (Math.round(Math.random()*12));
+                for(let key in rgb){
+                    rgb[key] += num;
+                }
+                pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                
+            } else if (neighbors.includes("steam") || neighbors.includes("water") || neighbors.includes("salt_water") || neighbors.includes("sugar_water") || neighbors.includes("dirty_water") || neighbors.includes("seltzer") || neighbors.includes("pool_water") || neighbors.includes("slush")){
+                pixel.anhydrous = false;
+                let rgb = (Math.random() > 0.5) ? {r: 67, g: 145, b: 253} :  {r: 0, g: 76, b: 254};
+                let num = 6 - (Math.round(Math.random()*12));
+                for(let key in rgb){
+                    rgb[key] += num;
+                }
+                pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+            }
+        }
+    }
+    elements.water.ignore = ["copper_sulphate"], elements.steam.ignore = ["copper_sulphate"], elements.pool_water.ignore = ["copper_sulphate", 'pool_ice'], elements.salt_water.ignore = ["copper_sulphate", 'salt_ice'], elements.sugar_water.ignore = ["copper_sulphate", 'sugar_ice'], elements.seltzer.ignore = ["copper_sulphate", 'seltzer_ice'],
+    document.addEventListener("keydown", (e)=>{xDown = (e.key.toLowerCase() == "x") ? true : xDown;});
+    document.addEventListener("keyup", (e)=>{xDown = (e.key.toLowerCase() == "x") ? false : xDown;});
+    
+    elements.toggle_cloner = {
+        category: "machines",
+        active: "#fbff03",
+        inactive: "#333300",
+        color: "#333300",
+        name: "ToggleableCloner",
+        keyInput: "chance",
+        insulate: 1,
+        properties: {
+            clone: null,
+            toggle: false,
+            chance: 0.0166666667,
+            clickCd: 0,
+        },
+        hardness: 1,
+        ignore: ["drag","unknown", "cloner", "toggle_cloner", "floating_cloner", "clone_powder", "slow_cloner", "ecloner", "destroyable_cloner", "destroyable_clone_powder", "ewall", "wall"],
+        onClicked: function(pixel,element){
+            
+            if(pixel.clone == null && pixel.clickCd == 0 && dragStart == null){
+                pixel.clone = (elements.toggle_cloner.ignore.includes(element)) ? pixel.clone : element;
+            } else if (pixel.clickCd == 0 && !shiftDown) {
+                pixel.toggle = !pixel.toggle;
+                if(pixel.toggle){
+                    let rgb = hexToRGB(elements.toggle_cloner.active);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                } else {
+                    let rgb = hexToRGB(elements.toggle_cloner.inactive);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            }
+            if(shiftDown && !elements.toggle_cloner.ignore.includes(element)){
+                pixel.clone = element;
+            }
+            
+            if(pixel.clickCd == 0 && dragStart == null){
+                pixel.clickCd =  20;
+            };
+        },
+        onSelect: function(){
+            logMessage("Place cloner, select element to clone, click on the pixel to set the clone element, then click on it to toggle on or off. Hold shift when clicking to change the element to the selected element.");
+        },
+        tick: function(pixel){
+            if(pixel.clickCd > 0){pixel.clickCd--;}
+            if(![null, undefined].includes(pixel.clone) && pixel.toggle == true && Math.random() < pixel.chance){
+                for(let coords of adjacentCoords){
+                    let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                    if(isEmpty(x,y) && !outOfBounds(x,y)){
+                        createPixel(pixel.clone, x, y);
+                        pixelMap[x][y].temp = pixel.temp;
+                    }
+                }
+            }
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p2 = getPixel(x,y);
+                if(p2 != null && p2.element == pixel.element && (p2.clone == null && pixel.clone != null)){
+                    p2.clone = pixel.clone;
+                }
+            }
+        },
+        dataInFunc: function(pixel, value){
+            if(value.includes(":")){
+                let valueArr = value.split(":");
+                if(Array.isArray(pixel[valueArr[0]]) && !pixel[valueArr[0]].includes(valueArr[1])){
+                    pixel[valueArr[0]].push(valueArr[1]);
+                } else {
+                    pixel[valueArr[0]] = (Number.isInteger(pixel[valueArr[0]])) ? parseInt(valueArr[1]) : valueArr[1];
+                }
+            }
+        }
+    };
+    
+    elements.multi_toggle_cloner = {
+        category: "machines",
+        color: "#283300",
+        keyInput: "chance",
+        ignore: ["unknown", "cloner", "toggle_cloner", "floating_cloner", "clone_powder", "slow_cloner", "ecloner", "destroyable_cloner", "destroyable_clone_powder", "ewall", "wall"],
+        properties: {
+            cloneElems: [],
+            toggle: false,
+            clickCd: 0,
+            chance: 0.45,
+        },
+        hardness: 1,
+        insulate: 1,
+        onClicked: function(pixel, element){
+            if(pixel.clickCd == 0 && !shiftDown && dragStart == null){
+                pixelToggle(pixel, {r:1.5,g:1.5,b:0});
+                pixel.clickCd = 20;
+            }
+            if(shiftDown && !elements.multi_toggle_cloner.ignore.includes(element)){
+                if(pixel.cloneElems.includes(element)){
+                    pixel.cloneElems.splice(pixel.cloneElems.indexOf(element), 1);
+                } else {
+                    pixel.cloneElems.push(element);
+                }
+            }
+        },
+        tick: function(pixel){
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random() < pixel.chance && pixel.toggle && JSON.stringify(pixel.cloneElems) != "[]"){
+                    elem = pixel.cloneElems[Math.round(Math.random()*pixel.cloneElems.length)];
+                    createPixel(elem, x, y);
+                    pixelMap[x][y].temp = pixel.temp;
+                }
+            }
+            pixel.clickCd -= (pixel.clickCd == 0) ? 0 : 1;
+        },
+        onSelect: function(){
+            logMessage("Place cloner, then add elements to the clone list by selecting the element and hold down shift while clicking in it, then click on it to toggle on or off. Shift clicking with an element already found in the list will remove it.");
+        },
+        dataInFunc: function(pixel, value){
+            if(value.includes(":")){
+                let valueArr = value.split(":");
+                if(Array.isArray(pixel[valueArr[0]]) && !pixel[valueArr[0]].includes(valueArr[1])){
+                    pixel[valueArr[0]].push(valueArr[1]);
+                } else {
+                    pixel[valueArr[0]] = (Number.isInteger(pixel[valueArr[0]])) ? parseInt(valueArr[1]) : valueArr[1];
+                }
+            }
+        }
+    }
+    
+    elements.toggle = {
+        category: "machines",
+        active: "#b8b8b8",
+        inactive: "#2b2b2b",
+        color: "#2b2b2b",
+        properties: {
+            toggle: false,
+            clickCd: 0,
+        },
+        hardness: 1,
+        onClicked: function(pixel){
+            if(pixel.clickCd == 0 && dragStart == null){
+                pixel.toggle = !pixel.toggle;
+                pixel.clickCd = 20;
+                if(pixel.toggle){
+                    let rgb = hexToRGB(elements.toggle.active);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                } else {
+                    let rgb = hexToRGB(elements.toggle.inactive);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            };
+        },
+        tick: function(pixel){
+            if(pixel.clickCd != 0){pixel.clickCd--;}
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p2 = getPixel(x,y);
+                if(p2 != null && elements[p2.element].conduct == 1 && pixel.toggle){
+                    p2.charge = 1;
+                }
+            }
+        }
+    }
+    
+    elements.e_temper = {
+        category: "machines",
+        color: "#ffb300",
+        conduct: 1,
+        targetTemp: 25,
+        hardness: 1,
+        onSelect: function(){
+            promptInput("Enter the target temperature:", (In)=>{
+                this.targetTemp = parseInt(In) || this.targetTemp;
+            }, "Temperature Selector", this.targetTemp);
+        },
+        properties: {
+            targetTemp: null
+        },
+        keyInput: "targetTemp",
+        tick: function(pixel){
+            if(pixel.targetTemp == null){
+                pixel.targetTemp = elements.e_temper.targetTemp;
+            }
+            
+            doElectricity(pixel, 1);
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p2 = getPixel(x,y);
+                if(p2 != null && pixel.charge > 0){
+                    let difference = pixel.targetTemp-p2.temp;
+                    p2.temp += difference/4;
+                }
+            }
+        },
+        dataInFunc: function(pixel, value){
+            if(value.includes(":")){
+                let valueArr = value.split(":");
+                if(Array.isArray(pixel[valueArr[0]]) && !pixel[valueArr[0]].includes(valueArr[1])){
+                    pixel[valueArr[0]].push(valueArr[1]);
+                } else {
+                    pixel[valueArr[0]] = (Number.isInteger(pixel[valueArr[0]])) ? parseInt(valueArr[1]) : valueArr[1];
+                }
+            }
+        }
+    }
+    
+    elements.toggle_temper = {
+        active: "#ff7b00",
+        inactive: "#261200",
+        color: "#261200",
+        category: "machines",
+        targetTemp: 25,
+        keyInput: "targetTemp",
+        hardness: 1,
+        properties: {
+            toggle: false,
+            clickCd: 0,
+            targetTemp: null,
+        },
+        onClicked: function(pixel){
+            if(pixel.clickCd == 0 && dragStart == null){
+                pixel.toggle = !pixel.toggle;
+                pixel.clickCd = 20;
+                if(pixel.toggle){
+                    let rgb = hexToRGB(elements.toggle_temper.active);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                } else {
+                    let rgb = hexToRGB(elements.toggle_temper.inactive);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            };
+        },
+        onSelect: function(){
+            promptInput("Enter the target temperature:", (In)=>{
+                this.targetTemp = parseInt(In) || this.targetTemp;
+            }, "Temperature Selector", this.targetTemp);
+        },
+        tick: function(pixel){
+            if(pixel.targetTemp == null){
+                pixel.targetTemp = this.targetTemp;
+            }
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p2 = getPixel(x,y);
+                if(p2 != null && pixel.toggle){
+                    let difference = pixel.targetTemp-p2.temp;
+                    p2.temp += difference/4;
+                }
+            }
+            if(pixel.clickCd > 0){pixel.clickCd--;};
+        },
+        dataInFunc: function(pixel, value){
+            if(value.includes(":")){
+                let valueArr = value.split(":");
+                if(Array.isArray(pixel[valueArr[0]]) && !pixel[valueArr[0]].includes(valueArr[1])){
+                    pixel[valueArr[0]].push(valueArr[1]);
+                } else {
+                    pixel[valueArr[0]] = (Number.isInteger(pixel[valueArr[0]])) ? parseInt(valueArr[1]) : valueArr[1];
+                }
+            }
+        }
+    }
+    
+    elements.multitool = {
+        category: "tools",
+        input: 0,
+        onSelect: function(){
+            promptInput("Multitool for morechemistry.js, changes key values for different elements added in morechemistry.js, chance for toggleable cloner, targetTemp for toggleable temper, clone for other cloners, and channel for portals.", (In)=>{
+                this.input = In;
+            }, "Multitool Input", this.input);
+        },
+        tool: function(pixel){
+             if(elements[pixel.element].keyInput != undefined){
+                let type = (elements[pixel.element].keyInput.startsWith("int:")) ? "int" : (elements[pixel.element].keyInput.startsWith("str:")) ? "string" : "int"; 
+                let In = elements[pixel.element].keyInput.slice(elements[pixel.element].keyInput.indexOf(":")+1, elements[pixel.element].keyInput.length);
+                pixel[In] = (type == "int") ? parseFloat(this.input) : this.input;
+            }
+        },
+        canPlace: false,
+    }
+    
+    class rangeTool {
+        constructor(color, func, properties = false, onSelect = false, onClicked = false){
+            this.category = "machines";
+            this.properties = (properties == false) ? { range: null } : properties;
+            this.color = color;
+            this.range = 0;
+            this.onSelect = (onSelect == false) ? ()=>{promptInput("Enter the range for this tool: ", (range)=>{this.range = parseInt(range);}, "Tool Range", this.range)} : onSelect;
+            this.onClicked = (onClicked == false) ? undefined : onClicked;
+            this.func = func;
+        }
+        tick = function(pixel){
+            if(pixel.range == null){
+                pixel.range = elements[pixel.element].range;
             } else {
-              changePixel(pixel2, elements[pixel2.element].breakInto);
+                let pixelRange = mouseRange(pixel.x, pixel.y, pixel.range);
+                for(let coords of pixelRange){
+                    let p2 = getPixel(coords[0], coords[1]);
+                    if(p2 != null){
+                        elements[pixel.element].func(p2);
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
-  if(event.key.toLowerCase() == "j"){
-    for(var i = 0; i < UFOs.length; i++){
-      pixel = UFOs[i];
-      for (var ii = 0; i < adjacentCoords.length; ii++){
-        let x = pixel.x + a[ii][0];
-        let y = pixel.y + a[ii][1];
-        if(!isEmpty(x, y) && !outOfBounds(x, y) && elements[pixelMap[x][y].element].conduct > 0){
-          pixelMap[x][y].charge = 1;
+    
+    elements.button = {
+        category: "machines",
+        color: "#c7c7c7",
+        hardness: 1,
+        onClicked: function(pixel){
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p = getPixel(x,y);
+                if(p != null && elements[p.element].conduct){
+                    p.charge = 1;
+                }
+            }
         }
-      }
     }
-  }
-  if(event.key.toLowerCase() == "v"){
-    for(var i = 0; i < UFOs.length; i++){
-      let pixel = UFOs[i];
-      let x = pixel.x
-      for (var y = pixel.y + 1; y < height; y++) {
-          if (outOfBounds(x, y)) {
-              break;
-          }
-          if (isEmpty(x, y)) {
-              if (Math.random() > 0.05) { continue }
-              createPixel("flash", x, y);
-              pixelMap[x][y].color = "#032dff";
-              pixelMap[x][y].temp = -3500;
-          }
-          else {
-              if (elements[pixelMap[x][y].element].isGas) { continue }
-              if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
-              pixelMap[x][y].temp -= 10;
-              pixelTempCheck(pixelMap[x][y]);
-              break;
-          }
-      }
-    }
-  }
-  if(event.key.toLowerCase() == "t"){
-    for(var i = 0; i < UFOs.length; i++){
-      for(var ii = 0; ii < adjacentCoords.length; ii++){
-        let x = UFOs[i].x + adjacentCoords[ii][0];
-        let y = UFOs[i].y + adjacentCoords[ii][1];
-        if(x == pixel.x || y == pixel.y) {continue;}
-        if(!outOfBounds(x,y) && !isEmpty(x,y)){
-          if(pixelMap[x][y].element == "ufo"){continue;}
-          deletePixel(x,y);
-          
+    
+    elements.toggle_mixer = new rangeTool("#212420", (pixel)=>{
+        let range = mouseRange(pixel.x, pixel.y, pixel.range);
+        let pixels = [];
+        for(let coords of range){
+            let p2 = getPixel(coords[0], coords[1]);
+            if(p2 != null && pixel.toggle){
+                pixels.push(p2);
+            }
         }
-      }
+        for(let p of pixels){
+            if(Math.random() < pixel.chance){
+                let p2 = pixels[Math.round(Math.random()*pixels.length)];
+                if(p != undefined && p2 != undefined && elements[p.element].movable && elements[p2.element].movable){
+                    swapPixels(p, p2);
+                    if(elements[p.element].onMix != undefined){
+                        elements[p.element].onMix(p);
+                    }
+                    if(elements[p2.element].onMix != undefined){
+                        elements[p2.element].onMix(p2);
+                    }
+                }
+            }
+        }
+        if(pixel.clickCd > 0){pixel.clickCd--;}
+    }, {range: null, toggle: false, clickCd: 0, chance: 0.35}, false, (pixel)=>{
+        if(pixel.clickCd == 0 && dragStart == null){
+                pixel.toggle = !pixel.toggle;
+                pixel.clickCd = 20;
+                if(pixel.toggle){
+                    let rgb = hexToRGB(elements.toggle_mixer.active);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                } else {
+                    let rgb = hexToRGB(elements.toggle_mixer.inactive);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            };
+    });
+    elements.toggle_mixer.inactive = "#212420", elements.toggle_mixer.active = "#93a390", elements.toggle_mixer.movable = false, elements.toggle_mixer.keyInput = "chance";
+    elements.toggle_mixer.hardness = 1;
+    
+    elements.toggle_smasher = new rangeTool("#2e2726", (pixel)=>{
+        let range = mouseRange(pixel.x, pixel.y, pixel.range);
+        for(let coords of range){
+            let p2 = getPixel(coords[0], coords[1]);
+            if(p2 != null && pixel.toggle && Math.random() < pixel.chance && elements[p2.element].breakInto != undefined){
+                let elem = (Array.isArray(elements[p2.element].breakInto)) ? elements[p2.element].breakInto[Math.round(Math.random()*elements[p2.element].breakInto.length)] : elements[p2.element].breakInto;
+                if(elem != undefined){
+                    changePixel(p2, elem);
+                }
+            }
+        }
+        if(pixel.clickCd > 0){pixel.clickCd--;}
+    }, {range: null, toggle: false, clickCd: 0, chance: 0.35}, false, (pixel)=>{
+        if(pixel.clickCd == 0 && dragStart == null){
+                pixel.toggle = !pixel.toggle;
+                pixel.clickCd = 20;
+                if(pixel.toggle){
+                    let rgb = hexToRGB(elements.toggle_smasher.active);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                } else {
+                    let rgb = hexToRGB(elements.toggle_smasher.inactive);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            };
+    });
+    elements.toggle_smasher.inactive = "#2e2726", elements.toggle_smasher.active = "#bf9e9b", elements.toggle_smasher.movable = false, elements.toggle_smasher.keyInput = "chance";
+    elements.toggle_smasher.hardness = 1;
+    
+    elements.target_toggle_smasher = new rangeTool("#332422", (pixel)=>{
+        let range = mouseRange(pixel.x, pixel.y, pixel.range);
+        for(let coords of range){
+            let p2 = getPixel(coords[0], coords[1]);
+            if(p2 != null && pixel.toggle && Math.random() < pixel.chance && elements[p2.element].breakInto != undefined && pixel.targetElems.includes(p2.element)){
+                let elem = (Array.isArray(elements[p2.element].breakInto)) ? elements[p2.element].breakInto[Math.round(Math.random()*elements[p2.element].breakInto.length)] : elements[p2.element].breakInto;
+                if(elem != undefined){
+                    changePixel(p2, elem);
+                }
+            }
+        }
+        if(pixel.clickCd > 0){pixel.clickCd--;}
+    }, {range: null, toggle: false, clickCd: 0, chance: 0.35, targetElems: []}, ()=>{
+        promptInput("Enter the range for this tool: ", (range)=>{
+            console.log(range);
+            elements.target_toggle_smasher.range = parseInt(range);
+            logMessage("Place smasher, then add elements to the target list by selecting the element and hold down shift while clicking on the pixel, then click on it to toggle on or off. Shift clicking with an element already found in the list will remove it.");
+        }, "Enter range", elements.target_toggle_smasher.range);
+    }, (pixel, elem)=>{
+        if(pixel.clickCd == 0 && dragStart == null && !shiftDown){
+                pixel.toggle = !pixel.toggle;
+                pixel.clickCd = 20;
+                if(pixel.toggle){
+                    let rgb = hexToRGB(elements.target_toggle_smasher.active);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                } else {
+                    let rgb = hexToRGB(elements.target_toggle_smasher.inactive);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            };
+        if(shiftDown && elements[elem].breakInto != undefined){
+            if(pixel.targetElems.includes(elem)){
+                pixel.targetElems.splice(pixel.targetElems.indexOf(elem), 1);
+            } else {
+                pixel.targetElems.push(elem);
+            }
+        }
+    });
+    elements.target_toggle_smasher.inactive = "#332422", elements.target_toggle_smasher.active = "#b57a72", elements.target_toggle_smasher.movable = false, elements.target_toggle_smasher.keyInput = "chance";
+    elements.target_toggle_smasher.hardness = 1;
+    
+    elements.target_toggle_mixer = new rangeTool("#1f291b", (pixel)=>{
+        
+        let range = mouseRange(pixel.x, pixel.y, pixel.range);
+        let pixels = [];
+        for(let coords of range){
+            let p2 = getPixel(coords[0], coords[1]);
+            if(p2 != null && pixel.toggle){
+                pixels.push(p2);
+            }
+        }
+        for(let p of pixels){
+            if(Math.random() < pixel.chance){
+                let p2 = pixels[Math.round(Math.random()*pixels.length)];
+                if(p != undefined && p2 != undefined && elements[p.element].movable && elements[p2.element].movable && pixel.targetElems.includes(p.element) && pixel.targetElems.includes(p2.element)){
+                    swapPixels(p, p2);
+                    if(elements[p.element].onMix != undefined){
+                        elements[p.element].onMix(p);
+                    }
+                    if(elements[p2.element].onMix != undefined){
+                        elements[p2.element].onMix(p2);
+                    }
+                }
+            }
+        }
+        if(pixel.clickCd > 0){pixel.clickCd--;}
+    }, {range: null, toggle: false, clickCd: 0, chance: 0.35, targetElems: []}, ()=>{
+        promptInput("Enter the range for this tool: ", (range)=>{
+            console.log(range);
+            elements.target_toggle_mixer.range = parseInt(range);
+            logMessage("Place mixer, then add elements to the target list by selecting the element and hold down shift while clicking on the pixel, then click on it to toggle on or off. Shift clicking with an element already found in the list will remove it.");
+        }, "Enter range", elements.target_toggle_mixer.range);
+    }, (pixel, elem)=>{
+        if(pixel.clickCd == 0 && dragStart == null && !shiftDown){
+                pixel.toggle = !pixel.toggle;
+                pixel.clickCd = 20;
+                if(pixel.toggle){
+                    let rgb = hexToRGB(elements.target_toggle_mixer.active);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                } else {
+                    let rgb = hexToRGB(elements.target_toggle_mixer.inactive);
+                    let num = 5 - (Math.random()*10);
+                    for(let key in rgb){
+                        rgb[key] += num;
+                        rgb[key] = Math.round(Math.max(Math.min(rgb[key], 255), 0));
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            };
+        if(shiftDown && elements[elem].movable){
+            if(pixel.targetElems.includes(elem)){
+                pixel.targetElems.splice(pixel.targetElems.indexOf(elem), 1);
+            } else {
+                pixel.targetElems.push(elem);
+            }
+        }
+    });
+    elements.target_toggle_mixer.inactive = "#1f291b", elements.target_toggle_mixer.active = "#8cbf7a", elements.target_toggle_mixer.movable = false, elements.target_toggle_mixer.keyInput = "chance";
+    elements.target_toggle_mixer.hardness = 1;
+    elements.target_sensor = {
+        color: "#afb08b",
+        conduct: 1,
+        category: "machines",
+        properties: {
+            targetElems: [],
+            clickCd: 0,
+        },
+        hardness: 1,
+        onClicked: function(pixel, element){
+            if(shiftDown && element != "unknown" && pixel.clickCd == 0){
+                if(pixel.targetElems.includes(element)){
+                    pixel.targetElems.splice(pixel.targetElems.indexOf(element), 1);
+                    pixel.clickCd = 20;
+                } else {
+                    pixel.targetElems.push(element);
+                    pixel.clickCd = 20;
+                }
+            }
+        },
+        tick: function(pixel){
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p = getPixel(x,y);
+                if(p != null && pixel.targetElems.includes(p.element)){
+                    pixel.charge = 1;
+                    doElectricity(pixel,1);
+                }
+            }
+            pixel.clickCd -= (pixel.clickCd > 0) ? 1 : 0;
+        },
+        dataInFunc: function(pixel, value){
+            if(value.includes(":")){
+                let valueArr = value.split(":");
+                if(Array.isArray(pixel[valueArr[0]]) && !pixel[valueArr[0]].includes(valueArr[1])){
+                    pixel[valueArr[0]].push(valueArr[1]);
+                } else {
+                    pixel[valueArr[0]] = (Number.isInteger(pixel[valueArr[0]])) ? parseInt(valueArr[1]) : valueArr[1];
+                }
+            }
+        }
     }
-  }
-})
-function isArray(item) {
-  return Object.prototype.toString.call(item) === '[object Array]';
-}
+    
+    Pixel.prototype.inRange = function(range){
+        res = false;
+        for(let coords of range){
+            if(this.x == coords[0] && this.y == coords[1]){
+                res = true;
+            }
+        }
+        return res;
+    }
+    function acidTick(pixel){
+        for(let coords of adjacentCoords){
+            let x = pixel.x+coords[0], y = pixel.y+coords[1];
+            let p2 = getPixel(x,y);
+            //let ignore = false;
+            /*for(let item of elements[pixel.element].ignore){
+                    if(p2 != null && item.startsWith("*")&&p2.element.endsWith(item.split("*")[1])){
+                        ignore = true;
+                    } else if (p2 != null && item.endsWith("*")&&p2.element.startsWith(item.split("*")[0])){
+                        ignore = true;
+                    } else if(p2 != null){
+						ignore = (elements[pixel.element].ignore.includes(p2.element)) ? true : ignore;
+					}
+                }*/
+            if(p2 != null){
+                let ignore = elements[pixel.element].ignore.some(item=>{
+                    let res = false;
+                    if(p2.element === item){
+                        res = true;
+                    } else if(item.startsWith("*") && p2.element.endsWith(item.slice(1))) {
+                        res = true;
+                    } else if(item.endsWith("*") && p2.element.startsWith(item.slice(0,-1))){
+                        res = true;
+                    }
+                    return res;
+                });
+                if(!ignore){
+                    deletePixel(x,y);
+                    deletePixel(pixel.x, pixel.y);
+                }
+            }
+        }
+    }
+    elements.acid.behavior = behaviors.LIQUID;
+    elements.acid.tick = acidTick;
+    elements.acid.ignore = elements.acid.ignore.concat(["nitric_acid", "aqua_regia", "nitrogen_dioxide", "nitric_acid_ice", "nitrogen_dioxide_ice", "acid", "chloroauric_acid", "*chloride", "*carbonate", "*acetate", "*sulfate", "*gallium", "*hydroxide", "salt", "*aluminum", "target_portal_in", "*magnesium", "*copper*", "*iron", "*calcium", "sulfuric_acid", "*vinegar", "*gypsum", "*wall", "epsom_salt", "platinum", "chloroplatinic_acid", "*sulfur*", "wall", "porcelain", "plastic", "glass", "*sulfate", "*nitrate"]);
+    elements.nitric_acid = {
+        alias: "HNO₃",
+        behavior: behaviors.LIQUID,
+        ignore: elements.acid.ignore,
+        state: "liquid",
+        color: ["#f5e7e1", "#f7e8e1", "#f7ebe6"],
+        tempLow: -42,
+        stateLow: "nitric_acid_ice",
+        reactions: {
+            acid: {elem1: null, elem2: "aqua_regia"},
+            copper: {elem1: "hydrogen", elem2: "copper_nitrate"},
+            sodium: {elem1: "hydrogen", elem2: "sodium_nitrate"},
+            aluminum: {elem1: "hydrogen", elem2: "aluminum_nitrate"},
+            potassium: {elem1: "hydrogen", elem2: "potassium_nitrate"},
+            calcium: {elem1: "hydrogen", elem2: "calcium_nitrate"},
+            magnesium: {elem1: "hydrogen", elem2: "magnesium_nitrate"},
+        },
+        density: 1510,
+        category: "liquids",
+        tick: function(pixel){
+            acidTick(pixel);
+            for(let coords of squareCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p2 = getPixel(x,y);
+                if(p2 != null && ["light", "liquid_light", "laser"].includes(p2.element) || Math.random()<(pixel.temp-68)/53){
+                    let elems = ["nitrogen_dioxide","water", "oxygen"];
+                    let elem = elems[Math.round(Math.random()*elems.length)];
+                    while (elem == undefined){
+                        elem = elems[Math.round(Math.random()*elems.length)];
+                    }
+                    changePixel(pixel, elem);
+                }
+            }
+        }
+    }
+    elements.nitrogen_dioxide = {
+        alias: "NO₂",
+        color: ["#6e361f", "#7d3d22", "#873f20", "#9c4935"],
+        behavior: behaviors.GAS,
+        state: "gas",
+        reactions: {
+            water: {elem1: null, elem2: "nitric_acid"},
+        },
+        category: "gases",
+        stateHigh: ["nitrogen", "oxygen"],
+        tempHigh: 150,
+        stateLow: "nitrogen_dioxide_ice",
+        tempLow: -11,
+    };
+    
+    elements.nitrogen_dioxide_ice = {
+        temp: -20,
+        color: ["#4f1607", "#4d1709", "#541606", "#471407"],
+        behavior: behaviors.WALL,
+        state: "solid",
+        category: "states",
+        stateHigh: "nitrogen_dioxide",
+        tempHigh: -10,
+    };
+    
+    elements.nitric_acid_ice = {
+        temp: -45,
+        behavior: behaviors.WALL,
+        color: ["#f5e7e4", "#f5efed", "#fcfafa"],
+        state: "solid",
+        category: "states",
+        stateHigh: "nitric_acid",
+        tempHigh: -41
+    };
+    
+    elements.aqua_regia = {
+        alias: "3HCl•HNO₃",
+        color:["#ffc766", "#f5c36e", "#f7c163", "#ffcd75"],
+        behavior: behaviors.LIQUID,
+        ignore: elements.acid.ignore,
+        category: "liquids",
+        state: "liquid",
+        density: 1210,
+        reactions: {
+            gold: {elem1: "chloroauric_acid", elem2: null, chance: 0.15},
+            gold_coin: {elem1: "chloroauric_acid", elem2: null, chance: 0.15},
+            blue_gold: {elem1: ["chloroauric_acid", "gallium_chloride"], elem2: null, chance: 0.15},
+            purple_gold: {elem1: ["chloroauric_acid", "chloroauric_acid", "chloroauric_acid", "aluminum_chloride"], elem2: null, chance: 0.15},
+        },
+        tick: acidTick,
+    };
+    elements.chloroauric_acid = {
+        color: ["#f7bb2f", "#f5bb33", "#f5b727", "#e8ae25"],
+        alias: "H(AuCl₄)",
+        behavior: behaviors.POWDER,
+        category: "salts",
+        state: "solid", 
+        density: 3900,
+        solubility: {water: 3.5},
+        reactions: {
+            potassium: {elem1: "gold_coin", elem2: "potassium_salt", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("hydrogen", x, y);}}}, color1: ["#574000", "#705200", "#634900", "#755600"]},
+            sodium: {elem1: "gold_coin", elem2: "salt", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("hydrogen", x, y);}}}, color1: ["#574000", "#705200", "#634900", "#755600"]},
+            caustic_potash: {elem1: "gold_coin", elem2: "potassium_salt", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("water", x, y);}}}},
+            lye: {elem1: "gold_coin", elem2: "salt", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("water", x, y);}}}, color1: ["#574000", "#705200", "#634900", "#755600"]},
+            magnesium: {elem1: "gold_coin", elem2: "magnesium_chloride", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("hydrogen", x, y);}}}, color1: ["#574000", "#705200", "#634900", "#755600"]},
+            metal_scrap: {elem1: "gold_coin", elem2: "slag", func: function(pixel){for(let coords of squareCoords){let x=pixel.x+coords[0],y=pixel.y+coords[1]; if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.25){createPixel("hydrogen", x, y);}}}, color1: ["#574000", "#705200", "#634900", "#755600"]},
+            copper: {elem1: "copper_chloride", elem2: "gold", color2: ["#574000", "#705200", "#634900", "#755600"]}
+        }
+    };
+    elements.magnesium_chloride = {
+        alias: "MgCl₂",
+        category: "salts",
+        behavior: behaviors.POWDER,
+        state: "solid",
+        color: ["#f2f2f2", "#f5f5f5", "#ebebeb", "#e6e6e6"],
+        density: 2320,
+        solubility: {water: 0.543, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
+        reactions: {
+            baking_soda: {elem1: "magnesium_carbonate", elem2: "salt"},
+            lye: {elem1: "magnesium_hydroxide", elem2: "salt"},
+            caustic_potash: {elem1: "magnesium_hydroxide", elem2: "potassium_salt"},
+            ash: {elem1: "magnesium_carbonate", elem2: ["dust","dust",null,"potassium_salt", "charcoal"]}
+        },
+        tempHigh: 714,
+    }
+    elements.molten_magnesium_chloride = {
+        alias: "MgCl₂",
+        density: 2150,
+        behavior: behaviors.MOLTEN,
+        state: "liquid",
+        color: ["#ffeb91", "#ffea8c", "#ffd480", "#ffd685", "#ffc37a"],
+        category: "states",
+        tempLow: 713,
+        stateLow: "magnesium_chloride",
+        stateHigh: ["acid_gas", "magnesium"],
+        tempHigh: 800,
+        temp: 720,
+    }
+    elements.calcium_chloride = {
+        flameColor: ["#fc8721", "#f58625", "#fa8d2d"],
+        alias: "CaCl₂",
+        category: "salts",
+        density: 2150,
+        behavior: behaviors.POWDER,
+        state: "solid",
+        color: ["#f2f2f2", "#f5f5f5", "#ebebeb", "#e6e6e6"],
+        solubility: {water: 0.745, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
+        reactions: {
+            baking_soda: {elem1: "limestone", elem2: "salt"},
+            lye: {elem1: "slaked_lime", elem2: "salt"},
+            caustic_potash: {elem1: "slaked_lime", elem2: "potassium_salt"},
+            ash: {elem1: "limestone", elem2: ["dust","dust",null,"potassium_salt", "charcoal"]},
+            epsom_salt: {elem1: "hardened_gypsum", elem2: "magnesium_chloride"},
+            carbon_dioxide: {elem1: "limestone", elem2: "chlorine", chance: 0.001, tempMin: 60}
+        }, 
+        tempHigh: 772,
+        stateHigh: "molten_calcium_chloride",
+    }
+    elements.molten_calcium_chloride = {
+        flameColor: ["#fc8721", "#f58625", "#fa8d2d"],
+        alias: "CaCl₂",
+        density: 2150,
+        behavior: behaviors.MOLTEN,
+        state: "liquid",
+        color: ["#ffeb91", "#ffea8c", "#ffd480", "#ffd685", "#ffc37a"],
+        category: "states",
+        tempLow: 771,
+        stateLow: "calcium_chloride",
+        reactions: {
+            oxygen: {elem1: "quicklime", elem2: "chlorine", chance: 0.005, tempMin: 800}
+        },
+        temp: 780,
+    }
+    elements.sodium.reactions.carbon_dioxide = {elem1: "baking_soda", elem2: null}, elements.magnesium.reactions.carbon_dioxide = {elem1: "magnesium_carbonate", elem2:null};
+    elements.acid.reactions.magnesium = {elem1: "hydrogen", elem2: "magnesium_chloride"};
+    elements.magnesium_carbonate = {
+        alias: "MgCO₃",
+        category: "salts",
+        behavior: behaviors.POWDER,
+        state: "solid",
+        color: ["#f2f2f2", "#f5f5f5", "#ebebeb", "#e6e6e6"],
+        density: 2960,
+        reactions: {
+            acid: {elem1: "magnesium_chloride", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+            sulfuric_acid: {elem1: "epsom_salt", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+            nitric_acid: {elem1: "magnesium_nitrate", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+            vinegar: {elem1: "magnesium_acetate", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]}
+        }
+    }
+    elements.magnesium_hydroxide = {
+        alias: "Mg(OH)₂",
+        category: "salts",
+        behavior: behaviors.POWDER,
+        state: "solid",
+        color: ["#f2f2f2", "#f5f5f5", "#ebebeb", "#e6e6e6"],
+        density: 2340,
+        reactions: {
+            acid: {elem1: "magnesium_chloride", elem2: "water"},
+            vinegar: {elem1: "magnesium_acetate", elem2: "water"},
+        },
+        tempHigh: 350,
+        stateHigh: ["steam", "magnesium"],
+    }
+    elements.vinegar.reactions.limestone = undefined;
+    elements.limestone.reactions = {vinegar: {elem1: "calcium_acetate", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]}};
+    elements.quicklime.reactions.vinegar = {elem1: "calcium_acetate", elem2: "oxygen"};
+    elements.oxidized_copper.reactions.vinegar = {elem1: "copper_acetate", elem2: "water"};
+    elements.slaked_lime.reactions.vinegar = {elem1: "calcium_acetate", elem2: "water"};
+    elements.hardened_gypsum = {
+        alias: "CaSO₄•2H₂O",
+        color: ["#f2f2f2", "#f5f5f5", "#ebebeb", "#e6e6e6"],
+        category: "solids",
+        state: "solid",
+        behavior: behaviors.WALL,
+        density: 2320,
+        breakInto: "gypsum",
+    }
+    elements.gypsum = {
+        alias: "CaSO₄•2H₂O",
+        color: ["#d1d1d1", "#d6d6d6", "#cccbca", "#cfcdca", "#bfbebb"],
+        category: "powders",
+        state: "solid",
+        behavior: behaviors.STURDYPOWDER,
+        density: 2420,
+        tick: function(pixel){
+            let chance = ((pixel.temp-18)/100*(Math.abs(pixel.temp)/40)*((pixelTicks-pixel.start)/250))*0.1;
+            if(Math.random()<chance){
+                changePixel(pixel, "hardened_gypsum");
+            }
+        }
+    }
+    elements.gallium_chloride = {
+        category: "salts",
+        alas: "GaCl₃",
+        behavior: behaviors.POWDER,
+        state: "solid",
+        color: ["#ffffff", "#fcfcfc", "#ffffff", "#ededed"],
+        density: 2470,
+        solubility: {water: 0.8, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
+        reactions: {
+            water: {elem1: "gallium", elem2: "acid"},
+            steam: {elem1: "gallium", elem2: "acid_gas"},
+            salt_water: {elem1: "gallium", elem2: ["acid", "salt"]},
+            seltzer: {elem1: "gallium", elem2: ["acid", "acid", "acid", "carbon_dioxide"]},
+            dirty_water: {elem1: "gallium", elem2: ["acid", "acid", "dirt"]},
+            sugar_water: {elem1: "gallium", elem2: ["acid", "sugar"]},
+            aluminum: {elem1: "gallium", elem2: "aluminum_chloride"},
+            sodium: {elem1: "gallium", elem2: "salt"},
+            potassium: {elem1: "gallium", elem2: "potassium_salt"},
+            magnesium: {elem1: "gallium", elem2: "magnesium_chloride"},
+        },
+        tick: function(pixel){
+            for(let coords of squareCoords){
+                let x = pixel.x+coords[0],y=pixel.y+coords[1];
+                if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random()<0.0015){
+                    createPixel("acid",x,y);
+                    changePixel(pixel, "gallium");
+                }
+            }
+        }
+    };
+    elements.aluminum_chloride = {
+        category: "salts",
+        color: ["#fcd732", "#fad42d", "#f5d133", "#fad83e"],
+        alias: "AlCl₃",
+        behavior: behaviors.POWDER,
+        state: "solid",
+        density: 2480,
+        tempHigh: 630,
+        stateHigh: ["chlorine", "aluminum"],
+        solubility: {water: 0.458, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
+    }
+    elements.acid.reactions.aluminum = {elem1: "hydrogen", elem2: "aluminum_chloride"};
+    elements.acid.reactions.purple_gold = {elem1: ["aluminum_chloride", "aluminum_chloride", "hydrogen"], elem2: "gold"};
+    elements.acid.reactions.blue_gold = {elem1: ["gallium_chloride", "gallium_chloride", "hydrogen"], elem2: "gold"};
+    elements.portal_in.keyInput = "channel", elements.portal_out.keyInput = "channel";
+    elements.target_portal_in = {
+        keyInput: "channel",
+        category: "machines",
+        state: "solid",
+        behavior: behaviors.WALL,
+        channel: 0,
+        movable: false,
+        hardness: 1,
+        checkAdjacent: function(pixel){
+            let adjacent = [];
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                if(isEmpty(x,y) && !outOfBounds(x,y)){
+                    adjacent.push([x,y]);
+                }
+            }
+            return (adjacent.length == 0) ? false : adjacent;
+        },
+        color: ["#f7ab05", "#fab011", "#faaf0c", "#f5aa0a", "#ffaf03"],
+        properties: {clickCd: 0, targetElems: [], channel: null, out: null},
+        onClicked: function(pixel, elem){
+            if(pixel.clickCd == 0){
+                if(elem != null){
+                    if(pixel.targetElems.includes(elem)){
+                        pixel.targetElems.splice(pixel.targetElems.indexOf(elem), 1);
+                    } else {
+                        pixel.targetElems.push(elem);
+                    }
+                }
+                pixel.clickCd = 20;
+            }
+        },
+        onSelect: function(){
+            promptInput("Enter channel for the portal: ", (input)=>{
+                elements.target_portal_in.channel = parseInt(input);
+            }, "Portal Channel", elements.target_portal_in.channel)
+        },
+        tick: function(pixel){
+            pixel.clickCd -= (pixel.clickCd == 0) ? 0 : 1;
+            if(pixel.channel == null){
+                pixel.channel = elements.target_portal_in.channel;
+            }
+            if(pixel.out == null){
+                for(p2 of currentPixels){
+                    if(p2.element == "portal_out" && p2.channel == pixel.channel){
+                        let adjacent = this.checkAdjacent(p2);
+                        if(adjacent != false){
+                            pixel.out = p2;
+                            break;
+                        }
+                    }
+                }
+            }
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                if(!isEmpty(x,y) && !outOfBounds(x,y) && elements[pixelMap[x][y].element].movable && pixel.out != undefined){
+                    let pixel2 = getPixel(x,y);
+                    let spots = this.checkAdjacent(pixel.out);
+                    if(spots != false && Array.isArray(spots)){
+                        let num = Math.round(Math.random()*spots.length);
+                        while(spots[num] == undefined){
+                            num = Math.round(Math.random()*spots.length);
+                        }
+                        if(pixel.targetElems.includes(pixel2.element)){
+                            movePixel(pixel2, spots[num][0], spots[num][1]);
+                        }
+                    }
+                }
+            }
+        },
+        dataInFunc: function(pixel, value){
+            if(value.includes(":")){
+                let valueArr = value.split(":");
+                if(Array.isArray(pixel[valueArr[0]]) && !pixel[valueArr[0]].includes(valueArr[1])){
+                    pixel[valueArr[0]].push(valueArr[1]);
+                } else {
+                    pixel[valueArr[0]] = (Number.isInteger(pixel[valueArr[0]])) ? parseInt(valueArr[1]) : valueArr[1];
+                }
+            }
+        }
+    }
+    
+    elements.aluminum_acetate = {
+        density: 1002,
+        color: ["#e8e8e8", "#ededed", "#e8e8e8", "#dedede"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        alias: "Al(CH₃COO)₃",
+        reactions: {
+            acid: {elem1: "aluminum_chloride", elem2: "vinegar"},
+        },
+        tempHigh: 120,
+        stateHigh: ["vinegar", "aluminum"],
+    }
+    elements.magnesium_acetate = {
+        density: 1450,
+        color: ["#e8e8e8", "#ededed", "#e8e8e8", "#dedede"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        alias: "Mg(CH₃COO)₂",
+        solubility: {water: 0.53, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
+        reactions: {
+            acid: {elem1: "magnesium_chloride", elem2: "vinegar"},
+            baking_soda: {elem1: "magnesium_carbonate", elem2: "sodium_acetate"},
+            ash: {elem1: "magnesium_carbonate", elem2: ["dust", "dust", null, "potassium_acetate"]},
+        },
+        tempHigh: 300,
+        stateHigh: ["vinegar", "magnesium_carbonate"],
+    }
+    elements.calcium_acetate = {
+        flameColor: ["#fc8721", "#f58625", "#fa8d2d"],
+        density: 1509,
+        color: ["#e8e8e8", "#ededed", "#e8e8e8", "#dedede"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        alias: "Ca(CH₃COO)₂",
+        solubility: {water: 0.347, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
+        reactions: {
+            acid: {elem1: "calcium_chloride", elem2: "vinegar"},
+            baking_soda: {elem1: "limestone", elem2: "sodium_acetate"},
+            ash: {elem1: "limestone", elem2: ["dust", "dust", null, "potassium_acetate"]},
+            epsom_salt: {elem1: "hardened_gypsum", elem2: "magnesium_acetate"},
+            copper_sulfate: {elem1: "hardened_gypsum", elem2: "copper_acetate"},
+        },
+        tempHigh: 650,
+        stateHigh: ["vinegar", "limestone"]
+    }
+    elements.potassium_acetate = {
+        density: 1570,
+        fireColor: ["#e3a6ff", "#d798f5", "#d88efa"],
+        color: ["#e8e8e8", "#ededed", "#e8e8e8", "#dedede"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        alias: "CH₃COOK",
+        solubility: {water: 2.55, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
+        reactions: {
+            acid: {elem1: "potassium_salt", elem2: "vinegar"},
+            baking_soda: {elem1: "caustic_potash", elem2: "sodium_acetate"},
+            
+        },
+        tempHigh: 292,
+    }
+    elements.copper_acetate = {
+        density: 1880,
+        fireColor:["#4dff58", "#4ee658", "#59f054", "#54f05c"],
+        color: ["#00594d", "#036357", "#045661", "#044052"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        alias: "Cu(CH₃COO)₂",
+        solubility: {water: 0.072},
+        reactions: {
+            sodium: {elem1: "copper", elem2: "sodium_acetate"},
+            potassium: {elem1: "copper", elem2: "potassium_acetate"},
+            magnesium: {elem1: "copper", elem2: "magnesium_acetate"},
+            calcium: {elem1: "copper", elem2: "calcium_acetate"},
+            aluminum: {elem1: "copper", elem2: "aluminum_acetate"},
+            wood: {stain2: "#043023"},
+        },
+        tempHigh: 240,
+        stateHigh: ["vinegar", "oxidized_copper"],
+    }
+    elements.copper_chloride = {
+        density: 3390,
+        tempHigh: 620,
+        stateHigh: ["copper", "chlorine"],
+        color: ["#59f0c2", "#57f2b2", "#53edce", "#61eddf"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        alias: "CuCl₂",
+        solubility: {water: 0.743},
+        reactions: {
+            sodium: {elem1: "copper", elem2: "salt"},
+            potassium: {elem1: "copper", elem2: "potassium_salt"},
+            magnesium: {elem1: "copper", elem2: "magnesium_chloride"},
+            calcium: {elem1: "copper", elem2: "calcium_chloride"},
+            aluminum: {elem1: "copper", elem2: "aluminum_chloride"},
+            wood: {stain2: "#043023"},
+        },
+        properties: {
+            anhydrous: false
+        },
+        fireColor: "#19abff",
+        tick: function(pixel){
+            if(pixelTicks-pixel.start == 2 && xDown){
+                pixel.anhydrous = true;
+                let rgb = {r: 74, g: 42, b: 10};
+                let num = 6 - (Math.round(Math.random()*12));
+                for(let key in rgb){
+                    rgb[key] += num;
+                }
+                pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+            }
+            let multi = (pixel.temp-70)/100;
+            multi = (multi < 0) ? 0 : ((multi > 1) ? 1 : multi);
+            if(Math.random() < 0.05*multi){
+                pixel.anhydrous = true;
+                let rgb = {r: 74, g: 42, b: 10};
+                let num = 6 - (Math.round(Math.random()*12));
+                for(let key in rgb){
+                    rgb[key] += num;
+                }
+                pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+            }
+            if(pixel.anhydrous){
+                let neighbors = [];
+                for(let coords of squareCoords){
+                    let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                    neighbors[neighbors.length] = (isEmpty(x,y) && !outOfBounds(x,y)) ? "air" : (!outOfBounds(x,y)) ? pixelMap[x][y].element : undefined;
+                }
+                if(neighbors.includes("air") && pixel.temp < 50 && Math.random() < 0.00035){
+                    pixel.anhydrous = false;
+                    let rgb = (Math.random() > 0.5) ? {r: 116, g: 237, b: 203} :  {r: 116, g: 237, b: 231};
+                    let num = 6 - (Math.round(Math.random()*12));
+                    for(let key in rgb){
+                        rgb[key] += num;
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                    
+                } else if (neighbors.includes("steam") || neighbors.includes("water") || neighbors.includes("salt_water") || neighbors.includes("sugar_water") || neighbors.includes("dirty_water") || neighbors.includes("seltzer") || neighbors.includes("pool_water") || neighbors.includes("slush")){
+                    pixel.anhydrous = false;
+                    let rgb = (Math.random() > 0.5) ? {r: 116, g: 237, b: 203} :  {r: 116, g: 237, b: 231};
+                    let num = 6 - (Math.round(Math.random()*12));
+                    for(let key in rgb){
+                        rgb[key] += num;
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            }
+        }
+    }
+    elements.magnesium.reactions.water = {elem1: "magnesium_hydroxide", elem2: "hydrogen"};
+    elements.sulfuric_acid = {
+        alias: "H₂SO₄",
+        category: "liquids",
+        ignore: elements.acid.ignore,
+        tick: acidTick,
+        color: ["#f5f5f5", "#fcfcfc", "#fffce8", "#fffce6"],
+        behavior: behaviors.LIQUID,
+        state: "liquid",
+        density: 1830,
+        reactions: {
+            magnesium_carbonate: {elem1: ["carbon_dioxide", "foam","foam"], elem2: "epsom_salt"},
+            limestone: {elem1: ["carbon_dioxide", "foam","foam"], elem2: "hardened_gypsum"},
+            quicklime: {elem1: "water", elem2: "hardened_gypsum"},
+            slaked_lime: {elem1: "water", elem2: "hardened_gypsum"},
+            copper_acetate: {elem1: "vinegar", elem2: "copper_sulfate"},
+            copper_oxide: {elem1: "water", elem2: "copper_sulfate"},
+            copper_chloride: {elem1: "acid_gas", elem2: "copper_sulfate"},
+            magnesium: {elem1: "hydrogen", elem2: "epsom_salt"},
+            calcium: {elem1: "hydrogen", elem2: "hardened_gypsum"},
+            magnesium_chloride: {elem1: "acid_gas", elem2: "epsom_salt"},
+            calcium_chloride: {elem1: "acid_gas", elem2: "hardened_gypsum"},
+            calcium_acetate: {elem1: "vinegar", elem2: "hardened_gypsum"},
+        },
+    }
+    elements.platinum = {
+        alias: "Pt",
+        color: ["#cccccc", "#cfcfcf", "#d9d9d9", "#dedede"],
+        category: "solids",
+        state: "solid",
+        density: 21450,
+        behavior: behaviors.WALL,
+        reactions: {
+            aqua_regia: {elem1: "chloroplatinic_acid",  elem2: "hydrogen"},
+        },
+        tempHigh: 1768,
+        stateHigh: "molten_platinum",
+    }
+    elements.molten_platinum = {
+        color: ["#ffd429", "#f7b228", "#ffb13d", "#ffd83d"],
+        behavior: behaviors.MOLTEN,
+        category: "states",
+        state: "liquid",
+        density: 21450,
+        tempLow: 1767,
+        stateLow: "platinum",
+        temp: 1770
+    }
+    elements.chloroplatinic_acid = {
+        color: ["#e6842e", "#f5923b", "#f5853b", "#f57a33"],
+        behavior: behaviors.POWDER,
+        category: "salts",
+        state: "solid",
+        density: 2431,
+        alias: "H₂PtCl₆",
+        tempHigh: 500,
+        stateHigh: ["acid_gas", "chlorine", "platinum", "platinum"],
+        solubility: {water: 1, },
+        reactions: {
+            sodium: {elem1: "salt", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            potassium: {elem1: "potassium_salt", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            magnesium: {elem1: "magnesium_chloride", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            calcium: {elem1: "calcium_chloride", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            aluminum: {elem1: "aluminum_chloride", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            baking_soda: {elem1: ["salt", "foam"], elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            limestone: {elem1: ["calcium_chloride", "foam"], elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            caustic_potash: {elem1: "potassium_salt", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            lye: {elem1: "salt", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            ash: {elem1: ["potassium_salt", "foam", "charcoal", null, null], elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]},
+            copper: {elem1: "copper_chloride", elem2: "platinum", color2: ["#404040", "#525252", "#454545", "#2e2e2e", "#262626"]}
+            
+        }
+    }
+    elements.magnet = {
+        keyInput: "range",
+        category: "machines",
+        range: 0,
+        attract: ["#1e43fc", "#1137f2", "#1c42ff", "#143bff"],
+        repel: ["#ff1814", "#ff1612", "#ff201c", "#ff0e0a"],
+        off: ["#303030", "#454545", "#3b3b3b", "#3d3d3d"],
+        color: ["#303030", "#454545", "#3b3b3b", "#3d3d3d"],
+        properties: {
+            range: null,
+            dragPixels: [],
+            clickCd: 0,
+            targetElems: [],
+            mode: 0,
+        },
+        onSelect: function(){
+          promptInput("Enter the range of this machine:", (input)=>{elements.magnet.range = parseInt(input);}, "Magnet Range", elements.magnet.range);
+        },
+        onClicked: function(pixel, elem){
+            if(pixel.targetElems.includes(elem) && elem != "unknown" && pixel.clickCd <= 0){
+                pixel.targetElems.splice(pixel.targetElems.indexOf(elem), 1);
+                pixel.clickCd = 20;
+            } else if (elem != "unknown" && pixel.clickCd <= 0) {
+                pixel.targetElems.push(elem);
+                pixel.clickCd = 20;
+            }
+            if(elem == "unknown" && pixel.clickCd <= 0){
+                switch(pixel.mode){
+                    case 0:
+                        pixel.mode = 1; //attract
+                        pixel.color = elements.magnet.attract[Math.round(Math.random()*elements.magnet.attract.length)];
+                        while(pixel.color == undefined){
+                            pixel.color = elements.magnet.attract[Math.round(Math.random()*elements.magnet.attract.length)];
+                        }
+                        break;
+                    case 1:
+                        pixel.mode = 2; //repel
+                        pixel.color = elements.magnet.repel[Math.round(Math.random()*elements.magnet.repel.length)];
+                        while(pixel.color == undefined){
+                            pixel.color = elements.magnet.repel[Math.round(Math.random()*elements.magnet.repel.length)];
+                        }
+                        break;
+                    case 2:
+                        pixel.mode = 0; //off
+                        pixel.color = elements.magnet.off[Math.round(Math.random()*elements.magnet.off.length)];
+                        while(pixel.color == undefined){
+                            pixel.color = elements.magnet.off[Math.round(Math.random()*elements.magnet.off.length)];
+                        }
+                        break;
+                    default: 
+                        pixel.mode = 0;
+                        pixel.color = elements.magnet.off[Math.round(Math.random()*elements.magnet.off.length)];
+                        while(pixel.color == undefined){
+                            pixel.color = elements.magnet.off[Math.round(Math.random()*elements.magnet.off.length)];
+                        }
+                        break;
+                };
+                pixel.clickCd = 20;
+            }
+        },
+        tick: function(pixel){
+            pixel.clickCd -= (pixel.clickCd == 0) ? 0 : 1;
+            if(pixel.range == null){
+                pixel.range = elements.magnet.range;
+            };
+            let range = mouseRange(pixel.x, pixel.y, pixel.range);
+            for(let p of pixel.dragPixels){
+                if(!p.inRange(range) || pixel.mode == 0 || !currentPixels.includes(p) || !pixel.targetElems.includes(p.element)){
+                    p.drag = false;
+                    pixel.dragPixels.splice(pixel.dragPixels.indexOf(p), 1);
+                } else {
+                    switch(pixel.mode){
+                        case 1: 
+                            let dX = pixel.x-p.x, dY = pixel.y-p.y;
+                            tryMove(p, p.x+Math.sign(dX), p.y+Math.sign(dY), null, true);
+                            break;
+                        case 2: 
+                            let dx = p.x-pixel.x, dy = p.y-pixel.y;
+                            tryMove(p, p.x+Math.sign(dx), p.y+Math.sign(dy), null, true);
+                            break;
+                    }
+                }
+            };
+            for(let coords of range){
+                let p2 = getPixel(coords[0], coords[1]);
+                if(p2 != null && pixel.targetElems.includes(p2.element) && pixel.mode != 0 && !pixel.dragPixels.includes(p2)){
+                    p2.drag = true;
+                    pixel.dragPixels.push(p2);
+                }
+            }
+        },
+        dataInFunc: function(pixel, value){
+            if(value.includes(":")){
+                let valueArr = value.split(":");
+                if(Array.isArray(elements[pixel.element].properties[valueArr[0]]) && !pixel[valueArr[0]].includes(valueArr[1])){
+                    pixel[valueArr[0]].push(valueArr[1]);
+                } else if(!Array.isArray(elements[pixel.element].properties[valueArr[0]])){
+                    pixel[valueArr[0]] = (Number.isInteger(pixel[valueArr[0]])) ? parseInt(valueArr[1]) : valueArr[1];
+                }
+            }
+        }
+    }
+    elements.liquid_sulfur_trioxide = {
+        density: 1920,
+        color: ["#fffdc7", "#fffdcc", "#f7f6da", "#f5f3bc"],
+        behavior: behaviors.LIQUID,
+        state: "liquid",
+        category: "states",
+        reactions: {
+            plant: {elem1: null, elem2: "dead_plant"},
+            fruit_leaves: {elem1: null, elem2: "dead_plant"},
+            fruit_branch: {elem1: null, elem2: "wood"},
+            tree_branch: {elem1: null, elem2: "wood"},
+            fruit_vine: {elem1: null, elem2: "dead_plant"},
+            low_fruit_vine: {elem1: null, elem2: "dead_plant"},
+            water: {elem1: null, elem2:"sulfuric_acid"},
+            quicklime: {elem1: null, elem2: "hardened_gypsum"},
+        },
+        tick: function(pixel){
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p2 = getPixel(x,y);
+                if(p2 != null && eLists.ANIMAL.includes(p2.element)){
+                    if(p2.element == "rat"){
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "rotten_meat");
+                    } else {
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "dead_bug");
+                    }
+                } else if (p2 != null && eLists.CLEANANIMAL.includes(p2.element)){
+                    if(["frog", "tadpole"].includes(p2.element)){
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "rotten_meat");
+                    } else {
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "dead_bug");
+                    }
+                } else if (p2 != null && eLists.SEEDS.includes(p2.element)){
+                    deletePixel(pixel.x,pixel.y);
+                    changePixel(p2, "dead_plant");
+                }
+            }
+        },
+        tempLow: 16,
+        stateLow: "sulfur_trioxide",
+    }
+    elements.sulfur_trioxide = {
+        temp: 16,
+        density: 1920,
+        color: ["#fffdc7", "#fffdcc", "#f7f6da", "#f5f3bc"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        reactions: {
+            plant: {elem1: null, elem2: "dead_plant"},
+            fruit_leaves: {elem1: null, elem2: "dead_plant"},
+            fruit_branch: {elem1: null, elem2: "wood"},
+            tree_branch: {elem1: null, elem2: "wood"},
+            fruit_vine: {elem1: null, elem2: "dead_plant"},
+            low_fruit_vine: {elem1: null, elem2: "dead_plant"},
+            water: {elem1: null, elem2:"sulfuric_acid"},
+            quicklime: {elem1: null, elem2: "hardened_gypsum"},
+            grass: {elem1: null, elem2: "dead_plant"},
+            vine: {elem1: null, elem2: "dead_plant"},
+            evergreen: {elem1: null, elem2: "dead_plant"},
+        },
+        tick: function(pixel){
+            for(let coords of adjacentCoords){
+                let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                let p2 = getPixel(x,y);
+                if(p2 != null && eLists.ANIMAL.includes(p2.element)){
+                    if(p2.element == "rat"){
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "rotten_meat");
+                    } else {
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "dead_bug");
+                    }
+                } else if (p2 != null && eLists.CLEANANIMAL.includes(p2.element)){
+                    if(["frog", "tadpole"].includes(p2.element)){
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "rotten_meat");
+                    } else {
+                        deletePixel(pixel.x,pixel.y);
+                        changePixel(p2, "dead_bug");
+                    }
+                } else if (p2 != null && eLists.SEEDS.includes(p2.element)){
+                    deletePixel(pixel.x,pixel.y);
+                    changePixel(p2, "dead_plant");
+                }
+            }
+        },
+        tempHigh: 17,
+        stateHigh: "liquid_sulfur_trioxide",
+    }
+    elements.sulfur.burnInto = "liquid_sulfur_trioxide", elements.molten_sulfur.burnInto = "liquid_sulfur_trioxide", elements.sulfur_gas.burnInto = "liquid_sulfur_trioxide";
+    
+    /*Inspired by the bismuth element from nousersthings.js*/
+    elements.bismuth = {
+        color: ["#d4d4d4", "#d6d6d6", "#dedede", "#d9d9d9", "#dbdbd5"],
+        tempHigh: 271,
+        stateHigh: "molten_bismuth",
+        category: "solids",
+        state: "solid",
+        density: 9807,
+    }
+        
+    elements.molten_bismuth = {
+        color: ["#d4d4d4", "#d6d6d6", "#dedede", "#d9d9d9", "#dbdbd5"],
+        category: "states",
+        state: "liquid",
+        behavior: behaviors.MOLTEN,
+        tick: function(pixel){
+            if(pixel.temp > 250 && pixel.temp < 270){
+                chance = 0.000075-(Math.min((pixel.temp-250)/20, 0)*0.00005);
+                if(Math.random()<chance){
+                    let colors = [
+                        {r:255, g:127, b:0},
+                        {r: 255, g:200, b:0},
+                        {r: 255, g:255, b:0},
+                        {r:0, g:255, b:0},
+                        {r:0, g:255, b:255},
+                        {r:0, g:0, b:255},
+                        {r:255, g:0, b:255},
+                        {r:255, g:0, b:70},
+                        {r:255, g:105, b:0},
+                    ];
+                    let num = Math.round(Math.random()*7);
+                    let newColorArr = [];
+                    for(let i = 0; i < colors.length; i++){
+                        newColorArr[i] = colors[(i+num)%colors.length];
+                    }
+                    changePixel(pixel, "bismuth");
+                    pixel.colorArr = newColorArr;
+                    pixel.crystallized = true;
+                    pixel.color = normalize(newColorArr[0]);
+                    pixel.position = 1;
+                } else {
+                    let positions = [], coordsArr = [];
+                    for(let coords of squareCoords){
+                        let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                        let p2 = getPixel(x,y);
+                        if(p2 != null && p2.element == "bismuth" && p2.crystallized){
+                            positions.push(p2.position);
+                            coordsArr.push([x,y]);
+                        }
+                    }
+                    if(Math.random()<0.005 && positions.length > 0){
+                        let lowestIndex = positions.indexOf(Math.min(...positions));
+                        let newPos = positions[lowestIndex]+1;
+                        let coords = coordsArr[lowestIndex], colors = pixelMap[coords[0]][coords[1]].colorArr || [
+                        {r:255, g:127, b:0},
+                        {r: 255, g:200, b:0},
+                        {r: 255, g:255, b:0},
+                        {r:0, g:255, b:0},
+                        {r:0, g:255, b:255},
+                        {r:0, g:0, b:255},
+                        {r:255, g:0, b:255},
+                        {r:255, g:0, b:70},
+                        {r:255, g:105, b:0},
+                    ];
+                        let current = ((newPos%11)/10)*colors.length;
+                        let currentIndex = Math.floor(current);
+                        let d = current-currentIndex;
+                        let c1 = colors[currentIndex%colors.length], c2 = colors[(currentIndex+1)%colors.length];
+                        changePixel(pixel, "bismuth");
+                        pixel.crystallized = true;
+                        pixel.position = newPos;
+                        let num = 207 + (Math.round(Math.random()*12)-6);
+                        let rgb = getRGB(interpolateRgb(c1, c2, d));
+                        rgb.r = Math.round(rgb.r*(num/255)), rgb.g = Math.round(rgb.g*(num/255)), rgb.b = Math.round(rgb.b*(num/255));
+                        pixel.color = normalize(rgb);
+                    }
+                }
+                
+            }
+        },
+        tempLow: 250,
+        stateLow: "bismuth",
+        temp: 270,
+    };
+	
+	elements.copper_nitrate = {
+        density: 3050,
+        tempHigh: 145,
+        stateHigh: ["oxidized_copper", "nitrogen_dioxide", "nitrogen_dioxide"],
+        color: ["#1717ff", "#2121ff", "#1b1bf5", "#0f0ff2", "#0707f7"],
+        behavior: behaviors.POWDER,
+        state: "solid",
+        category: "salts",
+        alias: "Cu(NO₃)₂",
+        solubility: {water: 1.25},
+        reactions: {
+            sodium: {elem1: "copper", elem2: "sodium_nitrate"},
+            potassium: {elem1: "copper", elem2: "potassium_nitrate"},
+            calcium: {elem1: "copper", elem2: "calcium_nitrate"},
+            aluminum: {elem1: "copper", elem2: "aluminum_nitrate"},
+            wood: {stain2: "#043023"},
+            ash: {elem1: "copper_carbonate", elem2: "potassium_nitrate"},
+            baking_soda: {elem1: "copper_carbonate", elem2: "sodium_nitrate"},
+            acid: {elem1: "copper_chloride", elem2: "nitric_acid"},
+            sulfuric_acid: {elem1: "copper_sulfate", elem2: "nitric_acid"},
+        },
+        properties: {
+            anhydrous: false
+        },
+        fireColor: "#19abff",
+        tick: function(pixel){
+            if(pixelTicks-pixel.start == 2 && xDown){
+                pixel.anhydrous = true;
+                let rgb = {r: 51, g: 158, b: 61};
+                let num = 6 - (Math.round(Math.random()*12));
+                for(let key in rgb){
+                    rgb[key] += num;
+                }
+                pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+            }
+            let multi = (pixel.temp-70)/100;
+            multi = (multi < 0) ? 0 : ((multi > 1) ? 1 : multi);
+            if(Math.random() < 0.05*multi){
+                pixel.anhydrous = true;
+                let rgb = {r: 51, g: 158, b: 61};
+                let num = 6 - (Math.round(Math.random()*12));
+                for(let key in rgb){
+                    rgb[key] += num;
+                }
+                pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+            }
+            if(pixel.anhydrous){
+                let neighbors = [];
+                for(let coords of squareCoords){
+                    let x = pixel.x+coords[0], y = pixel.y+coords[1];
+                    neighbors[neighbors.length] = (isEmpty(x,y) && !outOfBounds(x,y)) ? "air" : (!outOfBounds(x,y)) ? pixelMap[x][y].element : undefined;
+                }
+                if(neighbors.includes("air") && pixel.temp < 50 && Math.random() < 0.00035){
+                    pixel.anhydrous = false;
+                    let rgb = (Math.random() > 0.5) ? {r: 7, g: 7, b: 247} :  {r: 26, g: 26, b: 240};
+                    let num = 6 - (Math.round(Math.random()*12));
+                    for(let key in rgb){
+                        rgb[key] += num;
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                    
+                } else if (neighbors.includes("steam") || neighbors.includes("water") || neighbors.includes("salt_water") || neighbors.includes("sugar_water") || neighbors.includes("dirty_water") || neighbors.includes("seltzer") || neighbors.includes("pool_water") || neighbors.includes("slush")){
+                    pixel.anhydrous = false;
+                    let rgb = (Math.random() > 0.5) ? {r: 7, g: 7, b: 247} :  {r: 26, g: 26, b: 240};
+                    let num = 6 - (Math.round(Math.random()*12));
+                    for(let key in rgb){
+                        rgb[key] += num;
+                    }
+                    pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+                }
+            }
+        }
+    };
 
-document.addEventListener("keyup", function(event){
-  keysDown[event.key.toLowerCase()] = false;
-  if(moves[event.key.toLowerCase()] && move){
-    move = false;
-  }
-  if(event.key.toLowerCase() == "x"){
-    for(var i = 0; i < beamPixels.length; i++){
-      beamPixels[i].drag = false;
-    }
-    beamPixels = [];
-  }
-})
-function deletePixel(x,y) {
-    // remove pixelMap[x][y] from currentPixels
-    currentPixels.splice(currentPixels.indexOf(pixelMap[x][y]),1);
-  if(UFOs.includes(pixelMap[x][y])){
-    UFOs.splice(UFOs.indexOf(pixelMap[x][y]),1)
-  }
-    if (pixelMap[x][y]) {pixelMap[x][y].del = true;}
-    delete pixelMap[x][y];
-}
-setInterval(function(){
-  for(var i = 0; i < currentPixels.length; i++){
-    for(var ii = 0; ii < UFOs.length; ii++){
-      if(beamPixels.includes(currentPixels[i]) && currentPixels[i].x != UFOs[ii].x && !keysDown.x){
-        beamPixels.splice(beamPixels.indexOf(currentPixels[i]), 1);
-        currentPixels[i].drag = false;
-      }
-      else if (currentPixels[i].x != UFOs[ii].x && beamPixels.includes(currentPixels[i])){
-        (currentPixels[i].x > UFOs[ii].x) ? null : null;
-      }
-    }
-    if(currentPixels[i].drag && !beamPixels.includes(currentPixels[i])){
-      if(draggingPixels && !draggingPixels.includes(currentPixels[i])){
-        if(!magnetElems.includes(currentPixels[i])){
-          currentPixels.drag = false;
-        }
-      } else if(!draggingPixels){
-        if(!magnetElems.includes(currentPixels[i])){
-          currentPixels[i].drag = false;
-        }
-      } else if (draggingPixels && draggingPixels.includes(currentPixels[i])){
-        continue;
-      }
-    }
-  }
-}, 1000/tps)
-runAfterLoad(function(){
-  document.body.insertAdjacentHTML("beforeend",`
-  these are all properties of the pixel. another way to find pixel properties is using debug on a pixel, it will tell you the property and the value, like x and y, or, in plants.js, fruit.
-  <table id="variables">
-    <thead>
-      <tr class="bold">
-        <th>
-         Variable
-        </th>
-        <th>
-          Definition
-        </th>
-      </tr>
-    </thead>
-    <tbody><tr>
-      <th>
-        p.color
-      </th>
-      <th>
-        The color of the pixel. it is defined as an RGB value.
-      </th>
-    </tr>
-    <tr>
-      <th>
-        p.x and p.y
-      </th>
-      <th>
-        The x and y positions of the pixel.
-      </th>
-    </tr>
-    <tr>
-      <th>
-        p.element
-      </th>
-      <th>
-        The element of the pixel.
-      </th>
-    </tr>
-    <tr>
-      <th>
-        p.clone
-      </th>
-      <th>
-        Specific to cloners, specifies what the cloner clones.
-      </th>
-    </tr>
-    <tr>
-      <th>
-        wc and lc
-      </th>
-      <th>
-        Specific to saplings, specifies what colour the wood is (wc) and what colour the leaves are (lc).
-      </th>
-    </tr>
-    <tr>
-      <th>
-        p.start
-      </th>
-      <th>
-        The start tick of the pixel.
-      </th>
-    </tr>
-    <tr>
-      <th>
-        p.tick                                               
-      </th>
-      <th>
-        the amount of ticks that have happened so far in the game.
-      </th>
-    </tr>
-  </tbody></table>
-  <p>Paste function code for the prop machine in the text area below, typing doesnt work well.</p>
-  <textarea id="func"></textarea>
-  <button onClick = "Func = document.getElementById('func').value;">Use as function</button>
-  `);
-});
+    elements.sodium_nitrate = {
+        color: ["#f5f5f5", "#e8e8e8", "#ededed", "#e3e3e3"],
+        density: 2260,
+        category: "salts",
+        tempHigh: 650,
+        stateHigh: ["sodium", "nitrogen_dioxide"],
+        reactions: {
+            ash: {elem1: "baking_soda", elem2: "potassium_nitrate"},
+            potassium: {elem1: "sodium", elem2: "potassium_nitrate"},
+            //sulfuric_acid: {elem1: "sodium_sulfate", elem2: "nitric_acid"},
+            acid: {elem1: "salt", elem2: "nitric_acid"},
+        },
+        solubility: {water: 0.86},
+        alias: "NaNO₃",
+        behavior: behaviors.POWDER
+    };
+
+    elements.potassium_nitrate = {
+        color: ["#f5f5f5", "#e8e8e8", "#ededed", "#e3e3e3"],
+        density: 2106,
+        category: "salts",
+        tempHigh: 800,
+        stateHigh: ["potassium", "nitrogen_dioxide"],
+        reactions: {
+            //sulfuric_acid: {elem1: "potassium_sulfate", elem2: "nitric_acid"},
+            acid: {elem1: "potassium_salt", elem2: "nitric_acid"},
+        },
+        solubility: {water: 0.316},
+        alias: "KNO₃",
+        behavior: behaviors.POWDER
+    };
+    elements.magnesium_nitrate = {
+        color: ["#f5f5f5", "#e8e8e8", "#ededed", "#e3e3e3"],
+        density: 2300,
+        category: "salts",
+        tempHigh: 290,
+        stateHigh: ["magnesium", "nitrogen_dioxide"],
+        reactions: {
+            potassium: {elem1: "magnesium", elem2: "potassium_nitrate"},
+            sodium: {elem1: "magnesium", elem2: "sodium_nitrate"},
+            sulfuric_acid: {elem1: "epsom_salt", elem2: "nitric_acid"},
+            acid: {elem1: "magnesium_chloride", elem2: "nitric_acid"},
+        },
+        solubility: {water: 0.42},
+        alias: "Mg(NO₃)₂",
+        behavior: behaviors.POWDER
+    };
+    elements.calcium_nitrate = {
+        color: ["#f5f5f5", "#e8e8e8", "#ededed", "#e3e3e3"],
+        density: 2504,
+        category: "salts",
+        tempHigh: 650,
+        stateHigh: ["calcium", "nitrogen_dioxide"],
+        reactions: {
+            potassium: {elem1: "calcium", elem2: "potassium_nitrate"},
+            sodium: {elem1: "calcium", elem2: "sodium_nitrate"},
+            magnesium: {elem1: "calcium", elem2: "magnesium_nitrate"},
+            sulfuric_acid: {elem1: "gypsum", elem2: "nitric_acid"},
+            acid: {elem1: "calcium_chloride", elem2: "nitric_acid"},
+        },
+        solubility: {water: 1.21},
+        alias: "Ca(NO₃)₂",
+        behavior: behaviors.POWDER
+    };
+	elements.aluminum_nitrate = {
+        color: ["#f5f5f5", "#e8e8e8", "#ededed", "#e3e3e3"],
+        density: 1720,
+        category: "salts",
+        tempHigh: 150,
+        stateHigh: ["aluminum", "nitrogen_dioxide"],
+        reactions: {
+            sodium: {elem1: "aluminum", elem2: "sodium_nitrate"},
+            potassium: {elem1: "aluminum", elem2: "potassium_nitrate"},
+            calcium: {elem1: "aluminum", elem2: "calcium_nitrate"},
+            magnesium: {elem1: "aluminum", elem2: "magnesium_nitrate"},
+            //sulfuric_acid: {elem1: "aluminum_sulfate", elem2: "nitric_acid"},
+            acid: {elem1: "aluminum_chloride", elem2: "nitric_acid"},
+        },
+        solubility: {water: 0.739},
+        alias: "Al(NO₃)₃",
+        behavior: behaviors.POWDER
+    };
+    elements.limestone.reactions.sulfuric_acid = {elem1: "gypsum", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]};
+    elements.slaked_lime.reactions.sulfuric_acid = {elem1: "gypsum", elem2: "water"};
+    elements.quicklime.reactions.sulfuric_acid = {elem1: "gypsum", elem2: "oxygen"};
+    elements.limestone.reactions.nitric_acid = {elem1: "calcium_nitrate", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]};
+    elements.slaked_lime.reactions.nitric_acid = {elem1: "calcium_nitrate", elem2: "water"};
+    elements.quicklime.reactions.nitric_acid = {elem1: "calcium_nitrate", elem2: "oxygen"};
+    elements.copper_carbonate = {
+        color: ["#5ee092", "#54d186", "#52de8a", "#44c97a"],
+        category: "salts",
+        alias: "CuCO₃",
+        behavior: behaviors.POWDER,
+        reactions: {
+            vinegar: {elem1: "copper_acetate", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+            acid: {elem1: "copper_chloride", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+            sulfuric_acid: {elem1: "copper_sulfate", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+            nitric_acid: {elem1: "copper_nitrate", elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+            aqua_regia: {elem1: ["copper_nitrate", "copper_chloride"], elem2: ["carbon_dioxide", "foam", "seltzer", "seltzer"]},
+        },
+        density: 4000,
+        tempHigh: 290,
+        stateHigh: ["oxidized_copper", "carbon_dioxide"],
+    };
+    elements.aqua_regia.solubility = {water: 1};
+    elements.acid.solubility = {water: 1};
+    elements.vinegar.solubility = {water: 1};
+    elements.nitric_acid.solubility = {water: 1};
+    elements.sulfuric_acid.solubility = {water: 1};
+}, true);

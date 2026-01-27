@@ -1,29 +1,27 @@
-function whenAvailable(names, callback) {
-    var interval = 10; // ms
-    window.setTimeout(function() {
-		let bool = true;
-		for(let i = 0; i < names.length; i++)
-		{
-			if(!window[names[i]])
-			{
-				bool = false;
-			}
-		}
-        if (bool) {
-            callback();
-        } else {
-            whenAvailable(names, callback);
-        }
-    }, interval);
-}
+// function whenAvailable(names, callback) {
+//     var interval = 10; // ms
+//     window.setTimeout(function() {
+// 		let bool = true;
+// 		for(let i = 0; i < names.length; i++)
+// 		{
+// 			if(!window[names[i]])
+// 			{
+// 				bool = false;
+// 			}
+// 		}
+//         if (bool) {
+//             callback();
+//         } else {
+//             whenAvailable(names, callback);
+//         }
+//     }, interval);
+// }
 
 var modName = "mods/metals.js";
-var changeTempMod = "mods/changeTempReactionParameter.js";
-var runAfterAutogenMod = "mods/runAfterAutogen2.js";
+// var changeTempMod = "mods/changeTempReactionParameter.js";
+// var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 var libraryMod = "mods/code_library.js";
-var onTryMoveIntoMod = "mods/onTryMoveInto.js";
-if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) && enabledMods.includes(onTryMoveIntoMod)) {
-	whenAvailable(["runAfterAutogen"], function() {
+dependOn("code_library.js", function(){
 	elements.iron.hardness = 0.74
 	//https://www.engineeringtoolbox.com/bhn-brinell-hardness-number-d_1365.html
 	//https://en.wikipedia.org/wiki/Hardnesses_of_the_elements_(data_page)
@@ -483,7 +481,7 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 		properties: {
 			oldColor: null,
 		},
-		onTryMoveInto: function(pixel,otherPixel) {
+		onMoveInto: function(pixel,otherPixel) {
 			neutronAbsorbency(pixel,otherPixel);
 		},
 		tick: function(pixel) {
@@ -500,7 +498,7 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 		density: 5803,
 		tempHigh: 4409,
 		behavior: behaviors.MOLTEN,
-		onTryMoveInto: function(pixel,otherPixel) {
+		onMoveInto: function(pixel,otherPixel) {
 			neutronAbsorbency(pixel,otherPixel);
 		},
 		tick: function(pixel) {
@@ -512,7 +510,7 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 	elements.zirconium_gas = {
 		density: 3, //Unknown/Unmeasured value
 		behavior: behaviors.GAS,
-		onTryMoveInto: function(pixel,otherPixel) {
+		onMoveInto: function(pixel,otherPixel) {
 			neutronAbsorbency(pixel,otherPixel);
 		},
 		tick: function(pixel) {
@@ -781,11 +779,4 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 		conduct: 0.35,
 		hardness: 0.7, //idk lol
 	};
-});
-} else {
-	if(!enabledMods.includes(changeTempMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,changeTempMod) };
-	if(!enabledMods.includes(libraryMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
-	if(!enabledMods.includes(onTryMoveIntoMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod) };
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${changeTempMod}", "${runAfterAutogenMod}" and "${onTryMoveIntoMod}" mods are required; any missing mods in this list have been automatically inserted (reload for this to take effect).`);
-};
+},true)

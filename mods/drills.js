@@ -65,19 +65,19 @@
 
 
 // info element
-elements.drills_info = {
-	color: "#000000",
-	name: "drills.js",
-	category: "Mods",
-	behavior: behaviors.SELFDELETE,
-	maxSize: 1,
-	tool: function(pixel) {},
-	onSelect: function(pixel) {
-		let mod_info = "The drills.js mod adds different kinds of drills to a new 'drills' category.\n\nMod made by: Necrotic_Phantom. \n With help from: voidapex11."
-		alert(mod_info)
-	return
-	},
-};
+// elements.drills_info = {
+// 	color: "#000000",
+// 	name: "drills.js",
+// 	category: "Mods",
+// 	behavior: behaviors.SELFDELETE,
+// 	maxSize: 1,
+// 	tool: function(pixel) {},
+// 	onSelect: function(pixel) {
+// 		let mod_info = "The drills.js mod adds different kinds of drills to a new 'drills' category.\n\nMod made by: Necrotic_Phantom. \n With help from: voidapex11."
+// 		alert(mod_info)
+// 	return
+// 	},
+// };
 
 
 

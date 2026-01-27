@@ -1,8 +1,10 @@
 var modName = "mods/sponge_edit.js";
-var onTryMoveIntoMod = "mods/onTryMoveInto.js";
+// var onTryMoveIntoMod = "mods/onTryMoveInto.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
+
+
+dependOn("code_library.js", function(){
 	elements.sponge.properties ??= {};
 	elements.sponge.properties.maxAbsorb = 250;
 
@@ -34,7 +36,7 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 		};
 	};
 	
-	elements.sponge.onTryMoveInto = function(pixel,otherPixel) {
+	elements.sponge.onMoveInto = function(pixel,otherPixel) {
 		var absorbedElements = Object.keys(pixel.absorbed);
 		if(absorbedElements.length == 0) {
 			return false;
@@ -68,9 +70,4 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 			};
 		};
 	};
-} else {
-	enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod);
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod);
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The ${onTryMoveIntoMod} mod and ${libraryMod} mods are required and have been automatically inserted (reload for this to take effect).`);
-};
+}, true);

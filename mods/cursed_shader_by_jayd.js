@@ -56,7 +56,7 @@ elements.smoke.renderer = function(pixel,ctx) {
 elements.radiation.renderer = function(pixel,ctx) {
     shade(ctx, pixel.color, pixel.x, pixel.y, 2, 0.25)
 }
-elements.led_r.renderer = function(pixel,ctx) {
+elements.led.renderer = function(pixel,ctx) {
     if (pixel.charge) {
         shade(ctx, pixel.color, pixel.x, pixel.y, 3, 0.5)
     }
@@ -64,19 +64,27 @@ elements.led_r.renderer = function(pixel,ctx) {
         shade(ctx, pixel.color, pixel.x, pixel.y, 0, 1)
     }
 }
-elements.led_g.renderer = function(pixel,ctx) {
-    if (pixel.charge) {
-        shade(ctx, pixel.color, pixel.x, pixel.y, 3, 0.5)
-    }
-    else {
-        shade(ctx, pixel.color, pixel.x, pixel.y, 0, 1)
-    }
-}
-elements.led_b.renderer = function(pixel,ctx) {
-    if (pixel.charge) {
-        shade(ctx, pixel.color, pixel.x, pixel.y, 3, 0.5)
-    }
-    else {
-        shade(ctx, pixel.color, pixel.x, pixel.y, 0, 1)
-    }
-}
+// elements.led_r.renderer = function(pixel,ctx) {
+//     if (pixel.charge) {
+//         shade(ctx, pixel.color, pixel.x, pixel.y, 3, 0.5)
+//     }
+//     else {
+//         shade(ctx, pixel.color, pixel.x, pixel.y, 0, 1)
+//     }
+// }
+// elements.led_g.renderer = function(pixel,ctx) {
+//     if (pixel.charge) {
+//         shade(ctx, pixel.color, pixel.x, pixel.y, 3, 0.5)
+//     }
+//     else {
+//         shade(ctx, pixel.color, pixel.x, pixel.y, 0, 1)
+//     }
+// }
+// elements.led_b.renderer = function(pixel,ctx) {
+//     if (pixel.charge) {
+//         shade(ctx, pixel.color, pixel.x, pixel.y, 3, 0.5)
+//     }
+//     else {
+//         shade(ctx, pixel.color, pixel.x, pixel.y, 0, 1)
+//     }
+// }

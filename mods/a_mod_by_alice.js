@@ -1466,6 +1466,7 @@ try {
 
 			function createPixelReturn(elementIn,x,y) { //sugar
 				var element = elementIn; while(element instanceof Array) { element = randomChoice(element) };
+				if(pixelMap[x]?.[y] == undefined) { return {} }
 				var newPixel = new Pixel(x, y, element);
 				currentPixels.push(newPixel);
 				checkUnlock(element);
@@ -2214,8 +2215,8 @@ try {
 					return thingsArray.join(", ")
 				};
 			};
-			function capitalizeFirstLetter(string,locale=null) {
-				return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
+			function capitalizeFirstLetter(string) {
+				return string[0].toUpperCase() + string.slice(1)
 			};
 
 	//INTERFACE TO SET OTHER PIXEL PROPERTIES WHEN PLACING SPECIFIC ELEMENTS ##
@@ -4568,24 +4569,28 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 				else if (Math.floor(Math.random()*100)<fireChance && !fireSpawnBlacklist.includes(pixel.element)) { // Spawn fire
 					//console.log(fire);
-					if (isEmpty(pixel.x,pixel.y-1)) {
+					if (isEmpty(pixel.x,pixel.y-1,false)) {
 						if(fire !== null) {
-							createPixel(fire,pixel.x,pixel.y-1);
-							pixelMap[pixel.x][pixel.y-1].temp = fireTemp;
-							if (info.fireColor != undefined) {
-								pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
-							};
-						};
+							let n = tryCreatePixel(fire,pixel.x,pixel.y-1);
+							if(n) {
+								n.temp = fireTemp;
+								if (info.fireColor != undefined) {
+									pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
+								}
+							}
+						}
 					}
 					// same for below if top is blocked
-					else if (isEmpty(pixel.x,pixel.y+1)) {
+					else if (isEmpty(pixel.x,pixel.y+1,false)) {
 						if(fire !== null) {
-							createPixel(fire,pixel.x,pixel.y+1);
-							pixelMap[pixel.x][pixel.y+1].temp = fireTemp;
-							if (info.fireColor != undefined) {
-								pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
-							};
-						};
+							let n = tryCreatePixel(fire,pixel.x,pixel.y+1);
+							if(n) {
+								n.temp = fireTemp;
+								if (info.fireColor != undefined) {
+									pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -4685,14 +4690,18 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					//console.log((pixel.x+randomMove1[0]) + " " + (pixel.y+randomMove1[1]))
 					var newPixel = null;
 					if(!outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1])) {
-						newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
+						if(pixelMap[pixel.x+randomMove1[0]] !== undefined) {
+							newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
+						}
 					};
 					if(outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1]) || !reactionStealer(pixel,newPixel,"radiation")) {
 						var randomMove2 = move2Spots[Math.floor(Math.random() * move2Spots.length)];
 						if(!tryMove(pixel, pixel.x+randomMove2[0], pixel.y+randomMove2[1])) {
 							var newPixel = null;
 							if(!outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1])) {
-								newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
+								if(pixelMap[pixel.x+randomMove1[0]] !== undefined) {
+									newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
+								}
 							};
 							if(newPixel !== null) { reactionStealer(pixel,newPixel,"radiation") };
 						};
@@ -13708,7 +13717,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							stats += "<span id='stat-burning' class='stat'>Burning</span>";
 						}
 						if (elements[currentPixel.element].hoverStat) {
-							stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element].hoverStat(currentPixel)+"</span>";
+							stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element]?.hoverStat?.(currentPixel)+"</span>";
 						}
 						else if (elements[currentElement].toolHoverStat) {
 							stats += "<span id='stat-hover' class='stat'>"+elements[currentElement].toolHoverStat(currentPixel).toString().replaceAll("<","&lt;")+"</span>";
@@ -14060,7 +14069,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//3. slice(1) removes empty (OOB) position at y=0
 			//4. indexOf(false) always shows the first matching item
 			//5. an offset I don't understand (probably from that slice) shifts the first match to the empty spot above the first full pixel
-			var firstEmptyY = [...pixelMap[x].map(obj =>!obj || elements[obj.element].state == "gas"),false].slice(1).indexOf(false);
+			let row = pixelMap?.[x];
+			if(!row) { return false };
+			var firstEmptyY = [...(row.map(obj =>!obj || elements[obj.element].state == "gas")),false].slice(1).indexOf(false);
 			if(firstEmptyY == -1) {
 				return false;
 			};
@@ -42225,7 +42236,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					emptySlots = emptySlots.slice(0,2);
 					for(var i = 0; i < emptySlots.length; i++) {
 						var coords = emptySlots[i];
-						createPixelReturn("steam",...coords).temp = pixel.temp
+						let n = tryCreatePixelReturn("steam",...coords); if(n) { n.temp = pixel.temp }
 					};
 					changePixel(pixel,"calcium_sulfate",false);
 					return
@@ -42243,7 +42254,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					emptySlots = emptySlots.slice(0,2);
 					for(var i = 0; i < emptySlots.length; i++) {
 						var coords = emptySlots[i];
-						createPixelReturn("steam",...coords).temp = pixel.temp
+						let n = tryCreatePixelReturn("steam",...coords); if(n) { n.temp = pixel.temp }
 					};
 					changePixel(pixel,"molten_calcium_sulfate",false);
 					return
@@ -44975,7 +44986,6 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) != s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
 			function similarity(s1, s2) {var longer = s1;var shorter = s2;if (s1.length < s2.length) {longer = s2;shorter = s1;}var longerLength = longer.length;if (longerLength == 0) {return 1.0;}return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);}
 			function mostSimilarElement(s) {
-				delete elements;
 				var max = 0;
 				var maxElement = "";
 				for (var e in elements) {
@@ -46005,6 +46015,12 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			logMessage("a_mod_by_alice.js requires many other mods. Many of the elements and features added with it installed are actually added by the other mods it depends on.")
 			logMessage('These mods are libhooktick.js, chem.js, minecraft.js, Neutronium Mod.js, fey_and_more.js, velocity.js, ketchup_mod.js, moretools.js, aChefsDream.js, nousersthings.js. They were enabled automatically')
 		})
+		isEmpty = function(x, y, ignoreBounds=false, oob=false) {
+			if (oob === true || outOfBounds(x,y)) {
+				return ignoreBounds;
+			}
+			return pixelMap[x]?.[y] === undefined; //fix failure to handle nonexistent columns
+		}
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)
