@@ -969,6 +969,7 @@ elements.molten_francium.tick = function (pixel) {
   pixel.temp += 5;
 };
 elements.molten_francium.tempLow = 27;
+elements.molten_francium.stateLow = "francium";
 
 chemjsChemicals.stable_francium = {
   elem: {
@@ -986,6 +987,7 @@ chemjsChemicals.stable_francium = {
 elements.molten_stable_francium = {};
 elements.molten_stable_francium.behavior = behaviors.LIQUID;
 elements.molten_stable_francium.tempLow = 27;
+elements.molten_stable_francium.stateLow = "stable_francium";
 
 chemjsChemicals.radium = {
   elem: {
@@ -1011,6 +1013,7 @@ elements.molten_radium.tick = function (pixel) {
   pixel.temp += 1;
 };
 elements.molten_radium.tempLow = 700;
+elements.molten_radium.stateLow = "radium";
 
 chemjsChemicals.stable_radium = {
   elem: {
@@ -1048,6 +1051,7 @@ elements.molten_actinium.tick = function (pixel) {
   pixel.temp += 2.5;
 };
 elements.molten_actinium.tempLow = 1227;
+elements.molten_actinium.stateLow = "radium";
 
 chemjsChemicals.stable_actinium = {
   elem: {
@@ -1169,7 +1173,7 @@ chemjsChemicals.pure_mixed_uranium = {
 };
 
 elements.uranium.behavior = ["XX|CR:radiation%1 AND CR:alpha_particle%0.01|XX", "CR:radiation%1 AND CR:alpha_particle%0.01|CH:thorium%0.001|CR:radiation%1 AND CR:alpha_particle%0.01", "M2|M1|M2"];
-elements.molten_uranium.behavior = ["XX|CR:fire%2.5 AND CR:radiation%1 AND CR:alpha_particle%0.01|XX", "M2 AND CR:radiation%1 AND CR:alpha_particle%0.01|XX|M2 AND CR:radiation%1 AND CR:alpha_particle%0.01", "M1|M1|M1"];
+elements.molten_uranium.behavior = ["XX|CR:fire%2.5 AND CR:radiation%1 AND CR:alpha_particle%0.01|XX", "M2 AND CR:radiation%1 AND CR:alpha_particle%0.01|CH:thorium%0.001|M2 AND CR:radiation%1 AND CR:alpha_particle%0.01", "M1|M1|M1"];
 elements.molten_uranium.excludeRandom = true;
 
 chemjsChemicals.pure_uranium_238 = {
