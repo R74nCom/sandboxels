@@ -1,11 +1,10 @@
-// realistic_system.js - Global Realistic Lighting, Shadows, and Water Effects for ALL elements (including addons)
+// xVS_wasm.js - A mod that will apply global Realistic Lighting, Shadows, and Water Effects for ALL elements (including addons)
 // Features:
 // - Dynamic colored light propagation from fire, lights, hot pixels, etc.
 // - Realistic occlusion shadows (darker in crevices/caves), modulated by light intensity
 // - Wavy foam on ALL liquids (water, oils, mod liquids)
 // - Works with any mods/addons automatically (liquids get waves, all get lit/shadowed)
 // Performance: Low-res lightmap + cached shadows = smooth even on large views
-// Install: Save as realistic_system.js in mods folder, load via Mod Manager
 
 // ===== WASM LOADER (NON-MODULE VERSION) =====
 let wasmReady = false;
@@ -454,4 +453,5 @@ renderEachPixel(function(pixel, ctx) {
 
 if (typeof runEveryTick !== 'undefined') {
     runEveryTick(initTransparent);
+
 }
