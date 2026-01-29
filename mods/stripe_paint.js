@@ -1,7 +1,7 @@
 var modName = "mods/color_tools.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	stripeFixedDefaultProperties = {
 		color2: "rgb(0,0,0)",
 		phase: 0,
@@ -103,8 +103,4 @@ if(enabledMods.includes(libraryMod)) {
 		},
 		desc: stripePaintDesc
 	};
-} else {
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true);

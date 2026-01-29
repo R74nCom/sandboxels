@@ -1,7 +1,7 @@
 var modName = "mods/prop.js";
 var variablesMod = "mods/prop and prompt variables.js";
 
-if(enabledMods.includes(variablesMod)) {
+dependOn("prop and prompt variables.js", function(){
 	propProperty = "element";
 	propValue = "sand";
 	propType = "string";
@@ -212,7 +212,7 @@ if(enabledMods.includes(variablesMod)) {
 			};
 			pixelTempCheck(pixel);
 		},
-		category: "tools",
+		category: "edit",
 		desc: `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=propPrompt() style=\"color: #ff00ff;\";>Press [,] or click here</span> to open the property tool prompt.`,
 	};
 
@@ -452,15 +452,11 @@ if(enabledMods.includes(variablesMod)) {
 				pixelTempCheck(pixel);
 			};
 		},
-		category: "tools",
+		category: "edit",
 		desc: `Changes properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} ${numberAdjusterPreposition} ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
 	};
 
 	function updateNumberAdjusterDescription() {
 		elements.number_adjuster.desc = numberAdjusterReverseOrder ? `Changes numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterProperty} ${numberAdjusterPreposition} ${numberAdjusterValue}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.` : `Changes numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} ${numberAdjusterPreposition} ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
 	};
-} else {
-	alert(`The ${variablesMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,variablesMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true);

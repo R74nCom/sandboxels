@@ -48,18 +48,18 @@ behaviors.SELFDELETE = [
 
 pullerColour = '#e0adb6'
 
-elements.pullersDesc = {
-  color: pullerColour,
-  name: 'pullers.js',
-  category: "Mods",
-  behavior: behaviors.SELFDELETE,
-  tool: function(pixel) {},
-  onSelect: function(pixel) {
-    let info1stMod = `pullers.js is a mod made by voidapex11 that adds pullers to sandboxels`
-    alert(info1stMod)
-    return
-  },
-};
+// elements.pullersDesc = {
+//   color: pullerColour,
+//   name: 'pullers.js',
+//   category: "Mods",
+//   behavior: behaviors.SELFDELETE,
+//   tool: function(pixel) {},
+//   onSelect: function(pixel) {
+//     let info1stMod = `pullers.js is a mod made by voidapex11 that adds pullers to sandboxels`
+//     alert(info1stMod)
+//     return
+//   },
+// };
 
 // for the inator reference: if you know you know
 elements.immovable_inator = {
