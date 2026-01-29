@@ -1,28 +1,27 @@
-function whenAvailable(names, callback) {
-    var interval = 10; // ms
-    window.setTimeout(function() {
-		let bool = true;
-		for(let i = 0; i < names.length; i++)
-		{
-			if(!window[names[i]])
-			{
-				bool = false;
-			}
-		}
-        if (bool) {
-            callback();
-        } else {
-            whenAvailable(names, callback);
-        }
-    }, interval);
-}
+// function whenAvailable(names, callback) {
+//     var interval = 10; // ms
+//     window.setTimeout(function() {
+// 		let bool = true;
+// 		for(let i = 0; i < names.length; i++)
+// 		{
+// 			if(!window[names[i]])
+// 			{
+// 				bool = false;
+// 			}
+// 		}
+//         if (bool) {
+//             callback();
+//         } else {
+//             whenAvailable(names, callback);
+//         }
+//     }, interval);
+// }
 
 var modName = "mods/rays.js";
-var runAfterAutogenMod = "mods/runAfterAutogen2.js";
-var libraryMod = "mods/code_library.js";
+// var runAfterAutogenMod = "mods/runAfterAutogen2.js";
+// var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
-whenAvailable(["raaLoaded","libraryLoaded"], function() {
+dependOn("code_library.js", function(){
 	runAfterAutogen(function() {
 		snowAndIceCache = Object.keys(elements).filter(function(name) {
 			return name.endsWith("snow") || name.endsWith("ice") || name == "rime"
@@ -455,10 +454,4 @@ whenAvailable(["raaLoaded","libraryLoaded"], function() {
             }
         }
 	};
-});
-} else {
-	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
-	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${runAfterAutogenMod}" and "${libraryMod}" mods are required and have been automatically inserted (reload for this to take effect).`);
-};
+},true);

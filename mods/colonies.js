@@ -1,7 +1,7 @@
 var modName = "mods/colonies.js";
-var exoplanetMod = "mods/exoplanet.js";
+// var exoplanetMod = "mods/exoplanet.js";
 
-if(enabledMods.includes(exoplanetMod)) {
+dependOn("exoplanet.js", function(){
 
     window.addEventListener("load", () => { 
         document.getElementById("elementButton-base")?.remove()
@@ -567,8 +567,4 @@ elements.arriving_rocket = {
     cooldown: defaultCooldown
 }
 
-} else {
-	enabledMods.splice(enabledMods.indexOf(modName),0,exoplanetMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The ${exoplanetMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-};
+}, true);

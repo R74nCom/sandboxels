@@ -1152,7 +1152,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		burnTime: 600,
 		tempHigh: 200,
 		stateHigh: ["steam", "ash"],
-		onTryMoveInto: function(pixel,otherPixel) {
+		onMoveInto: function(pixel,otherPixel) {
 			var otherInfo = elements[otherPixel.element]
 			if(typeof(otherInfo.state) === "string" && otherInfo.state !== "gas") {
 				pixel.attached = false;

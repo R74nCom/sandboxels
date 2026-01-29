@@ -1435,7 +1435,7 @@ runAfterLoadList.push(() => {
     if (!localStorage.getItem("chessjs-tutorial")) {
         // "might break"
         // i know damn well it will 100% break on mobile
-        alert("To start or restart chess board press 'u'. Might break on different resolutions and on mobile.");
+        promptText("To start or restart chess board press 'u'. Might break on different resolutions and on mobile.");
         localStorage.setItem("chessjs-tutorial", true);
     }
 })

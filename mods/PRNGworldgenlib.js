@@ -1,4 +1,4 @@
-/*Version 1.2.0 Pseudorandom world generator*/
+/*Version 1.2.1 Pseudorandom world generator*/
 function pseudorandom(key, num, max = 1){
     return (Math.log(key)*(num*Math.log(1625.4986772154357))) % max;
 };
@@ -14,6 +14,134 @@ let oreChances = {
     uranium: 0.805,
     aluminum: 1
 }
+
+let promptMenus = {};
+let keys = ["OK", "Cancel", "Confirm", "Input", "Choices", "Dirs", "Dropdown"];
+Object.defineProperty(String.prototype, 'capitalize', {
+  value: function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  },
+  enumerable: false
+});
+runAfterLoad(()=>{
+	let dropDown = document.createElement("select");
+	dropDown.id = "promptDropdown";
+	dropDown.style.position = "absolute";
+	dropDown.style.top = "15%";
+	dropDown.style.left = "42.5%";
+	dropDown.style.width = "15%";
+	dropDown.title = "prompt";
+	dropDown.style.display = "none";
+	document.getElementById("promptMenu").appendChild(dropDown);
+	
+	for(let key of keys){
+		promptMenus[key] = document.getElementById(`prompt${key}`);
+		promptMenus[key].style.display = "none";
+	}
+	
+	//function prompt
+	
+	
+});
+
+function showPromptScreen() {
+	if (!promptState) return;
+	closeMenu("prompt");
+	paused = true;
+	checkPause();
+	var promptParent = document.getElementById("promptParent");
+	var menuTitle = document.querySelector("#promptMenu .menuTitle");
+	menuTitle.innerText = promptState.title || "Notice";
+	menuTitle.style.color = promptState.titleColor || "unset";
+	var promptMenuText = document.getElementById("promptMenuText");
+	promptMenuText.innerText = promptState.text || "";
+	if (promptState.html) {
+		promptMenuText.insertAdjacentHTML("beforeend",promptState.html);
+	}
+	let promptOK = document.getElementById("promptOK");
+	let promptCancel = document.getElementById("promptCancel");
+	let promptConfirm = document.getElementById("promptConfirm");
+	let promptInput = document.getElementById("promptInput");
+	let promptChoices = document.getElementById("promptChoices");
+	let promptDirs = document.getElementById("promptDirs");
+	let dropDown = document.getElementById("promptDropdown");
+	for(let key in promptMenus){
+		promptMenus[key].style.display = "none";
+	}
+	promptConfirm.classList.remove("danger");
+	if (promptState.type === "text") {
+		promptOK.style.display = "block";
+	}
+	else if (promptState.type === "confirm") {
+		promptCancel.style.display = "block";
+		promptConfirm.style.display = "block";
+		if (promptState.danger) promptConfirm.classList.add("danger");
+	}
+	else if (promptState.type === "input") {
+		promptInput.value = "";
+		promptInput.style.display = "block";
+		if (promptState.defaultInput !== undefined) {
+			promptInput.value = ""+promptState.defaultInput;
+		}
+	}
+	else if (promptState.type === "choose" && promptState.choices) {
+		promptChoices.innerHTML = "";
+		for (let i = 0; i < promptState.choices.length; i++) {
+			const choice = promptState.choices[i];
+			let span = document.createElement("span");
+			span.className = "promptChoice";
+			span.onclick = function(){ handlePrompt(choice) };
+			span.innerText = choice;
+			promptChoices.appendChild(span);
+		}
+		promptChoices.style.display = "block";
+	}
+	else if (promptState.type == "dropdown" && promptState.choices != undefined) {
+		dropDown.innerHTML = "";
+		//promptParent.appendChild(promptDropdown);
+		
+		for(let choice of promptState.choices){
+			dropDown.innerHTML += `<option value="${choice}">${choice.capitalize()}</option>`;
+		}
+		let span = document.createElement("span");
+		span.className = "promptOK";
+		span.textContent = "Select";
+		span.onclick = ()=>{
+			let c = dropDown.value;
+			console.log(c);
+			handlePrompt(c);
+			document.getElementById("promptMenu").removeChild(span);
+		};
+		document.getElementById("promptMenu").appendChild(span);
+		dropDown.style.display = "block";
+		
+	}
+	else if (promptState.type === "dir") {
+		promptDirs.style.display = "block";
+	}
+	promptParent.style.display = "block";
+	showingMenu = "prompt";
+	if (promptState.type === "input") {
+		document.getElementById("promptInput").focus();
+		document.getElementById("promptInput").select();
+	}
+}
+
+function promptDropdown(title, choices, handler){
+	let pause = false;
+	if (promptState) { pause = promptState.wasPaused }
+	else if (paused) { pause = true }
+	promptState = {
+		type: "dropdown",
+		text: "",
+		choices: choices,
+		handler: handler,
+		title: title || "Choose",
+		wasPaused: pause
+	}
+	showPromptScreen();
+}
+
 function makeCurve(pos, w, dir, div = 200){
     let prevX = pos[0], prevY = pos[1];
     let res = [];
@@ -24,6 +152,21 @@ function makeCurve(pos, w, dir, div = 200){
         prevX = Math.round(x2), prevY = Math.round(y2);
     }
     return res;
+}
+
+function makePool(pos, w=1, h=1){
+	let res = [];
+	for(let i = (w*12*Math.PI); i >= 0; i--){
+		let y = ((h*35)/3)*Math.sin(i/(12*w));
+		res.push([i, y]);
+	}
+	return res;
+}
+
+function drawTriangle(pos, height, elem, replace = null, properties = {}){
+	for(let i = 0; i < 2*height; i++){
+	    drawLine(elem, pos[0]+i, pos[1], pos[0]+height, pos[1]-(height), replace, properties);
+	}
 }
 
 elements.sandstone = {
@@ -38,14 +181,24 @@ elements.sandstone = {
 elements.packed_sand.tempHigh = 300;
 elements.packed_sand.stateHigh = "sandstone";
 
-function drawLine(elem,x1,y1,x2,y2, replace = null){
-	let coords = lineCoords(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2));
+function drawLine(elem,x1,y1,x2,y2, replace = null, properties = {}){
+	let coords = lineCoords(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2), 1);
 	for(let pos of coords){
 		let res = tryCreate(elem, pos[0], pos[1]);
+		if(res != null){
+			for(let key in properties){
+				console.log(properties[key], key)
+				res[key] = properties[key];
+			}
+		}
 		if(replace != null && res == null){
 			let pixel = getPixel(pos[0], pos[1]);
 			if(pixel != null && replace.includes(pixel.element)){
 				changePixel(pixel, elem);
+				for(let key in properties){
+					console.log(properties[key], key)
+					pixel[key] = properties[key];
+				}
 			} 
 		}
 	}
@@ -79,18 +232,53 @@ let structureFuncs = {
 		if(pseudorandom(232, 4564*(seed/2**32), 1) < 0.25){
 			let x = pseudorandom(531, 9834*(seed/2**32), width);
 			let h = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
-			let hwidth = h*Math.atan(0.78539816);
-			let num = 0;
-			for(let i = x - hwidth; i < x + hwidth; i++){
-				let y = (height-35)-(h);
-				drawLine("sandstone", i, height-35, x, y, ["sand", "cactus"]);
-				num++;
-				if(i == x){
-					num = 0;
-				};
+			let y = (height-35);
+			drawTriangle([x,y], h, "sandstone", ["sand","cactus"]);
+		}
+	},
+	
+	volcano: (seed)=>{
+		let x = pseudorandom(531, 9834*(seed/2**32), width);
+		let h = pseudorandom(659, 2342*(seed/2**32), 10) + 25;
+		let hwidth = h*Math.tan(0.78539816);
+		let num = 0;
+		let y = (height-35);
+		drawTriangle([x,y], h, "basalt", null, {temp: 850});
+		let w = Math.round(pseudorandom(2423,34543*(seed/2**32), 2))+1;
+		let d = Math.round(pseudorandom(1231, 54345*(seed/2**32), 12)-6);
+		let coords = lineCoords(Math.round(x+(h)+d), height-11, Math.round(x+(h)), Math.round(y-h), w);
+		for(let pos of coords){
+			let p = getPixel(pos[0],pos[1]);
+			if(p != null && p.element == "basalt"){
+				changePixel(p, "magma", 850);
 			}
 		}
 	},
+	lava_pool: (seed)=>{
+		let x = pseudorandom(455, 67854*(seed/2**32), width);
+		let y;
+		let vx = pseudorandom(531, 9834*(seed/2**32), width);
+		let vh = pseudorandom(659, 2342*(seed/2**32), 10) + 20;
+		if(x > vx-vh && x < vx+vh){
+			return;
+		}
+		for(let i = height; i > 0; i--){
+			if(getPixel(Math.round(x), i-1) == null && !outOfBounds(Math.round(x), i-1)){
+				y = i;
+				break;
+			}
+		}
+		let positions = makePool([x,y], 1+pseudorandom(678, 3453*seed, 1), 1+pseudorandom(232, 8754*seed, 0.75));
+		for(let pos of positions){
+			for(let i = y+pos[1]; i > y-10; i--){
+				let p = getPixel(Math.round(pos[0]), Math.round(i));
+				if(p != null){
+					changePixel(p, "magma");
+					p.temp = 850;
+				}
+			}
+		}
+	}
 };
 class biome {
     constructor(layersArr, yLevels, properties, afterFunc = false, genStructures = false, sp = false){
@@ -106,6 +294,9 @@ class biome {
         this.generate = function(seed){
             autoResizeCanvas();
             // paused = true;
+			if(seed <= 50000000){
+				seed = (seed*50000000) % (2**32);
+			}
             let fraction = seed/(2**32);
 			if(this.sPriority){
 				if(this.structures != undefined){
@@ -161,7 +352,9 @@ class biome {
 					gen(seed);
 				}
 			}
-            this.generateOreVeins(seed, this.vMulti);
+			if(!this.noOres){
+            	this.generateOreVeins(seed, this.vMulti);
+			}
         };
     }
 
@@ -212,7 +405,7 @@ class biome {
 }
 let biomes = {
     plains: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "dirt", "dirt", "mud", "gravel"], ["grass","flower_seed","grass","grass","grass","grass","sapling","grass","grass","grass","grass","grass","grass","grass","grass"]], [25, 38, 40]),
-    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}, false, structureFuncs.pyramid, true),
+    desert: new biome([["rock", "rock", "rock", "gravel"], ["rock", "packed_sand","rock", "packed_sand", "sand", "sandstone", "sandstone"], ["sand"], [null, null, null, null, null, null, null, null, null, "cactus"]], [17, 26, 40, 42], {vMulti: 1.2}, false, structureFuncs.pyramid, true),
     savanna: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "clay_soil", "dirt", "dirt"], ["grass",null,null, null, null, null, "sapling",null,null,null,null]], [25, 38, 40], {lc: ["#6fde26", "#8eed34", "#8cdb42", "#7bd12a", "#96e81c", "#a9e64e", "#a0d94c", "#a9d63e"], wc: ["#bdab7e", "#b09c6a", "#ab996d", "#998a63", "#917959", "#877051"], vMulti: 1.5}),
     tundra: new biome([["rock", "rock", "rock", "gravel"], ["dirt", "dirt", "rock", "permafrost"], ["permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "permafrost", "ice", "snow"], [null,null,null,null,null,"pinecone",null,null,null,null,null,null]], [25, 30, 38, 40], {temp: -15, vMulti: 2}),
 	beach: new biome([["rock", "rock", "rock", "gravel"], ["rock", "gravel", "sand", "sand"], ["sand"]], [7, 13, 35], {vMulti: 0.8}, (seed)=>{
@@ -237,6 +430,7 @@ let biomes = {
 			}
 		}, false);
 	}, structureFuncs.ocean),
+	volcano: new biome([["magma", "magma", "basalt"], ["basalt", "tuff", "magma"], ["basalt"]], [13, 23, 40], {temp: 850, noOres: true}, null, [structureFuncs.volcano, structureFuncs.lava_pool]),
 	
 }
 let seed = Math.random()*(2**32);
@@ -259,16 +453,15 @@ elements.SeedGenerate = {
         let arr = [];
         let txt = shiftDown;
         Object.keys(biomes).forEach(function(b){arr.push(b);});
-		txt = (arr.length >= 7) ? true : txt;
         promptInput("Leave blank to generate new seed or C to keep current seed. Your current seed is: " + seed, function(i){
             seed = (i != null && i.toLowerCase() == "c") ? seed : parseFloat(i) || Math.random()*(2**32);
             seed = seed % (2**32);
             if(!txt){
-                promptChoose("", arr, (choice)=>{
+                promptDropdown( "Select a biome to generate: ", arr, (choice)=>{
                     biomes[choice].generate(seed);
                     promptText("World generation complete.");
                     selectElement('dirt');
-                }, "Select a biome to generate: ");
+                });
             } else {
                 let str = "";
                 for(let key in biomes){
@@ -294,7 +487,6 @@ elements.RandomGen = {
 		let arr = [];
 		let txt = shiftDown;
 		Object.keys(biomes).forEach(function(b){arr.push(b);});
-		txt = (arr.length >= 7) ? true : txt;
 		seed = Math.random()*(2**32);
 		//seed %= 2**32;
 		if(txt){
@@ -316,17 +508,19 @@ elements.RandomGen = {
 			}, "Enter Biome Name: ");
 			
 		} else {
-			promptChoose("", arr, (choice)=>{
-				biomes[choice].generate(seed);
-				selectElement("dirt");
-			}, "Biome Selection");
+			promptDropdown( "Select a biome to generate: ", arr, (choice)=>{
+                biomes[choice].generate(seed);
+                promptText("World generation complete.");
+                selectElement('dirt');
+            });
 		}
 	},
 }
+
 elements.view_seed = {
     category: "edit",
     onSelect: function(){
-        alert(seed);
-        selectElement("dirt");
+		promptText(seed, undefined, "Seed");
+        selectElement(prevElement);
     }
 }

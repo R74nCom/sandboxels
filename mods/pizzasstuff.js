@@ -3,7 +3,7 @@ removeMod("pizzasstuff.js");
 
 reload(); */
 
-alert("THIS MOD IS NO LONGER SUPPORTED!\nThe mod 'pizzasstuff.s' and all of its contents have been moved to mossstuff.js.\nPlease install mossstuff.js to continue getting updates.");
+// alert("THIS MOD IS NO LONGER SUPPORTED!\nThe mod 'pizzasstuff.s' and all of its contents have been moved to mossstuff.js.\nPlease install mossstuff.js to continue getting updates.");
 
 
 elements.freeze_ray = {

@@ -1,7 +1,7 @@
 var modName = "mods/color_tools.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	var colorToolCounter = 0;
 	saturationAmount = 1;
 	saturationOp = "add";
@@ -290,8 +290,4 @@ if(enabledMods.includes(libraryMod)) {
 		excludeRandom: true,
 		desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 	}
-} else {
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true);

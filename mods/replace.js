@@ -49,7 +49,7 @@ elements.replace = {
 			changePixel(pixel,replaceTo,true);
 		};
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 };
 
@@ -60,7 +60,7 @@ elements.alt_replace = {
 			pixel.element = replaceTo;
 		};
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 	hidden: true,
 };
@@ -73,7 +73,7 @@ elements.alt_alt_replace = {
 			pixel.color = pixelColorPick(pixel);
 		};
     },
-    category: "tools",
+    category: "edit",
 	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 	hidden: true,
 };
