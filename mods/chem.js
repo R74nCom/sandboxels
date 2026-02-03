@@ -2542,7 +2542,7 @@ chemjsChemicals.sodium_hydroxide_solution = {
   },
   elemName: "sodium_hydroxide",
   tempHigh: [100, 150],
-  stateHigh: [null, ["caustic_soda"]],
+  stateHigh: [null, ["lye"]],
   densityHigh: [1],
   tempLow: [0],
   reactionProduct: { anionBase: "hydroxide", cationBase: "sodium_ion" },
@@ -2554,24 +2554,13 @@ elements.sodium_hydroxide_gas = {
 };
 
 chemjsChemicals.sodium_hydroxide = {
-  elem: {
-    color: "#ffe8ff",
-    behavior: behaviors.CAUSTIC,
-    category: "powders",
-    tempHigh: 323,
-    state: "solid",
-    density: 2130,
-    hidden: true,
-    alias: "sodium hydroxide powder",
-  },
-  elemName: "caustic_soda",
+  elementNames: ["lye", "molten_lye", "chemical!sodium_hydroxide_solution"],
   tempHigh: [323],
   reactionProduct: { anionBase: "hydroxide", cationBase: "sodium_ion" },
   categories: ["bases", "sodium_ion", "hydroxide", "caustic"],
 };
-elements.molten_caustic_soda = {
-  behavior: behaviors.MOLTEN_CAUSTIC,
-};
+elements.lye.behavior = behaviors.CAUSTIC;
+elements.molten_lye.behavior = behaviors.MOLTEN_CAUSTIC;
 
 chemjsChemicals.potassium_hydroxide_solution = {
   elem: {
@@ -2955,7 +2944,7 @@ chemjsChemicals.sodium_bromoheptahydrotriborate = {
     hidden: true,
   },
   tempHigh: [150], //wild guess
-  stateHigh: [["pentaborane", "sodium_bromide", "hydrogen"]],
+  stateHigh: [["pentaborane_9", "sodium_bromide", "hydrogen"]],
   categories: ["insoluble", "sodium_ion", "bromoheptahydrotriborate"],
 };
 
@@ -3456,6 +3445,7 @@ elements.aluminum_fluoride_gas = {
   state: "gas",
   category: "gases",
   density: 3.491,
+  hidden: true,
 };
 
 chemjsChemicals.potassium_carbonate = {
@@ -4371,7 +4361,7 @@ chemjsChemicals.uraninite = {
 
 chemjsChemicals.yellowcake = {
   elem: {
-    color: ["#545323", "#50573b", "#656660", "#4d4933", "#615e4a", "#525043"],
+    color: ["#dbd827", "#bce346", "#a8c418", "#d9bb1a", "#dec418", "#cfb615"],
     behavior: ["XX|CR:radiation%0.05|XX", "CR:radiation%0.05|XX|CR:radiation%0.05", "M2|M1|M2"],
     category: "powders",
     hidden: true,
@@ -5727,7 +5717,7 @@ chemjsChemicals.diborane = {
   },
   tempLow: [-92.5, -164],
   tempHigh: [200],
-  stateHigh: [["pentaborane", "pentaborane", "decaborane"]],
+  stateHigh: [["pentaborane_9", "pentaborane_9", "decaborane"]],
   toxic: [1],
   densityLow: [477],
 };
@@ -6390,7 +6380,7 @@ elements.soy_sauce = {
   stateHigh: ["steam", "steam", "steam", "steam", "salt"],
 };
 
-elements.supernova.behavior = ["XX|XX|XX", "XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,fluorine,neon,molten_potassium,chlorine,molten_calcium,molten_titanium,molten_nickel,molten_copper,molten_zinc,gallium_gas,bromine_gas,iodine_gas AND CH:neutronium,neutronium,quark_matter,void|XX", "XX|XX|XX"];
+elements.supernova.behavior = ["XX|XX|XX", "XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,fluorine,neon,molten_potassium,molten_magnesium,molten_aluminum,chlorine,molten_calcium,molten_titanium,molten_nickel,molten_copper,molten_zinc,gallium_gas,bromine_gas,iodine_gas AND CH:neutronium,neutronium,quark_matter,void|XX", "XX|XX|XX"];
 
 elements.gamma_ray_burst = {
   color: ["#fbf8ff", "#fbf3ff", "#f8f7ff"],
@@ -6455,7 +6445,7 @@ chemjsChemicals.quark_matter = {
 };
 
 elements.liquid_helium.behavior2 = ["XX|XX|XX".split("|"), "M1|XX|M1".split("|"), "M1|M1|M1".split("|")];
-elements.liquid_helium.behavior = null;
+delete elements.liquid_helium.behavior;
 
 elements.liquid_helium.tick = function (pixel) {
   if (Math.random() < 0.9) {
@@ -6730,6 +6720,19 @@ elements.living_spark = {
   ignoreAir: true,
 };
 
+runEveryTick(function () {
+  for (let i = currentPixels.length - 1; i >= 0; i--) {
+    if (currentPixels[i].element === "living_spark") {
+      if (currentPixels[i].lifeState === 2) {
+        deletePixel(currentPixels[i].x, currentPixels[i].y);
+      } else {
+        currentPixels[i].lifeState = 0;
+      }
+    }
+  }
+});
+
+
 function elementCircle(x, y, radius, pixelType = "fire", chance = 0.1, replace = [null]) {
   if (!Array.isArray(replace)) {
     replace = [replace];
@@ -6939,7 +6942,7 @@ chemjsReactions = [
   { react1: "chemical!acid_liquids", react2: "sodium", elem1: "explosion", elem2: "no_change", priority: 50 },
   { react1: "chemical!acid_liquids", react2: "potassium", elem1: "explosion", elem2: "no_change", priority: 50 },
   { react1: "chemical!acid_liquids", react2: "meat", elem1: "no_change", elem2: "rotten_meat", elem1: null, chance: 0.5, priority: 50 },
-  { react1: "chemical!acids", react2: "chemical!liquid_water,ignore!dirty_water,ignore!neutral_acid", elem1: null, elem2: "dirty_water", priority: 10 },
+  { react1: "chemical!acids,restrictchemical!caustic", react2: "chemical!liquid_water,ignore!dirty_water,ignore!neutral_acid", elem1: null, elem2: "dirty_water", priority: 10 },
   { react1: "chemical!nitric_acid,chemical!sulfuric_acid,chemical!hydroiodic_acid,chemical!hydroastatic_acid,chemical!fluoroboric_acid", react2: "chemical!liquid_water,ignore!dirty_water,ignore!neutral_acid", elem1: "no_change", elem2: "dirty_water", priority: 11 },
 
   { react1: "chemical!acid_gases", react2: "chemical!acid_gases", elem1: null, elem2: "acid_cloud", props: { chance: 0.3, y: [0, 12], setting: "clouds" }, priority: 50 },
@@ -7181,7 +7184,7 @@ chemjsReactions = [
   { react1: "chemical!ammonia", react2: "oxygen", elem1: "nitric_oxide", elem2: "steam", props: { chance: 0.01 }, priority: 100 },
   { react1: "chemical!nitric_acid", react2: "chemical!ammonia", elem1: "ammonium_nitrate", elem2: null, priority: 100 },
 
-  { react1: "chemical!ammonia", react2: "hydrochloric_acid", elem1: "ammonium_chloride", elem2: null, priority: 100 },
+  { react1: "chemical!ammonia", react2: "acid", elem1: "ammonium_chloride", elem2: null, priority: 100 },
 
   { react1: "chemical!nitrogen_dioxide", react2: "rain_cloud", elem1: null, elem2: "acid_cloud", props: { chance: 0.4, y: [0, 12], setting: "clouds" }, priority: 100 },
   { react1: "chemical!nitrogen_dioxide", react2: "cloud", elem1: null, elem2: "acid_cloud", props: { chance: 0.4, y: [0, 12], setting: "clouds" }, priority: 100 },
@@ -7204,7 +7207,7 @@ chemjsReactions = [
 
   { react1: "fluorine", react2: "liquid_oxygen", elem1: "foof", elem2: null, priority: 100 },
 
-  { react1: "chemical!chloroform", react2: "chemical!hydrogen_fluoride", elem1: "tetrafluoroethylene", elem2: "hydrochloric_acid", props: { temp2: 50 }, priority: 100 },
+  { react1: "chemical!chloroform", react2: "chemical!hydrogen_fluoride", elem1: "tetrafluoroethylene", elem2: "acid", props: { temp2: 50 }, priority: 100 },
   { react1: "chemical!tetrafluoroethylene", react2: "chemical!oxygen", elem1: "fire", elem2: "fire", priority: 100 },
   { react1: "chemical!tetrafluoroethylene", react2: "chemical!sulfuric_acid", elem1: "polytetrafluoroethylene", elem2: "no_change", priority: 100 },
 
@@ -7333,7 +7336,7 @@ chemjsReactions = [
   { react1: "chemical!sulfur", react2: "chemical!fluorine", elem1: "sulfur_hexafluoride", elem2: "fire", priority: 100 },
 
   //Cl
-  { react1: "chemical!chlorine", react2: "chemical!methane", elem1: "chloroform", elem2: ["hydrochloric_acid", null, null], priority: 100 },
+  { react1: "chemical!chlorine", react2: "chemical!methane", elem1: "chloroform", elem2: ["acid", null, null], priority: 100 },
 
   { react1: "chemical!sulfuric_acid", react2: "chemical!sodium_chloride", elem1: "sodium_sulfate", elem2: "acid", props: { temp1: 50, temp2: 50 }, priority: 100 },
   { react1: "chemical!sulfuric_acid", react2: "chemical!potassium_chloride", elem1: "potassium_sulfate", elem2: "acid", props: { temp1: 50, temp2: 50 }, priority: 100 },
@@ -7719,9 +7722,9 @@ chemjsReactions = [
   { react1: "chemical!ununennium", react2: "steam", elem1: "n_explosion", elem2: null, priority: 100 },
   { react1: "chemical!ununennium", react2: "chemical!liquid_water", elem1: "n_explosion", elem2: null, priority: 10 },
 
-  { react1: "chemical!stable_ununennium", react2: "rad_steam", elem1: "ununennium_hydroxide", elem2: [null, null, "big_pop"], props: { func: ununenniumHydroxide }, priority: 100 },
-  { react1: "chemical!stable_ununennium", react2: "steam", elem1: "ununennium_hydroxide", elem2: [null, null, "big_pop"], props: { func: ununenniumHydroxide }, priority: 100 },
-  { react1: "chemical!stable_ununennium", react2: "chemical!liquid_water", elem1: "ununennium_hydroxide", elem2: [null, null, "big_pop"], props: { func: ununenniumHydroxide }, priority: 10 },
+  { react1: "chemical!stable_ununennium", react2: "rad_steam", elem1: "ununennium_hydroxide", elem2: [null, null, "explosion"], props: { func: ununenniumHydroxide }, priority: 100 },
+  { react1: "chemical!stable_ununennium", react2: "steam", elem1: "ununennium_hydroxide", elem2: [null, null, "explosion"], props: { func: ununenniumHydroxide }, priority: 100 },
+  { react1: "chemical!stable_ununennium", react2: "chemical!liquid_water", elem1: "ununennium_hydroxide", elem2: [null, null, "explosion"], props: { func: ununenniumHydroxide }, priority: 10 },
   { react1: "chemical!ununennium_hydroxide,ignorechemical!ununennium_hydroxide_solution", react2: "chemical!liquid_water", elem1: "ununennium_hydroxide", elem2: null, priority: 10 },
 
   { react1: "chemical!ununennium_fluoride", react2: "chemical!fluorine", elem1: "ununennium_trifluoride", elem2: "fire", priority: 100 },
