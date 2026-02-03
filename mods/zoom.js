@@ -598,7 +598,9 @@
     const on_change = { cb: () => {
     } };
     const settings_manager = new CustomSettingsManager(on_change);
-    const patcher = new Patcher(settings_manager);
-    const handler = new Handler(settings_manager, patcher);
+    runAfterLoad(() => {
+      const patcher = new Patcher(settings_manager);
+      const handler = new Handler(settings_manager, patcher);
+    });
   }, true);
 })();
