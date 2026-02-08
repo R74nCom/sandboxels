@@ -191,3 +191,17 @@ elements.spicy_water = {
 elements.broth.reactions.spice = { color1:"#ef713f", tempMin:70, chance:0.05 };
 elements.broth.reactions.spicy_water = { color1:"#ef713f", tempMin:70, chance:0.05 };
 elements.meat.reactions.spicy_water = { elem2:"broth", color2:"#ef713f", tempMin:70 };
+
+elements.nut_spread = {
+	color: "#7B4528",
+	behavior: behaviors.LIQUID,
+	viscosity: 200000,
+	tempHigh: 232,
+	stateHigh: ["smoke","smoke","smoke","smoke","salt"],
+	category: "food",
+	state: "liquid",
+	density: 1090.5,
+	isFood: true,
+	hidden: true
+}
+elements.nut_meat.reactions.chocolate_powder = { elem1:"nut_spread", elem2:"nut_spread" }

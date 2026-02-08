@@ -2794,6 +2794,9 @@ elements.ray_emitter = {
                                 pixelMap[lx][ly].rColor = pixel.color
                                 pixelMap[lx][ly].color = pixel.color
                             }
+                            if (["pointer", "flash", "explosion"].includes(pixel.rayElement)){
+                                pixelMap[lx][ly].color = pixel.color
+                            }
                         } else if (!isEmpty(lx, ly, true)){
                             if (pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls){
                                 break;
@@ -2901,7 +2904,7 @@ elements.specific_ray_emitter = {
         }
     },
     hoverStat: function(pixel){
-        return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset") + ", " + (pixel.specificRayStart || "unset") + ", " + (pixel.specificRayEnd || "unset") + ", " + (pixel.specificRayAngle || "unset")
+        return (pixel.rayElement || "unset").toUpperCase() + ", " + (pixel.rayStoppedByWalls || "unset").toString().toUpperCase() + ", " + (pixel.specificRayStart || "unset") + ", " + (pixel.specificRayEnd || "unset") + ", " + (pixel.specificRayAngle || "unset")
     },
     tick: function(pixel){
         if (pixelTicks == pixel.start){
@@ -2972,6 +2975,9 @@ elements.specific_ray_emitter = {
                                 pixelMap[lx][ly].color = pixel.color
                                 pixelMap[lx][ly].life = pixel.life
                                 pixelMap[lx][ly].maxLife = pixel.life
+                            }
+                            if (["pointer", "flash", "explosion"].includes(pixel.rayElement)){
+                                pixelMap[lx][ly].color = pixel.color
                             }
                         } else if (!isEmpty(lx, ly, true)){
                             if ((pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls) || pixelMap[lx][ly].element == pixel.stopAtElement){

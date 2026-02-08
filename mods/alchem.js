@@ -12,6 +12,17 @@ function findReachable(elems) {
         if(e1 === "mushroom_gill") {
             redo = redo || addElement_(elems, "mushroom_cap");
         }
+
+        
+        if(e1 === "oil") {
+            redo = redo || addElement_(elems, "lamp_oil");
+            redo = redo || addElement_(elems, "propane");
+            redo = redo || addElement_(elems, "molten_plastic");
+        }
+        
+        if (eLists.SEEDS.includes(e1)) {
+            redo = redo || addElement_(elems, "fiber");
+        }
         
         
         if(e1 === "thorium" && elems.includes("neutron")) {
@@ -80,6 +91,8 @@ function findReachable(elems) {
     return elems;
 }
 
+worldgentypes = {}
+
 function addElement_(list, elem) {
     if(elem instanceof Array)
     {
@@ -102,11 +115,11 @@ let chemMod = document.querySelector("[src=\"mods/chem.js\"]");
 // unhide oxygen (air), dirt (earth), fire, and water
 function loadAlchem() {
     
-    if(!elements.hematite) {
+    if (!elements.hematite) {
         elements.hematite = {
-            color: ["#e0472f","#bf2a2a","#913920"],
+            color: ["#e0472f", "#bf2a2a", "#913920"],
             behavior: behaviors.POWDER,
-            category: "alchemy mod",
+            category: "land",
             density: 5250,
             state: "solid",
             tempHigh: 1539,
@@ -114,7 +127,7 @@ function loadAlchem() {
         };
         elements.molten_hematite = {
             reactions: {
-                "charcoal": { elem1: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_nickel"], elem2: "carbon_dioxide"},
+                "charcoal": { elem1: ["molten_iron", "molten_iron", "molten_iron", "molten_iron", "molten_nickel"], elem2: "carbon_dioxide" },
             },
         };
         elements.molten_slag.ignore.push("hematite");
@@ -122,17 +135,17 @@ function loadAlchem() {
     
     elements.molten_pyrite = {
         reactions: {
-            "oxygen": { elem1: "iron", elem2: "sulfur_dioxide"},
+            "oxygen": { elem1: "iron", elem2: "sulfur_dioxide" },
         },
     };
     elements.molten_slag.ignore.push("pyrite");
     
     
-    if(!elements.chalcopyrite) {
+    if (!elements.chalcopyrite) {
         elements.chalcopyrite = {
-            color: ["#e8d7cb","#cdc0af","#726153","#8f775e","#bfaea0",],
+            color: ["#e8d7cb", "#cdc0af", "#726153", "#8f775e", "#bfaea0",],
             behavior: behaviors.WALL,
-            category: "alchemy mod",
+            category: "land",
             density: 4200,
             state: "solid",
             tempHigh: 950,
@@ -140,17 +153,17 @@ function loadAlchem() {
         };
         elements.molten_chalcopyrite = {
             reactions: {
-                "charcoal": { elem1: "molten_copper", elem2: ["molten_slag","molten_slag","sulfur_dioxide","sulfur_dioxide","sulfur_dioxide","molten_iron"]},
+                "charcoal": { elem1: "molten_copper", elem2: ["molten_slag", "molten_slag", "sulfur_dioxide", "sulfur_dioxide", "sulfur_dioxide", "molten_iron"] },
             },
         };
         elements.molten_slag.ignore.push("chalcopyrite");
     }
     
-    if(!elements.sphalerite) {
+    if (!elements.sphalerite) {
         elements.sphalerite = {
-            color: ["#7a7a7a","#5c5c5c","#3d3d3d","#363636","#e0e0e0",],
+            color: ["#7a7a7a", "#5c5c5c", "#3d3d3d", "#363636", "#e0e0e0",],
             behavior: behaviors.WALL,
-            category: "alchemy mod",
+            category: "land",
             density: 4090,
             state: "solid",
             tempHigh: 1850,
@@ -158,18 +171,18 @@ function loadAlchem() {
         };
         elements.molten_sphalerite = {
             reactions: {
-                "charcoal": { elem1: "molten_zinc", elem2: ["sulfur_dioxide","sulfur_dioxide","sulfur_dioxide","sulfur_dioxide","sulfur_dioxide","gallium_gas"]},
+                "charcoal": { elem1: "molten_zinc", elem2: ["sulfur_dioxide", "sulfur_dioxide", "sulfur_dioxide", "sulfur_dioxide", "sulfur_dioxide", "gallium_gas"] },
             },
         };
         elements.molten_slag.ignore.push("sphalerite");
     }
     
     
-    if(!elements.cassiterite) {
+    if (!elements.cassiterite) {
         elements.cassiterite = {
-            color: ["#5e5b5b","#705a4d","#826f6f","#333030","#e3d8d1"],
+            color: ["#5e5b5b", "#705a4d", "#826f6f", "#333030", "#e3d8d1"],
             behavior: behaviors.WALL,
-            category: "alchemy mod",
+            category: "land",
             density: 6950,
             state: "solid",
             tempHigh: 1630,
@@ -177,17 +190,17 @@ function loadAlchem() {
         };
         elements.molten_cassiterite = {
             reactions: {
-                "charcoal": { elem1: "molten_tin", elem2: "carbon_dioxide"},
+                "charcoal": { elem1: "molten_tin", elem2: "carbon_dioxide" },
             },
         };
         elements.molten_slag.ignore.push("cassiterite");
     }
     
-    if(!elements.galena) {
+    if (!elements.galena) {
         elements.galena = {
-            color: ["#e6e6e6","#bdbdbd","#7a7a7a","#737373"],
+            color: ["#e6e6e6", "#bdbdbd", "#7a7a7a", "#737373"],
             behavior: behaviors.WALL,
-            category: "alchemy mod",
+            category: "land",
             density: 7600,
             state: "solid",
             tempHigh: 1113,
@@ -195,178 +208,161 @@ function loadAlchem() {
         };
         elements.molten_galena = {
             reactions: {
-                "charcoal": { elem1: "molten_lead", elem2: "sulfur_dioxide"},
+                "charcoal": { elem1: "molten_lead", elem2: "sulfur_dioxide" },
             },
         };
         elements.molten_slag.ignore.push("galena");
     }
     
     let ores = Array(5).fill("molten_hematite")
-    .concat(Array(5).fill("molten_pyrite"))
-    .concat(Array(5).fill("molten_chalcopyrite"))
-    .concat(Array(3).fill("molten_cassiterite"))
-    .concat(Array(5).fill("molten_sphalerite"))
-    .concat(Array(3).fill("molten_galena"))
-    .concat(Array(2).fill("molten_rutile"))
-    .concat(Array(5).fill("molten_bauxite"))
-    .concat(Array(2).fill("molten_silver"))
-    .concat(Array(1).fill("molten_gold"))
-    .concat(Array(3).fill("molten_fluorite"))
-    .concat(Array(3).fill("molten_uraninite"))
+        .concat(Array(5).fill("molten_pyrite"))
+        .concat(Array(5).fill("molten_chalcopyrite"))
+        .concat(Array(3).fill("molten_cassiterite"))
+        .concat(Array(5).fill("molten_sphalerite"))
+        .concat(Array(3).fill("molten_galena"))
+        .concat(Array(2).fill("molten_rutile"))
+        .concat(Array(5).fill("molten_bauxite"))
+        .concat(Array(2).fill("molten_silver"))
+        .concat(Array(1).fill("molten_gold"))
+        .concat(Array(3).fill("molten_fluorite"))
+        .concat(Array(3).fill("molten_uraninite"));
     
     elements.molten_slag.ignore.push("rutile");
     elements.molten_slag.ignore.push("bauxite");
     elements.molten_slag.ignore.push("silver");
     elements.molten_slag.ignore.push("gold");
     
-    elements.seltzer.reactions["electric"] = 
-        { elem1: "water", elem2:"methane"};
-    elements.carbon_dioxide.reactions["electric"] = 
-        { elem1:"methane"};
-    elements.magma.reactions["magma"] = 
-        { elem2:ores, tempMin:2500, tempMax:3000, chance:0.0001};
+    elements.seltzer.reactions["electric"] =
+        { elem1: "water", elem2: "methane" };
+    elements.carbon_dioxide.reactions["electric"] =
+        { elem1: "methane" };
+    elements.magma.reactions["magma"] =
+        { elem2: ores, tempMin: 2500, tempMax: 3000, chance: 0.0001 };
     
-if (!settings.alchemyUnlocked) {
-    settings.alchemyUnlocked = {
-        "oxygen": true,
-        "dirt": true,
-        "fire": true,
-        "water": true,
-    };
-}
-if (settings.unlocked.alchemymod) {
-    for (var element in settings.unlocked) {
-        if (settings.unlocked[element]) {
-            settings.alchemyUnlocked[element] = true
-        }
+    if (!settings.alchemyUnlocked) {
+        settings.alchemyUnlocked = {
+            "oxygen": true,
+            "dirt": true,
+            "fire": true,
+            "water": true,
+        };
     }
-}
-
-// loop through the elements object
-if (elements.explosion) {
-    elements.explosion.category = "tools";
-}
-if (elements.room_temp) {
-    elements.room_temp.category = "tools";
-}
-if (elements.cook) {
-    elements.cook.category = "tools";
-}
-if (elements.incinerate) {
-    elements.incinerate.category = "tools";
-}
-for (var element in elements) {
-    if (elements[element].category === "tools") {
-        settings.alchemyUnlocked[element] = true;
-    }
-    if (settings.alchemyUnlocked[element]) {
-        elements[element].hidden = false;
-        if (elements[element].category !== "tools") { elements[element].category = "alchemy mod"; }
-    }
-    else if (elements[element].category !== "tools") {
-        // give the element the hidden attribute true
-        elements[element].hidden = true;
-        // set its category to "alchemy mod"
-        elements[element].category = "alchemy mod";
-    }
-}
-
-// set the unhide setting to Unlock as Discovered (2)
-settings.unhide = 2;
-
-runAfterLoad(function(){
-    checkUnlock = function(element) {
-        if (elements[element] && elements[element].hidden && !settings.alchemyUnlocked[element]) {
-            settings.alchemyUnlocked[element] = true;
-            if (settings.unhide === 2) {
-                createElementButton(element)
-                var categoryButton = document.querySelector(".categoryButton[current='true']");
-                var currentCategory = categoryButton.getAttribute("category");
-                if (currentCategory !== elements[element].category) {
-                    document.getElementById("categoryButton-"+elements[element].category).classList.add("notify");
-                }
-                // add notify to the elementButton of the element
-                document.getElementById("elementButton-"+element).classList.add("notify");
+    if (settings.unlocked.alchemymod) {
+        for (var element in settings.unlocked) {
+            if (settings.unlocked[element]) {
+                settings.alchemyUnlocked[element] = true;
             }
-            saveSettings();
         }
     }
-})
-runAfterAutogen(function(){
-    for (var element in elements) {
-        if (elements[element].category === "states") {
-            elements[element].category = "alchemy mod"
+
+    // loop through the elements object
+    if (elements.explosion) {
+        elements.explosion.category = "tools";
+    }
+    if (elements.room_temp) {
+        elements.room_temp.category = "tools";
+    }
+    if (elements.cook) {
+        elements.cook.category = "tools";
+    }
+    if (elements.incinerate) {
+        elements.incinerate.category = "tools";
+    }
+
+    // set the unhide setting to Unlock as Discovered (2)
+    settings.unhide = 2;
+
+    runAfterLoad(function () {
+        checkUnlock = function (element) {
+            if (elements[element] && elements[element].hidden && !settings.alchemyUnlocked[element]) {
+                settings.alchemyUnlocked[element] = true;
+                if (settings.unhide === 2) {
+                    createElementButton(element);
+                    var categoryButton = document.querySelector(".categoryButton[current='true']");
+                    var currentCategory = categoryButton.getAttribute("category");
+                    if (currentCategory !== elements[element].category) {
+                        document.getElementById("categoryButton-" + elements[element].category).classList.add("notify");
+                    }
+                    // add notify to the elementButton of the element
+                    document.getElementById("elementButton-" + element).classList.add("notify");
+                }
+                saveSettings();
+            }
+        };
+    });
+    window.addEventListener("load", function () {
+        for (var element in elements) {
+            if (elements[element].hidden && document.getElementById("elementButton-" + element)) {
+                document.getElementById("elementButton-" + element).remove();
+            }
+        }
+    });
+
+    function lockAll() {
+        for (var element in elements) {
+            if (elements[element].category === "tools") {
+                settings.alchemyUnlocked[element] = true;
+            }
+            if (settings.alchemyUnlocked[element]) {
+                elements[element].hidden = false;
+            }
+            else if (elements[element].category !== "tools") {
+                // give the element the hidden attribute true
+                elements[element].hidden = true;
+            }
+            if (elements[element].category !== "tools") {
+                if (!settings.alchemyUnlocked || Object.keys(settings.alchemyUnlocked).length < 25) {
+                    elements[element].category = "alchemy mod";
+                }
+            }
         }
     }
-})
-window.addEventListener("load",function(){
-    for (var element in elements) {
-        if (elements[element].hidden && document.getElementById("elementButton-"+element)) {
-            document.getElementById("elementButton-"+element).remove()
-        }
-    }
-})
-    
-    /*runAfterAutogen(function(){
+    runAfterAutogen(() => runAfterAutogen(lockAll));
+
+
+    function printReachable() {
         let reachable = findReachable(initialElements);
         console.log(reachable.join(","));
         let string = "";
-        for(let i in elements)
-        {
-            if(!reachable.includes(i))
-            {
-                if(string === "")
-                {
+        for (let i in elements) {
+            if (!reachable.includes(i)) {
+                if (string === "") {
                     string = i;
                 }
-                else
-                {
+                else {
                     string += "," + i;
                 }
             }
         }
         console.log(string);
         string = "";
-        for(let i = 0; i < reachable.length; i++)
-        {
-            if(!settings.alchemyUnlocked[reachable[i]])
-            {
-                if(string === "")
-                {
+        for (let i = 0; i < reachable.length; i++) {
+            if (!settings.alchemyUnlocked[reachable[i]]) {
+                if (string === "") {
                     string = reachable[i];
                 }
-                else
-                {
+                else {
                     string += "," + reachable[i];
                 }
             }
         }
         console.log(string);
         string = "";
-        for(let i in settings.alchemyUnlocked)
-        {
-            if(!reachable.includes(i) && settings.alchemyUnlocked[i] && elements[i].category !== "tools")
-            {
-                if(string === "")
-                {
+        for (let i in settings.alchemyUnlocked) {
+            if (!reachable.includes(i) && settings.alchemyUnlocked[i] && elements[i].category !== "tools") {
+                if (string === "") {
                     string = i;
                 }
-                else
-                {
+                else {
                     string += "," + i;
                 }
             }
         }
         console.log(string);
-    });*/
+    }
+    // runAfterAutogen(() => runAfterAutogen(printReachable));
 }
 
-if (chemMod) {
-    if (chemMod.readyState === 'complete') {
-        loadAlchem();
-    } else {
-        chemMod.addEventListener("load", loadAlchem);
-    }
-} else {
-    loadAlchem();
-}
+dependOn("chem.js", () => { return; }, true);
+
+loadAlchem();

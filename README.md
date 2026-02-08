@@ -8,9 +8,7 @@ Join the [Discord server](https://discord.com/invite/ejUc6YPQuS).
 ![Landscape made in Sandboxels](https://raw.githubusercontent.com/R74nCom/sandboxels/main/icons/cover-3840x1240px-text.png)
 
 # Modding
-New to modding? Read the Sandboxels Wiki articles on [getting started with modding](https://sandboxels.wiki.gg/wiki/Modding/Getting_started) or [publishing your mod](https://sandboxels.wiki.gg/wiki/Modding/Putting_it_online).
-
-Please read the [Contribution Guidelines](https://github.com/R74nCom/sandboxels/tree/main/.github/CONTRIBUTING.md) before submitting your mod.
+**Mods are no longer accepted in this repository.** Please go to the new one at [R74nCom/Sandboxels-Mods](https://github.com/R74nCom/Sandboxels-Mods/).
 
 # Controls
  * Left Click = Draw pixels

@@ -1,7 +1,7 @@
 var modName = "mods/roseyiede.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+dependOn("code_library.js", function(){
 	/*
 	//arbitrarily picked
 		binitialArrayL = ["m","n","p","t","ch","k","b","d","j","g","f","th","s","sh","h","l","r","y","w","z"] //:eggTF:
@@ -356,8 +356,4 @@ if(enabledMods.includes(libraryMod)) {
 		density: 956,
 		temp: 120,
 	}
-} else {
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+}, true);
