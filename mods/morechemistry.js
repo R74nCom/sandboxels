@@ -36,6 +36,7 @@ dependOn("orchidslibrary.js", ()=>{
             for(let key in rgb){
                 rgb[key] += num;
             }
+			
             pixel.color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
         }
         let multi = (pixel.temp-70)/100;
@@ -982,6 +983,7 @@ dependOn("orchidslibrary.js", ()=>{
         stateHigh: ["chlorine", "aluminum"],
         solubility: {water: 0.458, color: ["#7a9ff0", "#7aa4ff", "#729bf2", "#6f9cfc"]},
     }
+	elements.acid.solInfo = "acid";
     elements.acid.reactions.aluminum = {elem1: "hydrogen", elem2: "aluminum_chloride"};
     elements.acid.reactions.purple_gold = {elem1: ["aluminum_chloride", "aluminum_chloride", "hydrogen"], elem2: "gold"};
     elements.acid.reactions.blue_gold = {elem1: ["gallium_chloride", "gallium_chloride", "hydrogen"], elem2: "gold"};
@@ -1232,6 +1234,7 @@ dependOn("orchidslibrary.js", ()=>{
         behavior: behaviors.LIQUID,
         state: "liquid",
         density: 1830,
+		solInfo: "acid",
         reactions: {
             magnesium_carbonate: {elem1: ["carbon_dioxide", "foam","foam"], elem2: "epsom_salt"},
             limestone: {elem1: ["carbon_dioxide", "foam","foam"], elem2: "hardened_gypsum"},
@@ -1314,14 +1317,14 @@ dependOn("orchidslibrary.js", ()=>{
           promptInput("Enter the range of this machine:", (input)=>{elements.magnet.range = parseInt(input);}, "Magnet Range", elements.magnet.range);
         },
         onClicked: function(pixel, elem){
-            if(pixel.targetElems.includes(elem) && elem != "unknown" && pixel.clickCd <= 0){
+            if(pixel.targetElems.includes(elem) && elem != null && pixel.clickCd <= 0){
                 pixel.targetElems.splice(pixel.targetElems.indexOf(elem), 1);
                 pixel.clickCd = 20;
-            } else if (elem != "unknown" && pixel.clickCd <= 0) {
+            } else if (elem != null && pixel.clickCd <= 0) {
                 pixel.targetElems.push(elem);
                 pixel.clickCd = 20;
             }
-            if(elem == "unknown" && pixel.clickCd <= 0){
+            if(elem == null && pixel.clickCd <= 0){
                 switch(pixel.mode){
                     case 0:
                         pixel.mode = 1; //attract
@@ -1513,15 +1516,17 @@ dependOn("orchidslibrary.js", ()=>{
                 chance = 0.000075-(Math.min((pixel.temp-250)/20, 0)*0.00005);
                 if(Math.random()<chance){
                     let colors = [
-                        {r:255, g:127, b:0},
-                        {r: 255, g:200, b:0},
-                        {r: 255, g:255, b:0},
-                        {r:0, g:255, b:0},
+                        {r:150, g:80, b:80},
+                        {r: 150, g:100, b:80},
+                        {r: 150, g:140, b:80},
+                        {r:125, g:150, b:80},
+						{r:0, g:255, b:0},
                         {r:0, g:255, b:255},
                         {r:0, g:0, b:255},
                         {r:255, g:0, b:255},
                         {r:255, g:0, b:70},
                         {r:255, g:105, b:0},
+						{r:150, g:80, b:110}
                     ];
                     let num = Math.round(Math.random()*7);
                     let newColorArr = [];
@@ -1546,17 +1551,19 @@ dependOn("orchidslibrary.js", ()=>{
                     if(Math.random()<0.005 && positions.length > 0){
                         let lowestIndex = positions.indexOf(Math.min(...positions));
                         let newPos = positions[lowestIndex]+1;
-                        let coords = coordsArr[lowestIndex], colors = pixelMap[coords[0]][coords[1]].colorArr || [
-                        {r:255, g:127, b:0},
-                        {r: 255, g:200, b:0},
-                        {r: 255, g:255, b:0},
-                        {r:0, g:255, b:0},
-                        {r:0, g:255, b:255},
-                        {r:0, g:0, b:255},
-                        {r:255, g:0, b:255},
-                        {r:255, g:0, b:70},
-                        {r:255, g:105, b:0},
-                    ];
+						let colors = [
+	                        {r:150, g:80, b:80},
+	                        {r: 150, g:100, b:80},
+	                        {r: 150, g:140, b:80},
+	                        {r:125, g:150, b:80},
+							{r:0, g:255, b:0},
+	                        {r:0, g:255, b:255},
+	                        {r:0, g:0, b:255},
+	                        {r:255, g:0, b:255},
+	                        {r:255, g:0, b:70},
+	                        {r:255, g:105, b:0},
+							{r:150, g:80, b:110}
+	                    ];
                         let current = ((newPos%11)/10)*colors.length;
                         let currentIndex = Math.floor(current);
                         let d = current-currentIndex;
@@ -1761,4 +1768,100 @@ dependOn("orchidslibrary.js", ()=>{
     elements.vinegar.solubility = {water: 1};
     elements.nitric_acid.solubility = {water: 1};
     elements.sulfuric_acid.solubility = {water: 1};
+	elements.morechem_filter = {
+	        noMix: true,
+	        movable: false,
+	        color: ["#214a30", "#245435", "#1a4027", "#265235"],
+	        category: "machines",
+	        state: "solid",
+	        behavior: behaviors.WALL,
+	        properties: {
+	            targetElems: [],
+	            cooldown: 0,
+	            p: null,
+	            dir: [0,0],
+	        },
+	        onClicked: function(pixel, elem){
+	            if(pixel.cooldown == 0){
+	                if(pixel.targetElems.includes(elem)){
+	                    pixel.targetElems.splice(pixel.targetElems.indexOf(elem), 1);
+	                    let total = {r: 0, g: 0, b: 0};
+	                    let num = 0;
+	                    for(let elem of pixel.targetElems){
+	                        let c = getItem(elements[elem].color);
+	                        let rgb = getRGB(c);
+	                        total.r += rgb.r, total.g += rgb.g, total.b += rgb.b;
+	                        num++;
+	                    }
+	                    if(num == 0){
+	                        total = {r: 33, g: 74, b: 48};
+	                        num = 1;
+	                    }
+	                    let color = noiseify({r: Math.min(Math.max(total.r/num, 0), 255), g: Math.min(Math.max(total.g/num, 0), 255), b: Math.min(Math.max(total.b/num, 0), 255)}, 6);
+	                    pixel.color = color;
+	                    
+	                } else {
+	                    pixel.targetElems.push(elem);
+	                    let total = {r: 0, g: 0, b: 0};
+	                    let num = 0;
+	                    for(let elem of pixel.targetElems){
+	                        let c = getItem(elements[elem].color);
+	                        let rgb = getRGB(c);
+	                        total.r += rgb.r, total.g += rgb.g, total.b += rgb.b;
+	                        num++;
+	                    }
+	                    let color = noiseify({r: Math.min(Math.max(total.r/num, 0), 255), g: Math.min(Math.max(total.g/num, 0), 255), b: Math.min(Math.max(total.b/num, 0), 255)}, 6);
+	                    pixel.color = color;
+	                    
+	                }
+	                pixel.cooldown = 20;
+	            }
+	        },
+	        tick: function(pixel){
+	            //if(pixel.p != null && pixel.p.del){pixel.p = null};
+	            pixel.cooldown -= (pixel.cooldown > 0) ? 1 : 0;
+	            for(let coords of adjacentCoords){
+	                let p2 = getPixel(coords[0]+pixel.x, coords[1]+pixel.y);
+	                if(p2 != null){
+	                    if(pixel.targetElems.includes(p2.element) && pixel.p == null && elements[p2.element].movable){
+							deletePixel(coords[0]+pixel.x, coords[1]+pixel.y);
+	                        pixel.p = p2;
+	                        pixel.dir = coords;
+	                    }
+	                } else if (p2 == null && pixel.p != null && pixel.dir != coords){
+	                    delete pixel.p.del;
+						//pixel.p.del = false;
+						pixel.p.x = coords[0]+pixel.x, pixel.p.y = coords[1]+pixel.y;
+						pixelMap[coords[0]+pixel.x][coords[1]+pixel.y] = pixel.p;
+						currentPixels.push(pixel.p);
+	                    pixel.p = null;
+	                } 
+	                if (p2?.element == "morechem_filter" && p2.p == undefined && pixel.p != undefined && Math.random() < 0.25 && pixel.dir != coords){
+	                    p2.p = pixel.p;
+	                    p2.dir = coords;
+	                    pixel.p = null;
+	                    pixel.dir = undefined;
+	                }
+	                if (p2?.element == "pipe" && !p2?.con && pixel.p != null && pixel.dir != coords){
+	                    p2.con = pixel.p;
+	                    p2.con.x = p2.x;
+	                    p2.con.y = p2.y;
+	                    pixel.p = null;
+	                }
+	            }
+	        }
+	        
+	    };
+	    elements.hydrogen_peroxide = {
+	        solubility: {water: 1},
+	        reactions: {
+	            copper: {elem1: "water", elem2: "oxidized_copper", chance: 0.05},
+	            iron: {elem1: "water", elem2: "rust", chance: 0.05},
+	        },
+	        behavior: behaviors.LIQUID,
+	        category: "liquids",
+			solInfo: "oxidizer",
+	        color: ["#316be8", "#356ee8", "#3570f0", "#3c71e6"],
+	    };
+
 }, true);

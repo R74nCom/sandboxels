@@ -1,47 +1,181 @@
 /*
 *Version 2.2.1
 */
+
+
+
 let plants;
-dependOn("orchidslibrary.js", ()=>{
-    class growInterval {
-        constructor(seedPixel, pattern, basePos, c = 0.025, dieAfter = undefined, fruit = undefined, elems = undefined){
-            let currentLength = 0;
-            let chance = c;
-            let pos = basePos;
-            let interval = setInterval(()=>{
-                if(currentLength == pattern.length || seedPixel == undefined){
-                    clearInterval(interval);
-                } else {
-                    let x = pos[0]+pattern[currentLength][0], y = pos[1]+pattern[currentLength][1];
-                    if(Math.random()<chance && isEmpty(x,y) && !outOfBounds(x,y) && !paused){
-                        let elem = (elems != undefined && elems[currentLength] != undefined) ? elems[currentLength] : (elems != undefined) ? elems[0] : "fruit_leaves";
-                        createPixel((elem == "flower") ? "fruit_leaves" : elem, x, y);
-                        pixelMap[x][y].noBloom = (elem == "flower") ? false : true;
-                        pixelMap[x][y].blooming = (elem == "flower");
-                        pixelMap[x][y].fruit = fruit;
-                        if(elem == "fruit_leaves"){
-                            pixelMap[x][y].dieAfter = dieAfter;
-                        }
-                        currentLength++;
-                    } else if (!isEmpty(x,y) && !outOfBounds(x,y)){
-                        if(eLists.SOIL.includes(pixelMap[x][y].element)){
-                            deletePixel(x,y);
-                            let elem = (elems != undefined && elems[currentLength] != undefined) ? elems[currentLength] : (elems != undefined) ? elems[0] : "fruit_leaves";
-                            createPixel((elem == "flower") ? "fruit_leaves" : elem, x, y);
-                            pixelMap[x][y].noBloom = (elem == "flower") ? false : true;
-                            pixelMap[x][y].blooming = (elem == "flower");
-                            pixelMap[x][y].fruit = fruit;
-                            if(elem == "fruit_leaves"){
-                                pixelMap[x][y].dieAfter = dieAfter;
-                            }
-                        }
-                        currentLength++;
-                    }
-                }
-            }, 1000/tps);
-            this.interval = interval;
+let growthPatterns = {
+    pineapple1: [[-1,-1],[-2,-2],[1,-1],[2,-2],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[-1,-6],[1,-6],[-1,-5],[1,-5],[-1,-4],[1,-4],[-1,-3],[1,-3],[0,-7],[-1,-8],[1,-8]],
+    pineapple2: [[[-1,-1],[1,-1]],[[-2,-2],[2,-2]], [0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[[-1,-6],[1,-6]],[[-1,-5],[1,-5]],[[-1,-4],[1,-4]],[[-1,-3],[1,-3]],[[-1,-2],[1,-2]],[0,-7],[-1,-8],[1,-8]],
+    pineapple3: [[-1,0],[-2,-1],[-3,-2],[1,0],[2,-1],[-4,-3],[3,-2],[4,-3],[-5,-4],[5,-4],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8],[0,-9],[0,-10],[-1,-10],[1,-10],[-1,-9],[1,-9],[-1,-8],[1,-8],[-1,-7],[1,-7],[-1,-6],[1,-6],[-1,-5],[1,-5],[-1,-4],[1,-4],[-2,-9],[2,-9],[-2,-8],[2,-8],[2,-7],[-2,-7],[-2,-6],[2,-6],[2,-5],[-2,-5],[0,-11],[-1,-12],[1,-12],[2,-13],[-2,-13]],
+    melon_2x2: [[0,-1],[1,-2],[1,-1],[[1,0],[2,-1]],[2,0]],
+    melon_3x3: [[0,-1],[0,-2],[1,-3],[2,-3],[2,-2],[[1,-2],[1,-1]],[2,-1],[2,0],[1,0],[3,0],[3,-1],[3,-2]],
+    melon_4x4: [[0,-1],[0,-2],[0,-3],[1,-4],[2,-4],[3,-4],[3,-3],[2,-3],[2,-2],[3,-2],[1,-2],[1,-3],[1,-1],[2,-1],[3,-1],[1,0],[2,0],[3,0],[4,0],[4,-1],[4,-2],[4,-3]],
+    melon_5x5: [[0,-1],[0,-2],[0,-3],[0,-4],[1,-5],[2,-5],[3,-5],[3,-4],[2,-4],[3,-3],[4,-4],[4,-3],[2,-3],[1,-4],[5,-4],[3,-2],[2,-2],[4,-2],[5,-2],[1,-2],[1,-3],[5,-3],[1,-1],[2,-1],[3,-1],[4,-1],[5,-1],[5,0],[4,0],[3,0],[2,0],[1,0]],
+    palm_1: [[1,-1],[2,-2],[3,-2],[4,-2],[5,-1]],
+    palm_2: [[1,-1],[2,-2],[3,-2],[4,-3],[5,-3],[6,-3],[7,-2]],
+    palm_3: [[1,-1],[2,-2],[3,-3],[4,-3],[5,-4],[6,-4],[7,-4],[8,-3],[9,-2]] ,
+    palm_4: [[1,-1],[2,-1],[3,-2],[4,-2],[5,-3],[6,-3],[7,-3],[8,-3],[9,-2]],
+    "palm_5-1":[[0,-1],[0,-2],[1,-2],[0,-3],[-1,-3],[-2,-3],[2,-2],[3,-2],[4,-2],[5,-2],[-3,-3],[-4,-3],[-5,-3],[6,-2],[-6,-2],[-7,-2],[7,-1],[8,-1],[-8,-2],[-9,-1],[9,0],[0,-4],[1,-4],[1,-3],[2,-3],[-2,-4],[-3,-5],[-4,-5],[3,-4],[4,-4],[5,-5],[6,-5],[7,-5],[-5,-6],[-6,-6],[-7,-6],[-8,-5],[8,-4],[1,-5],[1,-6],[-1,-5],[-1,-6],[-2,-7],[-2,-8],[1,-7],[2,-8],[2,-9],[-3,-9],[-4,-10],[3,-10],[-1,-1],[-2,-1],[-2,0],[-1,0],[-1,1],[-2,1],[1,1],[1,0],[1,-1],[2,-1],[2,0],[2,1]],
+    "palm_5-2": [[-1,-1],[1,-1],[-2,-1],[2,-1],[-3,-2],[3,-2],[-4,-2],[4,-2],[5,-3],[-5,-3],[-6,-3],[6,-3],[7,-3],[-7,-3],[8,-4],[9,-4],[10,-4],[-8,-2],[11,-3],[0,-1],[1,-2],[-1,-2],[-2,-3],[2,-3],[3,-4],[4,-4],[-3,-4],[-4,-5],[-5,-5],[5,-5],[6,-5],[-6,-6],[-7,-6],[-8,-6],[7,-6],[8,-6],[9,-6],[10,-6],[-9,-5],[0,-3],[0,-2],[1,-4],[1,-5],[-1,-4],[-1,-5],[-2,-6],[-2,-7],[2,-6],[3,-7],[4,-8],[-3,-8],[-4,-9],[5,-9],[6,-9],[-5,-10],[-6,-10],[-7,-9],[7,-8],[1,0],[2,0],[3,0],[0,0],[-1,0],[-2,0],[-2,1],[-3,1],[-3,0],[-1,1],[1,1],[2,1],[3,1],[3,2],[2,2],[1,2],[-1,2],[-2,2],[-3,2],[-3,3],[-2,3],[-1,3],[1,3],[2,3],[3,3]],
+    "coconut_5-1":[[0,-1],[-1,-1],[-2,-1],[-3,-1],[1,-1],[2,-1],[3,-2],[4,-2],[-4,-2],[-5,-2],[-6,-2],[-7,-2],[5,-2],[6,-2],[7,-1],[-8,-1],[0,-2],[0,-3],[-1,-3],[-2,-4],[1,-2],[2,-3],[3,-4],[4,-4],[5,-4],[6,-4],[7,-4],[-3,-5],[-4,-5],[-5,-5],[-6,-5],[-7,-4],[8,-3],[0,-4],[0,-5],[1,-6],[1,-7],[2,-8],[3,-9],[4,-10],[5,-10],[-1,0],[-2,0],[-1,1],[-2,1],[-1,2],[-3,0],[-4,-1],[1,0],[1,1],[1,2],[2,0],[2,1],[3,-1],[3,0],[0,0]],
+    "coconut_5-2":[[0,-1],[-1,-1],[-2,-1],[-3,-2],[-4,-2],[-5,-2],[-6,-2],[-7,-1],[1,-1],[2,-2],[3,-2],[4,-3],[5,-3],[6,-3],[7,-2],[8,-2],[9,-1],[0,-2],[0,-3],[1,-3],[2,-4],[3,-5],[4,-5],[5,-6],[6,-6],[7,-6],[8,-5],[-1,-3],[-2,-4],[-3,-5],[-4,-5],[-5,-6],[-6,-6],[-7,-6],[-8,-5],[-9,-4],[0,-4],[0,-5],[1,-6],[1,-7],[2,-8],[2,-9],[3,-10],[4,-11],[-1,0],[1,0],[2,0],[2,-1],[-2,0],[-1,1],[-2,1],[-3,1],[1,1],[2,1],[3,0],[4,0],[-3,-1],[-3,0],[-4,0],[-4,1],[3,1],[4,1],[3,-1],[-1,2],[-2,2],[-3,2],[1,2],[2,2],[3,2]],
+    blade: function(length, min, max, exclude = null){
+    let angle = min+(Math.random()*(max-min));
+    if(exclude != null){
+        while(angle > exclude[0] && angle < exclude[1]){
+            angle = min+(Math.random()*(max-min));
         }
     }
+    let res = [];
+    let num = (angle < 270) ? -0.5 : 0.5;
+    for(let i = 0; i < length; i++){
+        let tempAngle = (angle+(num*i))*(Math.PI/180);
+        let dX = Math.cos(tempAngle)*i, dY = Math.sin(tempAngle)*i;
+        res.push([Math.floor(dX), Math.floor(dY)]);
+    }
+    return res;
+    },
+    palm: function(length, min, max, exclude = null){
+        let angle = min+(Math.random()*(max-min));
+        if(exclude != null){
+            while(angle > exclude[0] && angle < exclude[1]){
+                angle = min+(Math.random()*(max-min));
+            }
+        }
+        let res = [];
+        let num = (angle < 270) ? -3 : 3;
+        for(let i = 0; i < length; i++){
+            let tempAngle = (angle+(num*i))*(Math.PI/180);
+            let dX = Math.cos(tempAngle)*i, dY = Math.sin(tempAngle)*i;
+            res.push([Math.floor(dX), Math.floor(dY)]);
+        }
+        return res;
+    },
+    palm_bloom: function(){
+        let res = [];
+        
+        let width = 3+Math.round(Math.random()*2);
+        let length = 5+(width-3);
+        for(let i = 1; i < length; i++){
+            for(let ii = 1; ii < width; ii++){
+                res.push([-ii,i]);
+                res.push([ii,i]);
+            }
+        }
+        return res;
+    },
+    stalk: function(height){
+        let res = [];
+        for(let i = 1; i <= height; i++){
+            res.push([0, -i]);
+        }
+        return res;
+    },
+	cucurbit: function(r, dir, min, max){
+		let w = Math.round(Math.random()*(max-min))+min;
+		let h = Math.round(w*r);
+		let res = [];
+		let pos = [0,0];
+			for(let i = 0; i < w; i++){
+				for(let ii = 0; ii < h/2; ii++){
+					res.push([i, ii]);
+					res.push([i, ii*-1]);
+			}
+		}
+		return res;
+	}
+};
+let growthElems = {
+    pineapple1: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves"],
+    pineapple2: ["fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves"],
+    pineapple3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
+    melon_2x2: ["fruit_leaves","fruit_leaves","flower","flower","flower","flower"],
+    melon_3x3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+    melon_4x4: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+    melon_5x5: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+    palm_1: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
+    palm_2: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
+    palm_3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
+    palm_4: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
+    "palm_5-1": ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+    "palm_5-2":["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+    "coconut_5-1": ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves"],
+    "coconut_5-2": ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+	cucurbit: ["fruit_leaves"],
+}
+class growInterval {
+       constructor(seedPixel, pattern, basePos, c = 0.025, dieAfter = undefined, fruit = undefined, elems = undefined){
+           let currentLength = 0;
+           let chance = c;
+           let pos = basePos;
+           let interval = setInterval(()=>{
+               if(currentLength == pattern.length || seedPixel == undefined){
+                   clearInterval(interval);
+               } else {
+				if(is2d(pattern[currentLength])){
+					for(let coords of pattern[currentLength]){
+						let x = pos[0]+coords[0], y = pos[1]+coords[1];
+	                   if(Math.random()<chance && isEmpty(x,y) && !outOfBounds(x,y) && !paused){
+	                       let elem = (elems != undefined && elems[currentLength] != undefined) ? elems[currentLength] : (elems != undefined) ? elems[0] : "fruit_leaves";
+	                       createPixel((elem == "flower") ? "fruit_leaves" : elem, x, y);
+	                       pixelMap[x][y].noBloom = (elem == "flower") ? false : true;
+	                       pixelMap[x][y].blooming = (elem == "flower");
+	                       pixelMap[x][y].fruit = fruit;
+	                       if(elem == "fruit_leaves"){
+	                           pixelMap[x][y].dieAfter = dieAfter;
+	                       }
+	                       currentLength++;
+	                   } else if (!isEmpty(x,y) && !outOfBounds(x,y)){
+	                       if(eLists.SOIL.includes(pixelMap[x][y].element)){
+	                           deletePixel(x,y);
+	                           let elem = (elems != undefined && elems[currentLength] != undefined) ? elems[currentLength] : (elems != undefined) ? elems[0] : "fruit_leaves";
+	                           createPixel((elem == "flower") ? "fruit_leaves" : elem, x, y);
+	                           pixelMap[x][y].noBloom = (elem == "flower") ? false : true;
+	                           pixelMap[x][y].blooming = (elem == "flower");
+	                           pixelMap[x][y].fruit = fruit;
+	                           if(elem == "fruit_leaves"){
+	                               pixelMap[x][y].dieAfter = dieAfter;
+	                           }
+	                       }
+	                       currentLength++;
+	                   }
+					}
+				} else {
+	                   let x = pos[0]+pattern[currentLength][0], y = pos[1]+pattern[currentLength][1];
+	                   if(Math.random()<chance && isEmpty(x,y) && !outOfBounds(x,y) && !paused){
+	                       let elem = (elems != undefined && elems[currentLength] != undefined) ? elems[currentLength] : (elems != undefined) ? elems[0] : "fruit_leaves";
+	                       createPixel((elem == "flower") ? "fruit_leaves" : elem, x, y);
+	                       pixelMap[x][y].noBloom = (elem == "flower") ? false : true;
+	                       pixelMap[x][y].blooming = (elem == "flower");
+	                       pixelMap[x][y].fruit = fruit;
+	                       if(elem == "fruit_leaves"){
+	                           pixelMap[x][y].dieAfter = dieAfter;
+	                       }
+	                       currentLength++;
+	                   } else if (!isEmpty(x,y) && !outOfBounds(x,y)){
+	                       if(eLists.SOIL.includes(pixelMap[x][y].element)){
+	                           deletePixel(x,y);
+	                           let elem = (elems != undefined && elems[currentLength] != undefined) ? elems[currentLength] : (elems != undefined) ? elems[0] : "fruit_leaves";
+	                           createPixel((elem == "flower") ? "fruit_leaves" : elem, x, y);
+	                           pixelMap[x][y].noBloom = (elem == "flower") ? false : true;
+	                           pixelMap[x][y].blooming = (elem == "flower");
+	                           pixelMap[x][y].fruit = fruit;
+	                           if(elem == "fruit_leaves"){
+	                               pixelMap[x][y].dieAfter = dieAfter;
+	                           }
+	                       }
+	                       currentLength++;
+	                   }
+	               }
+			  }     
+      }, 1000/tps);
+           this.interval = interval;
+       }
+   }
+dependOn("orchidslibrary.js", ()=>{
+   
     let flowerExclude = ["pineapple"];
     let vineGrow = ["wood", "rock_wall", "straw", "wall", "ewall", "bush_cane", "bush_base", "fruit_branch"];
     plants = {
@@ -54,94 +188,20 @@ dependOn("orchidslibrary.js", ()=>{
                 if(this[item] && Array.isArray(this[item]) && this[item].includes(target)){return true;}
             }
             return false;
-        }
+        },
+		get all(){
+			let res = [];
+			for(let key in plants){
+				if(key != "all" && Array.isArray(plants[key])){
+					for(let plant of plants[key]){
+						res.push(plant);
+					}
+				}
+			}
+			return res;
+		}
     }
-    let growthPatterns = {
-        pineapple1: [[-1,-1],[-2,-2],[1,-1],[2,-2],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[-1,-6],[1,-6],[-1,-5],[1,-5],[-1,-4],[1,-4],[-1,-3],[1,-3],[0,-7],[-1,-8],[1,-8]],
-        pineapple2: [[[-1,-1],[1,-1]],[[-2,-2],[2,-2]], [0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[[-1,-6],[1,-6]],[[-1,-5],[1,-5]],[[-1,-4],[1,-4]],[[-1,-3],[1,-3]],[[-1,-2],[1,-2]],[0,-7],[-1,-8],[1,-8]],
-        pineapple3: [[-1,0],[-2,-1],[-3,-2],[1,0],[2,-1],[-4,-3],[3,-2],[4,-3],[-5,-4],[5,-4],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8],[0,-9],[0,-10],[-1,-10],[1,-10],[-1,-9],[1,-9],[-1,-8],[1,-8],[-1,-7],[1,-7],[-1,-6],[1,-6],[-1,-5],[1,-5],[-1,-4],[1,-4],[-2,-9],[2,-9],[-2,-8],[2,-8],[2,-7],[-2,-7],[-2,-6],[2,-6],[2,-5],[-2,-5],[0,-11],[-1,-12],[1,-12],[2,-13],[-2,-13]],
-        melon_2x2: [[0,-1],[1,-2],[1,-1],[[1,0],[2,-1]],[2,0]],
-        melon_3x3: [[0,-1],[0,-2],[1,-3],[2,-3],[2,-2],[[1,-2],[1,-1]],[2,-1],[2,0],[1,0],[3,0],[3,-1],[3,-2]],
-        melon_4x4: [[0,-1],[0,-2],[0,-3],[1,-4],[2,-4],[3,-4],[3,-3],[2,-3],[2,-2],[3,-2],[1,-2],[1,-3],[1,-1],[2,-1],[3,-1],[1,0],[2,0],[3,0],[4,0],[4,-1],[4,-2],[4,-3]],
-        melon_5x5: [[0,-1],[0,-2],[0,-3],[0,-4],[1,-5],[2,-5],[3,-5],[3,-4],[2,-4],[3,-3],[4,-4],[4,-3],[2,-3],[1,-4],[5,-4],[3,-2],[2,-2],[4,-2],[5,-2],[1,-2],[1,-3],[5,-3],[1,-1],[2,-1],[3,-1],[4,-1],[5,-1],[5,0],[4,0],[3,0],[2,0],[1,0]],
-        palm_1: [[1,-1],[2,-2],[3,-2],[4,-2],[5,-1]],
-        palm_2: [[1,-1],[2,-2],[3,-2],[4,-3],[5,-3],[6,-3],[7,-2]],
-        palm_3: [[1,-1],[2,-2],[3,-3],[4,-3],[5,-4],[6,-4],[7,-4],[8,-3],[9,-2]] ,
-        palm_4: [[1,-1],[2,-1],[3,-2],[4,-2],[5,-3],[6,-3],[7,-3],[8,-3],[9,-2]],
-        "palm_5-1":[[0,-1],[0,-2],[1,-2],[0,-3],[-1,-3],[-2,-3],[2,-2],[3,-2],[4,-2],[5,-2],[-3,-3],[-4,-3],[-5,-3],[6,-2],[-6,-2],[-7,-2],[7,-1],[8,-1],[-8,-2],[-9,-1],[9,0],[0,-4],[1,-4],[1,-3],[2,-3],[-2,-4],[-3,-5],[-4,-5],[3,-4],[4,-4],[5,-5],[6,-5],[7,-5],[-5,-6],[-6,-6],[-7,-6],[-8,-5],[8,-4],[1,-5],[1,-6],[-1,-5],[-1,-6],[-2,-7],[-2,-8],[1,-7],[2,-8],[2,-9],[-3,-9],[-4,-10],[3,-10],[-1,-1],[-2,-1],[-2,0],[-1,0],[-1,1],[-2,1],[1,1],[1,0],[1,-1],[2,-1],[2,0],[2,1]],
-        "palm_5-2": [[-1,-1],[1,-1],[-2,-1],[2,-1],[-3,-2],[3,-2],[-4,-2],[4,-2],[5,-3],[-5,-3],[-6,-3],[6,-3],[7,-3],[-7,-3],[8,-4],[9,-4],[10,-4],[-8,-2],[11,-3],[0,-1],[1,-2],[-1,-2],[-2,-3],[2,-3],[3,-4],[4,-4],[-3,-4],[-4,-5],[-5,-5],[5,-5],[6,-5],[-6,-6],[-7,-6],[-8,-6],[7,-6],[8,-6],[9,-6],[10,-6],[-9,-5],[0,-3],[0,-2],[1,-4],[1,-5],[-1,-4],[-1,-5],[-2,-6],[-2,-7],[2,-6],[3,-7],[4,-8],[-3,-8],[-4,-9],[5,-9],[6,-9],[-5,-10],[-6,-10],[-7,-9],[7,-8],[1,0],[2,0],[3,0],[0,0],[-1,0],[-2,0],[-2,1],[-3,1],[-3,0],[-1,1],[1,1],[2,1],[3,1],[3,2],[2,2],[1,2],[-1,2],[-2,2],[-3,2],[-3,3],[-2,3],[-1,3],[1,3],[2,3],[3,3]],
-        "coconut_5-1":[[0,-1],[-1,-1],[-2,-1],[-3,-1],[1,-1],[2,-1],[3,-2],[4,-2],[-4,-2],[-5,-2],[-6,-2],[-7,-2],[5,-2],[6,-2],[7,-1],[-8,-1],[0,-2],[0,-3],[-1,-3],[-2,-4],[1,-2],[2,-3],[3,-4],[4,-4],[5,-4],[6,-4],[7,-4],[-3,-5],[-4,-5],[-5,-5],[-6,-5],[-7,-4],[8,-3],[0,-4],[0,-5],[1,-6],[1,-7],[2,-8],[3,-9],[4,-10],[5,-10],[-1,0],[-2,0],[-1,1],[-2,1],[-1,2],[-3,0],[-4,-1],[1,0],[1,1],[1,2],[2,0],[2,1],[3,-1],[3,0],[0,0]],
-        "coconut_5-2":[[0,-1],[-1,-1],[-2,-1],[-3,-2],[-4,-2],[-5,-2],[-6,-2],[-7,-1],[1,-1],[2,-2],[3,-2],[4,-3],[5,-3],[6,-3],[7,-2],[8,-2],[9,-1],[0,-2],[0,-3],[1,-3],[2,-4],[3,-5],[4,-5],[5,-6],[6,-6],[7,-6],[8,-5],[-1,-3],[-2,-4],[-3,-5],[-4,-5],[-5,-6],[-6,-6],[-7,-6],[-8,-5],[-9,-4],[0,-4],[0,-5],[1,-6],[1,-7],[2,-8],[2,-9],[3,-10],[4,-11],[-1,0],[1,0],[2,0],[2,-1],[-2,0],[-1,1],[-2,1],[-3,1],[1,1],[2,1],[3,0],[4,0],[-3,-1],[-3,0],[-4,0],[-4,1],[3,1],[4,1],[3,-1],[-1,2],[-2,2],[-3,2],[1,2],[2,2],[3,2]],
-        blade: function(length, min, max, exclude = null){
-        let angle = min+(Math.random()*(max-min));
-        if(exclude != null){
-            while(angle > exclude[0] && angle < exclude[1]){
-                angle = min+(Math.random()*(max-min));
-            }
-        }
-        let res = [];
-        let num = (angle < 270) ? -0.5 : 0.5;
-        for(let i = 0; i < length; i++){
-            let tempAngle = (angle+(num*i))*(Math.PI/180);
-            let dX = Math.cos(tempAngle)*i, dY = Math.sin(tempAngle)*i;
-            res.push([Math.floor(dX), Math.floor(dY)]);
-        }
-        return res;
-        },
-        palm: function(length, min, max, exclude = null){
-            let angle = min+(Math.random()*(max-min));
-            if(exclude != null){
-                while(angle > exclude[0] && angle < exclude[1]){
-                    angle = min+(Math.random()*(max-min));
-                }
-            }
-            let res = [];
-            let num = (angle < 270) ? -3 : 3;
-            for(let i = 0; i < length; i++){
-                let tempAngle = (angle+(num*i))*(Math.PI/180);
-                let dX = Math.cos(tempAngle)*i, dY = Math.sin(tempAngle)*i;
-                res.push([Math.floor(dX), Math.floor(dY)]);
-            }
-            return res;
-        },
-        palm_bloom: function(){
-            let res = [];
-            
-            let width = 3+Math.round(Math.random()*2);
-            let length = 5+(width-3);
-            for(let i = 1; i < length; i++){
-                for(let ii = 1; ii < width; ii++){
-                    res.push([-ii,i]);
-                    res.push([ii,i]);
-                }
-            }
-            return res;
-        },
-        stalk: function(height){
-            let res = [];
-            for(let i = 1; i <= height; i++){
-                res.push([0, -i]);
-            }
-            return res;
-        },
-    };
-    let growthElems = {
-        pineapple1: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves"],
-        pineapple2: ["fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves"],
-        pineapple3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
-        melon_2x2: ["fruit_leaves","fruit_leaves","flower","flower","flower","flower"],
-        melon_3x3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
-        melon_4x4: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
-        melon_5x5: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
-        palm_1: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
-        palm_2: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
-        palm_3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
-        palm_4: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
-        "palm_5-1": ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
-        "palm_5-2":["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
-        "coconut_5-1": ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves"],
-        "coconut_5-2": ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
-    }
+    
     let ethyleneChance = {
         tomato: 0.000055,
         orange: 0.000005,
@@ -247,6 +307,8 @@ dependOn("orchidslibrary.js", ()=>{
             type: "fruit",
         };
         isFood = true;
+		tempHigh = 65;
+		stateHigh = ["sugar", "dead_plant", "dead_plant", "dead_plant"];
         constructor(name, colour, jColour, type = "tree", sColour = false, extract = false, low = false){
             this.properties.fruit = name;
             this.color = colour;
@@ -483,6 +545,9 @@ dependOn("orchidslibrary.js", ()=>{
             dir: [1,1],
             bloomColor: "#FFE2E2",
         },
+		hoverStat: function(pixel){
+			return pixel?.fruit || "NONE";
+		},
         tick: function(pixel){
           if(pixel.dieAfter != undefined){
               let chance = (pixel.age-pixel.dieAfter)/150;
@@ -589,9 +654,19 @@ dependOn("orchidslibrary.js", ()=>{
             if(pixelTicks > pixel.start + 150){
               if(Math.random() < chance){
                 if(pixel.fruit){
-                  if(pixel.fruit == "random"){
-                    changePixel(pixel, fruits[Math.floor(Math.random() * fruits.length)]);
-                  } else {
+                  if(pixel.fruit == "randomfruit"){
+					all = plants.all;
+					let elem = all[Math.round(Math.random()*all.length)];
+					while(elem == undefined || elements[elem] == undefined){
+						elem = all[Math.round(Math.random()*all.length)]
+					}
+                    changePixel(pixel, elem);
+                  } 
+				  if (pixel.pattern && pixel.growthPattern == false) {
+						pixel.blooming = false;
+						pixel.growthPattern = true;
+						
+				 } else if(pixel.fruit != "randomfruit") {
                     let c = (pixel.offspringColor) ? pixel.offspringColor : undefined;
                     changePixel(pixel, pixel.fruit);
                     if(c != undefined){
@@ -622,7 +697,7 @@ dependOn("orchidslibrary.js", ()=>{
                             }
                         }
                     }
-                } else if(pixel.growthStage < growthPatterns[pixel.pattern].length) {
+                } else if(pixel.growthStage < [pixel.pattern].length) {
                     let x = pixel.x+(value[0]*pixel.dir[0]), y = pixel.y+(value[1]*pixel.dir[1]);
                     if(isEmpty(x,y) && !outOfBounds(x,y)){
                         if(growthElems[pixel.pattern][pixel.growthStage] == "flower"){
@@ -835,7 +910,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.005){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -843,7 +918,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.5){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -851,7 +926,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.005){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -859,7 +934,7 @@ dependOn("orchidslibrary.js", ()=>{
         for(let i = 0; i < squareCoords.length; i++){
             let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
             if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.5){
-                colorMix(pixel, pixelMap[x][y]);
+                colorMix(pixel, pixelMap[x][y], 0.5, mixConditions.ifDifferent);
             }
         }
     }
@@ -868,8 +943,8 @@ dependOn("orchidslibrary.js", ()=>{
             let rgb = interpolateRgb(getRGB(p1.color), getRGB(p2.color), 0.25);
             changePixel(p1, "fruit_milk");
             changePixel(p2, "fruit_milk");
-            p1.color = rgb;
-            p2.color = rgb;
+            p1.color = noiseify(rgb, 6);
+            p2.color = noiseify(rgb, 6);
         }
     };
     elements.juice.reactions.carbon_dioxide = { func: function(p1,p2){
@@ -1156,6 +1231,9 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.unripe_fruit = {
+		desc: "Poisonous unripe fruit.",
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         category: "life",
         breakInto: ["poison", "sugar_water", "dirty_water"],
         color: ["#7ed934", "#78d42c", "#7cdb2e", "#7bde2a"],
@@ -1172,6 +1250,9 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.pineapple = {
+		tempHigh: 140,
+		stateHigh: "dead_plant",
+		desc: "The multiple fruit of the Ananas Cosmosus plant, a bromeliad. Known for its acidity and sweet, tropical flavour, this fruit contains bromelain, an enzyme that can and will digest your mouth.",
         category: "food", 
         breakInto: "juice",
         bloomColor: ["#ff6682", "#ff6e88", "#ff6198", "#de73a5"],
@@ -1180,6 +1261,9 @@ dependOn("orchidslibrary.js", ()=>{
         isFood: true,
     }
     elements.sugarcane = {
+		desc: "The canes of Saccharum species, a member of the grass family. The stalks are rich in sucrose, so sugar can be extracted from it.",
+		tempHigh: 110,
+		stateHigh: "dead_plant",
         category: "life",
         extract: "sugar_water",
         color: ["#60d10f", "#5abf11", "#66cc1d", "#78ed24"],
@@ -1213,6 +1297,8 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.sugarcane_seed = {
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         category: "life",
         behavior: behaviors.POWDER,
         color: ["#f0e07a", "#e0d277", "#e3ca71", "#d9ba77"],
@@ -1232,7 +1318,10 @@ dependOn("orchidslibrary.js", ()=>{
     elements.watermelon = new fruit("watermelon", ["#0e6614", "#065c0c", "#03700b", "#109119", "#098f12"], ["#ff4242", "#ed2f2f", "#ff2e2e", "#ed2828"]);
     elements.watermelon.bloomColor = ["#e9ed11", "#f1f50a", "#fbff19", "#fbff29"];
     elements.watermelon.behavior = behaviors.WALL;
+	elements.watermelon.desc = "The berry of Citrullus Lanatus, though quite a sizeable one at that. A Cucurbit known for its watery but sweet flesh, making it a great summer treat.";
     elements.watermelon_seed = {
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         behavior: behaviors.POWDER,
         color: ["#5e4a22", "#423417", "#241b0b", "#1f1709", "#120e05"],
         category: "life",
@@ -1265,6 +1354,8 @@ dependOn("orchidslibrary.js", ()=>{
     }
     elements.tomato.bloomColor = ["#edd93e", "#fae334", "#e6dc22", "#f5ec3d"];
     elements.banana_seed = {
+		tempHigh: 60,
+		stateHigh: "dead_plant",
         behavior: [['XX', 'XX', 'XX'],['XX', 'XX', 'XX'],['M2', 'M1 AND ST:wood', 'M2']],
         color: ["#121211", "#121211", "#0f0f0e", "#171716"],
         category: "life",
@@ -1313,6 +1404,9 @@ dependOn("orchidslibrary.js", ()=>{
     }
     elements.dead_plant.behavior = [["XX","XX","XX"],["XX","CH:dirt%0.015","XX"],["M2","M1","M2"]];
     elements.banana = {
+		desc: "A berry produced by members of the Musa genus, although often referred to as palms, members of this genus are actually not in the palm family, Arecaceae.",
+		tempHigh: 110,
+		stateHigh: ["dead_plant","dead_plant","dead_plant","sugar"],
         category: "food", 
         breakInto: "juice",
         bloomColor: ["#6e2942", "#63293e", "#703249", "#82314f"],
@@ -1321,8 +1415,11 @@ dependOn("orchidslibrary.js", ()=>{
         isFood: true,
     };
     elements.coconut = {
+		desc: "The fruit of the Cocos Nucifera palm, contains a watery beverage meny people like to drink and a solid fat.",
         behavior: [['XX', 'XX', 'XX'],['XX', 'XX', 'XX'],['M2', 'M1 AND ST:wood', 'M2']],
         color: ["#291706", "#382007", "#2e1905", "#361d05", "#361e06"],
+		tempHigh: 70,
+		stateHigh: "dead_plant",
         category: "food",
         properties: {
             age: 0,
@@ -1377,6 +1474,7 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.coconut_oil = {
+		desc: "The fat derived from the flesh of the coconut, solid at room temperature.",
         behavior: behaviors.SOLID,
         color: ["#f0efed", "#edeceb", "#e6e4e3", "#ebe9e8"],
         category: "food",
@@ -1401,9 +1499,12 @@ dependOn("orchidslibrary.js", ()=>{
             lye: {elem1: "soap", elem2: "soap"},
         }, 
         tempLow: 23,
-        stateLow: "coconut_oil"
+        stateLow: "coconut_oil",
+		tempHigh: 200,
+		stateHigh: ["stench", "smoke","smoke","smoke","dioxin"]
     }
     elements.coconut_water = {
+		desc: "The clear fluid found inside of young coconuts to sustain the endosperm during development.",
         color: ["#8dd6d9", "#8cd9db", "#82d6d9"],
         behavior: behaviors.LIQUID,
         isFood: true,
@@ -1413,7 +1514,10 @@ dependOn("orchidslibrary.js", ()=>{
         stateHigh: ["sugar", "steam", "steam", "steam", "potassium_salt", "salt", "epsom_salt", "steam", "steam", "steam"]
     }
     elements.morning_glory_seed = {
+		tempHigh: 50,
+		stateHigh: "dead_plant",
         behavior: behaviors.VINEFRUIT,
+		desc: "Very proliferative and potentially invasive decorative vine.",
         bloomColors: [["#f783f0", "#fa8cf3", "#fa96f3", "#f590ee"], ["#8d40f7", "#9a52ff", "#8041d9", "#7e3ade"], ["#ed5365", "#f0485b", "#f55b6d", "#eb3d51"], ["#f53d49", "#fa4652", "#f54e59", "#f23a46"], ["#f53d49", "#fa8cf3", "#f55b6d", "#f23a46"]],
         color: ["#5c5036", "#473e29", "#4f4631", "#fcf2b8"],
         properties: {
@@ -1428,14 +1532,18 @@ dependOn("orchidslibrary.js", ()=>{
                 while(!Array.isArray(arr)){
                     arr = elements.morning_glory_seed.bloomColors[Math.round(Math.random()*elements.morning_glory_seed.bloomColors.length)];
                 }
+				if(Math.random()<0.1){
+					arr = ["#FFE108", "#F0EC1F", "#FFD208", "#FFF754"];
+				}
                 let num = 100*(10**Math.random()/10);
-                let newArr = false;
+                let newArr = [];
                 for(let item of arr){
                     let o = item;
                     let rgb = hexToRGB(item);
                     let newRGB = {r: Math.min(255, rgb.r+num), g: Math.min(255, rgb.g+num), b: Math.min(255, rgb.b+num)};
-                    newArr = [];
-                    newArr[arr.indexOf(item)] = RGBToHex(newRGB);
+                    //newArr = [];
+                    newArr.push(RGBToHex(newRGB));
+					//console.log(newRGB);
                     
                 }
                 pixel.bloomColor = (newArr) ? newArr : arr;
@@ -1450,6 +1558,7 @@ dependOn("orchidslibrary.js", ()=>{
     elements.apricot_seed.tempHigh = 175;
     elements.apricot_seed.stateHigh = "almond";
     elements.almond = {
+		desc: "The roasted pit of a prune closely related to apricots.",
         color: ["#ab9450", "#b3994d", "#a18943", "#a18c43", "#a18d47"],
         behavior: behaviors.POWDER, 
         state: "solid",
@@ -1470,6 +1579,7 @@ dependOn("orchidslibrary.js", ()=>{
         }
     }
     elements.almond_extract = {
+		desc: "Benzaldehyde-rich extracts of prunes, while called \"almond extract,\" it is often made using cherry pits.",
         color: ["#cfccbe", "#d6d4c7", "#c9c7bb", "#ccc9b8"],
         behavior: behaviors.LIQUID,
         isFood: true,
@@ -1497,9 +1607,13 @@ dependOn("orchidslibrary.js", ()=>{
     }
     
     elements.onion = {
+		desc: "A lilioid monocot of the Ammarylidaceae family in the asparagales order, commonly used in flavouring savoury dishes.",
+		tempHigh: 110,
+		stateHigh: "dead_plant",
         category: "food", 
         color: ["#dbaa5a", "#cc9b4b", "#bd9048", "#faebb4", "#fcf5d9", "#f2e9c7", "#7d2d50", "#ad3d6e", "#c25182"],
         state: "solid",
+		
         properties: {
             age: 0,
             sprouted: null,
@@ -1558,6 +1672,8 @@ dependOn("orchidslibrary.js", ()=>{
         color: ["#0f0f0f", "#0f0f0f", "#0a0a0a", "#0a0a0a"],
         category: "life",
         state: "solid",
+		stateHigh: "dead_plant",
+		tempHigh: 70, 
         tick: function(pixel){
             let inDirt = (getPixel(pixel.x,pixel.y+1) != null && eLists.SOIL.includes(pixelMap[pixel.x][pixel.y+1].element)) ? true : false;
             for(let coords of adjacentCoords){
@@ -1575,6 +1691,7 @@ dependOn("orchidslibrary.js", ()=>{
     elements.grape.reactions.sugar_water = {elem2: "wine", chance: 0.0006};
     elements.grape.reactions.water = {elem2: "wine", chance: 0.00006};
     elements.wine = {
+		desc: "Fermented juice, can be fermented with naturally ocurring yeast on the outside of many fruits or from lab grown yeast.",
         density: 992,
         color: ["#381b30", "#402137", "#261321", "#38192f"],
         behavior: behaviors.LIQUID,
@@ -1614,3 +1731,4 @@ dependOn("orchidslibrary.js", ()=>{
 
     
 }, true);
+  
