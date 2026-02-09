@@ -4,6 +4,25 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.13.3 - February 9, 2026 - New Home]
+    + Sandboxels is now on Neal.fun
+        ~ For all the details, see https://sandboxels.R74n.com/new-home
+    + Data transfer
+        + Download your data and save slots at http://sandboxels.R74n.com/transfer
+        + Import settings, discoveries, mods, and more with the "Import Data" button in Settings
+    + On-page changelog when clicking the version number
+    ~ Refreshed much of the user interface
+    ~ Reordered main tools
+    ~ Language selection is now in Settings
+    ~ Image tool element is now set by Shift-Selecting the tool
+    ~ Ligatures no longer show in the pixel font
+    - Removed Image Smoothing setting, Image tool is now always unsmoothed
+    - Removed Reset Discovered button
+   [Technical]
+    ~ Mods are now hosted in a separate repository (https://github.com/R74nCom/Sandboxels-Mods/)
+    ~ If Sandboxels is opened in a local file, it will load from the existing "mods/" folder
+        ~ Otherwise, it will use the repository
+
 [Version 1.13.2 - January 11, 2026]
     + Edit Mode
         ~ Moved Special tools to the edit tab

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Download and Transfer Data - Sandboxels</title>
+    <meta name="description" content="Download your user data, including save slots, discoveries, and mods, for transferring to another edition of Sandboxels.">
+    <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
+    <meta name="author" content="R74n">
+    <meta name="copyright" content="R74n">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all">
+    <link rel="canonical" href="https://sandboxels.r74n.com/transfer" id="canonicalLink"/>
+
+    <!--Favicons-->
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png?v=2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg?v=2" color="#2167ff">
+    <link rel="shortcut icon" href="icons/favicon.ico?v=2">
+    <meta name="msapplication-TileColor" content="#e6d577">
+    <meta name="theme-color" content="#000000">
+
+    <!--OpenGraph-->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Sandboxels">
+    <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
+    <meta property="og:image:width" content="1980">
+    <meta property="og:image:height" content="971">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="A rainforest made in Sandboxels">
+
+    <!--Twitter-->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site:id" content="1436857621827530753">
+    <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
+    <meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
+    <meta name="twitter:creator:id" content="1436857621827530753">
+
+    <link rel="stylesheet" type="text/css" href="style.css?nocache=3">
+    <style>
+        /* on mobile, make h1 fit on one line */
+        @media only screen and (max-width: 800px) {
+            h1 { font-size: 1em; }
+        }
+        #content { font-family: Arial, Helvetica, sans-serif; font-size:1.2em; }
+        h2 { text-align: left; margin-bottom:0; margin-top:45px}
+        button {
+            background-color: rgb(76, 76, 76);
+            padding: 7px;
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+            border: solid 3px gray;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        button.done {
+            background-color: rgb(76, 100, 76);
+        }
+        textarea {
+            background-color: rgb(76, 76, 76);
+            border: solid 3px gray;
+            color: white;
+            padding: 7px;
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            width: 100%;
+            max-width: 700px;
+            display: block;
+            min-height: 3.5em;
+        }
+        #otherData strong {
+            text-decoration: underline;
+        }
+        #otherData textarea {
+            margin-bottom: 2em;
+        }
+    </style>
+</head>
+
+<body>
+<h1><a href="https://sandboxels.R74n.com" class="backbutton">&lt;</a> Your Data</h1>
+
+<div id="content">
+
+<p>This page allows you to download your data to transfer it to other editions of Sandboxels. You can also use this page to simply back up your data, as browser data can be unreliable.</p>
+
+<p>For more information on the new home of Sandboxels, see <a href="new-home">our FAQ page</a>.</p>
+
+<h2>Save Slots</h2>
+<p>If saves are stored in this browser, you can download them below. Load a file into <a href="https://sandboxels.r74n.com/" target="_blank">Sandboxels</a> by using the "Load File" button in the saves menu, or by dragging-and-dropping it onto the canvas.</p>
+<ul id="saveSlots"></ul>
+<script>
+    let saveSlots = document.getElementById("saveSlots");
+    function saveFromSlot(i) {
+        const json = localStorage.getItem("SandboxelsSaves/" + i);
+        let parsed = JSON.parse(json);
+        let name = "Unnamed";
+        if (parsed.meta) name = parsed.meta.name;
+        var blob = new Blob([json], {type: "application/json"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = name+".sbxls";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+    for (let i = 0; i <= 100; i++) {
+        const json = localStorage.getItem("SandboxelsSaves/" + i);
+        if (!json) continue;
+        try {
+            parsed = JSON.parse(json);
+        }
+        catch {
+            continue;
+        }
+        let name = "Unnamed";
+        if (parsed.meta) name = parsed.meta.name;
+
+        saveSlots.insertAdjacentHTML("beforeend", `
+        <li>
+            Slot ${i}: ${name} <button onclick="saveFromSlot(${i})">Download</button>
+        </li>
+        `)
+    }
+    if (!saveSlots.innerText) saveSlots.innerText = "No save slots detected. Please check that you're in the correct browser and user profile.";
+</script>
+
+<h2>Other Data</h2>
+<p>Any other user data detected will appear below. In versions 1.13.3 and above, you can press the "Import Data" button in Settings to paste the text blocks below into your game.</p>
+
+<div id="otherData">
+    <strong>Settings</strong>, <em id="desc-settings">discoveries</em> <button onclick='copyData("data-settings"); this.innerText = "Copied"; this.className = "done"'>Copy</button>
+    <textarea id="data-settings" onclick="this.select()"></textarea>
+    
+    <strong>Enabled mods</strong> <button onclick='copyData("data-mods"); this.innerText = "Copied"; this.className = "done"'>Copy</button>
+    <textarea id="data-mods" onclick="this.select()"></textarea>
+</div>
+<script>
+    function copyData(id) {
+        let elem = document.getElementById(id);
+        if (navigator.clipboard) {
+            console.log(elem.textContent)
+            navigator.clipboard.writeText(elem.textContent);
+        }
+        else {
+            elem.select();
+            document.execCommand('copy');
+        }
+    }
+    let otherData = document.getElementById("otherData");
+    let settingsText = document.getElementById("data-settings");
+
+    let settings = localStorage.getItem("settings");
+    if (settings) {
+        settingsText.innerText = "settings >>> " + settings;
+
+        let settingsParsed = JSON.parse(settings);
+        let settingsDesc = document.getElementById("desc-settings");
+
+        if (settingsParsed.alchemyUnlocked) {
+            settingsDesc.innerText += ", alchemy.js progress"
+        }
+        if (settingsParsed.survival) {
+            settingsDesc.innerText += ", survival.js progress"
+        }
+    }
+    else {
+        settingsText.innerText = "No data found."
+    }
+
+    let modsText = document.getElementById("data-mods");
+    let enabledMods = localStorage.getItem("enabledMods");
+    if (enabledMods && enabledMods !== "[]") {
+        modsText.innerText = "enabledMods >>> " + enabledMods;
+    }
+    else {
+        modsText.innerText = "No data found."
+    }
+</script>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-93720349-9"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-93720349-9');
+</script>
+
+</body>
+
+</html>
