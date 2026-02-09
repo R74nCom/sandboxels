@@ -185,8 +185,11 @@
     fpan_speed;
     cpan_speed;
     upan_speed;
-    use_ijkl;
+    pan_keys;
     show_floater;
+    show_pos;
+    enable_scroll_zoom;
+    scroll_zoom_multiplier;
     pan_zeroing_en;
     zoom_zeroing_en;
     constructor(on_edit) {
@@ -241,13 +244,42 @@
         "Whether to show the floater or not",
         validator
       );
-      this.use_ijkl = new Setting(
-        "Use IJKL",
-        "use_ijkl",
+      this.show_pos = new Setting(
+        "Show position overlay",
+        "show_pos_ovl",
         settingType.BOOLEAN,
         false,
+        true,
+        "Whether to show the zoom/pan overlay or not",
+        validator
+      );
+      this.pan_keys = new SelectSetting(
+        "Panning keys",
+        "pan_keys",
+        [
+          ["wasd", "WASD"],
+          ["ijkl", "IJKL"],
+          ["", "<none>"]
+        ],
         false,
-        "Makes the mod use IJKL instead of WASD for panning (requires refresh)",
+        "wasd"
+      );
+      this.enable_scroll_zoom = new Setting(
+        "Use shift+scroll for zoom",
+        "enable_scroll_zoom",
+        settingType.BOOLEAN,
+        false,
+        true,
+        "Whether to use shift+scroll for zooming or not",
+        validator
+      );
+      this.scroll_zoom_multiplier = new Setting(
+        "Scroll zoom multiplier",
+        "scroll_zoom_mul",
+        settingType.NUMBER,
+        false,
+        1,
+        "Multiplier for scroll zoom speed",
         validator
       );
       this.pan_zeroing_en = new Setting(
@@ -316,14 +348,20 @@
       );
       settings_tab.registerSettings(
         void 0,
-        this.canvas_bkg
+        this.canvas_bkg,
+        this.show_floater,
+        this.show_pos
       );
       settings_tab.registerSettings(
-        "Controls",
-        this.use_ijkl,
-        this.show_floater,
+        "Keybinds (requires reset)",
+        this.pan_keys,
         this.pan_zeroing_en,
         this.zoom_zeroing_en
+      );
+      settings_tab.registerSettings(
+        "Mouse",
+        this.enable_scroll_zoom,
+        this.scroll_zoom_multiplier
       );
       settings_tab.registerSettings(
         "Zoom",
@@ -366,6 +404,53 @@
         y = Math.floor(y / canvas2.clientHeight * (height + 1));
         return { x, y };
       };
+      window.wheelHandle = (e) => {
+        e.preventDefault();
+        if (e.shiftKey) {
+          const mul = this.settings.scroll_zoom_multiplier.value;
+          let new_level;
+          if (this.settings.zoom.value == 0) {
+            const zoom_level_count = this.settings.zoom.settings[0].value.length;
+            new_level = this.zoom_level + Math.round(e.deltaY * mul / 5);
+            new_level = Math.min(new_level, zoom_level_count - 1);
+            new_level = Math.max(new_level, 0);
+          } else {
+            new_level = this.zoom_level + e.deltaY * mul / 1e3;
+          }
+          const max = this.settings.unl_zoom.settings.max.value;
+          const min = this.settings.unl_zoom.settings.min.value;
+          if (new_level > max) {
+            this.zoom_level = max;
+          } else if (new_level < min) {
+            this.zoom_level = min;
+          } else {
+            this.zoom_level = parseFloat(new_level.toPrecision(3));
+          }
+          this.update();
+          return;
+        }
+        if ((/* @__PURE__ */ new Date()).getTime() - lastScroll < 25) {
+          return;
+        }
+        lastScroll = (/* @__PURE__ */ new Date()).getTime();
+        var deltaY = e.deltaY;
+        if (window.settings.invertscroll) {
+          if (deltaY > 0) {
+            deltaY = 1;
+          } else {
+            deltaY = -1;
+          }
+        } else {
+          if (deltaY < 0) {
+            deltaY = 1;
+          } else {
+            deltaY = -1;
+          }
+        }
+        mouseSize += Math.round(deltaY);
+        checkMouseSize(Math.sign(deltaY));
+      };
+      this.patcher.canvas_div.addEventListener("wheel", wheelHandle);
       runAfterReset(() => {
         this.zoom_level = 1;
         this.zoom_panning = [0, 0];
@@ -445,18 +530,20 @@
       return ev.altKey ? this.settings.upan_speed.value : this.settings.cpan_speed.value;
     }
     patch_keybinds() {
-      const pan_keys = this.settings.use_ijkl.value ? ["i", "j", "k", "l"] : ["w", "a", "s", "d"];
-      const pan_keys_upper = this.settings.use_ijkl.value ? ["I", "J", "K", "L"] : ["W", "A", "S", "D"];
       keybinds["9"] = () => this.handle_zoom("in");
       keybinds["0"] = () => this.handle_zoom("out");
-      keybinds[pan_keys[0]] = (ev) => this.handle_pan("up", this.kbd_speed_noshift(ev));
-      keybinds[pan_keys[1]] = (ev) => this.handle_pan("left", this.kbd_speed_noshift(ev));
-      keybinds[pan_keys[2]] = (ev) => this.handle_pan("down", this.kbd_speed_noshift(ev));
-      keybinds[pan_keys[3]] = (ev) => this.handle_pan("right", this.kbd_speed_noshift(ev));
-      keybinds[pan_keys_upper[0]] = () => this.handle_pan("up", this.settings.fpan_speed.value);
-      keybinds[pan_keys_upper[1]] = () => this.handle_pan("left", this.settings.fpan_speed.value);
-      keybinds[pan_keys_upper[2]] = () => this.handle_pan("down", this.settings.fpan_speed.value);
-      keybinds[pan_keys_upper[3]] = () => this.handle_pan("right", this.settings.fpan_speed.value);
+      if (this.settings.pan_keys.value !== "") {
+        const pan_keys = this.settings.pan_keys.value;
+        const pan_keys_upper = pan_keys.toUpperCase();
+        keybinds[pan_keys[0]] = (ev) => this.handle_pan("up", this.kbd_speed_noshift(ev));
+        keybinds[pan_keys[1]] = (ev) => this.handle_pan("left", this.kbd_speed_noshift(ev));
+        keybinds[pan_keys[2]] = (ev) => this.handle_pan("down", this.kbd_speed_noshift(ev));
+        keybinds[pan_keys[3]] = (ev) => this.handle_pan("right", this.kbd_speed_noshift(ev));
+        keybinds[pan_keys_upper[0]] = () => this.handle_pan("up", this.settings.fpan_speed.value);
+        keybinds[pan_keys_upper[1]] = () => this.handle_pan("left", this.settings.fpan_speed.value);
+        keybinds[pan_keys_upper[2]] = () => this.handle_pan("down", this.settings.fpan_speed.value);
+        keybinds[pan_keys_upper[3]] = () => this.handle_pan("right", this.settings.fpan_speed.value);
+      }
       if (this.settings.pan_zeroing_en.value) {
         keybinds["q"] = () => {
           this.zoom_panning = [0, 0];
@@ -589,18 +676,20 @@
     }
     update_from_settings() {
       this.floater_div.style.display = this.settings.show_floater.value ? "grid" : "none";
+      this.zoom_data_div.style.display = this.settings.show_pos.value ? "block" : "none";
       this.canvas_div.style.backgroundColor = this.settings.canvas_bkg.value ?? "#252525";
     }
   };
 
   // src/main.ts
   dependOn("betterSettings.js", () => {
-    const on_change = { cb: () => {
+    let on_change = { cb: () => {
     } };
     const settings_manager = new CustomSettingsManager(on_change);
     runAfterLoad(() => {
       const patcher = new Patcher(settings_manager);
       const handler = new Handler(settings_manager, patcher);
+      on_change.cb = () => patcher.update_from_settings();
     });
   }, true);
 })();
