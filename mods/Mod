@@ -1,0 +1,67 @@
+elements.williamAfton = {
+  color: ["#6b2c2c", "#8b3a3a"],
+  behavior: [
+    "XX|X|XX",
+    "XX|M|XX",
+    "XX|X|XX"
+  ],
+  category: "life",
+  state: "solid",
+  density: 1200,
+  viscosity: 100,
+  friction: 0.8,
+  frictionModifier: 0.8,
+  temp: 98.6,
+  tempColor: ["#6b2c2c", "#8b3a3a"],
+  health: 100,
+  maxHealth: 100,
+  
+  tick: function(pixel) {
+    const range = 5;
+    let targetPixel = null;
+    
+    for (let x = -range; x <= range; x++) {
+      for (let y = -range; y <= range; y++) {
+        let checkPixel = pixelMap[pixel.x + x]?.[pixel.y + y];
+        
+        if (checkPixel && (checkPixel.element === "human" || checkPixel.element === "player")) {
+          targetPixel = checkPixel;
+          break;
+        }
+      }
+      if (targetPixel) break;
+    }
+    
+    if (targetPixel) {
+      const dx = Math.sign(targetPixel.x - pixel.x);
+      const dy = Math.sign(targetPixel.y - pixel.y);
+      
+      if (Math.random() < 0.7) {
+        if (dx !== 0) pixel.vx += dx * 0.5;
+        if (dy !== 0) pixel.vy += dy * 0.5;
+      }
+    }
+  },
+  
+  behavior: [
+    "XX|X|XX",
+    "XX|M|XX",
+    "XX|X|XX"
+  ],
+  
+  onBehavior: [
+    function(pixel) {
+      for (let x = -1; x <= 1; x++) {
+        for (let y = -1; y <= 1; y++) {
+          if (x === 0 && y === 0) continue;
+          
+          let neighbor = pixelMap[pixel.x + x]?.[pixel.y + y];
+          
+          if (neighbor && (neighbor.element === "human" || neighbor.element === "player")) {
+            neighbor.health = 0;
+          }
+        }
+      }
+    }
+  ]
+};
