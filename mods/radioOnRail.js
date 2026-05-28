@@ -1,22 +1,20 @@
 // ==========================================
-// 1. CORE PHYSICS UTILITIES & HELPERS
+// 1. CORE PHYSICS UTILITIES (ES5 Compatible)
 // ==========================================
 
 if (typeof countNearbyNeutrons !== "function") {
-    window.countNearbyNeutrons = function(pixel, radius) {
-        if (radius === undefined) radius = 1;
+    countNearbyNeutrons = function(pixel, radius) {
+        if (radius === undefined) { radius = 1; }
         var count = 0;
         for (var i = -radius; i <= radius; i++) {
             for (var j = -radius; j <= radius; j++) {
-                if (i === 0 && j === 0) continue;
+                if (i === 0 && j === 0) { continue; }
                 var px = pixel.x + i;
                 var py = pixel.y + j;
-                if (!outOfBounds(px, py)) {
-                    if (pixelMap[px] && pixelMap[px][py]) {
-                        var neighbor = pixelMap[px][py];
-                        if (neighbor.element === "neutron" || neighbor.element === "fast_neutron") {
-                            count++;
-                        }
+                if (!outOfBounds(px, py) && pixelMap[px] && pixelMap[px][py]) {
+                    var neighbor = pixelMap[px][py];
+                    if (neighbor.element === "neutron" || neighbor.element === "fast_neutron") {
+                        count++;
                     }
                 }
             }
@@ -26,16 +24,16 @@ if (typeof countNearbyNeutrons !== "function") {
 }
 
 if (typeof selfHeat !== "function") {
-    window.selfHeat = function(pixel, baseHeat, variance) {
-        if (variance === undefined) variance = 20;
+    selfHeat = function(pixel, baseHeat, variance) {
+        if (variance === undefined) { variance = 20; }
         pixel.temp += baseHeat + Math.random() * variance;
     };
 }
 
 if (typeof emitSpontaneousNeutrons !== "function") {
-    window.emitSpontaneousNeutrons = function(pixel, chance, minNeutrons, maxNeutrons) {
-        if (minNeutrons === undefined) minNeutrons = 1;
-        if (maxNeutrons === undefined) maxNeutrons = 3;
+    emitSpontaneousNeutrons = function(pixel, chance, minNeutrons, maxNeutrons) {
+        if (minNeutrons === undefined) { minNeutrons = 1; }
+        if (maxNeutrons === undefined) { maxNeutrons = 3; }
         if (Math.random() < chance) {
             var amount = Math.floor(Math.random() * (maxNeutrons - minNeutrons + 1)) + minNeutrons;
             for (var i = 0; i < amount; i++) {
@@ -45,13 +43,13 @@ if (typeof emitSpontaneousNeutrons !== "function") {
                     createPixel(Math.random() < 0.3 ? "fast_neutron" : "neutron", rx, ry);
                 }
             }
-            if (typeof selfHeat === "function") selfHeat(pixel, 10 * amount, 10);
+            if (typeof selfHeat === "function") { selfHeat(pixel, 10 * amount, 10); }
         }
     };
 }
 
 if (typeof handleNaturalDecay !== "function") {
-    window.handleNaturalDecay = function(pixel, radChance, alphaChance, changeChance, changeTarget) {
+    handleNaturalDecay = function(pixel, radChance, alphaChance, changeChance, changeTarget) {
         if (Math.random() < radChance) {
             var rx = pixel.x + Math.floor(Math.random() * 5 - 2);
             var ry = pixel.y + Math.floor(Math.random() * 5 - 2);
@@ -66,14 +64,14 @@ if (typeof handleNaturalDecay !== "function") {
                 createPixel("helium", rx, ry);
             }
         }
-        if (Math.random() < changeChance && changeTarget && elements[changeTarget]) {
+        if (changeChance && changeTarget && elements[changeTarget] && Math.random() < changeChance) {
             changePixel(pixel, changeTarget);
         }
     };
 }
 
 // ==========================================
-// 2. ENERGY & EXPLOSIONS
+// 2. ENERGY
 // ==========================================
 
 elements.nexplosion = {
@@ -88,10 +86,9 @@ elements.nexplosion = {
 };
 
 // ==========================================
-// 3. PURE ELEMENTS (Realistic Physics)
+// 3. PURE ELEMENTS
 // ==========================================
 
-// Francium - Extremely radioactive alkali metal, melts at 27°C
 elements.francium = {
     name: "francium", color: ["#ffffff","#dddddd","#eeeeee","#cccccc"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -99,8 +96,8 @@ elements.francium = {
     tempHigh: 27, stateHigh: "molten_francium", category: "solids", state: "solid", density: 2480,
     darkText: true, conduct: 0.3, hard: 0.5, burn: 100, burnTime: 100, fireColor: "#ffffff",
     tick: function(pixel) {
-        if (Math.random() < 0.005) selfHeat(pixel, 80, 20);
-        handleNaturalDecay(pixel, 0.40, 0.05, 0.001, "radium"); // Fr-223 beta→Ra-223
+        if (Math.random() < 0.005) { selfHeat(pixel, 80, 20); }
+        handleNaturalDecay(pixel, 0.40, 0.05, 0.001, "radium");
     }
 };
 elements.molten_francium = {
@@ -109,17 +106,16 @@ elements.molten_francium = {
     viscosity: 1000, density: 2200, category: "liquids", state: "liquid",
     burn: 100, burnTime: 200, fireColor: "#dddddd",
     reactions: { "water": { elem1: "explosion", chance: 1.0 } },
-    tick: function(pixel) { if (Math.random() < 0.01) selfHeat(pixel, 130, 20); handleNaturalDecay(pixel, 0.40, 0.05, 0.001, "radium"); }
+    tick: function(pixel) { if (Math.random() < 0.01) { selfHeat(pixel, 130, 20); } handleNaturalDecay(pixel, 0.40, 0.05, 0.001, "radium"); }
 };
 
-// Technetium - First artificial element
 elements.technetium = {
     name: "technetium", color: ["#a0a0a0","#808080","#909090","#b0b0b0"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
     reactions: { "neutron": { elem1: "nexplosion", chance: 0.005 } },
     tempHigh: 2157, stateHigh: "molten_technetium", category: "solids", state: "solid", density: 11500,
     darkText: true, conduct: 0.2, hard: 4,
-    tick: function(pixel) { handleNaturalDecay(pixel, 0.02, 0.001, 0.0001, "molybdenum"); } // Tc-99 beta→Mo-99
+    tick: function(pixel) { handleNaturalDecay(pixel, 0.02, 0.001, 0.0001, "molybdenum"); }
 };
 elements.molten_technetium = {
     name: "molten technetium", color: ["#dddddd","#bbbbbb","#cccccc","#eeeeee"],
@@ -129,7 +125,6 @@ elements.molten_technetium = {
     reactions: { "neutron": { elem1: "nexplosion", chance: 0.01 }, "oxygen": { elem1: "technetium_dioxide", chance: 0.1 } }
 };
 
-// Radium - Glows blue/green from radioluminescence
 elements.radium = {
     name: "radium", color: ["#ccffcc","#aaffaa","#bbffbb","#ddffdd"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -137,8 +132,8 @@ elements.radium = {
     tempHigh: 700, stateHigh: "molten_radium", category: "solids", state: "solid", density: 5500,
     darkText: false, conduct: 0.18, hard: 1.5, burn: 60, burnTime: 300, fireColor: "#88ff88",
     tick: function(pixel) {
-        if (Math.random() < 0.002) selfHeat(pixel, 60, 20);
-        handleNaturalDecay(pixel, 0.15, 0.02, 0.00001, "radon"); // Ra-226 alpha→Rn-222
+        if (Math.random() < 0.002) { selfHeat(pixel, 60, 20); }
+        handleNaturalDecay(pixel, 0.15, 0.02, 0.00001, "radon");
     }
 };
 elements.molten_radium = {
@@ -149,15 +144,12 @@ elements.molten_radium = {
     reactions: { "water": { elem1: "explosion", chance: 0.25 }, "neutron": { elem1: "nexplosion", chance: 0.003 } }
 };
 
-// Radon - Heavy noble gas, sinks in real life
 elements.radon = {
     name: "radon", color: ["#ccff99","#aaff88","#bbff99","#ddffaa"],
     behavior: behaviors.GAS, category: "gases", state: "gas", density: 9.73,
     temp: 20, tempLow: -61.7, stateLow: "liquid_radon",
     burn: 100, burnTime: 10, fireColor: "#88ff88",
-    tick: function(pixel) {
-        handleNaturalDecay(pixel, 0.30, 0.05, 0.005, "polonium_dust"); // Rn-222 alpha→Po-218
-    }
+    tick: function(pixel) { handleNaturalDecay(pixel, 0.30, 0.05, 0.005, "polonium_dust"); }
 };
 elements.liquid_radon = {
     name: "liquid radon", color: ["#aaff88","#88ff66"],
@@ -166,24 +158,22 @@ elements.liquid_radon = {
     tick: function(pixel) { handleNaturalDecay(pixel, 0.30, 0.05, 0.005, "polonium_dust"); }
 };
 
-// Polonium - Extreme alpha emitter, massive heat (RTG material)
 elements.polonium_dust = {
     name: "polonium dust", color: ["#ffcccc","#ffaaaa","#ffbbbb","#ffdddd"],
     behavior: behaviors.POWDER, category: "powders", state: "solid", density: 9196,
     tempHigh: 254, stateHigh: "molten_polonium",
     tick: function(pixel) {
-        if (Math.random() < 0.002) selfHeat(pixel, 280, 20);
-        handleNaturalDecay(pixel, 0.60, 0.10, 0.002, "lead"); // Po-210 alpha→Pb-206
+        if (Math.random() < 0.002) { selfHeat(pixel, 280, 20); }
+        handleNaturalDecay(pixel, 0.60, 0.10, 0.002, "lead");
     }
 };
 elements.molten_polonium = {
     name: "molten polonium", color: ["#ff8888","#ff6666","#ff9999"],
     behavior: behaviors.LIQUID, temp: 600, tempLow: 254, stateLow: "polonium_dust",
     viscosity: 4000, density: 8200, category: "liquids", state: "liquid",
-    tick: function(pixel) { if (Math.random() < 0.002) selfHeat(pixel, 280, 20); handleNaturalDecay(pixel, 0.60, 0.10, 0.002, "lead"); }
+    tick: function(pixel) { if (Math.random() < 0.002) { selfHeat(pixel, 280, 20); } handleNaturalDecay(pixel, 0.60, 0.10, 0.002, "lead"); }
 };
 
-// Actinium - Glows blue, intense radiation
 elements.actinium = {
     name: "actinium", color: ["#a0a0ff","#8080ff","#9090ff","#c0c0ff"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -191,7 +181,7 @@ elements.actinium = {
     tempHigh: 1050, stateHigh: "molten_actinium", category: "solids", state: "solid", density: 10070,
     darkText: true, conduct: 0.12, hard: 2.5,
     tick: function(pixel) {
-        if (Math.random() < 0.05) selfHeat(pixel, 15, 5);
+        if (Math.random() < 0.05) { selfHeat(pixel, 15, 5); }
         if (Math.random() < 0.04) {
             var rx = pixel.x + Math.floor(Math.random() * 5 - 2);
             var ry = pixel.y + Math.floor(Math.random() * 5 - 2);
@@ -199,7 +189,7 @@ elements.actinium = {
                 createPixel(Math.random() < 0.2 ? "fast_neutron" : "neutron", rx, ry);
             }
         }
-        handleNaturalDecay(pixel, 0.35, 0, 0.01, "radium"); // Ac-227 beta→Th-227 or alpha→Fr-223
+        handleNaturalDecay(pixel, 0.35, 0, 0.01, "radium");
     }
 };
 elements.molten_actinium = {
@@ -218,7 +208,6 @@ elements.molten_actinium = {
     }
 };
 
-// Thorium - Fertile, very long half-life (14B years)
 elements.thorium = {
     name: "thorium", color: ["#a0a0a0","#808080","#909090","#b0b0b0"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -226,13 +215,13 @@ elements.thorium = {
     tempHigh: 1750, stateHigh: "molten_thorium", category: "solids", state: "solid", density: 11724,
     darkText: true, conduct: 0.15, hard: 3,
     tick: function(pixel) {
-        if (Math.random() < 0.00001) selfHeat(pixel, 5, 5);
+        if (Math.random() < 0.00001) { selfHeat(pixel, 5, 5); }
         if (Math.random() < 0.0000005) {
             var rx = pixel.x + Math.floor(Math.random() * 5 - 2);
             var ry = pixel.y + Math.floor(Math.random() * 5 - 2);
             if (!outOfBounds(rx, ry) && isEmpty(rx, ry)) { createPixel("neutron", rx, ry); }
         }
-        handleNaturalDecay(pixel, 0.01, 0.00001, 0.000001, "radium"); // Th-232 alpha→Ra-228
+        handleNaturalDecay(pixel, 0.01, 0.00001, 0.000001, "radium");
     }
 };
 elements.molten_thorium = {
@@ -243,14 +232,13 @@ elements.molten_thorium = {
     reactions: { "neutron": { elem1: "protactinium", chance: 0.1 } }
 };
 
-// Protactinium - Rare, fertile
 elements.protactinium = {
     name: "protactinium", color: ["#d0d0d0","#b0b0b0","#c0c0c0","#e0e0e0"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
     reactions: { "neutron": { elem1: "uranium", chance: 0.05 } },
     tempHigh: 1568, stateHigh: "molten_protactinium", category: "solids", state: "solid", density: 15370,
     conduct: 0.2, hard: 4,
-    tick: function(pixel) { handleNaturalDecay(pixel, 0.05, 0.001, 0.001, "actinium"); } // Pa-231 alpha→Ac-227
+    tick: function(pixel) { handleNaturalDecay(pixel, 0.05, 0.001, 0.001, "actinium"); }
 };
 elements.molten_protactinium = {
     name: "molten protactinium", color: ["#e0e0e0","#c0c0c0","#d0d0d0","#f0f0f0"],
@@ -260,7 +248,6 @@ elements.molten_protactinium = {
     reactions: { "neutron": { elem1: "uranium", chance: 0.05 } }
 };
 
-// Uranium - Fissile U-235, Fertile U-238
 elements.uranium = {
     color: ["#9ea190","#676d68","#a1a194","#99bba4"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -268,11 +255,11 @@ elements.uranium = {
     tempHigh: 1132, stateHigh: "molten_uranium", category: "solids", state: "solid", density: 19050,
     darkText: true, conduct: 0.28, hard: 6,
     tick: function(pixel) {
-        if (Math.random() < 0.00005) selfHeat(pixel, 10, 10);
+        if (Math.random() < 0.00005) { selfHeat(pixel, 10, 10); }
         emitSpontaneousNeutrons(pixel, 0.00005, 1, 2);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 4 && Math.random() < 0.05) changePixel(pixel, "nexplosion");
-        handleNaturalDecay(pixel, 0.10, 0.0005, 0.00005, "thorium"); // U-238 alpha→Th-234
+        if (neutronCount > 4 && Math.random() < 0.05) { changePixel(pixel, "nexplosion"); }
+        handleNaturalDecay(pixel, 0.10, 0.0005, 0.00005, "thorium");
     }
 };
 elements.molten_uranium = {
@@ -284,12 +271,11 @@ elements.molten_uranium = {
     tick: function(pixel) {
         emitSpontaneousNeutrons(pixel, 0.0001, 1, 2);
         var neutronCount = countNearbyNeutrons(pixel, 2);
-        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "nexplosion");
+        if (neutronCount > 3 && Math.random() < 0.1) { changePixel(pixel, "nexplosion"); }
         handleNaturalDecay(pixel, 0.15, 0.001, 0.0001, "thorium");
     }
 };
 
-// Neptunium - First transuranic element
 elements.neptunium = {
     name: "neptunium", color: ["#a09891","#46413e","#28282c","#807b7b"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -297,10 +283,10 @@ elements.neptunium = {
     tempHigh: 644, stateHigh: "molten_neptunium", category: "solids", state: "solid", density: 20450,
     darkText: true, conduct: 0.15, hard: 3.2,
     tick: function(pixel) {
-        if (Math.random() < 0.0001) selfHeat(pixel, 20, 10);
+        if (Math.random() < 0.0001) { selfHeat(pixel, 20, 10); }
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 5 && Math.random() < 0.02) changePixel(pixel, "nexplosion");
-        handleNaturalDecay(pixel, 0.08, 0.005, 0.0001, "protactinium"); // Np-237 alpha→Pa-233
+        if (neutronCount > 5 && Math.random() < 0.02) { changePixel(pixel, "nexplosion"); }
+        handleNaturalDecay(pixel, 0.08, 0.005, 0.0001, "protactinium");
     }
 };
 elements.molten_neptunium = {
@@ -311,12 +297,11 @@ elements.molten_neptunium = {
     reactions: { "neutron": { elem1: "nexplosion", chance: 0.03 }, "fast_neutron": { elem1: "nexplosion", chance: 0.06 }, "water": { elem1: "explosion", chance: 0.005 } },
     tick: function(pixel) {
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 4 && Math.random() < 0.05) changePixel(pixel, "nexplosion");
+        if (neutronCount > 4 && Math.random() < 0.05) { changePixel(pixel, "nexplosion"); }
         handleNaturalDecay(pixel, 0.12, 0.008, 0.0002, "protactinium");
     }
 };
 
-// Plutonium - Warm to touch, highly fissile
 elements.plutonium = {
     color: ["#8b8f8f","#6c6e70","#7e7e86","#c2c2c2"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -324,11 +309,11 @@ elements.plutonium = {
     tempHigh: 640, stateHigh: "molten_plutonium", category: "solids", state: "solid", density: 19816,
     darkText: true, conduct: 0.18, hard: 3.5,
     tick: function(pixel) {
-        if (Math.random() < 0.0002) selfHeat(pixel, 40, 20);
+        if (Math.random() < 0.0002) { selfHeat(pixel, 40, 20); }
         emitSpontaneousNeutrons(pixel, 0.001, 1, 3);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 2 && Math.random() < 0.15) changePixel(pixel, "nexplosion");
-        handleNaturalDecay(pixel, 0.15, 0.005, 0.0001, "uranium"); // Pu-239 alpha→U-235
+        if (neutronCount > 2 && Math.random() < 0.15) { changePixel(pixel, "nexplosion"); }
+        handleNaturalDecay(pixel, 0.15, 0.005, 0.0001, "uranium");
     }
 };
 elements.molten_plutonium = {
@@ -340,12 +325,11 @@ elements.molten_plutonium = {
     tick: function(pixel) {
         emitSpontaneousNeutrons(pixel, 0.002, 1, 3);
         var neutronCount = countNearbyNeutrons(pixel, 2);
-        if (neutronCount > 1 && Math.random() < 0.25) changePixel(pixel, "nexplosion");
+        if (neutronCount > 1 && Math.random() < 0.25) { changePixel(pixel, "nexplosion"); }
         handleNaturalDecay(pixel, 0.20, 0.01, 0.0002, "uranium");
     }
 };
 
-// Americium - Used in smoke detectors
 elements.americium = {
     name: "americium", color: ["#a1a1a1", "#888888", "#b3b3b3", "#c4c4c4"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -353,11 +337,11 @@ elements.americium = {
     tempHigh: 1176, stateHigh: "molten_americium", category: "solids", state: "solid", density: 13670,
     darkText: true, conduct: 0.15, hard: 3,
     tick: function(pixel) {
-        if (Math.random() < 0.001) selfHeat(pixel, 50, 20);
+        if (Math.random() < 0.001) { selfHeat(pixel, 50, 20); }
         emitSpontaneousNeutrons(pixel, 0.003, 1, 3);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "nexplosion");
-        handleNaturalDecay(pixel, 0.20, 0.008, 0.0002, "neptunium"); // Am-241 alpha→Np-237
+        if (neutronCount > 3 && Math.random() < 0.1) { changePixel(pixel, "nexplosion"); }
+        handleNaturalDecay(pixel, 0.20, 0.008, 0.0002, "neptunium");
     }
 };
 elements.molten_americium = {
@@ -369,12 +353,11 @@ elements.molten_americium = {
     tick: function(pixel) {
         emitSpontaneousNeutrons(pixel, 0.005, 2, 4);
         var neutronCount = countNearbyNeutrons(pixel, 2);
-        if (neutronCount > 2 && Math.random() < 0.15) changePixel(pixel, "nexplosion");
+        if (neutronCount > 2 && Math.random() < 0.15) { changePixel(pixel, "nexplosion"); }
         handleNaturalDecay(pixel, 0.25, 0.015, 0.0003, "neptunium");
     }
 };
 
-// Curium - Glows red/purple, high heat
 elements.curium = {
     name: "curium", color: ["#c5c5d0", "#a1a1aa", "#d1d1dd", "#e0e0ff"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -382,11 +365,11 @@ elements.curium = {
     tempHigh: 1340, stateHigh: "molten_curium", category: "solids", state: "solid", density: 13510,
     darkText: true, conduct: 0.20, hard: 4.5,
     tick: function(pixel) {
-        if (Math.random() < 0.005) selfHeat(pixel, 60, 20);
+        if (Math.random() < 0.005) { selfHeat(pixel, 60, 20); }
         emitSpontaneousNeutrons(pixel, 0.008, 1, 3);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 3 && Math.random() < 0.12) changePixel(pixel, "nexplosion");
-        handleNaturalDecay(pixel, 0.30, 0.01, 0.0005, "plutonium"); // Cm-244 alpha→Pu-240
+        if (neutronCount > 3 && Math.random() < 0.12) { changePixel(pixel, "nexplosion"); }
+        handleNaturalDecay(pixel, 0.30, 0.01, 0.0005, "plutonium");
     }
 };
 elements.molten_curium = {
@@ -398,12 +381,11 @@ elements.molten_curium = {
     tick: function(pixel) {
         emitSpontaneousNeutrons(pixel, 0.015, 2, 4);
         var neutronCount = countNearbyNeutrons(pixel, 2);
-        if (neutronCount > 2 && Math.random() < 0.20) changePixel(pixel, "nexplosion");
+        if (neutronCount > 2 && Math.random() < 0.20) { changePixel(pixel, "nexplosion"); }
         handleNaturalDecay(pixel, 0.35, 0.02, 0.001, "plutonium");
     }
 };
 
-// Californium - Extreme neutron emitter, spontaneous fission
 elements.californium = {
     name: "californium", color: ["#999999", "#888888", "#aaaaaa", "#777777"],
     behavior: ["XX|XX|XX","XX|XX|XX","XX|XX|XX"],
@@ -411,11 +393,11 @@ elements.californium = {
     tempHigh: 900, stateHigh: "molten_californium", category: "solids", state: "solid", density: 15100,
     darkText: true, conduct: 0.15, hard: 3,
     tick: function(pixel) {
-        if (Math.random() < 0.01) selfHeat(pixel, 100, 20);
+        if (Math.random() < 0.01) { selfHeat(pixel, 100, 20); }
         emitSpontaneousNeutrons(pixel, 0.05, 2, 4);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 2 && Math.random() < 0.2) changePixel(pixel, "nexplosion");
-        handleNaturalDecay(pixel, 0.40, 0.02, 0.0005, "curium"); // Cf-252 alpha→Cm-248
+        if (neutronCount > 2 && Math.random() < 0.2) { changePixel(pixel, "nexplosion"); }
+        handleNaturalDecay(pixel, 0.40, 0.02, 0.0005, "curium");
     }
 };
 elements.molten_californium = {
@@ -425,19 +407,18 @@ elements.molten_californium = {
     burn: 60, burnTime: 999, fireColor: "#ffffff",
     reactions: { "neutron": { elem1: "nexplosion", chance: 0.35 }, "fast_neutron": { elem1: "nexplosion", chance: 0.45 } },
     tick: function(pixel) {
-        if (Math.random() < 0.05) selfHeat(pixel, 150, 30);
+        if (Math.random() < 0.05) { selfHeat(pixel, 150, 30); }
         emitSpontaneousNeutrons(pixel, 0.08, 3, 5);
         var neutronCount = countNearbyNeutrons(pixel, 2);
-        if (neutronCount > 1 && Math.random() < 0.30) changePixel(pixel, "nexplosion");
+        if (neutronCount > 1 && Math.random() < 0.30) { changePixel(pixel, "nexplosion"); }
         handleNaturalDecay(pixel, 0.45, 0.03, 0.001, "curium");
     }
 };
 
 // ==========================================
-// 4. COMPOUNDS & ORES (Restored)
+// 4. COMPOUNDS
 // ==========================================
 
-// Dioxides (Nuclear fuel ceramics)
 elements.uranium_dioxide = { name: "uranium dioxide", color: ["#333","#444"], behavior: behaviors.POWDER, category: "powders", state: "solid", density: 10970, tempHigh: 2875, stateHigh: "molten_uranium_dioxide", reactions: {"neutron": {elem1:"nexplosion", chance:0.05}}, tick: function(p){ handleNaturalDecay(p, 0.02, 0.0005, 0.00001, "thorium"); } };
 elements.molten_uranium_dioxide = { name: "molten uranium dioxide", color: ["#f60","#f80"], behavior: behaviors.LIQUID, category: "liquids", state: "liquid", density: 9800, tempLow: 2875, stateLow: "uranium_dioxide", tick: function(p){ handleNaturalDecay(p, 0.02, 0.0005, 0.00001, "thorium"); } };
 
@@ -472,7 +453,10 @@ elements.molten_actinium_oxide = { name: "molten actinium oxide", color: ["#eef"
 
 elements.francium_hydroxide = { name: "francium hydroxide", color: ["#fff","#ddd"], behavior: behaviors.POWDER, category: "powders", state: "solid", density: 3000, reactions: {"water": {elem1:"explosion", chance:0.1}}, tick: function(p){ handleNaturalDecay(p, 0.4, 0.05, 0.001, "radium"); } };
 
-// Ores (Natural deposits in "land" category)
+// ==========================================
+// 5. ORES
+// ==========================================
+
 elements.uraninite = { name: "uraninite", color: ["#333","#222"], behavior: behaviors.POWDER, category: "land", state: "solid", density: 10650, hard: 5.5, conduct: 0.05, reactions: {"acid": {elem1:"uranium", chance:0.01}}, tempHigh: 2875, stateHigh: "molten_uraninite", tick: function(p){ handleNaturalDecay(p, 0.01, 0.00001, 0.000001, "radium"); } };
 elements.molten_uraninite = { name: "molten uraninite", color: ["#f60","#f40"], behavior: behaviors.LIQUID, category: "liquids", state: "liquid", density: 9500, tempLow: 2875, stateLow: "uraninite", reactions: {"water": {elem1:"steam", chance:0.1, temp1:-100}}, tick: function(p){ handleNaturalDecay(p, 0.01, 0.00001, 0.000001, "radium"); } };
 
