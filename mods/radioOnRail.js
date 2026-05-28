@@ -56,7 +56,7 @@ function selfHeat(pixel, baseHeat, variance = 20) {
 }
 
 // === NUCLEAR EXPLOSION HELPER (must be at the top) ===
-elements.NExplosion = {
+elements.nexplosion = {
     color: ["#ffff80","#ffffff","#ff8000"],
     behavior: [
         "CR:explosion%50 AND CR:radiation%100|CR:explosion%50 AND CR:radiation%100|CR:explosion%50 AND CR:radiation%100",
@@ -67,7 +67,7 @@ elements.NExplosion = {
     category: "energy",
     state: "gas",
     density: 0.001,
-    ignore: ["NExplosion","radiation","neutron"],
+    ignore: ["nexplosion","radiation","neutron"],
     burn: 100,
     burnTime: 9999,
     fireColor: "#ffff00",
@@ -79,14 +79,14 @@ elements.francium = {
     name: "francium",
     color: ["#ffffff","#dddddd","#eeeeee","#cccccc"],  // silvery-white
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%30 AND CR:helium%0.0001 AND CH:radium%0.0001|XX",  // Added helium for alpha decay
-        "XX|XX|XX"
+        "XX|CR:radiation%7.5|XX",
+        "CR:radiation%7.5|CR:radiation%7.5 AND CR:helium%0.0001 AND CH:radium%0.0001|CR:radiation%7.5",
+        "XX|CR:radiation%7.5|XX"
     ],
     reactions: {
         "water": { elem1: "explosion", chance: 0.5 },  // extremely reactive, explodes with water
-        "neutron": { elem1: "NExplosion", chance: 0.0001 },  // negligible fissility
-        "fast_neutron": { elem1: "NExplosion", chance: 0.0005 }
+        "neutron": { elem1: "nexplosion", chance: 0.0001 },  // negligible fissility
+        "fast_neutron": { elem1: "nexplosion", chance: 0.0005 }
     },
     tempHigh: 27,  // melts at ~27°C
     stateHigh: "molten_francium",
@@ -133,13 +133,13 @@ elements.technetium = {
     name: "technetium",
     color: ["#a0a0a0","#808080","#909090","#b0b0b0"],  // silvery gray
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%8 AND CH:molybdenum%0.001|XX",  // Tc-99 beta to Ru-99, but simplify
-        "XX|XX|XX"
+        "XX|CR:radiation%2|XX",
+        "CR:radiation%2|CR:radiation%2 AND CH:molybdenum%0.001|CR:radiation%2",
+        "XX|CR:radiation%2|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.005 },  // some fission potential
-        "fast_neutron": { elem1: "NExplosion", chance: 0.01 }
+        "neutron": { elem1: "nexplosion", chance: 0.005 },  // some fission potential
+        "fast_neutron": { elem1: "nexplosion", chance: 0.01 }
     },
     tempHigh: 2157,
     stateHigh: "molten_technetium",
@@ -169,8 +169,8 @@ elements.molten_technetium = {
     burnTime: 400,
     fireColor: "#cccccc",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.01 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.02 },
+        "neutron": { elem1: "nexplosion", chance: 0.01 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.02 },
         "oxygen": { elem1: "technetium_dioxide", chance: 0.1 }  // forms oxide
     }
 };
@@ -180,13 +180,13 @@ elements.radium = {
     name: "radium",
     color: ["#ccffcc","#aaffaa","#bbffbb","#ddffdd"],  // pale greenish glow (famous radium glow)
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%20 AND CR:radon%0.08 AND CR:helium%0.08 AND CH:lead%0.0001|XX",  // Added helium for alpha decay
-        "XX|XX|XX"
+        "XX|CR:radiation%5|XX",
+        "CR:radiation%5|CR:radiation%5 AND CR:radon%0.08 AND CR:helium%0.08 AND CH:lead%0.0001|CR:radiation%5",
+        "XX|CR:radiation%5|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.0005 },      // almost no fissility
-        "fast_neutron": { elem1: "NExplosion", chance: 0.002 }
+        "neutron": { elem1: "nexplosion", chance: 0.0005 },      // almost no fissility
+        "fast_neutron": { elem1: "nexplosion", chance: 0.002 }
     },
     tempHigh: 973,        // melts at 700 °C
     stateHigh: "molten_radium",
@@ -228,7 +228,7 @@ elements.molten_radium = {
     fireColor: "#aaffaa",
     reactions: {
         "water": { elem1: "explosion", chance: 0.25 },  // radium + water → violent reaction (real!)
-        "neutron": { elem1: "NExplosion", chance: 0.003 },
+        "neutron": { elem1: "nexplosion", chance: 0.003 },
         "radiation": { elem1: null, elem2: "radiation", chance: 0.1 }
     },
     tick: function(pixel) {
@@ -307,9 +307,9 @@ elements.actinium = {
     name: "actinium",
     color: ["#a0a0ff","#8080ff","#9090ff","#c0c0ff"],
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%25 AND CH:radium%0.01|XX", 
-        "XX|XX|XX"
+        "XX|CR:radiation%6.25|XX",
+        "CR:radiation%6.25|CR:radiation%6.25 AND CH:radium%0.01|CR:radiation%6.25",
+        "XX|CR:radiation%6.25|XX"
     ],
     reactions: {
         "neutron": { elem1: "radiation", chance: 0.5 }, 
@@ -350,8 +350,8 @@ elements.molten_actinium = {
     burnTime: 600,
     fireColor: "#8888ff",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.005 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.01 },
+        "neutron": { elem1: "nexplosion", chance: 0.005 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.01 },
         "water": { elem1: "explosion", chance: 0.02 }  // reactive
     }
 };
@@ -361,13 +361,13 @@ elements.thorium = {
     name: "thorium",
     color: ["#a0a0a0","#808080","#909090","#b0b0b0"],
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%0.5 AND CR:helium%0.00001 AND CH:lead%0.00001|XX",
-        "XX|XX|XX"
+        "XX|CR:radiation%0.125|XX",
+        "CR:radiation%0.125|CR:radiation%0.125 AND CR:helium%0.00001 AND CH:lead%0.00001|CR:radiation%0.125",
+        "XX|CR:radiation%0.125|XX"
     ],
     reactions: {
         "neutron": { elem1: null, elem2: "protactinium", chance: 0.05 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.0001 }
+        "fast_neutron": { elem1: "nexplosion", chance: 0.0001 }
     },
     tempHigh: 2115,
     stateHigh: "molten_thorium",
@@ -413,13 +413,13 @@ elements.protactinium = {
     name: "protactinium",
     color: ["#b0b0b0","#909090","#a0a0a0","#c0c0c0"],
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%4 AND CR:helium%0.001 AND CH:actinium%0.001|XX",  // added helium
-        "XX|XX|XX"
+        "XX|CR:radiation%1|XX",
+        "CR:radiation%1|CR:radiation%1 AND CR:helium%0.001 AND CH:actinium%0.001|CR:radiation%1",
+        "XX|CR:radiation%1|XX"
     ],
     reactions: {
         "neutron": { elem1: null, elem2: "uranium", chance: 0.03 },  // Pa-233 beta to U-233 (fissile)
-        "fast_neutron": { elem1: "NExplosion", chance: 0.001 }
+        "fast_neutron": { elem1: "nexplosion", chance: 0.001 }
     },
     tempHigh: 1841,  // 1568°C
     stateHigh: "molten_protactinium",
@@ -457,13 +457,13 @@ elements.molten_protactinium = {
 elements.uranium = {
     color: ["#9ea190","#676d68","#a1a194","#99bba4"],
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%2 AND CR:helium%0.0005 AND CH:lead%0.0005|XX",
-        "XX|XX|XX"
+        "XX|CR:radiation%0.5|XX",
+        "CR:radiation%0.5|CR:radiation%0.5 AND CR:helium%0.0005 AND CH:lead%0.0005|CR:radiation%0.5",
+        "XX|CR:radiation%0.5|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.015 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.005 }
+        "neutron": { elem1: "nexplosion", chance: 0.015 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.005 }
     },
     tempHigh: 1405,
     stateHigh: "molten_uranium",
@@ -477,7 +477,7 @@ elements.uranium = {
         if (Math.random() < 0.00005) selfHeat(pixel, 10, 10);
         emitSpontaneousNeutrons(pixel, 0.00005, 1, 2);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 4 && Math.random() < 0.05) changePixel(pixel, "NExplosion");
+        if (neutronCount > 4 && Math.random() < 0.05) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -495,13 +495,13 @@ elements.molten_uranium = {
     burnTime: 400,
     fireColor: "#99ff99",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.04 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.015 },
+        "neutron": { elem1: "nexplosion", chance: 0.04 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.015 },
         "radiation": { elem1: null, elem2: "radiation", chance: 0.03 }
     },
     tick: function(pixel) {
         var neutronCount = countNearbyNeutrons(pixel, 2);  // Larger radius for molten
-        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "NExplosion");
+        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -509,13 +509,13 @@ elements.molten_uranium = {
 elements.neptunium = {
     color: ["#a09891","#46413e","#28282c","#807b7b"],
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%5 AND CR:helium%0.0005 AND CH:protactinium%0.0005|XX",  // added helium
-        "XX|XX|XX"
+        "XX|CR:radiation%1.25|XX",
+        "CR:radiation%1.25|CR:radiation%1.25 AND CR:helium%0.0005 AND CH:protactinium%0.0005|CR:radiation%1.25",
+        "XX|CR:radiation%1.25|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.01 },  // low but present
-        "fast_neutron": { elem1: "NExplosion", chance: 0.03 }
+        "neutron": { elem1: "nexplosion", chance: 0.01 },  // low but present
+        "fast_neutron": { elem1: "nexplosion", chance: 0.03 }
     },
     tempHigh: 912,
     stateHigh: "molten_neptunium",
@@ -528,7 +528,7 @@ elements.neptunium = {
     tick: function(pixel) {
         if (Math.random() < 0.0001) selfHeat(pixel, 20, 10);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 5 && Math.random() < 0.02) changePixel(pixel, "NExplosion");
+        if (neutronCount > 5 && Math.random() < 0.02) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -546,13 +546,13 @@ elements.molten_neptunium = {
     burnTime: 450,
     fireColor: "#aaaaff",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.03 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.06 },
+        "neutron": { elem1: "nexplosion", chance: 0.03 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.06 },
         "water": { elem1: "explosion", chance: 0.005 }
     },
     tick: function(pixel) {
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 4 && Math.random() < 0.05) changePixel(pixel, "NExplosion");
+        if (neutronCount > 4 && Math.random() < 0.05) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -560,13 +560,13 @@ elements.molten_neptunium = {
 elements.plutonium = {
     color: ["#8b8f8f","#6c6e70","#7e7e86","#c2c2c2"],
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%6 AND CR:helium%0.005 AND CH:uranium%0.005|XX",
-        "XX|XX|XX"
+        "XX|CR:radiation%1.5|XX",
+        "CR:radiation%1.5|CR:radiation%1.5 AND CR:helium%0.005 AND CH:uranium%0.005|CR:radiation%1.5",
+        "XX|CR:radiation%1.5|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.12 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.18 }
+        "neutron": { elem1: "nexplosion", chance: 0.12 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.18 }
     },
     tempHigh: 912,
     stateHigh: "molten_plutonium",
@@ -580,7 +580,7 @@ elements.plutonium = {
         if (Math.random() < 0.0002) selfHeat(pixel, 40, 20);
         emitSpontaneousNeutrons(pixel, 0.001, 1, 3);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 2 && Math.random() < 0.15) changePixel(pixel, "NExplosion");
+        if (neutronCount > 2 && Math.random() < 0.15) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -598,13 +598,13 @@ elements.molten_plutonium = {
     burnTime: 999,
     fireColor: "#88ff88",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.20 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.30 },
+        "neutron": { elem1: "nexplosion", chance: 0.20 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.30 },
         "water": { elem1: "explosion", chance: 0.015 }
     },
     tick: function(pixel) {
         var neutronCount = countNearbyNeutrons(pixel, 2);
-        if (neutronCount > 1 && Math.random() < 0.25) changePixel(pixel, "NExplosion");  // Even higher in molten
+        if (neutronCount > 1 && Math.random() < 0.25) changePixel(pixel, "nexplosion");  // Even higher in molten
     }
 };
 
@@ -613,13 +613,13 @@ elements.americium = {
     name: "americium",
     color: ["#a1a1a1", "#888888", "#b3b3b3", "#c4c4c4"],
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%8 AND CR:helium%0.008 AND CH:neptunium%0.008|XX",
-        "XX|XX|XX"
+        "XX|CR:radiation%2.0|XX",
+        "CR:radiation%2.0|CR:radiation%2.0 AND CR:helium%0.008 AND CH:neptunium%0.008|CR:radiation%2.0",
+        "XX|CR:radiation%2.0|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.10 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.15 }
+        "neutron": { elem1: "nexplosion", chance: 0.10 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.15 }
     },
     tempHigh: 1176,
     stateHigh: "molten_americium",
@@ -633,7 +633,7 @@ elements.americium = {
         if (Math.random() < 0.001) selfHeat(pixel, 50, 20);
         emitSpontaneousNeutrons(pixel, 0.003, 1, 3);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "NExplosion");
+        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -652,8 +652,8 @@ elements.molten_americium = {
     burnTime: 550,
     fireColor: "#bb88ff",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.01 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.04 },
+        "neutron": { elem1: "nexplosion", chance: 0.01 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.04 },
         "radiation": { elem1: null, elem2: "radiation", chance: 0.05 }
     }
 };
@@ -663,13 +663,13 @@ elements.curium = {
     name: "curium",
     color: ["#c5c5d0", "#a1a1aa", "#d1d1dd", "#e0e0ff"], 
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%12 AND CR:helium%0.01 AND CH:plutonium%0.005|XX", 
-        "XX|XX|XX"
+        "XX|CR:radiation%3.0|XX",
+        "CR:radiation%3.0|CR:radiation%3.0 AND CR:helium%0.01 AND CH:plutonium%0.005|CR:radiation%3.0",
+        "XX|CR:radiation%3.0|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.15 }, 
-        "fast_neutron": { elem1: "NExplosion", chance: 0.20 }
+        "neutron": { elem1: "nexplosion", chance: 0.15 }, 
+        "fast_neutron": { elem1: "nexplosion", chance: 0.20 }
     },
     tempHigh: 1340, 
     stateHigh: "molten_curium",
@@ -683,7 +683,7 @@ elements.curium = {
         if (Math.random() < 0.005) selfHeat(pixel, 60, 20); 
         emitSpontaneousNeutrons(pixel, 0.008, 1, 3);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 3 && Math.random() < 0.12) changePixel(pixel, "NExplosion");
+        if (neutronCount > 3 && Math.random() < 0.12) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -702,8 +702,8 @@ elements.molten_curium = {
     burnTime: 700,
     fireColor: "#ff8888",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.05 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.1 },
+        "neutron": { elem1: "nexplosion", chance: 0.05 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.1 },
         "water": { elem1: "explosion", chance: 0.01 }
     }
 };
@@ -713,13 +713,13 @@ elements.californium = {
     name: "californium",
     color: ["#999999", "#888888", "#aaaaaa", "#777777"], 
     behavior: [
-        "XX|XX|XX",
-        "XX|RL:radiation%20 AND CR:helium%0.02 AND CH:curium%0.01|XX", 
-        "XX|XX|XX"
+        "XX|CR:radiation%5.0|XX",
+        "CR:radiation%5.0|CR:radiation%5.0 AND CR:helium%0.02 AND CH:curium%0.01|CR:radiation%5.0",
+        "XX|CR:radiation%5.0|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.25 }, 
-        "fast_neutron": { elem1: "NExplosion", chance: 0.30 }
+        "neutron": { elem1: "nexplosion", chance: 0.25 }, 
+        "fast_neutron": { elem1: "nexplosion", chance: 0.30 }
     },
     tempHigh: 900, 
     stateHigh: "molten_californium",
@@ -733,7 +733,7 @@ elements.californium = {
         if (Math.random() < 0.01) selfHeat(pixel, 100, 20); 
         emitSpontaneousNeutrons(pixel, 0.05, 2, 4);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 2 && Math.random() < 0.2) changePixel(pixel, "NExplosion");
+        if (neutronCount > 2 && Math.random() < 0.2) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -752,8 +752,8 @@ elements.molten_californium = {
     burnTime: 999,
     fireColor: "#ffffff",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.35 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.45 }
+        "neutron": { elem1: "nexplosion", chance: 0.35 },
+        "fast_neutron": { elem1: "nexplosion", chance: 0.45 }
     },
     tick: function(pixel) {
         // Generates massive heat natively because it's liquid and unstable
@@ -765,7 +765,7 @@ elements.molten_californium = {
         // Critical mass check (Liquid state triggers faster with lower requirements)
         var neutronCount = countNearbyNeutrons(pixel, 2);
         if (neutronCount > 1 && Math.random() < 0.30) {
-            changePixel(pixel, "NExplosion");
+            changePixel(pixel, "nexplosion");
         }
     }
 };
@@ -781,12 +781,12 @@ elements.uranium_dioxide = {  // UO2, ceramic fuel
     tempHigh: 2875,  // very high melting
     stateHigh: "molten_uranium_dioxide",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.01 }  // can fission
+        "neutron": { elem1: "nexplosion", chance: 0.01 }  // can fission
     },
     tick: function(pixel) {
         if (Math.random() < 0.00001) selfHeat(pixel, 5, 5);  // slight heating
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 5 && Math.random() < 0.03) changePixel(pixel, "NExplosion");
+        if (neutronCount > 5 && Math.random() < 0.03) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -811,12 +811,12 @@ elements.plutonium_dioxide = {  // PuO2
     tempHigh: 2400,
     stateHigh: "molten_plutonium_dioxide",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.08 }  // high fissility
+        "neutron": { elem1: "nexplosion", chance: 0.08 }  // high fissility
     },
     tick: function(pixel) {
         if (Math.random() < 0.0001) selfHeat(pixel, 10, 10);
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "NExplosion");
+        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -841,11 +841,11 @@ elements.neptunium_dioxide = {  // NpO2
     tempHigh: 2547,
     stateHigh: "molten_neptunium_dioxide",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.005 }
+        "neutron": { elem1: "nexplosion", chance: 0.005 }
     },
     tick: function(pixel) {
         var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 4 && Math.random() < 0.02) changePixel(pixel, "NExplosion");
+        if (neutronCount > 4 && Math.random() < 0.02) changePixel(pixel, "nexplosion");
     }
 };
 
@@ -1095,7 +1095,7 @@ elements.molten_uraninite = {
     density: 9500,
     reactions: {
         "water": { elem1: "steam", chance: 0.1, temp1: -100 },  // cools and steams
-        "neutron": { elem1: "NExplosion", chance: 0.005 }
+        "neutron": { elem1: "nexplosion", chance: 0.005 }
     },
     tick: function(pixel) {
         if (Math.random() < 0.0001) createPixel("radiation", pixel.x, pixel.y);
@@ -1224,7 +1224,7 @@ elements.molten_coffinite = {
     viscosity: 9000,
     density: 4800,
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.001 }
+        "neutron": { elem1: "nexplosion", chance: 0.001 }
     }
 };
 
