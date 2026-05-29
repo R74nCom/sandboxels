@@ -530,7 +530,7 @@ elements.plutonium = {
     color: ["#8b8f8f","#6c6e70","#7e7e86","#c2c2c2"],
     behavior: [
         "XX|XX|XX",
-        "XX|RL:radiation%6 AND CR:helium%0.005 AND CH:uranium%0.005 AND CH:neutron%0.005|XX",  // added helium
+        "XX|RL:radiation%6 AND CR:helium%0.005 AND CH:uranium%0.005 AND CH:neutron%0.0035|XX",  // added helium
         "XX|XX|XX"
     ],
     reactions: {
@@ -629,7 +629,7 @@ elements.curium = {
     color: ["#c0c0c0","#a0a0a0","#b0b0b0","#e0e0e0"],
     behavior: [
         "XX|XX|XX",
-        "XX|RL:radiation%12 AND CR:helium%0.02 AND CH:plutonium%0.02 AND CH:neutron%0.0085|XX",  // Cm-244 alpha to Pu-240, added helium
+        "XX|RL:radiation%12 AND CR:helium%0.02 AND CH:plutonium%0.02 AND CH:neutron%0.0385|XX",  // Cm-244 alpha to Pu-240, added helium
         "XX|XX|XX"
     ],
     reactions: {
