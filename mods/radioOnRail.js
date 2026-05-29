@@ -757,17 +757,29 @@ elements.molten_plutonium = {
 // === AMERICIUM (highly radioactive, used in smoke detectors) ===
 elements.americium = {
     name: "americium",
-    color: ["#b0b0ff","#9090ff","#a0a0ff","#d0d0ff"],  // purplish glow
+    color: ["#b0b0ff","#9090ff","#a0a0ff","#d0d0ff"],
     behavior: [
         "XX|XX|XX",
-        "XX|RL:radiation%10 AND CR:helium%0.01 AND CH:neptunium%0.01 AND CH:neutron%0.0015|XX",  // corrected: Am-241 alpha to Np-237, added helium
+        "XX|RL:radiation%10 AND CR:helium%0.01 AND CH:neptunium%0.01 AND CH:neutron%0.0015|XX",
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.005 },  // low for Am-241
-        "fast_neutron": { elem1: "NExplosion", chance: 0.02 }
+        "neutron": { 
+            chance: 0.005,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        },
+        "fast_neutron": { 
+            chance: 0.02,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        }
     },
-    tempHigh: 1449,  // 1176°C
+    tempHigh: 1449,
     stateHigh: "molten_americium",
     category: "solids",
     state: "solid",
@@ -776,7 +788,8 @@ elements.americium = {
     conduct: 0.11,
     hard: 2.8,
     tick: function(pixel) {
-        if (Math.random() < 0.0008) selfHeat(pixel, 60, 20);  // strong self-heating
+        if (Math.random() < 0.0008) selfHeat(pixel, 60, 20);
+        if (Math.random() < 0.001) emitAlphaParticle(pixel, 0.01, "neptunium"); // Integrates alpha decay helper
     }
 };
 
@@ -795,53 +808,88 @@ elements.molten_americium = {
     burnTime: 550,
     fireColor: "#bb88ff",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.01 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.04 },
+        "neutron": { 
+            chance: 0.01,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        },
+        "fast_neutron": { 
+            chance: 0.04,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        },
         "radiation": { elem1: null, elem2: "radiation", chance: 0.05 }
     }
 };
 
-// === CURIUM (very radioactive, self-glowing from heat) ===
+// === CURIUM ===
 elements.curium = {
     name: "curium",
     color: ["#c0c0c0","#a0a0a0","#b0b0b0","#e0e0e0"],
     behavior: [
         "XX|XX|XX",
-        "XX|RL:radiation%12 AND CR:helium%0.02 AND CH:plutonium%0.02 AND CH:neutron%0.0385|XX",  // Cm-244 alpha to Pu-240, added helium
+        "XX|RL:radiation%12 AND CR:helium%0.02 AND CH:plutonium%0.02 AND CH:neutron%0.0385|XX",
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.02, func: function(pixel) {
-        var count = Math.random() < 0.5 ? 2 : 3; 
-        
-        var offsets = [
-            [-1, -1], [0, -1], [1, -1],
-            [-1,  0],          [1,  0],
-            [-1,  1], [0,  1], [1,  1]
-        ];
-        
-        offsets.sort(() => Math.random() - 0.5);
-        
-        var spawned = 0;
-        for (var i = 0; i < offsets.length; i++) {
-            if (spawned >= count) break;
-            
-            var targetX = pixel.x + offsets[i][0];
-            var targetY = pixel.y + offsets[i][1];
-            
-            if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
-                if (isEmpty(targetX, targetY)) {
-                    createPixel("neutron", targetX, targetY);
-                    spawned++;
+        "neutron": { 
+            chance: 0.02, 
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+
+                var count = Math.random() < 0.5 ? 2 : 3; 
+                var offsets = [[-1,-1],[0,-1],[1,-1],[-1,0],,[-1,1],,];
+                offsets.sort(() => Math.random() - 0.5);
+                
+                var spawned = 0;
+                for (var i = 0; i < offsets.length; i++) {
+                    if (spawned >= count) break;
+                    
+                    var targetX = pixel1.x + offsets[i];
+                    var targetY = pixel1.y + offsets[i];
+                    
+                    if (!outOfBounds(targetX, targetY)) {
+                        if (isEmpty(targetX, targetY) || game.elements[pixelMap[targetX][targetY].element].category !== "solids") {
+                            createPixel("neutron", targetX, targetY);
+                            spawned++;
+                        }
+                    }
                 }
+                changePixel(pixel1, "NExplosion");
+            } 
+        },
+        "fast_neutron": { 
+            chance: 0.05,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+
+                var count = Math.random() < 0.5 ? 2 : 3; 
+                var offsets = [[-1,-1],[0,-1],[1,-1],[-1,0],,[-1,1],,];
+                offsets.sort(() => Math.random() - 0.5);
+                
+                var spawned = 0;
+                for (var i = 0; i < offsets.length; i++) {
+                    if (spawned >= count) break;
+                    
+                    var targetX = pixel1.x + offsets[i];
+                    var targetY = pixel1.y + offsets[i];
+                    
+                    if (!outOfBounds(targetX, targetY)) {
+                        if (isEmpty(targetX, targetY) || game.elements[pixelMap[targetX][targetY].element].category !== "solids") {
+                            createPixel("fast_neutron", targetX, targetY);
+                            spawned++;
+                        }
+                    }
+                }
+                changePixel(pixel1, "NExplosion");
             }
         }
-
-        changePixel(pixel, "NExplosion");
-    } },  // some isotopes fissile
-        "fast_neutron": { elem1: "NExplosion", chance: 0.05 }
     },
-    tempHigh: 1613,  // 1340°C
+    tempHigh: 1613,
     stateHigh: "molten_curium",
     category: "solids",
     state: "solid",
@@ -850,15 +898,20 @@ elements.curium = {
     conduct: 0.13,
     hard: 3,
     tick: function(pixel) {
-        if (Math.random() < 0.001) selfHeat(pixel, 80, 20);  // intense heat, Cm glows red-hot from decay
-        var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 3 && Math.random() < 0.1) changePixel(pixel, "NExplosion");
+        if (Math.random() < 0.001) selfHeat(pixel, 80, 20);
+        if (Math.random() < 0.002) emitAlphaParticle(pixel, 0.02, "plutonium");
+
+        // Criticality layout check using your functional helper
+        var neutronCount = countNearbyNeutrons(pixel, 1);
+        if (neutronCount > 3 && Math.random() < 0.1) {
+            changePixel(pixel, "NExplosion");
+        }
     }
 };
 
 elements.molten_curium = {
     name: "molten curium",
-    color: ["#ffdddd","#ffbbbb","#ffcccc","#ffeeee"],  // reddish glow
+    color: ["#ffdddd","#ffbbbb","#ffcccc","#ffeeee"],
     behavior: behaviors.LIQUID,
     temp: 1700,
     tempLow: 1613,
@@ -871,11 +924,24 @@ elements.molten_curium = {
     burnTime: 700,
     fireColor: "#ff8888",
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.05 },
-        "fast_neutron": { elem1: "NExplosion", chance: 0.1 },
-        "water": { elem1: "explosion", chance: 0.01 }
+        "neutron": { 
+            chance: 0.05,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        },
+        "fast_neutron": { 
+            chance: 0.1,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        },
+        "water": { elem1: "explosion", chance: 0.01 } // Kept as standard interaction
     }
 };
+
 
 // === CALIFORNIUM (Extremely radioactive, powerful neutron source) ===
 elements.californium = {
