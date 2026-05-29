@@ -368,6 +368,8 @@ elements.thorium = {
                 }
             }
         }
+
+        changePixel(pixel, "NExplosion");
     } },  // Th-232 + n → Th-233 beta to Pa-233
         "fast_neutron": { elem1: "NExplosion", chance: 0.0001,  }  // very low fission
     },
@@ -457,7 +459,7 @@ elements.uranium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.015, func: function(pixel) {
+        "neutron": { elem1: "NExplosion", chance: 0.015, func: function(pixel) {
         var count = Math.random() < 0.5 ? 2 : 3; 
         
         var offsets = [
@@ -482,6 +484,8 @@ elements.uranium = {
                 }
             }
         }
+
+        changePixel(pixel, "NExplosion");
     } },  // slightly higher
         "fast_neutron": { elem1: "NExplosion", chance: 0.005 }
     },
@@ -584,7 +588,7 @@ elements.plutonium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", elem2: "NExplosion", chance: 0.12, func: function(pixel) {
+        "neutron": { elem1: "NExplosion", chance: 0.12, func: function(pixel) {
         var count = Math.random() < 0.5 ? 2 : 3; 
         
         var offsets = [
@@ -609,6 +613,8 @@ elements.plutonium = {
                 }
             }
         }
+
+        changePixel(pixel, "NExplosion");
     } },  // very high
         "fast_neutron": { elem1: "NExplosion", chance: 0.18 }
     },
@@ -708,7 +714,7 @@ elements.curium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.02, func: function(pixel) {
+        "neutron": { elem1: "NExplosion", chance: 0.02, func: function(pixel) {
         var count = Math.random() < 0.5 ? 2 : 3; 
         
         var offsets = [
@@ -733,6 +739,8 @@ elements.curium = {
                 }
             }
         }
+
+        changePixel(pixel, "NExplosion");
     } },  // some isotopes fissile
         "fast_neutron": { elem1: "NExplosion", chance: 0.05 }
     },
