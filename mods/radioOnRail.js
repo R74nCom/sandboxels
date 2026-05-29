@@ -371,7 +371,7 @@ elements.thorium = {
 
         changePixel(pixel, "NExplosion");
     } },  // Th-232 + n → Th-233 beta to Pa-233
-        "fast_neutron": { elem1: "NExplosion", chance: 0.0001,  }  // very low fission
+        "fast_neutron": { elem1: "NExplosion", chance: 0.0001 }  // very low fission
     },
     tempHigh: 2115,  // 1842°C
     stateHigh: "molten_thorium",
