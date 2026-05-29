@@ -584,39 +584,78 @@ elements.plutonium = {
     color: ["#8b8f8f","#6c6e70","#7e7e86","#c2c2c2"],
     behavior: [
         "XX|XX|XX",
-        "XX|RL:radiation%6 AND CR:helium%0.005 AND CH:uranium%0.005 AND CH:neutron%0.0035|XX",  // added helium
+        "XX|RL:radiation%6 AND CR:helium%0.005 AND CH:uranium%0.005 AND CH:neutron%0.0035|XX", 
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.12, func: function(pixel) {
-        var count = Math.random() < 0.5 ? 2 : 3; 
-        
-        var offsets = [
-            [-1, -1], [0, -1], [1, -1],
-            [-1,  0],          [1,  0],
-            [-1,  1], [0,  1], [1,  1]
-        ];
-        
-        offsets.sort(() => Math.random() - 0.5);
-        
-        var spawned = 0;
-        for (var i = 0; i < offsets.length; i++) {
-            if (spawned >= count) break;
-            
-            var targetX = pixel.x + offsets[i][0];
-            var targetY = pixel.y + offsets[i][1];
-            
-            if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
-                if (isEmpty(targetX, targetY)) {
-                    createPixel("neutron", targetX, targetY);
-                    spawned++;
+        "neutron": { 
+            chance: 0.12, 
+            func: function(pixel1, pixel2) {
+                // Delete the triggering neutron (absorbed by nucleus)
+                deletePixel(pixel2.x, pixel2.y);
+
+                // Determine fission neutron yield (2 or 3)
+                var count = Math.random() < 0.5 ? 2 : 3; 
+                
+                var offsets = [
+                    [-1, -1], [0, -1], [1, -1],
+                    [-1,  0],           [1,  0],
+                    [-1,  1], [0,  1], [1,  1]
+                ];
+                
+                // Shuffle directions randomly
+                offsets.sort(() => Math.random() - 0.5);
+                
+                var spawned = 0;
+                for (var i = 0; i < offsets.length; i++) {
+                    if (spawned >= count) break;
+                    
+                    var targetX = pixel1.x + offsets[i][0];
+                    var targetY = pixel1.y + offsets[i][1];
+                    
+                    if (!outOfBounds(targetX, targetY)) {
+                        // Force spawn if space is empty or not a solid block
+                        if (isEmpty(targetX, targetY) || game.elements[pixelMap[targetX][targetY].element].category !== "solids") {
+                            createPixel("neutron", targetX, targetY);
+                            spawned++;
+                        }
+                    }
                 }
+
+                // Transform current plutonium into the explosion
+                changePixel(pixel1, "NExplosion");
+            } 
+        },
+        "fast_neutron": { 
+            chance: 0.18,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                
+                var count = Math.random() < 0.5 ? 2 : 3; 
+                var offsets = [
+                    [-1, -1], [0, -1], [1, -1],
+                    [-1,  0],           [1,  0],
+                    [-1,  1], [0,  1], [1,  1]
+                ];
+                offsets.sort(() => Math.random() - 0.5);
+                
+                var spawned = 0;
+                for (var i = 0; i < offsets.length; i++) {
+                    if (spawned >= count) break;
+                    
+                    var targetX = pixel1.x + offsets[i][0];
+                    var targetY = pixel1.y + offsets[i][1];
+                    
+                    if (!outOfBounds(targetX, targetY)) {
+                        if (isEmpty(targetX, targetY) || game.elements[pixelMap[targetX][targetY].element].category !== "solids") {
+                            createPixel("fast_neutron", targetX, targetY); // Emits fast neutrons
+                            spawned++;
+                        }
+                    }
+                }
+                changePixel(pixel1, "NExplosion");
             }
         }
-
-        changePixel(pixel, "NExplosion");
-    } },  // very high
-        "fast_neutron": { elem1: "NExplosion", chance: 0.18 }
     },
     tempHigh: 912,
     stateHigh: "molten_plutonium",
@@ -627,11 +666,24 @@ elements.plutonium = {
     conduct: 0.18,
     hard: 3.5,
     tick: function(pixel) {
-        if (Math.random() < 0.0002) selfHeat(pixel, 40, 20);  // notable self-heating
-        var neutronCount = countNearbyNeutrons(pixel);
-        if (neutronCount > 2 && Math.random() < 0.15) changePixel(pixel, "NExplosion");  // High sensitivity
+        // Dynamic background alpha decay using your external function
+        if (Math.random() < 0.005) {
+            emitAlphaParticle(pixel, 0.01, "uranium");
+        }
+
+        // Thermodynamic self-heating using your external function
+        if (Math.random() < 0.0002) {
+            selfHeat(pixel, 40, 20);
+        }
+        
+        // Proximity / critical mass check using your external neutron counter
+        var neutronCount = countNearbyNeutrons(pixel, 1);
+        if (neutronCount > 2 && Math.random() < 0.15) {
+            changePixel(pixel, "NExplosion");
+        }
     }
 };
+
 
 elements.molten_plutonium = {
     color: ["#ccffff","#aadddd","#99eeee","#bbffff"],
