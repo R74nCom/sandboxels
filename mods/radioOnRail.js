@@ -343,8 +343,33 @@ elements.thorium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "neutron", elem2: "protactinium", chance: 0.05 },  // Th-232 + n → Th-233 beta to Pa-233
-        "fast_neutron": { elem1: "NExplosion", chance: 0.0001 }  // very low fission
+        "neutron": { elem1: "neutron", elem2: "protactinium", chance: 0.05, func: function(pixel) {
+        var count = Math.random() < 0.5 ? 2 : 3; 
+        
+        var offsets = [
+            [-1, -1], [0, -1], [1, -1],
+            [-1,  0],          [1,  0],
+            [-1,  1], [0,  1], [1,  1]
+        ];
+        
+        offsets.sort(() => Math.random() - 0.5);
+        
+        var spawned = 0;
+        for (var i = 0; i < offsets.length; i++) {
+            if (spawned >= count) break;
+            
+            var targetX = pixel.x + offsets[i][0];
+            var targetY = pixel.y + offsets[i][1];
+            
+            if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
+                if (isEmpty(targetX, targetY)) {
+                    createPixel("neutron", targetX, targetY);
+                    spawned++;
+                }
+            }
+        }
+    } },  // Th-232 + n → Th-233 beta to Pa-233
+        "fast_neutron": { elem1: "NExplosion", chance: 0.0001,  }  // very low fission
     },
     tempHigh: 2115,  // 1842°C
     stateHigh: "molten_thorium",
@@ -432,7 +457,32 @@ elements.uranium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.015 },  // slightly higher
+        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.015, func: function(pixel) {
+        var count = Math.random() < 0.5 ? 2 : 3; 
+        
+        var offsets = [
+            [-1, -1], [0, -1], [1, -1],
+            [-1,  0],          [1,  0],
+            [-1,  1], [0,  1], [1,  1]
+        ];
+        
+        offsets.sort(() => Math.random() - 0.5);
+        
+        var spawned = 0;
+        for (var i = 0; i < offsets.length; i++) {
+            if (spawned >= count) break;
+            
+            var targetX = pixel.x + offsets[i][0];
+            var targetY = pixel.y + offsets[i][1];
+            
+            if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
+                if (isEmpty(targetX, targetY)) {
+                    createPixel("neutron", targetX, targetY);
+                    spawned++;
+                }
+            }
+        }
+    } },  // slightly higher
         "fast_neutron": { elem1: "NExplosion", chance: 0.005 }
     },
     tempHigh: 1405,
@@ -534,7 +584,32 @@ elements.plutonium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.12 },  // very high
+        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.12, func: function(pixel) {
+        var count = Math.random() < 0.5 ? 2 : 3; 
+        
+        var offsets = [
+            [-1, -1], [0, -1], [1, -1],
+            [-1,  0],          [1,  0],
+            [-1,  1], [0,  1], [1,  1]
+        ];
+        
+        offsets.sort(() => Math.random() - 0.5);
+        
+        var spawned = 0;
+        for (var i = 0; i < offsets.length; i++) {
+            if (spawned >= count) break;
+            
+            var targetX = pixel.x + offsets[i][0];
+            var targetY = pixel.y + offsets[i][1];
+            
+            if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
+                if (isEmpty(targetX, targetY)) {
+                    createPixel("neutron", targetX, targetY);
+                    spawned++;
+                }
+            }
+        }
+    } },  // very high
         "fast_neutron": { elem1: "NExplosion", chance: 0.18 }
     },
     tempHigh: 912,
@@ -633,7 +708,32 @@ elements.curium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.02 },  // some isotopes fissile
+        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.02, func: function(pixel) {
+        var count = Math.random() < 0.5 ? 2 : 3; 
+        
+        var offsets = [
+            [-1, -1], [0, -1], [1, -1],
+            [-1,  0],          [1,  0],
+            [-1,  1], [0,  1], [1,  1]
+        ];
+        
+        offsets.sort(() => Math.random() - 0.5);
+        
+        var spawned = 0;
+        for (var i = 0; i < offsets.length; i++) {
+            if (spawned >= count) break;
+            
+            var targetX = pixel.x + offsets[i][0];
+            var targetY = pixel.y + offsets[i][1];
+            
+            if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
+                if (isEmpty(targetX, targetY)) {
+                    createPixel("neutron", targetX, targetY);
+                    spawned++;
+                }
+            }
+        }
+    } },  // some isotopes fissile
         "fast_neutron": { elem1: "NExplosion", chance: 0.05 }
     },
     tempHigh: 1613,  // 1340°C
