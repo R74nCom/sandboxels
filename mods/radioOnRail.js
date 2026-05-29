@@ -877,6 +877,134 @@ elements.molten_curium = {
     }
 };
 
+// === CALIFORNIUM (Extremely radioactive, powerful neutron source) ===
+elements.californium = {
+    name: "californium",
+    color: ["#7a828a","#5c636a","#6d757d","#8b949e"], // silvery metallic with bluish gray tint
+    behavior: [
+        "XX|XX|XX",
+        "XX|RL:radiation%12 AND CR:helium%0.02 AND CH:curium%0.005 AND CH:neutron%0.05|XX", // High natural neutron emission
+        "XX|XX|XX"
+    ],
+    reactions: {
+        "neutron": { 
+            chance: 0.35, // Highly sensitive to fission
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+
+                // Huge fission yield: spawns 3 to 4 neutrons instead of 2-3
+                var count = Math.random() < 0.4 ? 3 : 4; 
+                var offsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+                offsets.sort(() => Math.random() - 0.5);
+                
+                var spawned = 0;
+                for (var i = 0; i < offsets.length; i++) {
+                    if (spawned >= count) break;
+                    
+                    var targetX = pixel1.x + offsets[i][0];
+                    var targetY = pixel1.y + offsets[i][1];
+                    
+                    if (!outOfBounds(targetX, targetY)) {
+                        if (isEmpty(targetX, targetY) || game.elements[pixelMap[targetX][targetY].element].category !== "solids") {
+                            createPixel("neutron", targetX, targetY);
+                            spawned++;
+                        }
+                    }
+                }
+                changePixel(pixel1, "NExplosion");
+            } 
+        },
+        "fast_neutron": { 
+            chance: 0.45, // Extremely vulnerable to fast neutrons
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+
+                var count = Math.random() < 0.4 ? 3 : 4; 
+                var offsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+                offsets.sort(() => Math.random() - 0.5);
+                
+                var spawned = 0;
+                for (var i = 0; i < offsets.length; i++) {
+                    if (spawned >= count) break;
+                    
+                    var targetX = pixel1.x + offsets[i][0];
+                    var targetY = pixel1.y + offsets[i][1];
+                    
+                    if (!outOfBounds(targetX, targetY)) {
+                        if (isEmpty(targetX, targetY) || game.elements[pixelMap[targetX][targetY].element].category !== "solids") {
+                            createPixel("fast_neutron", targetX, targetY);
+                            spawned++;
+                        }
+                    }
+                }
+                changePixel(pixel1, "NExplosion");
+            }
+        }
+    },
+    tempHigh: 900, // Melts at 900°C
+    stateHigh: "molten_californium",
+    category: "solids",
+    state: "solid",
+    density: 15100,
+    darkText: true,
+    conduct: 0.12,
+    hard: 2.5,
+    tick: function(pixel) {
+        // High thermodynamic self-heating due to intense radioactivity
+        if (Math.random() < 0.005) selfHeat(pixel, 60, 30);
+        
+        // Rapid background alpha decay into curium
+        if (Math.random() < 0.002) emitAlphaParticle(pixel, 0.02, "curium");
+
+        // Intense proximity/criticality check (Explodes with fewer surrounding neutrons)
+        var neutronCount = countNearbyNeutrons(pixel, 1);
+        if (neutronCount > 1 && Math.random() < 0.25) { 
+            changePixel(pixel, "NExplosion");
+        }
+    }
+};
+
+// === MOLTEN CALIFORNIUM ===
+elements.molten_californium = {
+    name: "molten californium",
+    color: ["#ffb3d9","#ff80bf","#ff4da6"], // Distinct bright glowing hot pink/purple hue
+    behavior: behaviors.LIQUID,
+    temp: 1000,
+    tempLow: 900,
+    stateLow: "californium",
+    viscosity: 6000,
+    density: 13500,
+    category: "liquids",
+    state: "liquid",
+    burn: 40,
+    burnTime: 600,
+    fireColor: "#ff00ff",
+    reactions: {
+        "neutron": { 
+            chance: 0.50,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        },
+        "fast_neutron": { 
+            chance: 0.60,
+            func: function(pixel1, pixel2) {
+                deletePixel(pixel2.x, pixel2.y);
+                changePixel(pixel1, "NExplosion");
+            }
+        }
+    },
+    tick: function(pixel) {
+        // Spontaneous criticality triggers easily in liquid state
+        var neutronCount = countNearbyNeutrons(pixel, 2);
+        if (neutronCount > 1 && Math.random() < 0.35) {
+            changePixel(pixel, "NExplosion");
+        }
+    }
+};
+
+
 // === SUBSTANCES / COMPOUNDS ===
 elements.uranium_dioxide = {  // UO2, ceramic fuel
     name: "uranium dioxide",
