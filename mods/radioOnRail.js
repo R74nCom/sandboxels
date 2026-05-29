@@ -343,7 +343,7 @@ elements.thorium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: null, elem2: "protactinium", chance: 0.05 },  // Th-232 + n → Th-233 beta to Pa-233
+        "neutron": { elem1: "neutron", elem2: "protactinium", chance: 0.05 },  // Th-232 + n → Th-233 beta to Pa-233
         "fast_neutron": { elem1: "NExplosion", chance: 0.0001 }  // very low fission
     },
     tempHigh: 2115,  // 1842°C
@@ -432,7 +432,7 @@ elements.uranium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.015 },  // slightly higher
+        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.015 },  // slightly higher
         "fast_neutron": { elem1: "NExplosion", chance: 0.005 }
     },
     tempHigh: 1405,
@@ -534,7 +534,7 @@ elements.plutonium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "NExplosion", chance: 0.12 },  // very high
+        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.12 },  // very high
         "fast_neutron": { elem1: "NExplosion", chance: 0.18 }
     },
     tempHigh: 912,
