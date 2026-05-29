@@ -584,7 +584,7 @@ elements.plutonium = {
         "XX|XX|XX"
     ],
     reactions: {
-        "neutron": { elem1: "neutron", elem2: "NExplosion", chance: 0.12, func: function(pixel) {
+        "neutron": { elem1: "NExplosion", elem2: "NExplosion", chance: 0.12, func: function(pixel) {
         var count = Math.random() < 0.5 ? 2 : 3; 
         
         var offsets = [
