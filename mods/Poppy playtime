@@ -1,0 +1,103 @@
+class SandboxelsMod {
+  constructor() {
+    this.entities = [];
+  }
+
+  addEntity(entity) {
+    this.entities.push(entity);
+  }
+
+  update() {
+    this.entities.forEach(entity => entity.update());
+  }
+}
+
+class Boxer {
+  constructor(name, health = 100) {
+    this.name = name;
+    this.health = health;
+    this.position = { x: 0, y: 0 };
+    this.isPunching = false;
+  }
+
+  move(x, y) {
+    this.position.x += x;
+    this.position.y += y;
+  }
+
+  punch(target) {
+    if (this.isPunching) return;
+    this.isPunching = true;
+    setTimeout(() => {
+      if (target && target.health) {
+        target.health -= 10;
+        if (target.health < 0) target.health = 0;
+      }
+      this.isPunching = false;
+    }, 500);
+  }
+
+  update() {
+    // Boxer behavior update logic can be added here
+  }
+}
+
+class PoppyPlaytimeHuman {
+  constructor(name) {
+    this.name = name;
+    this.position = { x: 0, y: 0 };
+    this.health = 100;
+    this.isScared = false;
+  }
+
+  move(x, y) {
+    this.position.x += x;
+    this.position.y += y;
+  }
+
+  scare() {
+    this.isScared = true;
+    setTimeout(() => {
+      this.isScared = false;
+    }, 3000);
+  }
+
+  update() {
+    // Example behavior: if scared, move randomly
+    if (this.isScared) {
+      this.move(Math.random() * 2 - 1, Math.random() * 2 - 1);
+    }
+  }
+}
+
+// Usage example
+const mod = new SandboxelsMod();
+
+const boxer = new Boxer("Boxer1");
+const human = new PoppyPlaytimeHuman("PoppyHuman");
+
+mod.addEntity(boxer);
+mod.addEntity(human);
+
+// Simulate game loop
+setInterval(() => {
+  mod.update();
+
+  // Example interaction: boxer punches human if close
+  const dx = boxer.position.x - human.position.x;
+  const dy = boxer.position.y - human.position.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance < 5) {
+    boxer.punch(human);
+    human.scare();
+  }
+
+  console.log(`Boxer Health: ${boxer.health}, Position: (${boxer.position.x.toFixed(2)}, ${boxer.position.y.toFixed(2)})`);
+  console.log(`Human Health: ${human.health}, Position: (${human.position.x.toFixed(2)}, ${human.position.y.toFixed(2)}), Scared: ${human.isScared}`);
+
+  // Move boxer closer to human for demo
+  if (distance > 1) {
+    boxer.move(dx * -0.1, dy * -0.1);
+  }
+}, 1000);
