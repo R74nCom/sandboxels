@@ -78,12 +78,20 @@ elements.thermonuclear_fusion_core = {
     hardness: 1,
 }
 
+elements.reactor_steam = {
+    color: "#e5f3fa",
+    behavior: behaviors.GAS,
+    temp: 500,
+    desc: "Steam produced by reactor fluid when it reaches high temperature.",
+    state: "gas",
+    category: "cores"
+}
 elements.reactor_fluid = {
     color: "#00a5b8",
     behavior: behaviors.LIQUID,
     temp: -50,
     tempHigh: 500,
-    stateHigh: "steam",
+    stateHigh: "reactor_steam",
     desc: "Nuclear reactor cooling fluid. You can use it instead of water.",
     state: "liquid",
     category: "cores"
