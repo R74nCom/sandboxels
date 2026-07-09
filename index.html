@@ -1508,6 +1508,45 @@ SEEDRISE: function(pixel) {
 	stain: -0.5,
 	extinguish: true
 },
+"diarrhea": {
+	color: ["#5c481c","#544513","#754d1c","#8a7829","#ad7315","#755c30"],
+	behavior: behaviors.LIQUID,
+	reactions: {
+		"fly": { elem1: "fly", elem2: [null,null,null,null,null,null,"fly"], chance: 0.02 },
+		"water": { elem1: "dirty_water", elem2: "diarrhea" },
+		"dirt": { elem1: "diarrhea", elem2: "mud" }
+	},
+	tempLow: -5,
+	stateLowName: "frozen_diarrhea",
+	tempHigh: 100,
+	stateHigh: ["steam","steam","steam","steam","dirt"],
+	category: "liquids",
+	state: "liquid",
+	density: 1030,
+	viscosity: 3,
+	stain: 0.51,
+	alias: "diareah"
+},
+"diareah": {
+	color: ["#5c481c","#544513","#754d1c","#8a7829","#ad7315","#755c30"],
+	behavior: behaviors.LIQUID,
+	reactions: {
+		"fly": { elem1: "fly", elem2: [null,null,null,null,null,null,"fly"], chance: 0.02 },
+		"water": { elem1: "dirty_water", elem2: "diarrhea" },
+		"dirt": { elem1: "diarrhea", elem2: "mud" }
+	},
+	tempLow: -5,
+	stateLowName: "frozen_diarrhea",
+	tempHigh: 100,
+	stateHigh: ["steam","steam","steam","steam","dirt"],
+	category: "liquids",
+	state: "liquid",
+	density: 1030,
+	viscosity: 3,
+	stain: 0.51,
+	hidden: true,
+	alias: "diarrhea"
+},
 "dirt": {
 	color: ["#76552b","#5c4221","#573c1a","#6b481e"],
 	behavior: behaviors.POWDER,
