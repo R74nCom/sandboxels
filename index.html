@@ -863,6 +863,26 @@ SEEDRISE: function(pixel) {
 		// burning - whether the element is burning on creation
 		// charge - charge of the element on creation
 		// hardness - chance of resisting damage (0-1)
+		treeIdentitySerial = 0;
+		treeIdentityElements = new Set(["sapling","pinecone","bamboo_plant","wood","tree_branch","evergreen","bamboo","plant","leaves","pine_needles"]);
+		function ensureTreeIdentity(pixel,species) {
+			if (!pixel) return null;
+			if (!pixel.treeLineage) {
+				treeIdentitySerial++;
+				pixel.treeLineage = "tree-" + Date.now().toString(36) + "-" + treeIdentitySerial.toString(36);
+			}
+			if (!pixel.treeSpecies && species) pixel.treeSpecies = species;
+			pixel.naturalVegetation = true;
+			return pixel.treeLineage;
+		}
+		function inheritTreeIdentity(source,target) {
+			if (!source || !target || !treeIdentityElements.has(target.element)) return target;
+			ensureTreeIdentity(source,source.treeSpecies);
+			target.treeLineage = source.treeLineage;
+			target.treeSpecies = source.treeSpecies;
+			target.naturalVegetation = true;
+			return target;
+		}
 		elements = {
 "sand": {
 	color: "#e6d577",
@@ -972,11 +992,7 @@ SEEDRISE: function(pixel) {
 		"DL|DL|DL"
 	],
 	tool: function(pixel) {
-		if (currentElementProp && currentElementProp.filter &&
-			currentElementProp.filter !== pixel.element &&
-			!currentElementProp.filter.split(",").includes(pixel.element)
-		) return;
-		deletePixel(pixel.x,pixel.y);
+		erasePixelAt(pixel.x,pixel.y,currentElementProp && currentElementProp.filter);
 	},
 	category: "tools",
 	canPlace: false,
@@ -3813,7 +3829,8 @@ SEEDRISE: function(pixel) {
 						bee.queen = true;
 						bee.mats = Math.floor(Math.random() * 9) + 4; //from 3 to 10
 						bee.hive = Math.floor(Math.random() * 256);
-						deletePixel(bee.x,bee.y);
+						deletePixelObject(bee);
+						if (!isEmpty(bee.x,bee.y)) deletePixel(bee.x,bee.y);
 						createPixel("hive",bee.x,bee.y);
 						pixelMap[bee.x][bee.y].hive = bee.hive;
 						pixelMap[bee.x][bee.y].bees.push(bee);
@@ -3821,7 +3838,7 @@ SEEDRISE: function(pixel) {
 					}
 				}
 				else if (hitPixel.element === "hive" && hitPixel.bees.length < 5 && Math.random() < 0.25) {
-					deletePixel(bee.x,bee.y);
+					deletePixelObject(bee);
 					hitPixel.bees.push(bee);
 					return;
 				}
@@ -4033,26 +4050,28 @@ SEEDRISE: function(pixel) {
 		panic: 0
 	},
 	onPlace: function(pixel) {
-		if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element === "head") {
-			deletePixel(pixel.x, pixel.y-1);
+		const existingHead = getPixelByElement(pixel.x,pixel.y-1,"head");
+		const existingBody = getPixelByElement(pixel.x,pixel.y+1,"body");
+		if (existingHead) {
+			deletePixelObject(existingHead);
 		}
-		else if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element === "body") {
-			deletePixel(pixel.x, pixel.y+1);
+		else if (existingBody) {
+			deletePixelObject(existingBody);
 		}
 
-		if (isEmpty(pixel.x, pixel.y+1)) {
+		if (canCreatureOccupy(pixel,pixel.x,pixel.y+1)) {
 			createPixel("body", pixel.x, pixel.y+1);
 			var color = pixel.color;
 			changePixel(pixel,"head");
 			pixel.color = color;
 		}
-		else if (isEmpty(pixel.x, pixel.y-1)) {
+		else if (canCreatureOccupy(pixel,pixel.x,pixel.y-1)) {
 			createPixel("head", pixel.x, pixel.y-1);
-			pixelMap[pixel.x][pixel.y-1].color = pixel.color;
+			getPixelByElement(pixel.x,pixel.y-1,"head").color = pixel.color;
 			changePixel(pixel,"body");
 		}
 		else {
-			deletePixel(pixel.x, pixel.y);
+			deletePixelObject(pixel);
 		}
 	},
 	reactions: {
@@ -4128,16 +4147,9 @@ SEEDRISE: function(pixel) {
 	},
 	tick: function(pixel) {
 		if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
-			if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
-				var headpixel = pixelMap[pixel.x][pixel.y-2];
-				if (headpixel.element === "head") {
-					if (isEmpty(pixel.x, pixel.y-1)) {
-						movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
-					}
-					else {
-						swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
-					}
-				}
+			const headpixel = getPixelByElement(pixel.x,pixel.y-2,"head");
+			if (headpixel) { // Drag head down, including through vegetation.
+				movePixel(headpixel,pixel.x,pixel.y-1);
 			}
 		}
 		doHeat(pixel);
@@ -4152,8 +4164,8 @@ SEEDRISE: function(pixel) {
 		}
 
 		// Find the head
-		if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
-			var head = pixelMap[pixel.x][pixel.y-1];
+		var head = getPixelByElement(pixel.x,pixel.y-1,"head");
+		if (head) {
 			if (head.dead) { // If head is dead, kill body
 				pixel.dead = head.dead;
 			}
@@ -4162,7 +4174,7 @@ SEEDRISE: function(pixel) {
 				delete head.panic;
 			}
 		}
-		else { var head = null }
+		else { head = null }
 		if (head && Math.random() < 0.25) {
 			let y = Math.random() < 0.5 ? 0 : -1;
 			for (let x = 1; x < 10; x++) {
@@ -4199,7 +4211,7 @@ SEEDRISE: function(pixel) {
 			else if (pixel.panic > 50) { pixel.panic = 50; }
 		}
 
-		if (isEmpty(pixel.x, pixel.y-1)) {
+		if (head === null && isEmpty(pixel.x,pixel.y-1)) {
 			// create blood if decapitated 10% chance
 			if (Math.random() < 0.1 && !pixel.charge) {
 				createPixel("blood", pixel.x, pixel.y-1);
@@ -4219,7 +4231,7 @@ SEEDRISE: function(pixel) {
 			// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
 			while (movesToTry.length > 0) {
 				var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
-				if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+				if (canCreatureOccupy(head,pixel.x+move[0],pixel.y+move[1]-1)) {
 					var origx = pixel.x+move[0];
 					var origy = pixel.y+move[1];
 					if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1]) && pixel.x===origx && pixel.y===origy) {
@@ -4228,8 +4240,9 @@ SEEDRISE: function(pixel) {
 						break;
 					}
 				}
-				else if (!isEmpty(pixel.x+move[0], pixel.y+move[1], true)) {
-					var hitPixel = pixelMap[pixel.x+move[0]][pixel.y+move[1]];
+				else {
+					var hitPixel = getPixelByElement(pixel.x+move[0],pixel.y+move[1],"body") || getPixelByElement(pixel.x+move[0],pixel.y+move[1],"head");
+					if (!hitPixel) continue;
 					if (hitPixel.element === "body" || hitPixel.element === "head" && hitPixel.panic < pixel.panic) {
 						// interact with other human
 						hitPixel.panic = pixel.panic;
@@ -4299,13 +4312,13 @@ SEEDRISE: function(pixel) {
 		}
 
 		// Find the body
-		if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body") {
-			var body = pixelMap[pixel.x][pixel.y+1];
+		var body = getPixelByElement(pixel.x,pixel.y+1,"body");
+		if (body) {
 			if (body.dead) { // If body is dead, kill head
 				pixel.dead = body.dead;
 			}
 		}
-		else { var body = null }
+		else { body = null }
 
 		// check for eating food
 		if (body && !pixel.dead && Math.random() < 0.1) {
@@ -4322,7 +4335,7 @@ SEEDRISE: function(pixel) {
 
 		if (tryMove(pixel, pixel.x, pixel.y+1)) {
 			// create blood if severed 10% chance
-			if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.1 && !pixel.charge) {
+			if (!getPixelByElement(pixel.x,pixel.y+1,"body") && !pixel.dead && Math.random() < 0.1 && !pixel.charge) {
 				createPixel("blood", pixel.x, pixel.y+1);
 				// set dead to true 15% chance
 				if (Math.random() < 0.15) {
@@ -6278,14 +6291,9 @@ SEEDRISE: function(pixel) {
 "sapling": {
 	color: "#3e9c3e",
 	tick: function(pixel) {
+		ensureTreeIdentity(pixel,"sapling");
 		if (!tryMove(pixel,pixel.x,pixel.y+1)) {
 			if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-				if (!outOfBounds(pixel.x,pixel.y+1)) {
-					var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-					if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1 || dirtPixel.element === "grass")) {
-						changePixel(dirtPixel,"root");
-					}
-				}
 				if (isEmpty(pixel.x,pixel.y-1)) {
 					if (!pixel.wc) {
 						var c = Math.random();
@@ -6300,15 +6308,19 @@ SEEDRISE: function(pixel) {
 						else { pixel.wc="#a0522d"; pixel.lc="#00bf00" } //basic
 						pixel.color = pixelColorPick(pixel, pixel.lc);
 					}
-					movePixel(pixel,pixel.x,pixel.y-1);
-					createPixel(Math.random() > 0.5 ? "wood" : "tree_branch",pixel.x,pixel.y+1);
-					pixelMap[pixel.x][pixel.y+1].wc = pixel.wc;
-					pixelMap[pixel.x][pixel.y+1].lc = pixel.lc;
-					pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1], pixel.wc);
+					if (movePixel(pixel,pixel.x,pixel.y-1)) {
+						createPixel(Math.random() > 0.5 ? "wood" : "tree_branch",pixel.x,pixel.y+1);
+						var trunkPixel = pixelMap[pixel.x][pixel.y+1];
+						inheritTreeIdentity(pixel,trunkPixel);
+						trunkPixel.wc = pixel.wc;
+						trunkPixel.lc = pixel.lc;
+						trunkPixel.color = pixelColorPick(trunkPixel, pixel.wc);
+					}
 				}
 			}
 			else if (pixel.age > 1000 && Math.random() < 0.05) {
 				changePixel(pixel,"wood");
+				pixel.naturalVegetation = true;
 				pixel.color = pixelColorPick(pixel, pixel.wc);
 			}
 			pixel.age++;
@@ -6333,24 +6345,22 @@ SEEDRISE: function(pixel) {
 "pinecone": {
 	color: ["#5c3e33","#472f27","#31211b"],
 	tick: function(pixel) {
+		ensureTreeIdentity(pixel,"pinecone");
 		if (!tryMove(pixel,pixel.x,pixel.y+1) && pixelTicks-pixel.start > 50) {
 			if (pixel.h === undefined) { // set to even number between 6 and 20
 				pixel.h = Math.floor(Math.random()*7)*2+6;
 			}
 			if (Math.random() < 0.02 && pixel.h > 0 && pixel.temp < 100) {
-				if (!outOfBounds(pixel.x,pixel.y+1)) { // grow roots
-					var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-					if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1  || dirtPixel.element === "grass")) {
-						changePixel(dirtPixel,"root");
-					}
-				}
 				if (isEmpty(pixel.x,pixel.y-1) && tryMove(pixel,pixel.x,pixel.y-1)) {
 					if (pixel.h % 2 && pixel.h < 12) {
 						createPixel("evergreen",pixel.x,pixel.y+1);
-						pixelMap[pixel.x][pixel.y+1].h = pixel.h;
+						var evergreenPixel = pixelMap[pixel.x][pixel.y+1];
+						inheritTreeIdentity(pixel,evergreenPixel);
+						evergreenPixel.h = pixel.h;
 					}
 					else {
 						createPixel("wood",pixel.x,pixel.y+1);
+						inheritTreeIdentity(pixel,pixelMap[pixel.x][pixel.y+1]);
 					}
 					pixel.h --;
 				}
@@ -6374,15 +6384,20 @@ SEEDRISE: function(pixel) {
 "evergreen": {
 	color: "#006300",
 	tick: function (pixel) {
+		ensureTreeIdentity(pixel,pixel.treeSpecies || "pinecone");
 		if (pixel.h > 0 && pixelTicks % (50+pixel.h) === 0) {
 			// extend to the left and right, giving the next evergreen h-1
 			if (isEmpty(pixel.x-1,pixel.y)) {
 				createPixel("evergreen",pixel.x-1,pixel.y);
-				pixelMap[pixel.x-1][pixel.y].h = pixel.h-2;
+				var leftEvergreen = pixelMap[pixel.x-1][pixel.y];
+				inheritTreeIdentity(pixel,leftEvergreen);
+				leftEvergreen.h = pixel.h-2;
 			}
 			if (isEmpty(pixel.x+1,pixel.y)) {
 				createPixel("evergreen",pixel.x+1,pixel.y);
-				pixelMap[pixel.x+1][pixel.y].h = pixel.h-2;
+				var rightEvergreen = pixelMap[pixel.x+1][pixel.y];
+				inheritTreeIdentity(pixel,rightEvergreen);
+				rightEvergreen.h = pixel.h-2;
 			}
 		}
 		doDefaults(pixel);
@@ -6849,43 +6864,56 @@ SEEDRISE: function(pixel) {
 "tree_branch": {
 	color: "#a0522d",
 	tick: function(pixel) {
+		ensureTreeIdentity(pixel,pixel.treeSpecies || "sapling");
 		if (!pixel.burning) {
 			if (!pixel.lc) { pixel.lc = "#00bf00" }
 			if (!pixel.wc) { pixel.wc = "#a0522d" }
 			if (isEmpty(pixel.x-1,pixel.y-1) && Math.random() < 0.02) {
 				if (Math.random() < 0.5) {
 					createPixel("plant",pixel.x-1,pixel.y-1);
-					pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.lc);
+					var leftLeaf = pixelMap[pixel.x-1][pixel.y-1];
+					inheritTreeIdentity(pixel,leftLeaf);
+					leftLeaf.color = pixelColorPick(leftLeaf, pixel.lc);
 				}
 				else {
 					createPixel("tree_branch",pixel.x-1,pixel.y-1);
-					pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.wc);
-					pixelMap[pixel.x-1][pixel.y-1].wc = pixel.wc;
-					pixelMap[pixel.x-1][pixel.y-1].lc = pixel.lc;
+					var leftBranch = pixelMap[pixel.x-1][pixel.y-1];
+					inheritTreeIdentity(pixel,leftBranch);
+					leftBranch.color = pixelColorPick(leftBranch, pixel.wc);
+					leftBranch.wc = pixel.wc;
+					leftBranch.lc = pixel.lc;
 				}
 			}
 			if (isEmpty(pixel.x+1,pixel.y-1) && Math.random() < 0.02) {
 				if (Math.random() < 0.5) {
 					createPixel("plant",pixel.x+1,pixel.y-1);
-					pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.lc);
+					var rightLeaf = pixelMap[pixel.x+1][pixel.y-1];
+					inheritTreeIdentity(pixel,rightLeaf);
+					rightLeaf.color = pixelColorPick(rightLeaf, pixel.lc);
 				}
 				else {
 					createPixel("tree_branch",pixel.x+1,pixel.y-1);
-					pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.wc);
-					pixelMap[pixel.x+1][pixel.y-1].wc = pixel.wc;
-					pixelMap[pixel.x+1][pixel.y-1].lc = pixel.lc;
+					var rightBranch = pixelMap[pixel.x+1][pixel.y-1];
+					inheritTreeIdentity(pixel,rightBranch);
+					rightBranch.color = pixelColorPick(rightBranch, pixel.wc);
+					rightBranch.wc = pixel.wc;
+					rightBranch.lc = pixel.lc;
 				}
 			}
 			if (isEmpty(pixel.x,pixel.y-1) && Math.random() < 0.02) {
 				if (Math.random() < 0.75) {
 					createPixel("plant",pixel.x,pixel.y-1);
-					pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.lc);
+					var topLeaf = pixelMap[pixel.x][pixel.y-1];
+					inheritTreeIdentity(pixel,topLeaf);
+					topLeaf.color = pixelColorPick(topLeaf, pixel.lc);
 				}
 				else {
 					createPixel("tree_branch",pixel.x,pixel.y-1);
-					pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.wc);
-					pixelMap[pixel.x][pixel.y-1].wc = pixel.wc;
-					pixelMap[pixel.x][pixel.y-1].lc = pixel.lc;
+					var topBranch = pixelMap[pixel.x][pixel.y-1];
+					inheritTreeIdentity(pixel,topBranch);
+					topBranch.color = pixelColorPick(topBranch, pixel.wc);
+					topBranch.wc = pixel.wc;
+					topBranch.lc = pixel.lc;
 				}
 			}
 		}
@@ -6993,7 +7021,10 @@ SEEDRISE: function(pixel) {
 		"XX|L2:bamboo AND C2:bamboo%10|XX",
 		"XX|M1|XX"
 	],
-	tick: behaviors.SEEDRISE,
+	tick: function(pixel) {
+		ensureTreeIdentity(pixel,"bamboo_plant");
+		behaviors.SEEDRISE(pixel);
+	},
 	tempHigh: 100,
 	stateHigh: "dead_plant",
 	tempLow: -2,
@@ -14564,10 +14595,530 @@ function langKey(key,fallback,template) {
 		}
 
 		currentPixels = [];
+		// pixelMap remains the primary material layer for backwards compatibility.
+		// overlapMap stores persistent auxiliary pixels such as creatures over
+		// vegetation and alwaysOverlay/nonBlocking logical objects.
+		overlapMap = [];
+		creatureElements = Object.create(null);
+		passableVegetationElements = Object.create(null);
+		currentlyTickingPixel = null;
+		function registerCreatureElement(element) {
+			if (element) {
+				creatureElements[element] = true;
+				if (elements[element]) elements[element].isCreature = true;
+			}
+			return element;
+		}
+		function registerPassableVegetation(element) {
+			if (element) {
+				passableVegetationElements[element] = true;
+				if (elements[element]) elements[element].passableVegetation = true;
+			}
+			return element;
+		}
+		function isCreaturePixel(pixel) {
+			return !!(pixel && looksLikeCreatureElement(pixel.element,elements[pixel.element]));
+		}
+		function looksLikePassableVegetationElement(element,elementInfo) {
+			elementInfo = elementInfo || elements[element];
+			if (!elementInfo || elementInfo.passableVegetation === false) return false;
+			if (passableVegetationElements[element] || elementInfo.passableVegetation === true) return true;
+			if (elementInfo.isPlant === true || elementInfo.plant === true || elementInfo.isTree === true || elementInfo.tallPlant === true) return true;
+			if (element === "wood" || /(?:^|_)(?:lumber|plank|timber|wooden)(?:_|$)/.test(element)) return false;
+			const category = String(elementInfo.category || "").toLowerCase();
+			if (category === "plants" || category === "flora" || category === "vegetation") return true;
+			if (category !== "life" && category !== "food") return false;
+			if (elementInfo.seed !== undefined) return true;
+			const plantTransitions = JSON.stringify([elementInfo.stateHigh,elementInfo.stateLow,elementInfo.burnInto,elementInfo.breakInto]);
+			if (plantTransitions.indexOf("dead_plant") !== -1 || plantTransitions.indexOf("frozen_plant") !== -1) return true;
+			return /(?:^|_)(?:plant|grass|sapling|seedling|tree|branch|leaf|leaves|vine|bamboo|cactus|wheat|corn|flower|shrub|bush|reed|fern|moss|kelp|crop|stalk|stem|root|mushroom|fungus|lichen|algae|coral)(?:_|$)/.test(element);
+		}
+		function looksLikeCreatureElement(element,elementInfo) {
+			if (!elementInfo || elementInfo.isCreature === false) return false;
+			if (creatureElements[element] || elementInfo.isCreature === true) return true;
+			if (looksLikePassableVegetationElement(element,elementInfo)) return false;
+			const category = String(elementInfo.category || "").toLowerCase();
+			if (category === "animals" || category === "animal" || category === "fauna" || category === "creatures") return true;
+			if (category !== "life") return false;
+			if (elementInfo.movable === true || typeof elementInfo.tick === "function") return true;
+			return !!(elementInfo.behavior && /M[12]/.test(JSON.stringify(elementInfo.behavior)));
+		}
+		function isPassableVegetationPixel(pixel) {
+			if (!pixel || !elements[pixel.element]) return false;
+			if (looksLikePassableVegetationElement(pixel.element,elements[pixel.element])) return true;
+			// Generic wood is also used for buildings. Only wood produced by a
+			// growing tree is marked as natural vegetation.
+			return pixel.naturalVegetation === true;
+		}
+		function elementFlag(element,flag) {
+			const info = elements[element];
+			return !!(info && (info[flag] === true || (info.properties && info.properties[flag] === true)));
+		}
+		function normalizeElementInteractionMode(value,allowed) {
+			value = String(value || "default");
+			return allowed.indexOf(value) !== -1 ? value : "default";
+		}
+		function normalizeElementInteractionList(value) {
+			if (!Array.isArray(value)) return [];
+			const result = [];
+			for (let i = 0; i < value.length; i++) {
+				const element = String(value[i] || "").trim();
+				if (element && result.indexOf(element) === -1) result.push(element);
+			}
+			return result;
+		}
+		function getElementInteractionSettings(element) {
+			const all = settings.elementInteractions && typeof settings.elementInteractions === "object" ? settings.elementInteractions : {};
+			const configured = all[element] && typeof all[element] === "object" ? all[element] : {};
+			return {
+				overlap: normalizeElementInteractionMode(configured.overlap,["default","allow","block"]),
+				renderLayer: normalizeElementInteractionMode(configured.renderLayer,["default","top","normal"]),
+				sameElement: normalizeElementInteractionMode(configured.sameElement,["default","allow","block"]),
+				allowWith: normalizeElementInteractionList(configured.allowWith)
+			};
+		}
+		function interactionOverlapMode(pixelOrElement) {
+			const element = typeof pixelOrElement === "string" ? pixelOrElement : pixelOrElement && pixelOrElement.element;
+			return element ? getElementInteractionSettings(element).overlap : "default";
+		}
+		function interactionRenderLayer(pixelOrElement) {
+			const element = typeof pixelOrElement === "string" ? pixelOrElement : pixelOrElement && pixelOrElement.element;
+			return element ? getElementInteractionSettings(element).renderLayer : "default";
+		}
+		function interactionSameElementMode(pixelOrElement) {
+			const element = typeof pixelOrElement === "string" ? pixelOrElement : pixelOrElement && pixelOrElement.element;
+			return element ? getElementInteractionSettings(element).sameElement : "default";
+		}
+		function interactionAllowWith(pixelOrElement) {
+			const element = typeof pixelOrElement === "string" ? pixelOrElement : pixelOrElement && pixelOrElement.element;
+			return element ? getElementInteractionSettings(element).allowWith : [];
+		}
+function pixelFlag(pixel,flag) {
+			if (!pixel) return false;
+			if (pixel[flag] !== undefined) return pixel[flag] === true;
+			return elementFlag(pixel.element,flag);
+		}
+		function isAlwaysOverlayPixel(pixel) {
+			const layer = interactionRenderLayer(pixel);
+			if (layer === "top") return true;
+			if (layer === "normal") return false;
+			return pixelFlag(pixel,"alwaysOverlay");
+		}
+		function isNonBlockingPixel(pixel) {
+			const mode = interactionOverlapMode(pixel);
+			if (mode === "allow") return true;
+			if (mode === "block") return false;
+			return pixelFlag(pixel,"nonBlocking");
+		}
+		function isEraseProtectedPixel(pixel) {
+			return pixelFlag(pixel,"eraseProtected");
+		}
+		function isCivilizedHumanPixel(pixel) {
+			return !!(pixel && (pixel.element === "civ_body" || pixel.element === "civ_head" || pixel.element === "civ_child"));
+		}
+		function civilizedHumansCanOverlap(first,second) {
+			return isCivilizedHumanPixel(first) && isCivilizedHumanPixel(second);
+		}
+		function pixelsCanOverlap(first,second) {
+			if (!first || !second || first === second) return true;
+			const firstSettings = getElementInteractionSettings(first.element);
+			const secondSettings = getElementInteractionSettings(second.element);
+			if (firstSettings.overlap === "block" || secondSettings.overlap === "block") return false;
+			if (first.element === second.element && (firstSettings.sameElement === "block" || secondSettings.sameElement === "block")) return false;
+			if (firstSettings.overlap === "allow" || secondSettings.overlap === "allow") return true;
+			if (first.element === second.element && (firstSettings.sameElement === "allow" || secondSettings.sameElement === "allow")) return true;
+			if (firstSettings.allowWith.indexOf(second.element) !== -1 || secondSettings.allowWith.indexOf(first.element) !== -1) return true;
+			if (pixelFlag(first,"nonBlocking") || pixelFlag(second,"nonBlocking")) return true;
+			if (civilizedHumansCanOverlap(first,second)) return true;
+			if (isCreaturePixel(first) && isPassableVegetationPixel(second)) return true;
+			if (isCreaturePixel(second) && isPassableVegetationPixel(first)) return true;
+			return false;
+		}
+		function requiresOverlayStorageElement(element) {
+			const configured = getElementInteractionSettings(element);
+			return configured.renderLayer === "top" || configured.overlap === "allow" ||
+				(configured.renderLayer !== "normal" && elementFlag(element,"alwaysOverlay")) ||
+				(configured.overlap !== "block" && elementFlag(element,"nonBlocking"));
+		}
+		function requiresOverlayStoragePixel(pixel) {
+			return isAlwaysOverlayPixel(pixel) || isNonBlockingPixel(pixel);
+		}
+		function normalizeOverlayExclusiveGroup(value) {
+			if (value === true) return "default";
+			if (typeof value === "string" || typeof value === "number") {
+				const normalized = String(value).trim();
+				return normalized || null;
+			}
+			return null;
+		}
+		function getElementOverlayExclusiveGroup(element) {
+			const info = elements[element];
+			if (!info) return null;
+			const configured = info.exclusiveOverlayGroup !== undefined ? info.exclusiveOverlayGroup : (info.properties && info.properties.exclusiveOverlayGroup);
+			if (configured !== undefined) return normalizeOverlayExclusiveGroup(configured);
+			if (elementFlag(element,"alwaysOverlay") && elementFlag(element,"isBuildingCore")) return "buildingCore";
+			return null;
+		}
+		function getOverlayExclusiveGroup(pixel) {
+			if (!pixel) return null;
+			if (pixel.exclusiveOverlayGroup !== undefined) return normalizeOverlayExclusiveGroup(pixel.exclusiveOverlayGroup);
+			const info = elements[pixel.element];
+			const configured = info && (info.exclusiveOverlayGroup !== undefined ? info.exclusiveOverlayGroup : (info.properties && info.properties.exclusiveOverlayGroup));
+			if (configured !== undefined) return normalizeOverlayExclusiveGroup(configured);
+			if (isAlwaysOverlayPixel(pixel) && pixelFlag(pixel,"isBuildingCore")) return "buildingCore";
+			return null;
+		}
+		function getExclusiveOverlayConflict(pixel,x,y) {
+			const group = getOverlayExclusiveGroup(pixel);
+			if (!group) return null;
+			const pixels = getPixelsAt(x,y);
+			for (let i = 0; i < pixels.length; i++) {
+				const other = pixels[i];
+				if (other !== pixel && getOverlayExclusiveGroup(other) === group) return other;
+			}
+			return null;
+		}
+		function refreshOverlayExclusiveConflicts(x,y) {
+			const pixelsAtCell = getPixelsAt(x,y);
+			const groups = new Map();
+			for (let i = 0; i < pixelsAtCell.length; i++) {
+				const group = getOverlayExclusiveGroup(pixelsAtCell[i]);
+				if (!group) {
+					delete pixelsAtCell[i]._legacyExclusiveConflict;
+					continue;
+				}
+				if (!groups.has(group)) groups.set(group,[]);
+				groups.get(group).push(pixelsAtCell[i]);
+			}
+			for (const pixels of groups.values()) {
+				for (let i = 0; i < pixels.length; i++) {
+					if (pixels.length > 1) pixels[i]._legacyExclusiveConflict = true;
+					else delete pixels[i]._legacyExclusiveConflict;
+				}
+			}
+		}
+		function getOverlapCell(x,y,create=false) {
+			if (!overlapMap[x]) {
+				if (!create) return null;
+				overlapMap[x] = [];
+			}
+			if (!overlapMap[x][y] && create) overlapMap[x][y] = new Set();
+			return overlapMap[x][y] || null;
+		}
+		function getOverlayPixels(x,y) {
+			const cell = getOverlapCell(x,y);
+			if (!cell) return [];
+			return Array.from(cell).filter(pixel => pixel && !pixel.del);
+		}
+		function getPixelsAt(x,y) {
+			if (outOfBounds(x,y)) return [];
+			const result = [];
+			if (pixelMap[x] && pixelMap[x][y] && !pixelMap[x][y].del) result.push(pixelMap[x][y]);
+			return result.concat(getOverlayPixels(x,y));
+		}
+		function getTopErasablePixelAt(x,y) {
+			const pixels = getPixelsAt(x,y);
+			for (let i = pixels.length - 1; i >= 0; i--) {
+				if (!isEraseProtectedPixel(pixels[i])) return pixels[i];
+			}
+			return null;
+		}
+		function getProtectedEraseActionPixelAt(x,y) {
+			const pixels = getPixelsAt(x,y);
+			for (let i = pixels.length - 1; i >= 0; i--) {
+				const pixel = pixels[i];
+				const info = elements[pixel.element];
+				if (isEraseProtectedPixel(pixel) && pixelFlag(pixel,"isBuildingCore") && info && typeof info.onErase === "function") return pixel;
+			}
+			return null;
+		}
+		function getSolidPixelsAt(x,y) {
+			return getPixelsAt(x,y).filter(pixel => {
+				const info = elements[pixel.element];
+				return info && info.state === "solid" && !isNonBlockingPixel(pixel);
+			});
+		}
+		function getPixelByElement(x,y,element) {
+			const pixels = getPixelsAt(x,y);
+			for (let i = 0; i < pixels.length; i++) {
+				if (pixels[i].element === element) return pixels[i];
+			}
+			return null;
+		}
+		function getInteractionConflictAt(pixel,x,y,ignoreRelation,ignorePixels) {
+			if (!pixel || outOfBounds(x,y)) return null;
+			const group = getOverlayExclusiveGroup(pixel);
+			const pixels = getPixelsAt(x,y);
+			for (let i = 0; i < pixels.length; i++) {
+				const other = pixels[i];
+				if (!other || other === pixel || other.del) continue;
+				if (ignorePixels && ignorePixels.has(other)) continue;
+				if (!ignorePixels && ignoreRelation !== undefined && other._r === ignoreRelation) continue;
+				if (group && getOverlayExclusiveGroup(other) === group) return other;
+				if (!pixelsCanOverlap(pixel,other)) return other;
+			}
+			return null;
+		}
+		function canPixelShareCell(pixel,x,y,ignoreRelation,ignorePixels) {
+			return !getInteractionConflictAt(pixel,x,y,ignoreRelation,ignorePixels);
+		}
+		function getBlockingOverlay(x,y,ignoreRelation,movingPixel,ignorePixels) {
+			const pixels = getOverlayPixels(x,y);
+			for (let i = 0; i < pixels.length; i++) {
+				if (pixels[i] === movingPixel) continue;
+				if (ignorePixels && ignorePixels.has(pixels[i])) continue;
+				if (!ignorePixels && ignoreRelation !== undefined && pixels[i]._r === ignoreRelation) continue;
+				if (movingPixel && movingPixel._interactionRelocating && x === movingPixel.x && y === movingPixel.y) continue;
+				if (movingPixel ? pixelsCanOverlap(movingPixel,pixels[i]) : isNonBlockingPixel(pixels[i])) continue;
+				return pixels[i];
+			}
+			return null;
+		}
+		function canCreatureOccupy(pixel,x,y,ignoreRelation) {
+			if (outOfBounds(x,y) || getBlockingOverlay(x,y,ignoreRelation,pixel)) return false;
+			const base = pixelMap[x][y];
+			return !base || pixelsCanOverlap(pixel,base);
+		}
+		function addPixelToOverlap(pixel,x,y) {
+			const cell = getOverlapCell(x,y,true);
+			cell.add(pixel);
+			pixel.x = x;
+			pixel.y = y;
+			pixel._overlap = true;
+			delete pixel._overlapMustExit;
+			refreshOverlayExclusiveConflicts(x,y);
+			return true;
+		}
+		function promoteOverlapPixel(x,y) {
+			if (!pixelMap[x] || pixelMap[x][y] !== undefined) return null;
+			const cell = getOverlapCell(x,y);
+			if (!cell) return null;
+			for (const pixel of cell) {
+				if (!pixel || pixel.del) {
+					cell.delete(pixel);
+					continue;
+				}
+				if (!requiresOverlayStoragePixel(pixel)) {
+					pixel._overlapMustExit = true;
+				}
+			}
+			if (cell.size === 0) overlapMap[x][y] = undefined;
+			else refreshOverlayExclusiveConflicts(x,y);
+			return null;
+		}
+		function detachPixelFromGrid(pixel,promote=true) {
+			if (!pixel) return false;
+			const x = pixel.x;
+			const y = pixel.y;
+			let detached = false;
+			const cell = getOverlapCell(x,y);
+			if (cell && cell.delete(pixel)) {
+				detached = true;
+				if (cell.size === 0) overlapMap[x][y] = undefined;
+				else refreshOverlayExclusiveConflicts(x,y);
+			}
+			if (pixelMap[x] && pixelMap[x][y] === pixel) {
+				pixelMap[x][y] = undefined;
+				detached = true;
+				if (promote) promoteOverlapPixel(x,y);
+			}
+			delete pixel._overlap;
+			return detached;
+		}
+		function attachPixelToGrid(pixel,x,y,forceOverlay=false,allowLegacyExclusiveConflict=false) {
+			if (outOfBounds(x,y)) return false;
+			const conflict = getInteractionConflictAt(pixel,x,y,pixel._r);
+			const legacyBaseConflict = conflict && conflict === pixelMap[x][y] && pixelFlag(pixel,"alwaysOverlay") && interactionRenderLayer(pixel) === "default" && interactionOverlapMode(pixel) !== "block" && interactionOverlapMode(conflict) !== "block";
+			if (conflict && !legacyBaseConflict && !(allowLegacyExclusiveConflict && getOverlayExclusiveGroup(pixel) && getOverlayExclusiveGroup(conflict) === getOverlayExclusiveGroup(pixel))) return false;
+			if (forceOverlay || requiresOverlayStoragePixel(pixel)) {
+				return addPixelToOverlap(pixel,x,y);
+			}
+			const base = pixelMap[x][y];
+			if (!base) {
+				pixel.x = x;
+				pixel.y = y;
+				delete pixel._overlap;
+				delete pixel._overlapMustExit;
+				pixelMap[x][y] = pixel;
+				return true;
+			}
+			return addPixelToOverlap(pixel,x,y);
+		}
+		function enforceAlwaysOverlayStorage(pixel,allowLegacyExclusiveConflict=false) {
+			if (!pixel || pixel.del || !requiresOverlayStoragePixel(pixel)) return false;
+			if (pixel._overlap) {
+				if (getExclusiveOverlayConflict(pixel,pixel.x,pixel.y) && !(allowLegacyExclusiveConflict || pixel._legacyExclusiveConflict)) return false;
+				delete pixel._overlapMustExit;
+				refreshOverlayExclusiveConflicts(pixel.x,pixel.y);
+				return true;
+			}
+			const x = pixel.x;
+			const y = pixel.y;
+			detachPixelFromGrid(pixel,false);
+			if (!attachPixelToGrid(pixel,x,y,true,allowLegacyExclusiveConflict || pixel._legacyExclusiveConflict)) {
+				pixel.x = x;
+				pixel.y = y;
+				delete pixel._overlap;
+				pixelMap[x][y] = pixel;
+				return false;
+			}
+			promoteOverlapPixel(x,y);
+			return true;
+		}
+		function canTransientOverlayRemain(pixel,x,y) {
+			if (!pixel || pixel.del || requiresOverlayStoragePixel(pixel)) return false;
+			const base = pixelMap[x] && pixelMap[x][y];
+			return !!(base && pixelsCanOverlap(pixel,base) && !getBlockingOverlay(x,y,pixel._r,pixel));
+		}
+		function validateOverlaysAt(x,y) {
+			const overlays = getOverlayPixels(x,y);
+			for (let i = 0; i < overlays.length; i++) {
+				const overlay = overlays[i];
+				if (requiresOverlayStoragePixel(overlay) || canTransientOverlayRemain(overlay,x,y)) delete overlay._overlapMustExit;
+				else overlay._overlapMustExit = true;
+			}
+		}
+		function clearPixelOverlaySemantics(pixel) {
+			const flags = ["alwaysOverlay","nonBlocking","eraseProtected","isBuildingCore","exclusiveOverlayGroup","_legacyExclusiveConflict"];
+			for (let i = 0; i < flags.length; i++) delete pixel[flags[i]];
+		}
+		function reconcilePixelStorageAfterChange(pixel) {
+			if (!pixel || pixel.del) return false;
+			const x = pixel.x;
+			const y = pixel.y;
+			if (requiresOverlayStoragePixel(pixel)) {
+				return enforceAlwaysOverlayStorage(pixel,pixel._legacyExclusiveConflict === true);
+			}
+			if (pixel._overlap) {
+				detachPixelFromGrid(pixel,false);
+				if (!attachPixelToGrid(pixel,x,y,false)) {
+					addPixelToOverlap(pixel,x,y);
+					pixel._overlapMustExit = true;
+					return true;
+				}
+			}
+			validateOverlaysAt(x,y);
+			return true;
+		}
+		function pixelHasInteractionConflict(pixel) {
+			if (!pixel || pixel.del) return false;
+			const pixels = getPixelsAt(pixel.x,pixel.y);
+			for (let i = 0; i < pixels.length; i++) {
+				if (pixels[i] !== pixel && !pixelsCanOverlap(pixel,pixels[i])) return true;
+			}
+			return false;
+		}
+		function movePixelOrRelationToNearestValid(pixel) {
+			if (!pixel || pixel.del) return false;
+			const relation = pixel._r !== undefined ? getRelation(pixel._r) : null;
+			const originX = pixel.x;
+			const originY = pixel.y;
+			const maximumRadius = Math.max(width,height);
+			for (let radius = 1; radius <= maximumRadius; radius++) {
+				for (let dx = -radius; dx <= radius; dx++) {
+					for (let dy = -radius; dy <= radius; dy++) {
+						if (Math.max(Math.abs(dx),Math.abs(dy)) !== radius) continue;
+						const x = originX + dx;
+						const y = originY + dy;
+						if (outOfBounds(x,y)) continue;
+						const relocating = relation ? relation.p.filter(part => part && !part.del) : [pixel];
+						relocating.forEach(part => { part._interactionRelocating = true; });
+						let moved;
+						try { moved = relation ? tryMoveRelation(relation,dx,dy,true) : movePixel(pixel,x,y); }
+						finally { relocating.forEach(part => { delete part._interactionRelocating; }); }
+						if (moved && !pixelHasInteractionConflict(pixel)) return true;
+					}
+				}
+			}
+			pixel._overlapMustExit = true;
+			return false;
+		}
+		function reconcileElementInteractionSettings(element) {
+			const handledRelations = new Set();
+			const matching = currentPixels.filter(pixel => pixel && !pixel.del && pixel.element === element);
+			for (let i = 0; i < matching.length; i++) reconcilePixelStorageAfterChange(matching[i]);
+			for (let i = 0; i < matching.length; i++) {
+				const pixel = matching[i];
+				if (!pixelHasInteractionConflict(pixel)) continue;
+				if (pixel._r !== undefined) {
+					if (handledRelations.has(pixel._r)) continue;
+					handledRelations.add(pixel._r);
+				}
+				movePixelOrRelationToNearestValid(pixel);
+			}
+			return matching.length;
+		}
+		function setElementInteractionSettings(element,patch) {
+			if (!element || !patch || typeof patch !== "object") return false;
+			if (!settings.elementInteractions || typeof settings.elementInteractions !== "object") settings.elementInteractions = {};
+			const current = getElementInteractionSettings(element);
+			const next = {
+				overlap: patch.overlap === undefined ? current.overlap : normalizeElementInteractionMode(patch.overlap,["default","allow","block"]),
+				renderLayer: patch.renderLayer === undefined ? current.renderLayer : normalizeElementInteractionMode(patch.renderLayer,["default","top","normal"]),
+				sameElement: patch.sameElement === undefined ? current.sameElement : normalizeElementInteractionMode(patch.sameElement,["default","allow","block"]),
+				allowWith: patch.allowWith === undefined ? current.allowWith : normalizeElementInteractionList(patch.allowWith)
+			};
+			if (next.overlap === "default" && next.renderLayer === "default" && next.sameElement === "default" && next.allowWith.length === 0) delete settings.elementInteractions[element];
+			else settings.elementInteractions[element] = next;
+			reconcileElementInteractionSettings(element);
+			if (typeof saveSettings === "function") saveSettings();
+			return true;
+		}
+		function resetElementInteractionSettings(element) {
+			return setElementInteractionSettings(element,{overlap:"default",renderLayer:"default",sameElement:"default",allowWith:[]});
+		}
+		function isPixelStored(pixel) {
+			if (!pixel || pixel.del) return false;
+			if (pixelMap[pixel.x] && pixelMap[pixel.x][pixel.y] === pixel) return true;
+			const cell = getOverlapCell(pixel.x,pixel.y);
+			return !!(cell && cell.has(pixel));
+		}
+		function deletePixelObject(pixel) {
+			if (!pixel || pixel.del) return false;
+			pixel.del = true;
+			if (elements[pixel.element] && elements[pixel.element].onDelete !== undefined) {
+				elements[pixel.element].onDelete(pixel);
+			}
+			detachPixelFromGrid(pixel,true);
+			return true;
+		}
+		function erasePixelObject(pixel) {
+			if (!pixel || pixel.del || isEraseProtectedPixel(pixel)) return false;
+			return deletePixelObject(pixel);
+		}
+		function erasePixelAt(x,y,filter) {
+			const protectedPixel = getProtectedEraseActionPixelAt(x,y);
+			const protectedMatchesFilter = protectedPixel && (!filter || filter === protectedPixel.element || filter.split(",").includes(protectedPixel.element));
+			if (protectedMatchesFilter) {
+				elements[protectedPixel.element].onErase(protectedPixel);
+				return protectedPixel;
+			}
+			const pixel = getTopErasablePixelAt(x,y);
+			if (!pixel) return null;
+			if (filter && filter !== pixel.element && !filter.split(",").includes(pixel.element)) return null;
+			return erasePixelObject(pixel) ? pixel : null;
+		}
+		function deletePixelsAt(x,y) {
+			const pixels = getPixelsAt(x,y);
+			let deleted = 0;
+			for (let i = 0; i < pixels.length; i++) {
+				if (erasePixelObject(pixels[i])) deleted++;
+			}
+			return deleted;
+		}
+		[
+			"plant","grass","sapling","pinecone","tree_branch","evergreen","cactus",
+			"vine","bamboo_plant","bamboo","wheat","corn","flower","pistil"
+		].forEach(registerPassableVegetation);
+		[
+			"human","body","head","civ_body","civ_head","civ_child","civilized_human",
+			"bird","rat","frog","tadpole","fish","bee","fly","firefly","termite","ant",
+			"worm","flea","snail","slug","crab","lobster","butterfly","moth","grasshopper"
+		].forEach(registerCreatureElement);
 		//currentID = 0;
 		// Pixel class, with attributes such as x, y, and element
 		class Pixel {
-			constructor(x, y, element) {
+			constructor(x, y, element, attach=true) {
 				this.x = x;
 				this.y = y;
 				if (!elements[element]) {
@@ -14628,7 +15179,7 @@ function langKey(key,fallback,template) {
 						}
 					}
 				}
-				pixelMap[x][y] = this;
+				if (attach) pixelMap[x][y] = this;
 				if (airTemp !== 20) {pixelTempCheck(this); pixelTempCheck(this)}
 			}
 		}
@@ -14666,50 +15217,93 @@ function langKey(key,fallback,template) {
 			return pixelMap[x][y] === undefined;
 		}
 		function canMove(pixel,x,y) {
-			if (isEmpty(x,y)) {
-				return true;
-			}
+			if (!pixel || pixel.del || outOfBounds(x,y)) return false;
+			if (pixel.x === x && pixel.y === y) return true;
+			if (getBlockingOverlay(pixel.x,pixel.y,pixel._r,pixel)) return false;
+			return canPixelShareCell(pixel,x,y,pixel._r);
 		}
 		function movePixel(pixel,x,y,leaveBehind=null) {
-			// Delete the pixel from the old position
-			pixelMap[pixel.x][pixel.y] = undefined;
-			if (leaveBehind !== null) { createPixel(leaveBehind,pixel.x,pixel.y); }
-			pixel.x = x;
-			pixel.y = y;
-			pixelMap[x][y] = pixel;
+			if (!pixel || pixel.del || outOfBounds(x,y)) return false;
+			const oldX = pixel.x;
+			const oldY = pixel.y;
+			if (x === oldX && y === oldY) return true;
+			const oldWasOverlap = pixel._overlap === true;
+			const oldLegacyExclusiveConflict = pixel._legacyExclusiveConflict === true;
+			if (!pixel._overlap && pixelMap[oldX][oldY] === pixel && getBlockingOverlay(oldX,oldY,pixel._r,pixel)) return false;
+			if (pixel._overlap && getBlockingOverlay(oldX,oldY,pixel._r,pixel)) return false;
+			if (!canPixelShareCell(pixel,x,y,pixel._r)) return false;
+			let targetBase = pixelMap[x][y];
+			if (targetBase && targetBase !== pixel && isNonBlockingPixel(targetBase)) {
+				enforceAlwaysOverlayStorage(targetBase);
+				targetBase = pixelMap[x][y];
+			}
+			const overlayStorage = requiresOverlayStoragePixel(pixel);
+			const canOverlay = overlayStorage || !!targetBase;
+			detachPixelFromGrid(pixel,true);
+			if (!attachPixelToGrid(pixel,x,y,canOverlay)) {
+				attachPixelToGrid(pixel,oldX,oldY,oldWasOverlap && pixelMap[oldX][oldY] !== undefined,oldLegacyExclusiveConflict);
+				return false;
+			}
+			if (leaveBehind !== null && pixelMap[oldX][oldY] === undefined) { createPixel(leaveBehind,oldX,oldY); }
+			return true;
 		}
 		function clonePixel(pixel,x,y) {
 			createPixel(pixel.element,x,y);
 		}
-		function createPixel(element,x,y) {
+		function applyInitialPixelProperties(pixel,properties) {
+			if (!properties || typeof properties !== "object") return pixel;
+			for (const key in properties) {
+				if (key === "x" || key === "y" || key === "element" || key === "del" || key === "_overlap" || key === "_overlapMustExit" || key === "_legacyExclusiveConflict") continue;
+				const value = properties[key];
+				pixel[key] = value && typeof value === "object" ? JSON.parse(JSON.stringify(value)) : value;
+			}
+			return pixel;
+		}
+		function createPixel(element,x,y,initialProperties) {
 			if (Array.isArray(element)) {
 				element = element[Math.floor(Math.random()*element.length)];
 			}
-			let placed = currentPixels.push(new Pixel(x, y, element));
-			if (!placed) {return};
-			if (currentPixels.length > maxPixelCount || !element) {
-				currentPixels[currentPixels.length-1].del = true;
+			if (!element || currentPixels.length >= maxPixelCount || !pixelMap[x]) return null;
+			const newPixel = applyInitialPixelProperties(new Pixel(x,y,element,false),initialProperties);
+			if (typeof inheritTreeIdentity === "function" && currentlyTickingPixel && currentlyTickingPixel.treeLineage && !newPixel.treeLineage) {
+				inheritTreeIdentity(currentlyTickingPixel,newPixel);
 			}
-			else if (elements[element] && elements[element].onPlace !== undefined) {
-				elements[element].onPlace(currentPixels[currentPixels.length-1])
+			const targetBase = pixelMap[x][y];
+			const overlayStorage = requiresOverlayStoragePixel(newPixel);
+			if (getExclusiveOverlayConflict(newPixel,x,y)) return null;
+			const legacyBaseConflict = targetBase && pixelFlag(newPixel,"alwaysOverlay") && interactionRenderLayer(newPixel) === "default" && interactionOverlapMode(newPixel) !== "block" && interactionOverlapMode(targetBase) !== "block";
+			if (!legacyBaseConflict && !canPixelShareCell(newPixel,x,y)) return null;
+			if (!attachPixelToGrid(newPixel,x,y,overlayStorage || !!targetBase)) return null;
+			currentPixels.push(newPixel);
+			if (elements[element] && elements[element].onPlace !== undefined) {
+				elements[element].onPlace(newPixel)
 			}
+			if (!newPixel.del) enforceAlwaysOverlayStorage(newPixel);
 			checkUnlock(element);
+			return newPixel.del ? null : newPixel;
+		}
+		function createDetachedPixel(element,x,y) {
+			if (Array.isArray(element)) element = element[Math.floor(Math.random()*element.length)];
+			const pixel = new Pixel(x,y,element,false);
+			currentPixels.push(pixel);
+			if (currentPixels.length > maxPixelCount || !element) pixel.del = true;
+			return pixel;
 		}
 		function deletePixel(x,y) {
-			// remove pixelMap[x][y] from currentPixels
-			let pixel = pixelMap[x][y];
-			let i = currentPixels.indexOf(pixel);
-			// if (i !== -1) currentPixels.splice(i,1);
-			// if (i !== -1) currentPixels.splice(currentPixels.indexOf(pixel),1);
-			if (pixel) {
-				pixel.del = true;
-				if (elements[pixel.element].onDelete !== undefined) {
-					elements[pixel.element].onDelete(pixel)
-				}
+			let pixel = null;
+			if (currentlyTickingPixel && currentlyTickingPixel.x === x && currentlyTickingPixel.y === y && currentlyTickingPixel._overlap) {
+				pixel = currentlyTickingPixel;
 			}
-			pixelMap[x][y] = undefined;
+			else if (pixelMap[x] && !isEraseProtectedPixel(pixelMap[x][y])) pixel = pixelMap[x][y];
+			if (!pixel) {
+				const overlays = getOverlayPixels(x,y);
+				pixel = overlays.find(overlay => !isEraseProtectedPixel(overlay)) || null;
+			}
+			return erasePixelObject(pixel);
 		}
 		function swapPixels(pixel1,pixel2) {
+			if (!pixel1 || !pixel2 || pixel1.del || pixel2.del || pixel1._overlap || pixel2._overlap) return false;
+			if (getBlockingOverlay(pixel1.x,pixel1.y) || getBlockingOverlay(pixel2.x,pixel2.y)) return false;
 			const tempX = pixel1.x;
 			const tempY = pixel1.y;
 			pixel1.x = pixel2.x;
@@ -14718,13 +15312,19 @@ function langKey(key,fallback,template) {
 			pixel2.y = tempY;
 			pixelMap[pixel1.x][pixel1.y] = pixel1;
 			pixelMap[pixel2.x][pixel2.y] = pixel2;
+			return true;
 		}
 
 		function changePixel(pixel,element,changetemp=true) {
 			if (!element) { return }
+			const oldExclusiveGroup = getOverlayExclusiveGroup(pixel);
+			const oldLegacyExclusiveConflict = pixel._legacyExclusiveConflict === true;
+			const newExclusiveGroup = getElementOverlayExclusiveGroup(elements[element] ? element : "unknown");
+			if (newExclusiveGroup && newExclusiveGroup !== oldExclusiveGroup && getExclusiveOverlayConflict({element:element},pixel.x,pixel.y)) return false;
 			if (elements[pixel.element].onChange !== undefined) {
 				elements[pixel.element].onChange(pixel,element);
 			}
+			clearPixelOverlaySemantics(pixel);
 			if (!elements[element]) {
 				pixel.invalidElement = element;
 				element = "unknown"
@@ -14806,7 +15406,10 @@ function langKey(key,fallback,template) {
 			if (elements[element].onPlace !== undefined) {
 				elements[element].onPlace(pixel);
 			}
+			if (oldLegacyExclusiveConflict && oldExclusiveGroup && oldExclusiveGroup === getOverlayExclusiveGroup(pixel)) pixel._legacyExclusiveConflict = true;
+			if (!pixel.del && !reconcilePixelStorageAfterChange(pixel)) return false;
 			checkUnlock(element);
+			return pixel;
 		}
 		function reactPixels(pixel1,pixel2) {
 			const r = elements[pixel1.element].reactions[pixel2.element];
@@ -14843,7 +15446,7 @@ function langKey(key,fallback,template) {
 				} else { elem1 = r.elem1; }
 				
 				if (elem1 === null) {
-					deletePixel(pixel1.x,pixel1.y);
+					deletePixelObject(pixel1);
 				}
 				else {
 					changePixel(pixel1,elem1);
@@ -14871,7 +15474,7 @@ function langKey(key,fallback,template) {
 				} else { elem2 = r.elem2; }
 
 				if (elem2 === null) {
-					deletePixel(pixel2.x,pixel2.y);
+					deletePixelObject(pixel2);
 				}
 				else {
 					changePixel(pixel2,elem2);
@@ -14928,23 +15531,29 @@ function langKey(key,fallback,template) {
 			if (outOfBounds(x,y)) return null;
 			return pixelMap[x][y] || null;
 		}
-		function tryCreate(element, x, y, replace) {
-			if (!isEmpty(x,y)) {
-				if (replace && !outOfBounds(x,y)) {
-					deletePixel(x,y);
+		function tryCreate(element, x, y, replace, initialProperties) {
+			if (Array.isArray(element)) element = element[Math.floor(Math.random()*element.length)];
+			if (!element || outOfBounds(x,y) || !pixelMap[x] || currentPixels.length >= maxPixelCount) return null;
+			const preview = applyInitialPixelProperties({element:element},initialProperties);
+			const overlayStorage = requiresOverlayStoragePixel(preview);
+			if (getExclusiveOverlayConflict(preview,x,y)) return null;
+			const targetBase = pixelMap[x] && pixelMap[x][y];
+			const pairOverlay = targetBase && canPixelShareCell(preview,x,y);
+			const pixelsHere = getPixelsAt(x,y);
+			if (replace && pixelsHere.length && !outOfBounds(x,y)) {
+				if (targetBase && isEraseProtectedPixel(targetBase) && !overlayStorage && !pairOverlay) return null;
+				const protectedOverlays = getOverlayPixels(x,y).filter(pixel => isEraseProtectedPixel(pixel));
+				for (let i = 0; i < protectedOverlays.length; i++) {
+					if (!pixelsCanOverlap(preview,protectedOverlays[i])) return null;
 				}
-				else return null;
+				if (!pairOverlay) deletePixelsAt(x,y);
 			}
-			createPixel(element, x, y);
-			return pixelMap[x][y];
+			else if (pixelsHere.length && !canPixelShareCell(preview,x,y)) return null;
+			return createPixel(element,x,y,initialProperties);
 		}
 		function tryDelete(x, y) {
-			if (!isEmpty(x,y,true)) {
-				const pixel = pixelMap[x][y];
-				deletePixel(x,y);
-				return pixel;
-			}
-			return null;
+			const pixel = getTopErasablePixelAt(x,y);
+			return erasePixelObject(pixel) ? pixel : null;
 		}
 		function chargePixel(pixel,amount=1) {
 			const con = elements[pixel.element].conduct;
@@ -15052,26 +15661,38 @@ function langKey(key,fallback,template) {
 					}
 				}
 			}
+			const oob = outOfBounds(nx,ny);
+			if (oob === true) return false;
+			if (pixel.x === nx && pixel.y === ny) return true;
 			if (pixel._r !== undefined) {
 				let relation = getRelation(pixel._r);
-				if (relation.lastMove === pixelTicks) return;
+				if (relation.lastMove === pixelTicks) return false;
 				let dirX = Math.sign(nx - pixel.x);
 				let dirY = Math.sign(ny - pixel.y);
-				tryMoveRelation(relation, dirX, dirY);
-				return;
+				return tryMoveRelation(relation, dirX, dirY);
 			}
 			const info = elements[pixel.element];
-			const oob = outOfBounds(nx,ny);
-			if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
-				movePixel(pixel,nx,ny,leaveBehind);
-				return true;
+			if (requiresOverlayStoragePixel(pixel)) return movePixel(pixel,nx,ny,leaveBehind);
+			const overlapBlocker = getBlockingOverlay(nx,ny,pixel._r,pixel);
+			if (overlapBlocker) {
+				const blockerInfo = elements[overlapBlocker.element];
+				if (info.reactions && info.reactions[overlapBlocker.element] && reactPixels(pixel,overlapBlocker)) return true;
+				if (blockerInfo.reactions && blockerInfo.reactions[pixel.element] && blockerInfo.reactions[pixel.element].oneway !== true && reactPixels(overlapBlocker,pixel)) return true;
+				if (info.onCollide !== undefined) info.onCollide(pixel,overlapBlocker);
+				return false;
 			}
-			
+			if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
+				return movePixel(pixel,nx,ny,leaveBehind);
+			}
+			const basePixel = pixelMap[nx][ny];
+			if (basePixel && canPixelShareCell(pixel,nx,ny,pixel._r)) {
+				return movePixel(pixel,nx,ny,leaveBehind);
+			}
+
 			const infoReactions = info.reactions;
-			if (oob === true) return false;
-			
+
 			// Reactions
-			const newPixel = pixelMap[nx][ny];
+			const newPixel = basePixel;
 			const newElement = newPixel.element;
 			let rr1 = false;
 			if (infoReactions !== undefined && infoReactions[newElement] !== undefined) {
@@ -15097,8 +15718,7 @@ function langKey(key,fallback,template) {
 					if (validDensitySwaps[info.state][newPixelInfo.state] !== undefined && info.density >= newPixelInfo.density && newPixel.skip !== true) {
 						// chance depending on the difference in density
 						if (Math.random() < (info.density - newPixelInfo.density)/(info.density + newPixelInfo.density)) {
-							swapPixels(pixel,newPixel);
-							return true;
+							if (swapPixels(pixel,newPixel)) return true;
 						}
 					}
 				}
@@ -15110,8 +15730,7 @@ function langKey(key,fallback,template) {
 				}
 			}
 			else if (info.isGas !== true && validDensitySwaps[info.state][info.state] !== undefined && Math.random() < 1/(currentPixels.length/10)) {
-				swapPixels(pixel,newPixel);
-				return true;
+				if (swapPixels(pixel,newPixel)) return true;
 			}
 			
 			return false;
@@ -15208,83 +15827,173 @@ function langKey(key,fallback,template) {
 			}
 			return currentRelations[id];
 		}
+		function captureRelationMoveSnapshot(coordinates,extraPixels) {
+			const hasOwn = (object,key) => Object.prototype.hasOwnProperty.call(object,key);
+			const uniqueCoordinates = new Map();
+			for (let i = 0; i < coordinates.length; i++) {
+				const x = coordinates[i][0];
+				const y = coordinates[i][1];
+				uniqueCoordinates.set(x+","+y,[x,y]);
+			}
+			const cells = [];
+			const overlayColumns = new Map();
+			const pixels = new Set(extraPixels || []);
+			for (const coords of uniqueCoordinates.values()) {
+				const x = coords[0];
+				const y = coords[1];
+				const primaryColumn = pixelMap[x];
+				const primaryHadProperty = !!(primaryColumn && hasOwn(primaryColumn,y));
+				const primary = primaryColumn && primaryColumn[y];
+				if (primary) pixels.add(primary);
+				if (!overlayColumns.has(x)) {
+					overlayColumns.set(x,{hadProperty:hasOwn(overlapMap,x),value:overlapMap[x]});
+				}
+				const overlayColumn = overlapMap[x];
+				const overlayHadProperty = !!(overlayColumn && hasOwn(overlayColumn,y));
+				const overlayCell = overlayColumn && overlayColumn[y];
+				const overlayMembers = overlayCell instanceof Set ? Array.from(overlayCell) : null;
+				if (overlayMembers) {
+					for (let i = 0; i < overlayMembers.length; i++) pixels.add(overlayMembers[i]);
+				}
+				cells.push({x:x,y:y,primaryHadProperty:primaryHadProperty,primary:primary,overlayHadProperty:overlayHadProperty,overlayCell:overlayCell,overlayMembers:overlayMembers});
+			}
+			const pixelStates = [];
+			const trackedFields = ["_overlap","_overlapMustExit","_legacyExclusiveConflict"];
+			for (const pixel of pixels) {
+				if (!pixel) continue;
+				const fields = {};
+				for (let i = 0; i < trackedFields.length; i++) {
+					const key = trackedFields[i];
+					fields[key] = {hadProperty:hasOwn(pixel,key),value:pixel[key]};
+				}
+				pixelStates.push({pixel:pixel,x:pixel.x,y:pixel.y,fields:fields});
+			}
+			return {cells:cells,overlayColumns:overlayColumns,pixelStates:pixelStates};
+		}
+		function restoreRelationMoveSnapshot(snapshot) {
+			for (let i = 0; i < snapshot.cells.length; i++) {
+				const cell = snapshot.cells[i];
+				if (cell.primaryHadProperty) pixelMap[cell.x][cell.y] = cell.primary;
+				else delete pixelMap[cell.x][cell.y];
+				if (cell.overlayCell instanceof Set && cell.overlayMembers) {
+					cell.overlayCell.clear();
+					for (let j = 0; j < cell.overlayMembers.length; j++) cell.overlayCell.add(cell.overlayMembers[j]);
+				}
+			}
+			for (const [x,columnState] of snapshot.overlayColumns.entries()) {
+				if (!columnState.hadProperty) {
+					delete overlapMap[x];
+					continue;
+				}
+				const column = columnState.value;
+				for (let i = 0; i < snapshot.cells.length; i++) {
+					const cell = snapshot.cells[i];
+					if (cell.x !== x) continue;
+					if (cell.overlayHadProperty) column[cell.y] = cell.overlayCell;
+					else delete column[cell.y];
+				}
+				overlapMap[x] = column;
+			}
+			for (let i = 0; i < snapshot.pixelStates.length; i++) {
+				const state = snapshot.pixelStates[i];
+				state.pixel.x = state.x;
+				state.pixel.y = state.y;
+				for (const key in state.fields) {
+					const field = state.fields[key];
+					if (field.hadProperty) state.pixel[key] = field.value;
+					else delete state.pixel[key];
+				}
+			}
+		}
 		function tryMoveRelation(relation, dirX, dirY, forceTry) {
 			if (!relation.p || !relation.p.length) return false;
 			if (relation.lastMove === pixelTicks && forceTry !== true) return false;
+			const lastMoveHadProperty = Object.prototype.hasOwnProperty.call(relation,"lastMove");
+			const previousLastMove = relation.lastMove;
 			relation.lastMove = pixelTicks;
 
-			let possible = true;
-			let toDisplace = [];
+			const parts = relation.p.filter(pixel => {
+				if (pixel && !pixel.del) return true;
+				if (pixel) delete pixel._r;
+				return false;
+			});
+			relation.p = parts;
+			if (!parts.length) return false;
+			const relationId = parts[0]._r;
+			const partSet = new Set(parts);
+			const toDisplace = [];
+			const displaceSet = new Set();
+			const oldPrimarySpots = [];
+			const targetKeys = new Set();
 
-			for (let i = 0; i < relation.p.length; i++) {
-				const pixel = relation.p[i];
-				if (pixel.del) {
-					relation.p.splice(i,1);
-					i--;
-					delete pixel._r;
-					continue;
-				}
+			for (let i = 0; i < parts.length; i++) {
+				const pixel = parts[i];
 				const x = pixel.x + dirX;
 				const y = pixel.y + dirY;
-				if (outOfBounds(x,y)) {
-					possible = false;
-					break;
-				}
-				const newPixel = getPixel(x, y);
-				if (newPixel) {
-					if (pixel._r === newPixel._r) {
-						continue; //is possible
-					}
-					// // sink in liquids/gases
-					if (validDensitySwaps[elements[pixel.element].state][elements[newPixel.element].state] === true &&
-						elements[newPixel.element].density < elements[pixel.element].density
-					) {
+				if (outOfBounds(x,y)) return false;
+				if (!pixel._overlap && pixelMap[pixel.x] && pixelMap[pixel.x][pixel.y] === pixel && getBlockingOverlay(pixel.x,pixel.y,relationId,pixel,partSet)) return false;
+				targetKeys.add(x+","+y);
+				if (pixelMap[pixel.x][pixel.y] === pixel) oldPrimarySpots.push([pixel.x,pixel.y]);
+				if (getBlockingOverlay(x,y,relationId,pixel,partSet) || getExclusiveOverlayConflict(pixel,x,y)) return false;
+				const newPixel = pixelMap[x][y];
+				if (!newPixel || partSet.has(newPixel)) continue;
+				if (pixelsCanOverlap(pixel,newPixel)) continue;
+				const pixelInfo = elements[pixel.element];
+				const newPixelInfo = elements[newPixel.element];
+				if (validDensitySwaps[pixelInfo.state][newPixelInfo.state] === true && newPixelInfo.density < pixelInfo.density) {
+					if (!displaceSet.has(newPixel)) {
+						displaceSet.add(newPixel);
 						toDisplace.push(newPixel);
-						continue; //is possible
 					}
-					else if (dirY < 0 && newPixel._r === undefined && elements[newPixel.element].movable) {
-						toDisplace.push(newPixel);
-						continue; //is possible
-					}
-					possible = false;
-					break;
+					continue;
 				}
+				if (dirY < 0 && newPixel._r === undefined && newPixelInfo.movable) {
+					if (!displaceSet.has(newPixel)) {
+						displaceSet.add(newPixel);
+						toDisplace.push(newPixel);
+					}
+					continue;
+				}
+				return false;
 			}
-			if (!possible) return false;
 
-			let spots = [];
-			if (toDisplace.length !== 0) {
-				for (let i = 0; i < relation.p.length; i++) {
-					const pixel = relation.p[i];
-					spots.push([pixel.x, pixel.y]);
+			const displacementSpots = oldPrimarySpots.filter(coords => !targetKeys.has(coords[0]+","+coords[1]));
+			if (displacementSpots.length < toDisplace.length) return false;
+			const touchedCoordinates = [];
+			for (let i = 0; i < parts.length; i++) {
+				touchedCoordinates.push([parts[i].x,parts[i].y],[parts[i].x+dirX,parts[i].y+dirY]);
+			}
+			for (let i = 0; i < toDisplace.length; i++) touchedCoordinates.push([toDisplace[i].x,toDisplace[i].y]);
+			for (let i = 0; i < displacementSpots.length; i++) touchedCoordinates.push(displacementSpots[i]);
+			const snapshot = captureRelationMoveSnapshot(touchedCoordinates,parts.concat(toDisplace));
+			snapshot.lastMoveHadProperty = lastMoveHadProperty;
+			snapshot.previousLastMove = previousLastMove;
+			const abortMove = {};
+			try {
+				for (let i = 0; i < parts.length; i++) {
+					if (!detachPixelFromGrid(parts[i],false)) throw abortMove;
 				}
-			}
-			for (let i = 0; i < relation.p.length; i++) {
-				const pixel = relation.p[i];
-				pixelMap[pixel.x][pixel.y] = undefined;
-				pixel.x += dirX;
-				pixel.y += dirY;
-			}
-			for (let i = 0; i < relation.p.length; i++) {
-				const pixel = relation.p[i];
-				pixelMap[pixel.x][pixel.y] = pixel;
-			}
-			if (toDisplace.length !== 0) {
-				spots = spots.filter((coords) => {
-					return pixelMap[coords[0]][coords[1]] === undefined;
-				})
-				shuffleArray(spots);
 				for (let i = 0; i < toDisplace.length; i++) {
-					const pixel = toDisplace[i];
-					let coords = spots[i];
-					// if (!coords) break;
-					pixel.x = coords[0];
-					pixel.y = coords[1];
-					pixelMap[pixel.x][pixel.y] = pixel;
-					// movePixel(pixel, coords[0], coords[1]);
+					if (!detachPixelFromGrid(toDisplace[i],false)) throw abortMove;
 				}
+				for (let i = 0; i < parts.length; i++) {
+					if (!attachPixelToGrid(parts[i],parts[i].x+dirX,parts[i].y+dirY)) throw abortMove;
+				}
+				shuffleArray(displacementSpots);
+				for (let i = 0; i < toDisplace.length; i++) {
+					const coords = displacementSpots[i];
+					if (!attachPixelToGrid(toDisplace[i],coords[0],coords[1])) throw abortMove;
+				}
+				for (let i = 0; i < oldPrimarySpots.length; i++) promoteOverlapPixel(oldPrimarySpots[i][0],oldPrimarySpots[i][1]);
+				return true;
 			}
-			return true;
+			catch (error) {
+				restoreRelationMoveSnapshot(snapshot);
+				if (snapshot.lastMoveHadProperty) relation.lastMove = snapshot.previousLastMove;
+				else delete relation.lastMove;
+				if (error === abortMove) return false;
+				throw error;
+			}
 		}
 		function addToRelation(pixel, id) {
 			if (id === undefined) id = pixel._r;
@@ -16461,13 +17170,34 @@ behaviorRules = {
 		};
 		// version;codes;pixels;
 		basicProperties = ["x","y","color","start","origColor","temp"];
-		vitalSettings = ["abszero","airdensity","airtemp","bg","burn","clouds","events","stain","limitless"];
+		vitalSettings = ["abszero","airdensity","airtemp","bg","burn","clouds","events","stain","limitless","elementInteractions","humanSocietyPeaceMode"];
 		function uuidv4() {
 			return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
 				(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
 			);
 		}
 		function generateSave(pixelarray,saveOptions) {
+			const savingWorldMap = !pixelarray || pixelarray === pixelMap;
+			let overlayPixels = [];
+			if (savingWorldMap) {
+				overlayPixels = currentPixels.filter(pixel => pixel && !pixel.del && pixel._overlap).map(pixel => {
+					const savedPixel = JSON.parse(JSON.stringify(pixel));
+					delete savedPixel._overlap;
+					delete savedPixel._overlapMustExit;
+					delete savedPixel._legacyExclusiveConflict;
+					delete savedPixel.del;
+					delete savedPixel.start;
+					delete savedPixel.origColor;
+					if (!(elements[pixel.element].singleColor || elements[pixel.element].customColor || elements[pixel.element].forceSaveColor || pixel.painted !== undefined)) {
+						delete savedPixel.color;
+					}
+					if (savedPixel.temp !== undefined) {
+						savedPixel.temp = Math.round(savedPixel.temp);
+						if (savedPixel.temp === airTemp) delete savedPixel.temp;
+					}
+					return savedPixel;
+				});
+			}
 			if (!pixelarray) { pixelarray = pixelMap; }
 			if (!saveOptions) { saveOptions = {}; }
 			var ignoreProperties = JSON.parse(JSON.stringify(basicProperties));
@@ -16607,6 +17337,7 @@ behaviorRules = {
 				"saveConfig":saveConfig,
 				"codes":codesReverse,
 				"pixelMap":compressedMap,
+				"overlayPixels":overlayPixels,
 				"relations":relations
 			}
 		}
@@ -16708,7 +17439,7 @@ behaviorRules = {
 				}
 			}
 			let oldTps = tps;
-			tps = parseInt(saveConfig.tps)||30;
+			tps = mapLegacyTPS(saveConfig.tps);
 			resetInterval(tps);
 			// if (saveConfig.currentElement) {
 			//	 selectElement(saveConfig.currentElement||firstElement);
@@ -16750,27 +17481,51 @@ behaviorRules = {
 								pixel.element = "unknown";
 							}
 						}
-						createPixel(pixel.element,x,y);
-						// set the properties
-						for (var prop in pixel) {
-							// if (!pixelMap[x][y]) continue;
-							pixelMap[x][y][prop] = pixel[prop];
-						}
+						const loadedPixel = createPixel(pixel.element,x,y,pixel);
+						if (!loadedPixel || loadedPixel.del) continue;
 						if (saveElementMigrations[element]) {
-							saveElementMigrations[element](pixelMap[x][y], version);
+							saveElementMigrations[element](loadedPixel, version);
 							if (pixel.color === undefined && pixel.element === "unknown") {
-								pixelMap[x][y].color = pixelColorPick(pixelMap[x][y]);
+								loadedPixel.color = pixelColorPick(loadedPixel);
 							}
 						}
-						if (pixel._r && currentRelations[pixel._r]) {
-							let relation = currentRelations[pixel._r];
+						enforceAlwaysOverlayStorage(loadedPixel);
+						if (loadedPixel._r && currentRelations[loadedPixel._r]) {
+							let relation = currentRelations[loadedPixel._r];
 							if (!relation.p) relation.p = [];
-							relation.p.push(pixelMap[x][y]);
+							relation.p.push(loadedPixel);
 						}
 					}
 					else {
 						pixelarray[x][y] = undefined;
 					}
+				}
+			}
+			const savedOverlays = Array.isArray(saveJSON.overlayPixels) ? saveJSON.overlayPixels : [];
+			for (let i = 0; i < savedOverlays.length; i++) {
+				const savedPixel = JSON.parse(JSON.stringify(savedOverlays[i]));
+				const x = parseInt(savedPixel.x);
+				const y = parseInt(savedPixel.y);
+				if (isNaN(x) || isNaN(y) || outOfBounds(x,y)) continue;
+				let element = savedPixel.element;
+				if (saveJSON.codes && saveJSON.codes[element]) element = saveJSON.codes[element];
+				if (!elements[element]) element = "unknown";
+				const loadedPixel = createDetachedPixel(element,x,y);
+				if (loadedPixel.del) continue;
+				applyInitialPixelProperties(loadedPixel,savedPixel);
+				loadedPixel.element = element;
+				if (saveElementMigrations[savedPixel.element]) saveElementMigrations[savedPixel.element](loadedPixel,version);
+				const basePixel = pixelMap[x][y];
+				const validOverlay = (requiresOverlayStoragePixel(loadedPixel) && (!basePixel || pixelsCanOverlap(loadedPixel,basePixel))) ||
+					(basePixel && pixelsCanOverlap(loadedPixel,basePixel) && !getBlockingOverlay(x,y,loadedPixel._r,loadedPixel));
+				attachPixelToGrid(loadedPixel,x,y,true,true);
+				if (!validOverlay) {
+					loadedPixel._overlapMustExit = true;
+				}
+				if (loadedPixel._r && currentRelations[loadedPixel._r]) {
+					const relation = currentRelations[loadedPixel._r];
+					if (!relation.p) relation.p = [];
+					relation.p.push(loadedPixel);
 				}
 			}
 			pixelTicks = parseInt(saveConfig.pixelTicks)||0;
@@ -16810,13 +17565,15 @@ behaviorRules = {
 			var power = radius/10;
 			//for (var p = 0; p < Math.round(radius/10+1); p++) {
 			for (var i = 0; i < coords.length; i++) {
+				if (outOfBounds(coords[i].x,coords[i].y)) continue;
 				// damage value is based on distance from x and y
 				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
 				// invert
 				damage = 1 - damage;
 				if (damage < 0) { damage = 0; }
 				damage *= power;
-				if (isEmpty(coords[i].x,coords[i].y)) {
+				const pixelsHere = getPixelsAt(coords[i].x,coords[i].y);
+				if (pixelsHere.length === 0) {
 					// create smoke or fire depending on the damage if empty
 					if (damage < 0.02) { } // do nothing
 					else if (damage < 0.2) {
@@ -16833,50 +17590,36 @@ behaviorRules = {
 					}
 				}
 				else if (!outOfBounds(coords[i].x,coords[i].y)) {
-					// damage the pixel
-					var pixel = pixelMap[coords[i].x][coords[i].y];
-					var info = elements[pixel.element];
-					if (info.hardness) { // lower damage depending on hardness(0-1)
-						if (info.hardness < 1) {
-							// more hardness = less damage, logarithmic
-							damage *= Math.pow((1-info.hardness),info.hardness);
+					// Damage every object in the cell, including a creature walking
+					// through vegetation.
+					for (let p = 0; p < pixelsHere.length; p++) {
+						const pixel = pixelsHere[p];
+						if (!pixel || pixel.del) continue;
+						const info = elements[pixel.element];
+						let pixelDamage = damage;
+						if (info.hardness) {
+							if (info.hardness < 1) pixelDamage *= Math.pow((1-info.hardness),info.hardness);
+							else pixelDamage = 0;
 						}
-						else { damage = 0; }
-					}
-					if (damage > 0.9) {
-						if (Array.isArray(fire)) {
-							var newfire = fire[Math.floor(Math.random() * fire.length)];
-						}
-						else {
-							var newfire = fire;
-						}
-						changePixel(pixel,newfire);
-						continue;
-					}
-					else if (damage > 0.25) {
-						if (isBreakable(pixel)) {
-							breakPixel(pixel);
-							continue;
-						}
-						else {
-							if (Array.isArray(fire)) {
-								var newfire = fire[Math.floor(Math.random() * fire.length)];
-							}
-							else {
-								var newfire = fire;
-							}
-							if (elements[pixel.element].onBreak !== undefined) {
-								elements[pixel.element].onBreak(pixel);
-							}
+						if (pixelDamage > 0.9) {
+							const newfire = Array.isArray(fire) ? fire[Math.floor(Math.random() * fire.length)] : fire;
 							changePixel(pixel,newfire);
 							continue;
 						}
+						if (pixelDamage > 0.25) {
+							if (isBreakable(pixel)) {
+								breakPixel(pixel);
+								continue;
+							}
+							const newfire = Array.isArray(fire) ? fire[Math.floor(Math.random() * fire.length)] : fire;
+							if (elements[pixel.element].onBreak !== undefined) elements[pixel.element].onBreak(pixel);
+							changePixel(pixel,newfire);
+							continue;
+						}
+						if (pixelDamage > 0.75 && info.burn) burnPixel(pixel);
+						pixel.temp += pixelDamage*radius*power;
+						pixelTempCheck(pixel);
 					}
-					if (damage > 0.75 && info.burn) {
-						burnPixel(pixel);
-					}
-					pixel.temp += damage*radius*power;
-					pixelTempCheck(pixel);
 				}
 			}
 		}
@@ -16900,7 +17643,7 @@ behaviorRules = {
 			}
 			// change the pixel to the result
 			if (result === null) {
-				deletePixel(pixel.x,pixel.y);
+				deletePixelObject(pixel);
 				return;
 			}
 			if (elements[pixel.element].breakIntoColor) {
@@ -17073,6 +17816,28 @@ behaviorRules = {
 				})
 			}
 		}
+		function relationUsesGenericGravity(relation) {
+			if (!relation || !Array.isArray(relation.p)) return true;
+			for (let i = 0; i < relation.p.length; i++) {
+				const pixel = relation.p[i];
+				const info = pixel && !pixel.del && elements[pixel.element];
+				if (info && info.relationGravity === "managed") return false;
+			}
+			return true;
+		}
+		function applyRelationGravity() {
+			for (let rid in currentRelations) {
+				let relation = currentRelations[rid];
+				if (relation.p !== undefined) {
+					if (relation.p.length === 0) {
+						delete currentRelations[rid];
+						continue;
+					}
+					if (relation.lastMove === pixelTicks || !relationUsesGenericGravity(relation)) continue;
+					tryMoveRelation(relation, 0, 1);
+				}
+			}
+		}
 		function tickPixels() {
 			ticktemp = {};
 
@@ -17089,50 +17854,59 @@ behaviorRules = {
 				const info = elements[pixel.element];
 				if (pixel.skip === true) continue;
 				if (pixel.del === true) continue;
-				if (info.movable === true) {
-					if (currentSaveData.voidX === true && onBorderX(pixel.x)) {
-						deletePixel(pixel.x,pixel.y); continue;
+				if (requiresOverlayStoragePixel(pixel) && !pixel._overlap) enforceAlwaysOverlayStorage(pixel);
+				currentlyTickingPixel = pixel;
+				try {
+					if (pixel._overlapMustExit && pixel._overlap && !isNonBlockingPixel(pixel)) {
+						const escapeMoves = adjacentCoords.slice();
+						shuffleArray(escapeMoves);
+						for (let e = 0; e < escapeMoves.length; e++) {
+							const dx = escapeMoves[e][0];
+							const dy = escapeMoves[e][1];
+							let escaped;
+							if (pixel._r !== undefined) escaped = tryMoveRelation(getRelation(pixel._r),dx,dy,true);
+							else escaped = tryMove(pixel,pixel.x+dx,pixel.y+dy,undefined,true);
+							if (escaped) break;
+						}
 					}
-					if (currentSaveData.voidY === true && onBorderY(pixel.y)) {
-						deletePixel(pixel.x,pixel.y); continue;
-					}
-					if (currentSaveData.loopX === true) {
-						if (pixel.x === currentSaveData.border) tryMove(pixel,width-currentSaveData.border-1,pixel.y);
-						else if (pixel.x === width-currentSaveData.border) tryMove(pixel,currentSaveData.border+1,pixel.y);
-					}
-					if (currentSaveData.loopY === true) {
-						if (pixel.y === currentSaveData.border) tryMove(pixel,pixel.x,height-currentSaveData.border-1);
-						else if (pixel.y === height-currentSaveData.border) tryMove(pixel,pixel.x,currentSaveData.border+1);
-					}
-				}
-				if (pixel.del === true) continue;
-				if (info.tick !== undefined) { // Run tick function if it exists
-					info.tick(pixel);
-				}
-				if (pixel.del === true) continue;
-				if (runPerPixelList.length !== 0) {
-					for (let i = 0; i < runPerPixelList.length; i++) {
-						runPerPixelList[i](pixel);
-						if (pixel.del === true) continue;
+					if (info.movable === true) {
+						if (currentSaveData.voidX === true && onBorderX(pixel.x)) {
+							deletePixelObject(pixel); continue;
+						}
+						if (currentSaveData.voidY === true && onBorderY(pixel.y)) {
+							deletePixelObject(pixel); continue;
+						}
+						if (currentSaveData.loopX === true) {
+							if (pixel.x === currentSaveData.border) tryMove(pixel,width-currentSaveData.border-1,pixel.y);
+							else if (pixel.x === width-currentSaveData.border) tryMove(pixel,currentSaveData.border+1,pixel.y);
+						}
+						if (currentSaveData.loopY === true) {
+							if (pixel.y === currentSaveData.border) tryMove(pixel,pixel.x,height-currentSaveData.border-1);
+							else if (pixel.y === height-currentSaveData.border) tryMove(pixel,pixel.x,currentSaveData.border+1);
+						}
 					}
 					if (pixel.del === true) continue;
+					if (info.tick !== undefined) { // Run tick function if it exists
+						info.tick(pixel);
+					}
+					if (pixel.del === true) continue;
+					if (runPerPixelList.length !== 0) {
+						for (let j = 0; j < runPerPixelList.length; j++) {
+							runPerPixelList[j](pixel);
+							if (pixel.del === true) continue;
+						}
+						if (pixel.del === true) continue;
+					}
+					if (info.behavior !== undefined) { // Parse behavior if it exists
+						pixelTick(pixel);
+					}
 				}
-				if (info.behavior !== undefined) { // Parse behavior if it exists
-					pixelTick(pixel);
+				finally {
+					if (currentlyTickingPixel === pixel) currentlyTickingPixel = null;
 				}
 			}
 
-			for (let rid in currentRelations) {
-				let relation = currentRelations[rid];
-				if (relation.p !== undefined) {
-					if (relation.p.length === 0) {
-						delete currentRelations[rid];
-						continue;
-					}
-					if (relation.lastMove === pixelTicks) continue;
-					tryMoveRelation(relation, 0, 1);
-				}
-			}
+			applyRelationGravity();
 
 			pixelTicks++
 		}
@@ -17321,12 +18095,14 @@ behaviorRules = {
 			const canvas = canvasLayers.pixels;
 			const ctx = canvas.getContext("2d");
 			let pixelsFirst = [];
+			let pixelsUnderlay = [];
+			let pixelsOverlay = [];
 			let pixelsLast = [];
 			let hasDeleted = false;
 			for (let i = 0; i < currentPixels.length; i++) {
 				let pixel = currentPixels[i];
 				if (pixel.del === true) {
-					if (pixelMap[pixel.x][pixel.y] === pixel) pixelMap[pixel.x][pixel.y] = undefined;
+					detachPixelFromGrid(pixel,true);
 					// currentPixels.splice(i,1);
 					currentPixels[i] = undefined;
 					hasDeleted = true;
@@ -17339,7 +18115,9 @@ behaviorRules = {
 						pixel = pixel.con;
 					}
 				}
-				if (elements[pixel.element].isGas === true || elements[pixel.element].glow === true) pixelsLast.push(pixel);
+				if (pixel._overlap && interactionRenderLayer(pixel) === "normal") pixelsUnderlay.push(pixel);
+				else if (pixel._overlap) pixelsOverlay.push(pixel);
+				else if (elements[pixel.element].isGas === true || elements[pixel.element].glow === true) pixelsLast.push(pixel);
 				else pixelsFirst.push(pixel);
 			}
 			if (hasDeleted === true) {
@@ -17347,7 +18125,7 @@ behaviorRules = {
 			}
 			// Draw the current pixels
 			if (!hiding) {
-				let pixelDrawList = pixelsFirst.concat(pixelsLast);
+				let pixelDrawList = pixelsUnderlay.concat(pixelsFirst,pixelsOverlay,pixelsLast);
 				if (!viewInfo[view]) {
 					setView(1);
 				}
@@ -17362,7 +18140,7 @@ behaviorRules = {
 				if (viewInfo[view].pixel) {
 					for (let i = 0; i < pixelDrawList.length; i++) {
 						let pixel = pixelDrawList[i];
-						if (pixelMap[pixel.x][pixel.y] === undefined) {continue}
+						if (!isPixelStored(pixel) && !(pixelMap[pixel.x] && pixelMap[pixel.x][pixel.y] && pixelMap[pixel.x][pixel.y].con === pixel)) {continue}
 						if (pixel.con) { pixel = pixel.con }
 						if (elements[pixel.element].renderer && (settings.textures !== 0 || viewInfo[view].fancy === false)) {
 							elements[pixel.element].renderer(pixel,ctx);
@@ -17382,7 +18160,8 @@ behaviorRules = {
 						renderPostPixelList[i](ctx);
 					}
 				}
-				const hoverPixel = getPixel(Math.round(mousePos.x), Math.round(mousePos.y));
+				const hoverPixels = getPixelsAt(Math.round(mousePos.x), Math.round(mousePos.y));
+				const hoverPixel = hoverPixels.length ? hoverPixels[hoverPixels.length-1] : null;
 				if (hoverPixel) {
 					if (elements[hoverPixel.element].hoverRender !== undefined) {
 						elements[hoverPixel.element].hoverRender(ctx);
@@ -17692,17 +18471,17 @@ behaviorRules = {
 				if (outOfSight(x,y)) { continue; }
 				
 				var existingPixel = null;
-				if (!isEmpty(x,y,true)) { existingPixel = pixelMap[x][y] }
+				const pixelsAtCursor = getPixelsAt(x,y);
+				if (pixelsAtCursor.length) existingPixel = pixelsAtCursor[pixelsAtCursor.length-1];
 
-				if (mode === "replace" && (!elements[currentElement].tool || elements[currentElement].canPlace)) {
+				const replacingPlacement = mode === "replace" && (!elements[currentElement].tool || elements[currentElement].canPlace);
+				let replaceForCreate = replacingPlacement;
+				if (replacingPlacement) {
 					if (outOfBounds(x,y)) {
 						continue;
 					}
-					// Remove pixel at position from currentPixels
-					if (existingPixel !== null) {
-						if (!(currentElement === existingPixel.element && existingPixel.start === pixelTicks-1)) {
-							deletePixel(x,y);
-						}
+					if (existingPixel !== null && currentElement === existingPixel.element && existingPixel.start === pixelTicks-1) {
+						replaceForCreate = false;
 					}
 				}
 				else if (existingPixel !== null && elements[existingPixel.element].onClicked && currentElement !== existingPixel.element) {
@@ -17711,7 +18490,7 @@ behaviorRules = {
 
 				if (currentElement === "mix") {
 					if (existingPixel !== null) {
-						var pixel = pixelMap[x][y];
+						var pixel = existingPixel;
 						if (pixel.del) continue;
 						if (!(elements[pixel.element].movable !== true || elements[pixel.element].noMix === true) || shiftDown) {
 							mixList.push(pixel);
@@ -17719,10 +18498,10 @@ behaviorRules = {
 					}
 					continue;
 				}
-				else if (elements[currentElement].tool && !(elements[currentElement].canPlace && isEmpty(x,y))) {
+				else if (!replacingPlacement && elements[currentElement].tool && !(elements[currentElement].canPlace && isEmpty(x,y))) {
 					// run the tool function on the pixel
 					if (existingPixel !== null) {
-						var pixel = pixelMap[x][y];
+						var pixel = existingPixel;
 						// if the current element has an ignore property and the pixel's element is in the ignore property, don't do anything
 						if (elements[currentElement].ignore && elements[currentElement].ignore.indexOf(pixel.element) !== -1) {
 							continue;
@@ -17731,24 +18510,15 @@ behaviorRules = {
 					}
 					continue;
 				}
-				if (isEmpty(x, y)) {
-					if (currentPixels.length < maxPixelCount) {
-						createPixel(currentElement,x,y);
-						if (pixelMap[x][y]) {
-							if (currentElement === pixelMap[x][y].element && (elements[currentElement].customColor || elements[currentElement].singleColor)) {
-								pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],currentColorMap[currentElement]);
-							}
-							if (currentElementProp) {
-								for (var key in currentElementProp) {
-									pixelMap[x][y][key] = currentElementProp[key]
-								}
-							}
-						}
+				const placedPixel = tryCreate(currentElement,x,y,replaceForCreate,currentElementProp);
+				if (placedPixel && !placedPixel.del) {
+					if ((currentElement === placedPixel.element || currentElement === "human" || currentElement === "civilized_human") && (elements[currentElement].customColor || elements[currentElement].singleColor)) {
+						placedPixel.color = pixelColorPick(placedPixel,currentColorMap[currentElement]);
 					}
 				}
-				else if (!outOfBounds(x,y)) {
+				else if (!outOfBounds(x,y) && existingPixel && !existingPixel.del) {
 					if (elements[currentElement].extinguish) {
-						var pixel = pixelMap[x][y];
+						var pixel = existingPixel;
 						if (pixel.burning && elements[pixel.element].burning !== true) {
 							delete pixel.burning;
 							delete pixel.burnStart;
@@ -17805,11 +18575,14 @@ behaviorRules = {
 				if (done[x][y]) { continue; }
 				done[x][y] = true;
 
-				if (!isEmpty(x, y)) {
+				if (getPixelsAt(x,y).length) {
 					if (outOfBounds(x,y)) {
 						continue
 					}
-					if (elements.erase) elements.erase.tool(pixelMap[x][y])
+					if (elements.erase) {
+						const pixels = getPixelsAt(x,y);
+						elements.erase.tool(pixels[pixels.length-1]);
+					}
 				}
 			}
 		}
@@ -17823,8 +18596,9 @@ behaviorRules = {
 				}
 				if (!outOfBounds(mouseX, mouseY)) { e.preventDefault(); }
 			}
-			if (!isEmpty(mouseX, mouseY,true)) {
-				var pixel = pixelMap[mouseX][mouseY];
+			const pickedPixels = getPixelsAt(mouseX,mouseY);
+			if (pickedPixels.length) {
+				var pixel = pickedPixels[pickedPixels.length-1];
 				if (elements.pick && elements.pick.tool) elements.pick.tool(pixel);
 			}
 		}
@@ -17935,19 +18709,54 @@ behaviorRules = {
 			}
 			showPromptScreen();
 		}
+		MAX_TPS = 150;
+		SIMULATION_SPEEDS = [30,60,90,150];
+		function mapLegacyTPS(oldTps) {
+			let parsed = parseInt(oldTps);
+			if (!isFinite(parsed) || parsed <= 0) return 30;
+			// A few development builds stored the multiplier itself.
+			if (parsed === 1 || parsed === 2 || parsed === 3 || parsed === 5) return parsed*30;
+			parsed = Math.min(MAX_TPS,parsed);
+			let closest = SIMULATION_SPEEDS[0];
+			for (let i = 1; i < SIMULATION_SPEEDS.length; i++) {
+				if (Math.abs(SIMULATION_SPEEDS[i]-parsed) < Math.abs(closest-parsed)) closest = SIMULATION_SPEEDS[i];
+			}
+			return closest;
+		}
+		function updateSpeedButton() {
+			const speedButton = document.getElementById("speedButton");
+			if (!speedButton) return;
+			const multiplier = tps/30;
+			speedButton.textContent = (Number.isInteger(multiplier) ? multiplier : multiplier.toFixed(1))+"×";
+			speedButton.title = "Simulation speed: "+tps+" TPS";
+		}
 		function setTPS(newtps) {
-			tps = parseInt(newtps) || 30;
+			tps = Math.max(1,Math.min(MAX_TPS,parseInt(newtps) || 30));
 			resetInterval(tps);
+			updateSpeedButton();
+			return tps;
+		}
+		function cycleSimulationSpeed() {
+			let next = SIMULATION_SPEEDS[0];
+			for (let i = 0; i < SIMULATION_SPEEDS.length; i++) {
+				if (SIMULATION_SPEEDS[i] > tps) {
+					next = SIMULATION_SPEEDS[i];
+					break;
+				}
+			}
+			setTPS(next);
+			setSetting("tps",tps);
+			focusGame();
 		}
 		function tpsPrompt() {
-			promptInput("Enter the new simulation Ticks Per Second (TPS) between 1 and 1000. This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".",
+			promptInput("Enter the new simulation Ticks Per Second (TPS) between 1 and 150. This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".",
 				(r) => {
 					var newtps = parseInt(r);
 					if (r !== null) {
 						if (isNaN(newtps) || newtps == "") logMessage("You did not enter a valid TPS.");
-						else if (newtps > 1000) {
-							logMessage("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");
-							tps = 1000;
+						else if (newtps > MAX_TPS) {
+							logMessage("You entered a TPS that is too high. The TPS will be set to the maximum, "+MAX_TPS+".");
+							tps = MAX_TPS;
 							delete currentSaveData.oldTps;
 						}
 						else {
@@ -17961,6 +18770,7 @@ behaviorRules = {
 							}
 						}
 						resetInterval(tps);
+						updateSpeedButton();
 					}
 					focusGame();
 				},
@@ -18336,6 +19146,8 @@ behaviorRules = {
 			currentPixels = [];
 			currentRelations = { _id:1 };
 			pixelMap = [];
+			overlapMap = [];
+			currentlyTickingPixel = null;
 			for (var i = 0; i <= width; i++) {
 				pixelMap[i] = [];
 				for (var j = 0; j <= height; j++) {
@@ -18475,7 +19287,8 @@ behaviorRules = {
 			stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
 			if ((typeof pixelMap).length === 9) { return; }
 			if (pixelMap[mousePos.x] !== undefined) {
-				var currentPixel = pixelMap[mousePos.x][mousePos.y];
+				const hoveredPixels = getPixelsAt(mousePos.x,mousePos.y);
+				var currentPixel = hoveredPixels.length ? hoveredPixels[hoveredPixels.length-1] : undefined;
 				if (currentPixel !== undefined) {
 					stats += "<span id='stat-element' class='stat'>"+langKey("gui.stats.elem","Elem")+":<span>"+(elements[currentPixel.element].name || currentPixel.element).toUpperCase()+"</span></span>";
 					stats += "<span id='stat-temperature' class='stat'>"+langKey("gui.stats.temp","Temp")+":"+formatTemp(currentPixel.temp)+"</span>";
@@ -19592,8 +20405,51 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			var settingsParent = document.getElementById("settingsParent");
 			settingsParent.style.display = "block";
 			showingMenu = "settings";
+			refreshElementInteractionEditor();
 			paused = true;
 			checkPause();
+		}
+		function refreshElementInteractionEditor() {
+			const input = document.getElementById("elementInteractionElement");
+			const list = document.getElementById("elementInteractionElements");
+			const overlap = document.getElementById("elementInteractionOverlap");
+			const sameElement = document.getElementById("elementInteractionSame");
+			const allowWith = document.getElementById("elementInteractionAllowWith");
+			const layer = document.getElementById("elementInteractionLayer");
+			if (!input || !list || !overlap || !sameElement || !allowWith || !layer) return;
+			if (!list.childElementCount) {
+				Object.keys(elements).sort().forEach(element => {
+					const option = document.createElement("option");
+					option.value = element;
+					list.appendChild(option);
+				});
+			}
+			const element = input.value.trim();
+			if (!elements[element]) return;
+			const configured = getElementInteractionSettings(element);
+			overlap.value = configured.overlap;
+			if (sameElement.dataset.edited !== "true") sameElement.value = configured.sameElement;
+			if (allowWith.dataset.edited !== "true") allowWith.value = configured.allowWith.join(", ");
+			layer.value = configured.renderLayer;
+		}
+		function applyElementInteractionEditor(reset) {
+			const input = document.getElementById("elementInteractionElement");
+			const element = input && input.value.trim();
+			if (!element || !elements[element]) {
+				if (typeof logMessage === "function") logMessage("Unknown element: " + (element || "(empty)"));
+				return false;
+			}
+			if (reset) resetElementInteractionSettings(element);
+			else setElementInteractionSettings(element,{
+				overlap: document.getElementById("elementInteractionOverlap").value,
+				sameElement: document.getElementById("elementInteractionSame").value,
+				allowWith: document.getElementById("elementInteractionAllowWith").value.split(","),
+				renderLayer: document.getElementById("elementInteractionLayer").value
+			});
+			document.getElementById("elementInteractionSame").dataset.edited = "false";
+			document.getElementById("elementInteractionAllowWith").dataset.edited = "false";
+			refreshElementInteractionEditor();
+			return true;
 		}
 		function setSetting(setting,value) {
 			settings[setting] = value;
@@ -19829,12 +20685,17 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 		lookupTempElements = {};
 		hiding = false;
 		// On window load, run tick() 30 times per second
-		tps = settings.tps || 30;
+		tps = mapLegacyTPS(settings.tps || 30);
+		settings.tps = tps;
 		tickInterval = window.setInterval(tick, 1000/tps);
 		function resetInterval(newtps=30) {
+			newtps = Math.max(1,Math.min(MAX_TPS,parseInt(newtps) || 30));
+			tps = newtps;
 			window.clearInterval(tickInterval);
 			tickInterval = window.setInterval(tick, 1000/newtps);
+			updateSpeedButton();
 		}
+		window.addEventListener("load",updateSpeedButton);
 		// renderInterval = window.setInterval(drawLayers, 1000/60);
 		let animation = function() {
 			drawLayers();
@@ -20107,6 +20968,11 @@ function finalizeElementAfter(key) {
 			if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable = true; }
 		}
 		if (elements[key].tick) { elements[key].movable = true; }
+	}
+	if (looksLikePassableVegetationElement(key,elements[key])) registerPassableVegetation(key);
+	if (creatureElements[key]) elements[key].isCreature = true;
+	else if (looksLikeCreatureElement(key,elements[key])) {
+		registerCreatureElement(key);
 	}
 	if (elements[key].behavior) {
 		var behavior = elements[key].behavior;
@@ -20846,6 +21712,10 @@ window.onload = function() {
 
 }
 	</script>
+	<script src="scripts/human_society_core.js?nocache=1"></script>
+	<script src="scripts/human_society_tech_data.js?nocache=1"></script>
+	<script src="scripts/human_society_world.js?nocache=1"></script>
+	<script src="scripts/human_society.js?nocache=1"></script>
 	<link rel="stylesheet" type="text/css" href="style.css?nocache=4">
 </head>
 
@@ -20884,7 +21754,7 @@ window.onload = function() {
 			<div id="stats"></div>
 			<div id="controls">
 				<div id="toolControls">
-					<button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='paused=!paused;manualPaused=paused;checkPause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:1;checkMouseSize(-1);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:1;checkMouseSize(1);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();'>Elem</button><button id="editModeButton" title="Switch to Edit Mode" class="controlButton" onclick='toggleEditMode();'>Edit</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
+					<button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='paused=!paused;manualPaused=paused;checkPause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="speedButton" title="Simulation speed: 30 TPS" class="controlButton" onclick='cycleSimulationSpeed();'>1×</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:1;checkMouseSize(-1);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:1;checkMouseSize(1);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();'>Elem</button><button id="editModeButton" title="Switch to Edit Mode" class="controlButton" onclick='toggleEditMode();'>Edit</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
 				</div>
 				<script>
 					// if it is the 1st of April, add a rainbow-colored button
@@ -21193,6 +22063,29 @@ window.onload = function() {
 					<span setting="limitless" class="setting-span multisetting" title="Default: OFF">
 						<input type="button" value="Limitless" id="settingLabel-limitless" class="toggleInput" onclick="toggleInput(this,'limitless',false); refreshMaxPixels(); checkMouseSize(true);" state="0">
 					</span>
+					<span class="setting-span multisetting" id="elementInteractionSetting" title="Configure collision and render order for any element">
+						<span>元素重叠</span>
+						<input id="elementInteractionElement" list="elementInteractionElements" placeholder="输入元素名称" onchange="refreshElementInteractionEditor()">
+						<datalist id="elementInteractionElements"></datalist>
+						<select id="elementInteractionOverlap">
+							<option value="default">重叠：默认</option>
+							<option value="allow">重叠：允许</option>
+							<option value="block">重叠：禁止</option>
+						</select>
+						<select id="elementInteractionSame" onchange="this.dataset.edited='true'">
+							<option value="default">同类：默认</option>
+							<option value="allow">同类：允许</option>
+							<option value="block">同类：禁止</option>
+						</select>
+						<input id="elementInteractionAllowWith" list="elementInteractionElements" placeholder="允许元素，逗号分隔" oninput="this.dataset.edited='true'">
+						<select id="elementInteractionLayer">
+							<option value="default">层级：默认</option>
+							<option value="top">层级：最上层</option>
+							<option value="normal">层级：普通</option>
+						</select>
+						<input type="button" value="应用" onclick="applyElementInteractionEditor(false)">
+						<input type="button" value="恢复默认" onclick="applyElementInteractionEditor(true)">
+					</span>
 					<span setting="lang" class="setting-span" title="Default: Disabled" style="display:none" id="setting-span-lang">
 						<span id="settingLabel-lang">Language</span>
 					</span>
@@ -21206,7 +22099,7 @@ window.onload = function() {
 						</select>&nbsp;
 					</span>
 					<span setting="tps" class="setting-span multisetting" title="Simulation speed in Ticks Per Second. Default: 30">
-						<span id="settingLabel-airtemp">Speed</span> <input type="number" value="30" placeholder="30" onchange="if(this.value===''){this.value=30} setTPS(Math.abs(parseInt(this.value)) || 30); setSetting('tps',tps)">&nbsp;
+						<span id="settingLabel-airtemp">Speed</span> <input type="number" min="1" max="150" value="30" placeholder="30" onchange="if(this.value===''){this.value=30} setTPS(Math.abs(parseInt(this.value)) || 30); this.value=tps; setSetting('tps',tps)">&nbsp;
 					</span>
 					<span setting="airtemp" class="setting-span multisetting" title="Temperature that pixels spawn in at. Default: 20 (°C)">
 						<span id="settingLabel-airtemp">Air Temp</span> <input type="number" value="20" placeholder="20" onchange="if(this.value===''){this.value=20} airTemp=parseFloat(this.value); setSetting('airtemp',airTemp)">&nbsp;
