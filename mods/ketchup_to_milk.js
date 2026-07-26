@@ -1,6 +1,6 @@
 metadata = {
     name: "Ketchup to Milk",
-    author: "YourName",
+    author: "Jack-AI-CPU",
     description: "Transforms ketchup into milk upon contact with salt water.",
     version: "1.0.0"
 };
