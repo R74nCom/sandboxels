@@ -1,3 +1,3 @@
-if (!elements.soapy_water) elements.soapy_water = {};
-if (!elements.soapy_water.reactions) elements.soapy_water.reactions = {};
-elements.soapy_water.reactions.ketchup = { "elem1": "soapy_water", "elem2": "milk" };
+if (!elements.salt_water) elements.salt_water = {};
+if (!elements.salt_water.reactions) elements.salt_water.reactions = {};
+elements.salt_water.reactions.ketchup = { "elem1": "salt_water", "elem2": "milk" };
