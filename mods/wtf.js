@@ -1,3 +1,9 @@
+metadata = {
+    name: "Ketchup to Milk",
+    author: "YourName",
+    description: "Transforms ketchup into milk upon contact with salt water.",
+    version: "1.0.0"
+};
 runAfterLoad(function() {
 
     if (elements.salt_water) {
