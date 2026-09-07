@@ -1110,6 +1110,7 @@ state: "solid",
 behavior: behaviors.RADIOACTIVE_POWDER,
 tempHigh: 1132,
 stateHigh: "molten_uranium233",
+forceAutoGen: true,
 density: 19,
 };
 elements.uranium235 = {
@@ -1123,6 +1124,7 @@ behavior: [
 "XX|XX|XX",
 ],
 tempHigh: 1132.2,
+forceAutoGen: true,
 stateHigh: "molten_uranium235",
 density: 19.1,
 };
@@ -1138,6 +1140,7 @@ behavior: [
 ],
 tempHigh: 1131,
 stateHigh: "molten_uranium238",
+forceAutoGen: true,
 density: 20,
 };
 /* Removed:
