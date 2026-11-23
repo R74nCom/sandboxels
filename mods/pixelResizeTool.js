@@ -9,6 +9,14 @@ pixelResizeButton.onclick = function(pixel) {
             promptText("Number is invalid!");
             return;
         }
+        if (pixelSizeNeeded <= 0) {
+            // p1lotdev - added a warning against numbers 0 and below
+            promptInput("Warning! Numbers 0 and below will crash your game. Type 'ok' below to continue.", (input) => {
+                if (input != "ok") {
+                    return;
+                }
+            });
+        }
         resizeCanvas(canvas_height,canvas_width, parseFloat(pixelSizeNeeded), true);
     },"Pixel Size")
 };
